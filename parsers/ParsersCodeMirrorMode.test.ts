@@ -92,8 +92,7 @@ class MockCodeMirror {
 
 testTree.codeMirrorTest = equal => {
   const code = `testParser
- root
- version`
+ root`
 
   const mock = new MockCodeMirror(
     () =>
@@ -104,7 +103,7 @@ testTree.codeMirrorTest = equal => {
       )
   )
   const tokenLines = mock.getTokenLines(code)
-  equal(tokenLines.join(" "), `def bracket atom bracket atom`)
+  equal(tokenLines.join(" "), `def bracket atom`)
 }
 
 testTree.iris = equal => {
@@ -139,7 +138,6 @@ testTree.iris = equal => {
 testTree.codeMirrorTest2 = equal => {
   const code = `testParser
  root
- version 1.0.0
 foobarParser`
 
   const mock = new MockCodeMirror(
@@ -151,8 +149,8 @@ foobarParser`
       )
   )
   const tokenLines = mock.getTokenLines(code)
-  equal(tokenLines.length, 4)
-  equal(tokenLines.join(" "), `def bracket atom bracket atom bracket number def`)
+  equal(tokenLines.length, 3)
+  equal(tokenLines.join(" "), `def bracket atom def`)
 }
 
 testTree.regressionTest = equal => {

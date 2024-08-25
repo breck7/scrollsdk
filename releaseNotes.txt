@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+82.0.0 2024-8-25
+================
+🎉 Parsers: better documentation
+⚠️ BREAKING: (no one should be affected) removed `versionParser` parser from Parsers
+
 81.1.1 2024-8-25
 ================
 🏥 npm fix
@@ -2195,4 +2200,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v122.0.0
+Built with Scroll v123.0.0

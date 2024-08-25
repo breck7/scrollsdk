@@ -1,3 +1,4 @@
+pageHeader
 ScrollSDK
 =========
 Libraries for building on Scroll
@@ -130,3 +131,5 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 
 ❤️ Public Domain ❤️
 ===================
+
+pageFooter

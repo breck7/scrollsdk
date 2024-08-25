@@ -1,11 +1,11 @@
 // Cell Parsers
 anyCell
 valueCell
- highlightScope string
+ paint string
  description Any character is valid in a value.
 keywordCell
  description Allows any character except a space.
- highlightScope keyword
+ paint keyword
 
 // Line Parsers
 configParser

@@ -10,7 +10,7 @@
       return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameCell
- highlightScope keyword
+ paint keyword
 fruitParser
  description A useless language to test scoped parsers.
  root

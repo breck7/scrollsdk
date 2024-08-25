@@ -1,3 +1,5 @@
+pageHeader
+
 Parsers: A language for making languages
 ========================================
 
@@ -100,3 +102,5 @@ Here's a list of the notable changes in Parsers:
 - ⚠️ BREAKING:
  - Removed `todo` comments. Use `// todo` instead
  - Removed `tooling` keyword. Use `// tooling` instead
+
+pageFooter

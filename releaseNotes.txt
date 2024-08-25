@@ -1,3 +1,5 @@
+pageHeader
+
 Release Notes
 =============
 
@@ -6,6 +8,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.csv CSV
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
+
+81.0.0 2024-8-24
+================
+⚠️ BREAKING: `highlightScope` is now called `paint` globally
+⚠️ BREAKING: removed `sortTemplate`. Use `sortIndex` in Scroll instead.
 
 80.5.0 2024-8-06
 ================
@@ -2180,3 +2187,5 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 1.0.2 2017-3-02
 ===============
 🎉 Initial release
+
+pageFooter

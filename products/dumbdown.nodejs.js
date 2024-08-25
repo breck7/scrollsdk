@@ -34,15 +34,15 @@
 anyCell
 blankCell
 dashCell
- highlightScope constant.language
+ paint constant.language
 codeCell
- highlightScope comment
+ paint comment
 keywordCell
- highlightScope keyword
+ paint keyword
 textCell
- highlightScope string
+ paint string
 urlCell
- highlightScope constant.language
+ paint constant.language
 
 // Line Parsers
 errorParser

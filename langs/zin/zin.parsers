@@ -1,9 +1,9 @@
 // Cell parsers
 nameCell
  description A person's name
- highlightScope string
+ paint string
 keywordCell
- highlightScope keyword
+ paint keyword
 
 // Line parsers
 zinParser

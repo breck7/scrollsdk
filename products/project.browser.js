@@ -71,11 +71,11 @@ ${missing.join("\n")}
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 anyCell
 filepathCell
- highlightScope string
+ paint string
 termCell
- highlightScope variable.parameter
+ paint variable.parameter
 fileConstantCell
- highlightScope keyword.control
+ paint keyword.control
 
 // Line Parsers
 projectParser

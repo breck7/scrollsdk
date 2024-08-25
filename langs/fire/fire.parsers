@@ -7,19 +7,19 @@ booleanCell
 filepathCell
 identifierCell
  regex [$A-Za-z_][0-9a-zA-Z_$]*
- highlightScope variable
+ paint variable
  examples myVarA someVarB
 numberCell
  regex \-?[0-9]*\.?[0-9]*
- highlightScope constant.numeric
+ paint constant.numeric
 numberIdentifierCell
  extends identifierCell
 hashBangCell
- highlightScope comment
+ paint comment
 hashBangKeywordCell
- highlightScope comment
+ paint comment
 stringCell
- highlightScope string
+ paint string
 booleanIdentifierCell
  extends identifierCell
 functionIdentifierCell
@@ -33,7 +33,7 @@ methodIdentifierCell
 resultIdentifierCell
  extends identifierCell
 keywordCell
- highlightScope keyword
+ paint keyword
 stringIdentifierCell
  extends identifierCell
 stringCellsCell

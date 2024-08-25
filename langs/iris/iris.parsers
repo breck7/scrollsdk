@@ -1,17 +1,17 @@
 // Cell Parsers
 anyCell
 floatCell
- highlightScope constant.numeric.float
+ paint constant.numeric.float
 intCell
 keywordCell
 commentKeywordCell
  extends keywordCell
- highlightScope comment
+ paint comment
  enum comment
 headerCell
- highlightScope string
+ paint string
 commentCell
- highlightScope comment
+ paint comment
 sepalLengthCell
  extends floatCell
 sepalWidthCell
@@ -22,7 +22,7 @@ petalWidthCell
  extends floatCell
 speciesCell
  enum virginica versicolor setosa
- highlightScope constant.language
+ paint constant.language
 
 // Line Parsers
 irisParser

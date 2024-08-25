@@ -107,9 +107,8 @@ var ParsersConstants
   // develop time
   ParsersConstants["description"] = "description"
   ParsersConstants["example"] = "example"
-  ParsersConstants["sortTemplate"] = "sortTemplate"
   ParsersConstants["frequency"] = "frequency"
-  ParsersConstants["highlightScope"] = "highlightScope"
+  ParsersConstants["paint"] = "paint"
 })(ParsersConstants || (ParsersConstants = {}))
 class TypedWord extends TreeWord {
   constructor(node, cellIndex, type) {
@@ -360,38 +359,6 @@ class ParserBackedNode extends TreeNode {
     })
     return this
   }
-  sortFromSortTemplate() {
-    if (!this.length) return this
-    // Recurse
-    this.forEach(node => node.sortFromSortTemplate())
-    const def = this.isRoot() ? this.definition.rootParserDefinition : this.definition
-    const { sortIndices, sortSections } = def.sortSpec
-    // Sort and insert section breaks
-    if (sortIndices.size) {
-      // Sort keywords
-      this.sort((nodeA, nodeB) => {
-        var _a, _b
-        const aIndex = (_a = sortIndices.get(nodeA.firstWord)) !== null && _a !== void 0 ? _a : sortIndices.get(nodeA.sortKey)
-        const bIndex = (_b = sortIndices.get(nodeB.firstWord)) !== null && _b !== void 0 ? _b : sortIndices.get(nodeB.sortKey)
-        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.firstWord}"`)
-        const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
-        const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
-        return a > b ? 1 : a < b ? -1 : nodeA.getLine() > nodeB.getLine()
-      })
-      // pad sections
-      let currentSection = 0
-      this.forEach(node => {
-        var _a
-        const nodeSection = (_a = sortSections.get(node.firstWord)) !== null && _a !== void 0 ? _a : sortSections.get(node.sortKey)
-        const sectionHasAdvanced = nodeSection > currentSection
-        if (sectionHasAdvanced) {
-          currentSection = nodeSection
-          node.prependSibling("") // Put a blank line before this section
-        }
-      })
-    }
-    return this
-  }
   getParserUsage(filepath = "") {
     // returns a report on what parsers from its language the program uses
     const usage = new TreeNode()
@@ -406,8 +373,8 @@ class ParserBackedNode extends TreeNode {
     })
     return usage
   }
-  toHighlightScopeTree() {
-    return this.topDownArray.map(child => child.indentation + child.getLineHighlightScopes()).join("\n")
+  toPaintTree() {
+    return this.topDownArray.map(child => child.indentation + child.getLinePaints()).join("\n")
   }
   toDefinitionLineNumberTree() {
     return this.topDownArray.map(child => child.definition.lineNumber + " " + child.indentation + child.cellDefinitionLineNumbers.join(" ")).join("\n")
@@ -421,16 +388,16 @@ class ParserBackedNode extends TreeNode {
   get asTreeWithParsers() {
     return this.topDownArray.map(child => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLine()).join("\n")
   }
-  getCellHighlightScopeAtPosition(lineIndex, wordIndex) {
+  getCellPaintAtPosition(lineIndex, wordIndex) {
     this._initCellTypeCache()
-    const typeNode = this._cache_highlightScopeTree.topDownArray[lineIndex - 1]
+    const typeNode = this._cache_paintTree.topDownArray[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
   }
   _initCellTypeCache() {
     const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
     this._cache_typeTree = new TreeNode(this.toCellTypeTree())
-    this._cache_highlightScopeTree = new TreeNode(this.toHighlightScopeTree())
+    this._cache_paintTree = new TreeNode(this.toPaintTree())
     this._cache_programCellTypeStringMTime = treeMTime
   }
   createParserCombinator() {
@@ -499,8 +466,8 @@ class ParserBackedNode extends TreeNode {
       })
       .join(" ")
   }
-  getLineHighlightScopes(defaultScope = "source") {
-    return this.parsedCells.map(slot => slot.highlightScope || defaultScope).join(" ")
+  getLinePaints(defaultScope = "source") {
+    return this.parsedCells.map(slot => slot.paint || defaultScope).join(" ")
   }
   get cellDefinitionLineNumbers() {
     return this.parsedCells.map(cell => cell.definitionLineNumber)
@@ -678,9 +645,9 @@ class AbstractParsersBackedCell {
   get placeholder() {
     return this.cellTypeDefinition.get(ParsersConstants.examples) || ""
   }
-  get highlightScope() {
+  get paint() {
     const definition = this.cellTypeDefinition
-    if (definition) return definition.highlightScope // todo: why the undefined?
+    if (definition) return definition.paint // todo: why the undefined?
   }
   getAutoCompleteWords(partialWord = "") {
     const cellDef = this.cellTypeDefinition
@@ -761,7 +728,7 @@ class ParsersBitCell extends AbstractParsersBackedCell {
     return !!parseInt(word)
   }
 }
-ParsersBitCell.defaultHighlightScope = "constant.numeric"
+ParsersBitCell.defaultPaint = "constant.numeric"
 class ParsersNumericCell extends AbstractParsersBackedCell {
   _toStumpInput(crux) {
     return `input
@@ -790,7 +757,7 @@ class ParsersIntCell extends ParsersNumericCell {
     return parseInt(word)
   }
 }
-ParsersIntCell.defaultHighlightScope = "constant.numeric.integer"
+ParsersIntCell.defaultPaint = "constant.numeric.integer"
 ParsersIntCell.parserFunctionName = "parseInt"
 class ParsersFloatCell extends ParsersNumericCell {
   _isValid() {
@@ -809,7 +776,7 @@ class ParsersFloatCell extends ParsersNumericCell {
     return parseFloat(word)
   }
 }
-ParsersFloatCell.defaultHighlightScope = "constant.numeric.float"
+ParsersFloatCell.defaultPaint = "constant.numeric.float"
 ParsersFloatCell.parserFunctionName = "parseFloat"
 // ErrorCellType => parsers asks for a '' cell type here but the parsers does not specify a '' cell type. (todo: bring in didyoumean?)
 class ParsersBoolCell extends AbstractParsersBackedCell {
@@ -837,7 +804,7 @@ class ParsersBoolCell extends AbstractParsersBackedCell {
     return this._trues.has(word.toLowerCase())
   }
 }
-ParsersBoolCell.defaultHighlightScope = "constant.numeric"
+ParsersBoolCell.defaultPaint = "constant.numeric"
 class ParsersAnyCell extends AbstractParsersBackedCell {
   _isValid() {
     return true
@@ -859,7 +826,7 @@ class ParsersKeywordCell extends ParsersAnyCell {
     return this._parserDefinitionParser.cruxIfAny
   }
 }
-ParsersKeywordCell.defaultHighlightScope = "keyword"
+ParsersKeywordCell.defaultPaint = "keyword"
 class ParsersExtraWordCellTypeCell extends AbstractParsersBackedCell {
   _isValid() {
     return false
@@ -1191,7 +1158,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleTreeNode {
     types[ParsersConstants.reservedWords] = ParsersReservedWordsTestParser
     types[ParsersConstants.enumFromCellTypes] = EnumFromCellTypesTestParser
     types[ParsersConstants.enum] = ParsersEnumTestNode
-    types[ParsersConstants.highlightScope] = TreeNode
+    types[ParsersConstants.paint] = TreeNode
     types[ParsersConstants.comment] = TreeNode
     types[ParsersConstants.examples] = TreeNode
     types[ParsersConstants.min] = TreeNode
@@ -1235,11 +1202,11 @@ class cellTypeDefinitionParser extends AbstractExtendibleTreeNode {
     const arr = this._getAncestorsArray()
     return arr[arr.length - 1].id
   }
-  get highlightScope() {
-    const hs = this._getFromExtended(ParsersConstants.highlightScope)
+  get paint() {
+    const hs = this._getFromExtended(ParsersConstants.paint)
     if (hs) return hs
     const preludeKind = this.preludeKind
-    if (preludeKind) return preludeKind.defaultHighlightScope
+    if (preludeKind) return preludeKind.defaultPaint
   }
   _getEnumOptions() {
     const enumNode = this._getNodeFromExtended(ParsersConstants.enum)
@@ -1433,7 +1400,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
       ParsersConstants.cellParser,
       ParsersConstants.extensions,
       ParsersConstants.version,
-      ParsersConstants.sortTemplate,
       ParsersConstants.tags,
       ParsersConstants.crux,
       ParsersConstants.cruxFromId,
@@ -1465,15 +1431,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
     map[ParsersConstants.compilerParser] = ParsersCompilerParser
     map[ParsersConstants.example] = ParsersExampleParser
     return new TreeNode.ParserCombinator(undefined, map, [{ regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser }])
-  }
-  get sortSpec() {
-    const sortSections = new Map()
-    const sortIndices = new Map()
-    const sortTemplate = this.get(ParsersConstants.sortTemplate)
-    if (!sortTemplate) return { sortSections, sortIndices }
-    sortTemplate.split("  ").forEach((section, sectionIndex) => section.split(" ").forEach(word => sortSections.set(word, sectionIndex)))
-    sortTemplate.split(" ").forEach((word, index) => sortIndices.set(word, index))
-    return { sortSections, sortIndices }
   }
   toTypeScriptInterface(used = new Set()) {
     let childrenInterfaces = []
@@ -1759,23 +1716,23 @@ ${properties.join("\n")}
   }
   // todo: refactor. move some parts to cellParser?
   _toSublimeMatchBlock() {
-    const defaultHighlightScope = "source"
+    const defaultPaint = "source"
     const program = this.languageDefinitionProgram
     const cellParser = this.cellParser
     const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
     const catchAllCellTypeId = cellParser.catchAllCellTypeId
     const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
-    const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.highlightScope : defaultHighlightScope) + "." + this.parserIdFromDefinition
+    const firstWordPaint = (firstCellTypeDef ? firstCellTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
     const topHalf = ` '${this.parserIdFromDefinition}':
   - match: ${this.sublimeMatchLine}
-    scope: ${firstWordHighlightScope}`
+    scope: ${firstWordPaint}`
     if (catchAllCellTypeId) requiredCellTypeIds.push(catchAllCellTypeId)
     if (!requiredCellTypeIds.length) return topHalf
     const captures = requiredCellTypeIds
       .map((cellTypeId, index) => {
         const cellTypeDefinition = program.getCellTypeDefinitionById(cellTypeId) // todo: cleanup
         if (!cellTypeDefinition) throw new Error(`No ${ParsersConstants.cellType} ${cellTypeId} found`) // todo: standardize error/capture error at parsers time
-        return `        ${index + 1}: ${(cellTypeDefinition.highlightScope || defaultHighlightScope) + "." + cellTypeDefinition.cellTypeId}`
+        return `        ${index + 1}: ${(cellTypeDefinition.paint || defaultPaint) + "." + cellTypeDefinition.cellTypeId}`
       })
       .join("\n")
     const cellTypesToRegex = cellTypeIds => cellTypeIds.map(cellTypeId => `({{${cellTypeId}}})?`).join(" ?")

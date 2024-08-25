@@ -23,14 +23,14 @@
 // Cell Parsers
 anyCell
 keywordCell
- highlightScope keyword
+ paint keyword
 stringCell
- highlightScope string
+ paint string
 booleanCell
  enum true false
- highlightScope constant.numeric
+ paint constant.numeric
 numberCell
- highlightScope constant.numeric
+ paint constant.numeric
 
 // Line Parsers
 dugParser

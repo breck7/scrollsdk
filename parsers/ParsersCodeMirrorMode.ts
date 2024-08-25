@@ -363,11 +363,11 @@ class ParsersCodeMirrorMode {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?
-    if (!program.getCellHighlightScopeAtPosition) console.log(program)
-    const highlightScope = program.getCellHighlightScopeAtPosition(lineIndex, cellIndex)
-    const style = highlightScope ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
+    if (!program.getCellPaintAtPosition) console.log(program)
+    const paint = program.getCellPaintAtPosition(lineIndex, cellIndex)
+    const style = paint ? <string>textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined
 
-    return style || "noHighlightScopeDefinedInParsers"
+    return style || "noPaintDefinedInParsers"
   }
 
   // todo: remove.

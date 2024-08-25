@@ -1,5 +1,3 @@
-pageHeader
-
 Release Notes
 =============
 
@@ -2188,4 +2186,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-pageFooter
+Built with Scroll v122.0.0

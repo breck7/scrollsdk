@@ -109,7 +109,6 @@ var ParsersConstants
   // develop time
   ParsersConstants["description"] = "description"
   ParsersConstants["example"] = "example"
-  ParsersConstants["sortTemplate"] = "sortTemplate"
   ParsersConstants["frequency"] = "frequency"
   ParsersConstants["paint"] = "paint"
 })(ParsersConstants || (ParsersConstants = {}))
@@ -360,38 +359,6 @@ class ParserBackedNode extends TreeNode {
     this.topDownArray.forEach(child => {
       child.format()
     })
-    return this
-  }
-  sortFromSortTemplate() {
-    if (!this.length) return this
-    // Recurse
-    this.forEach(node => node.sortFromSortTemplate())
-    const def = this.isRoot() ? this.definition.rootParserDefinition : this.definition
-    const { sortIndices, sortSections } = def.sortSpec
-    // Sort and insert section breaks
-    if (sortIndices.size) {
-      // Sort keywords
-      this.sort((nodeA, nodeB) => {
-        var _a, _b
-        const aIndex = (_a = sortIndices.get(nodeA.firstWord)) !== null && _a !== void 0 ? _a : sortIndices.get(nodeA.sortKey)
-        const bIndex = (_b = sortIndices.get(nodeB.firstWord)) !== null && _b !== void 0 ? _b : sortIndices.get(nodeB.sortKey)
-        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.firstWord}"`)
-        const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
-        const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
-        return a > b ? 1 : a < b ? -1 : nodeA.getLine() > nodeB.getLine()
-      })
-      // pad sections
-      let currentSection = 0
-      this.forEach(node => {
-        var _a
-        const nodeSection = (_a = sortSections.get(node.firstWord)) !== null && _a !== void 0 ? _a : sortSections.get(node.sortKey)
-        const sectionHasAdvanced = nodeSection > currentSection
-        if (sectionHasAdvanced) {
-          currentSection = nodeSection
-          node.prependSibling("") // Put a blank line before this section
-        }
-      })
-    }
     return this
   }
   getParserUsage(filepath = "") {
@@ -1435,7 +1402,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
       ParsersConstants.cellParser,
       ParsersConstants.extensions,
       ParsersConstants.version,
-      ParsersConstants.sortTemplate,
       ParsersConstants.tags,
       ParsersConstants.crux,
       ParsersConstants.cruxFromId,
@@ -1467,15 +1433,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
     map[ParsersConstants.compilerParser] = ParsersCompilerParser
     map[ParsersConstants.example] = ParsersExampleParser
     return new TreeNode.ParserCombinator(undefined, map, [{ regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser }])
-  }
-  get sortSpec() {
-    const sortSections = new Map()
-    const sortIndices = new Map()
-    const sortTemplate = this.get(ParsersConstants.sortTemplate)
-    if (!sortTemplate) return { sortSections, sortIndices }
-    sortTemplate.split("  ").forEach((section, sectionIndex) => section.split(" ").forEach(word => sortSections.set(word, sectionIndex)))
-    sortTemplate.split(" ").forEach((word, index) => sortIndices.set(word, index))
-    return { sortSections, sortIndices }
   }
   toTypeScriptInterface(used = new Set()) {
     let childrenInterfaces = []

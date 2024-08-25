@@ -88,7 +88,7 @@ regexCell
 reservedWordCell
  description A word that a cell cannot contain.
  paint string
-scopeNameCell
+paintTypeCell
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  paint string
 scriptUrlCell
@@ -242,30 +242,29 @@ exampleParser
  catchAllParser catchAllExampleLineParser
  extends abstractParserRuleParser
  cruxFromId
-sortTemplateParser
- description A one liner for describing how the content of the node should be sorted. Put a blank cell to insert a line break between sections.
- extends abstractParserRuleParser
- cruxFromId
- catchAllCellType anyCell
+
 extendsParserParser
  crux extends
- description parser definitions can extend others.
- // todo Add mixin support in addition to/in place of extends?
+ description Extend another parser.
+ // todo: add a catchall that is used for mixins
  cells propertyKeywordCell parserIdCell
  extends abstractParserRuleParser
+
 frequencyParser
  // todo Remove this parser. Switch to conditional frequencies.
  cells propertyKeywordCell floatCell
  extends abstractParserRuleParser
  cruxFromId
+
 inScopeParser
- description A list of possible child parsers for a node.
+ description Parsers in scope.
  catchAllCellType parserIdCell
  extends abstractParserRuleParser
  cruxFromId
+
 javascriptParser
  // todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
- description Provide raw javascript code that will be inserted into a node type's class.
+ description Specify javascript code for Parser Actions.
  catchAllParser catchAllJavascriptCodeLineParser
  extends abstractParserRuleParser
  javascript
@@ -284,60 +283,81 @@ javascriptParser
    return this
   }
  cruxFromId
+
 abstractParseRuleParser
- description Each node should have a pattern that it matches on unless it's a catch all node.
+ // Each node should have a pattern that it matches on unless it's a catch all node.
  extends abstractParserRuleParser
  cruxFromId
+
 cruxParser
  cells propertyKeywordCell stringCell
- description Use this property for prefix languages where the first word is the keyword.
+ description Attach by matching first word.
  extends abstractParseRuleParser
+
 cruxFromIdParser
  cells propertyKeywordCell
- description Include this to derive the crux word from the node type id, for example 'fooParser' would have crux of 'foo'.
+ description Derive crux from parserId.
+ // for example 'fooParser' would have crux of 'foo'.
  extends abstractParseRuleParser
+
 patternParser
  catchAllCellType regexCell
- description If present, this regex will be used to determine the parser instead of the cruxParser.
+ description Attach via regex.
  extends abstractParseRuleParser
+
 requiredParser
- description If present, the parent node will have an error if one of these nodes is not provided.
+ description Assert is present at least once.
  extends abstractParserRuleParser
  cruxFromId
+
 abstractValidationRuleParser
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType boolCell
+
 singleParser
- description If present and there are more than 1 of these nodes on the parent, an error will be present. Can be overridden by a child class by setting to false.
+ description Assert used once.
+ // Can be overridden by a child class by setting to false.
  extends abstractValidationRuleParser
+
 uniqueLineParser
- description If present and there are more than 1 of these lines on the parent, an error will be present. Can be overridden by a child class by setting to false.
+ description Assert unique lines. For pattern parsers.
+ // Can be overridden by a child class by setting to false.
  extends abstractValidationRuleParser
+
 uniqueFirstWordParser
- description For catch all parsers or pattern nodes, use this to indicate the first words should be unique.
+ description Assert unique first words. For pattern parsers.
+ // For catch all parsers or pattern nodes, use this to indicate the 
  extends abstractValidationRuleParser
+
 listDelimiterParser
- description If present will serialize the content of the node to an array of strings split on the provided delimiter.
+ description Split content by this delimiter.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
+
+
 contentKeyParser
+ // todo: deprecate?
  description Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
 childrenKeyParser
+ // todo: deprecate?
  description Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the node to an object and set a property with this key and the value set to the node's children.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
+
 tagsParser
  catchAllCellType tagCell
  extends abstractParserRuleParser
  cruxFromId
+
 catchAllErrorParser
  baseParser errorParser
+
 catchAllExampleLineParser
  catchAllCellType exampleAnyCell
  catchAllParser catchAllExampleLineParser
@@ -350,6 +370,8 @@ catchAllMultilineStringConstantParser
  catchAllCellType stringCell
  catchAllParser catchAllMultilineStringConstantParser
  cells stringCell
+
+
 cellTypeDefinitionParser
  // todo Generate a class for each cell type?
  // todo Allow abstract cell types?
@@ -357,6 +379,8 @@ cellTypeDefinitionParser
  pattern ^[a-zA-Z0-9_]+Cell$
  inScope paintParser regexParser reservedWordsParser enumFromCellTypesParser descriptionParser enumParser slashCommentParser extendsCellTypeParser examplesParser cellMinParser cellMaxParser
  cells cellTypeIdCell
+
+// Enums
 enumFromCellTypesParser
  catchAllCellType cellTypeIdCell
  cells cellPropertyNameCell
@@ -365,11 +389,13 @@ enumParser
  cruxFromId
  catchAllCellType enumOptionCell
  cells cellPropertyNameCell
+
 examplesParser
  description If the domain of possible cell values is large, such as a string type, it can help certain methods—such as program synthesis—to provide a few examples.
  cruxFromId
  catchAllCellType cellExampleCell
  cells cellPropertyNameCell
+
 cellMinParser
  description For numeric cell types you can specify a min
  crux min
@@ -378,11 +404,13 @@ cellMaxParser
  description For numeric cell types you can specify a max
  crux max
  cells cellPropertyNameCell numericCell
+
 paintParser
- cells propertyKeywordCell scopeNameCell
- description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
+ cells propertyKeywordCell paintTypeCell
+ description Color this word like a [category].
  single
  cruxFromId
+
 rootFlagParser
  crux root
  description Mark a parser as root if it is the root of your programming language. The parserId will be the name of your language. The parserId will also serve as the default file extension, if you don't specify another. If more than 1 parser is marked as "root", the last one wins.
@@ -627,12 +655,6 @@ extendsCellTypeParser
     }
   }
 
-  class sortTemplateParser extends abstractParserRuleParser {
-    get anyCell() {
-      return this.getWordsFrom(0)
-    }
-  }
-
   class extendsParserParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -851,7 +873,7 @@ extendsCellTypeParser
     get propertyKeywordCell() {
       return this.getWord(0)
     }
-    get scopeNameCell() {
+    get paintTypeCell() {
       return this.getWord(1)
     }
   }
@@ -882,7 +904,6 @@ extendsCellTypeParser
           compiler: compilerParser,
           description: descriptionParser,
           example: exampleParser,
-          sortTemplate: sortTemplateParser,
           extends: extendsParserParser,
           frequency: frequencyParser,
           inScope: inScopeParser,

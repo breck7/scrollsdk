@@ -60,7 +60,6 @@ arrowParser
  root
  inScope chargeParser commentParser
  catchAllParser errorParser
- sortTemplate Comment charge
  javascript
   compile() {
    return this.asJsonSubset
@@ -77,7 +76,6 @@ chargeParser
    const card = this.get("cardNumber")
    return \`Successfully charged \${this.get("amount")} \${this.get("currency")} to card \${card.substr(card.length - 4, 4)}.\`
   }
- sortTemplate description  amountParser currency  cardNumber token
 abstractChargeAttributeParser
  cruxFromId
  required
@@ -88,7 +86,6 @@ cardNumberParser
 amountParser
  extends abstractChargeAttributeParser
  cells keywordCell amountCell
- string sortKey amountParser
 currencyParser
  extends abstractChargeAttributeParser
  cells keywordCell currencyCell
@@ -145,9 +142,6 @@ tokenParser
     }
     get amountCell() {
       return parseFloat(this.getWord(1))
-    }
-    get sortKey() {
-      return `amountParser`
     }
   }
 

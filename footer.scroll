@@ -1,3 +1,7 @@
 importOnly
 endColumns
-pageFooter
+center
+emailButton sdk@scroll.pub
+downloadButton
+viewSourceButton
+scrollVersionLink

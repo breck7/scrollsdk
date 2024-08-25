@@ -2,7 +2,9 @@ importOnly
 import settings.scroll
 metaTags
 gazetteCss
-pageHeader
+homeButton
+leftRightButtons
+viewSourceButton
 buildTxt
 buildHtml
 <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />

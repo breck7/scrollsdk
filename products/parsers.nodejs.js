@@ -236,14 +236,15 @@ compilesToParser
  // todo: deprecate?
  // Optionally specify a file extension that will be used when compiling your language to a file. Generally used on parsers marked root.
  cruxFromId
+ tags experimental
 
 extensionsParser
  extends abstractParserRuleParser
  catchAllCellType fileExtensionCell
- // todo: deprecate?
  description File extension for your dialect.
  // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's parserId will be used as the default file extension.
  cruxFromId
+ tags deprecate
 
 abstractNonTerminalParserRuleParser
  extends abstractParserRuleParser
@@ -268,6 +269,7 @@ cellParserParser
  // prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractParserRuleParser
  cruxFromId
+ tags experimental
 
 catchAllParserParser
  description Attach this to unmatched lines.
@@ -288,6 +290,7 @@ compilerParser
  inScope stringTemplateParser catchAllCellDelimiterParser openChildrenParser closeChildrenParser indentCharacterParser joinChildrenWithParser
  extends abstractParserRuleParser
  cruxFromId
+ tags experimental
 
 parserDescriptionParser
  description Parser description.
@@ -315,7 +318,7 @@ extendsParserParser
  cells propertyKeywordCell parserIdCell
  extends abstractParserRuleParser
 
-frequencyParser
+popularityParser
  // todo Remove this parser. Switch to conditional frequencies.
  description Parser popularity.
  cells propertyKeywordCell floatCell
@@ -404,12 +407,12 @@ listDelimiterParser
 
 
 contentKeyParser
- // todo: deprecate?
  description Deprecated. For to/from JSON.
  // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
+ tags deprecate
 childrenKeyParser
  // todo: deprecate?
  description Deprecated. For to/from JSON.
@@ -417,6 +420,7 @@ childrenKeyParser
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
+ tags deprecate
 
 tagsParser
  catchAllCellType tagCell
@@ -731,7 +735,7 @@ extendsCellTypeParser
     }
   }
 
-  class frequencyParser extends abstractParserRuleParser {
+  class popularityParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -971,7 +975,7 @@ extendsCellTypeParser
           description: parserDescriptionParser,
           example: exampleParser,
           extends: extendsParserParser,
-          frequency: frequencyParser,
+          popularity: popularityParser,
           inScope: inScopeParser,
           javascript: javascriptParser,
           crux: cruxParser,

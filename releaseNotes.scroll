@@ -18,6 +18,10 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 83.0.0 2024-8-26
+🎉 Parsers: better documentation
+⚠️ BREAKING: (no one should be affected) `frequency` in Parsers is now `popularity`
+
 📦 82.0.0 2024-8-25
 🎉 Parsers: better documentation
 ⚠️ BREAKING: (no one should be affected) removed `versionParser` parser from Parsers

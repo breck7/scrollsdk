@@ -125,7 +125,7 @@ abstractJsblockParser
  extends abstractNonTerminalParser
 blockParser
  description block of code
- frequency .2
+ popularity .2
  compiler
   stringTemplate /* {identifierCell} */
  extends abstractJsblockParser
@@ -138,13 +138,13 @@ functionParser
  compiler
   stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
   catchAllCellDelimiter , 
- frequency .1
+ popularity .1
  extends abstractJsblockParser
 ifParser
  crux if
  description If tile
  cells keywordCell identifierCell
- frequency .2
+ popularity .2
  compiler
   stringTemplate if ({identifierCell})
  extends abstractJsblockParser
@@ -152,7 +152,7 @@ whileParser
  crux while
  description While tile
  cells keywordCell identifierCell
- frequency .1
+ popularity .1
  compiler
   stringTemplate while ({identifierCell})
  extends abstractJsblockParser
@@ -165,7 +165,7 @@ abstractArithmeticParser
  catchAllCellType anyCell
  compiler
   stringTemplate const {identifierCell} = {anyCell}
- frequency .2
+ popularity .2
  extends abstractAssignmentParser
 divideParser
  description Divide Numbers
@@ -207,7 +207,7 @@ greaterThanParser
  cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
- frequency .1
+ popularity .1
  extends abstractBooleanOperatorParser
  crux greaterThan
 greaterThanOrEqualParser
@@ -215,7 +215,7 @@ greaterThanOrEqualParser
  cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
- frequency .1
+ popularity .1
  extends abstractBooleanOperatorParser
  crux greaterThanOrEqual
 lessThanParser
@@ -223,7 +223,7 @@ lessThanParser
  cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
- frequency .1
+ popularity .1
  extends abstractBooleanOperatorParser
  crux lessThan
 lessThanOrEqualParser
@@ -232,7 +232,7 @@ lessThanOrEqualParser
  cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
- frequency .1
+ popularity .1
  extends abstractBooleanOperatorParser
 sumParser
  crux sum
@@ -242,7 +242,7 @@ sumParser
  compiler
   stringTemplate const {numberIdentifierCell} = [{numberCell}].reduce((sum, num) => sum + num)
   catchAllCellDelimiter , 
- frequency .1
+ popularity .1
  extends abstractAssignmentParser
 booleanParser
  crux boolean
@@ -254,7 +254,7 @@ booleanParser
 callFunctionAndSetParser
  crux callFunctionAndSet
  description Function Call
- frequency .5
+ popularity .5
  cells keywordCell resultIdentifierCell functionIdentifierCell
  catchAllCellType anyCell
  compiler
@@ -264,7 +264,7 @@ callFunctionAndSetParser
 callMethodAndSetParser
  crux callMethodAndSet
  description Method Call
- frequency .5
+ popularity .5
  cells keywordCell resultIdentifierCell instanceIdentifierCell methodIdentifierCell
  catchAllCellType anyCell
  compiler
@@ -279,7 +279,7 @@ joinParser
  compiler
   stringTemplate const {identifierCell} = [{identifiersCell}].join("")
   catchAllCellDelimiter , 
- frequency .2
+ popularity .2
  extends abstractAssignmentParser
 mutableNumberParser
  crux mutableNumber
@@ -294,14 +294,14 @@ numberParser
  cells keywordCell identifierCell numberCell
  compiler
   stringTemplate const {identifierCell} = {numberCell}
- frequency .3
+ popularity .3
  extends abstractAssignmentParser
 numbersParser
  crux numbers
  description Number Array Assignment
  cells keywordCell identifierCell
  catchAllCellType numberCell
- frequency .4
+ popularity .4
  compiler
   stringTemplate const {identifierCell} = [{numberCell}]
   catchAllCellDelimiter , 
@@ -313,12 +313,12 @@ stringParser
  catchAllCellType anyCell
  compiler
   stringTemplate const {stringIdentifierCell} = "{anyCell}"
- frequency .2
+ popularity .2
  extends abstractAssignmentParser
 callFunctionParser
  crux callFunction
  description Function call ignore result.
- frequency .1
+ popularity .1
  cells keywordCell functionIdentifierCell
  catchAllCellType anyCell
  compiler
@@ -331,7 +331,7 @@ decrementParser
  cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}--
- frequency .1
+ popularity .1
  extends abstractTerminalParser
 dumpIdentifierParser
  crux dumpIdentifier
@@ -340,7 +340,7 @@ dumpIdentifierParser
  compiler
   stringTemplate console.log({identifierCell})
   catchAllCellDelimiter , 
- frequency .5
+ popularity .5
  extends abstractTerminalParser
 exportParser
  crux export
@@ -348,12 +348,12 @@ exportParser
  cells keywordCell identifierCell
  compiler
   stringTemplate module.exports = {identifierCell}
- frequency .1
+ popularity .1
  extends abstractTerminalParser
 incrementParser
  crux increment
  description Increment
- frequency .3
+ popularity .3
  cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}++
@@ -377,14 +377,14 @@ requireParser
  cells keywordCell identifierCell filepathCell
  compiler
   stringTemplate const {identifierCell} = require("{filepathCell}")
- frequency .1
+ popularity .1
  extends abstractTerminalParser
 returnParser
  crux return
  cells keywordCell anyCell
  compiler
   stringTemplate return {anyCell}
- frequency .1
+ popularity .1
  extends abstractTerminalParser
 hashbangParser
  crux #!

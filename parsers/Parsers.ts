@@ -132,7 +132,7 @@ enum ParsersConstants {
   // develop time
   description = "description",
   example = "example",
-  frequency = "frequency", // todo: remove. switch to conditional frequencies. potentially do that outside this core lang.
+  popularity = "popularity", // todo: remove. switch to conditional frequencies. potentially do that outside this core lang.
   paint = "paint"
 }
 
@@ -1739,7 +1739,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode
   createParserCombinator() {
     // todo: some of these should just be on nonRootNodes
     const types = [
-      ParsersConstants.frequency,
+      ParsersConstants.popularity,
       ParsersConstants.inScope,
       ParsersConstants.cells,
       ParsersConstants.extends,
@@ -1945,7 +1945,7 @@ ${properties.join("\n")}
 
   get topParserDefinitions(): parserDefinitionParser[] {
     const arr = Object.values(this.firstWordMapWithDefinitions)
-    arr.sort(Utils.makeSortByFn((definition: parserDefinitionParser) => definition.frequency))
+    arr.sort(Utils.makeSortByFn((definition: parserDefinitionParser) => definition.popularity))
     arr.reverse()
     return arr
   }
@@ -2195,8 +2195,8 @@ ${captures}
     return this._getFromExtended(ParsersConstants.description) || ""
   }
 
-  get frequency() {
-    const val = this._getFromExtended(ParsersConstants.frequency)
+  get popularity() {
+    const val = this._getFromExtended(ParsersConstants.popularity)
     return val ? parseFloat(val) : 0
   }
 

@@ -7,6 +7,15 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+83.1.0 2024-8-26
+================
+🎉 Parsers: tag parsers for better documentation
+
+83.0.0 2024-8-26
+================
+🎉 Parsers: better documentation
+⚠️ BREAKING: (no one should be affected) `frequency` in Parsers is now `popularity`
+
 82.0.0 2024-8-25
 ================
 🎉 Parsers: better documentation

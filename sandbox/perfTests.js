@@ -8,7 +8,7 @@ const logFn = msg => {
 const getBigCode = () => {
   const programCode = `foo
  whoodat
-nodeWithConsts
+particleWithConsts
 lightbulbState on
 lightbulbState off
 + 2 3 2

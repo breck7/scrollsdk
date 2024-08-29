@@ -427,9 +427,7 @@ abstract class ParserBackedParticle extends Particle {
         console.log(`Warning: ${err}`)
       }
     }
-    this.topDownArray.forEach(child => {
-      child.format()
-    })
+    this.topDownArray.forEach(child => child.format())
     return this
   }
 
@@ -2617,9 +2615,9 @@ ${testCode}`
   }
 
   get parserLineage() {
-    const particle = new Particle()
-    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(particle => particle.touchParticle(particle.ancestorParserIdsArray.join(" ")))
-    return particle
+    const newParticle = new Particle()
+    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(particle => newParticle.touchParticle(particle.ancestorParserIdsArray.join(" ")))
+    return newParticle
   }
 
   get languageDefinitionProgram() {

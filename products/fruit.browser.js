@@ -1,7 +1,7 @@
 {
-  class fruitParser extends ParserBackedNode {
+  class fruitParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameCell
  paint keyword
@@ -29,7 +29,7 @@ errorParser
     static rootParser = fruitParser
   }
 
-  class abstractFruitParser extends ParserBackedNode {
+  class abstractFruitParser extends ParserBackedParticle {
     get fruitNameCell() {
       return this.getWord(0)
     }
@@ -38,11 +38,11 @@ errorParser
   class appleParser extends abstractFruitParser {
     createParserCombinator() {
       class bananaParser extends abstractFruitParser {}
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }

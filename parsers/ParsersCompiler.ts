@@ -2,7 +2,7 @@ const fs = require("fs")
 const path = require("path")
 
 const { Utils } = require("../products/Utils.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { HandParsersProgram } = require("./Parsers.js")
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
@@ -31,10 +31,10 @@ class ParsersCompiler {
 
   static formatFileInPlace = (programPath: scrollNotationTypes.filepath, parsersPath: scrollNotationTypes.filepath) => {
     // tod: remove?
-    const original = TreeNode.fromDisk(programPath)
+    const original = Particle.fromDisk(programPath)
     const formatted = this.formatCode(original.toString(), parsersPath)
     if (original === formatted) return false
-    new TreeNode(formatted).toDisk(programPath)
+    new Particle(formatted).toDisk(programPath)
     return true
   }
 
@@ -46,7 +46,7 @@ class ParsersCompiler {
     scrollsdkProductsPath?: scrollNotationTypes.requirePath
   ) {
     const isNodeJs = CompileTarget.nodejs === target
-    const parsersCode = TreeNode.fromDisk(pathToParsers)
+    const parsersCode = Particle.fromDisk(pathToParsers)
     const program = new HandParsersProgram(parsersCode.toString())
     const outputFilePath = path.join(outputFolder, `${program.parsersName}.${target}.js`)
 
@@ -58,7 +58,7 @@ class ParsersCompiler {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.rootParserId}(Particle.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )
@@ -88,7 +88,7 @@ if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2
     const files = Utils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
     const content = files.map((path: scrollNotationTypes.filepath) => fs.readFileSync(path, "utf8")).join("\n")
 
-    return new TreeNode(content)
+    return new Particle(content)
   }
 }
 

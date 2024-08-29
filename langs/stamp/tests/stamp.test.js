@@ -4,16 +4,16 @@ const stamp = require("../../../products/stamp.nodejs.js")
 const fs = require("fs")
 const { TestRacer } = require("../../../products/TestRacer.js")
 
-const testTree = {}
+const testParticles = {}
 
-testTree.toStamp = equal => {
+testParticles.toStamp = equal => {
   // Arrange/Act/Assert
   const expected = `file cases/executable.stamp
 file cases/test.stamp`
   equal(stamp.dirToStamp(__dirname + "/cases"), expected, "correct")
 }
 
-testTree.executeStamp = equal => {
+testParticles.executeStamp = equal => {
   // Arrange
   const name = "testFile.okToDelete.txt"
   equal(fs.existsSync(name), false)
@@ -29,7 +29,7 @@ testTree.executeStamp = equal => {
   equal(fs.existsSync(name), false)
 }
 
-testTree.stampTargetDifferentDir = equal => {
+testParticles.stampTargetDifferentDir = equal => {
   // Arrange
   const newDir = "some-new-dir"
   const filename = "testFile.okToDelete.txt"
@@ -50,5 +50,5 @@ testTree.stampTargetDifferentDir = equal => {
   equal(fs.existsSync(targetDir), false)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
-module.exports = { testTree }
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
+module.exports = { testParticles }

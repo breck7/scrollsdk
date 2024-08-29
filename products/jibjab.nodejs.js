@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
-  const { ParserBackedNode } = require("./Parsers.js")
+  const { ParserBackedParticle } = require("./Parsers.js")
 
-  class jibberishParser extends ParserBackedNode {
+  class jibberishParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
@@ -24,8 +24,8 @@
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
           comment: commentParser,
@@ -61,7 +61,7 @@ commentCell
 // Line Parsers
 jibberishParser
  root
- description A useless Language built for testing Scroll Notation code.
+ description A useless Language built for testing Particles Notation code.
  javascript
   execute() {
    return 42
@@ -71,7 +71,7 @@ jibberishParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 jibjabParser
  root
- description Adds a comment node to Jibberish
+ description Adds a comment particle to Jibberish
  extends jibberishParser
 abstractBaseClassParser
 extendsAbstractParser
@@ -144,7 +144,7 @@ lightbulbStateParser
 nestedParser
  extends abstractTopLevelParser
  crux nested
-nodeWithConstsParser
+particleWithConstsParser
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'\`
@@ -156,11 +156,11 @@ nodeWithConstsParser
  float score2 3.01
  boolean win true
  extends abstractTopLevelParser
- crux nodeWithConsts
-nodeExpandsConstsParser
+ crux particleWithConsts
+particleExpandsConstsParser
  string greeting hola
- extends nodeWithConstsParser
- crux nodeExpandsConsts
+ extends particleWithConstsParser
+ crux particleExpandsConsts
 someCodeParser
  catchAllParser lineOfCodeParser
  extends abstractTopLevelParser
@@ -197,7 +197,7 @@ scoresParser
     static rootParser = jibjabParser
   }
 
-  class abstractBaseClassParser extends ParserBackedNode {}
+  class abstractBaseClassParser extends ParserBackedParticle {}
 
   class extendsAbstractParser extends abstractBaseClassParser {
     get topLevelPropertyCell() {
@@ -208,7 +208,7 @@ scoresParser
     }
   }
 
-  class abstractTopLevelParser extends ParserBackedNode {
+  class abstractTopLevelParser extends ParserBackedParticle {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -231,7 +231,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -250,7 +250,7 @@ scoresParser
 
   class blockParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           hue: hueParser,
@@ -266,8 +266,8 @@ scoresParser
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
           comment: commentParser
@@ -279,7 +279,7 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
@@ -317,7 +317,7 @@ scoresParser
 
   class nestedParser extends abstractTopLevelParser {}
 
-  class nodeWithConstsParser extends abstractTopLevelParser {
+  class particleWithConstsParser extends abstractTopLevelParser {
     get win() {
       return true
     }
@@ -345,7 +345,7 @@ world`
     }
   }
 
-  class nodeExpandsConstsParser extends nodeWithConstsParser {
+  class particleExpandsConstsParser extends particleWithConstsParser {
     get greeting() {
       return `hola`
     }
@@ -353,7 +353,7 @@ world`
 
   class someCodeParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
   }
 
@@ -368,23 +368,23 @@ world`
 
   class commentParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class contentParser extends ParserBackedNode {
+  class contentParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }
@@ -396,22 +396,22 @@ world`
     }
   }
 
-  class lineOfCodeParser extends ParserBackedNode {
+  class lineOfCodeParser extends ParserBackedParticle {
     get wordCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class textParser extends ParserBackedNode {
+  class textParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
     }
   }
 
-  class scoresParser extends ParserBackedNode {
+  class scoresParser extends ParserBackedParticle {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -423,5 +423,5 @@ world`
   module.exports = jibjabParser
   jibjabParser
 
-  if (!module.parent) new jibjabParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new jibjabParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

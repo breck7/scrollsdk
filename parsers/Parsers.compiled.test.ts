@@ -4,11 +4,11 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { HandParsersProgram, UnknownParsersProgram } = require("../products/Parsers.js")
 const { ParsersCompiler } = require("../products/ParsersCompiler.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 // todo: setup: make vms dir. cleanup? delete parsers file when done?
@@ -24,7 +24,7 @@ const makeProgram = (parsersCode: string, code: string) => {
   return new rootParser(code)
 }
 
-testTree.parsers = equal => {
+testParticles.parsers = equal => {
   // Arrange
   const parsersParsersPath = path.join(langsDir, "parsers", "parsers.parsers")
   try {
@@ -41,14 +41,14 @@ testTree.parsers = equal => {
   }
 }
 
-testTree.compileAll = equal => {
+testParticles.compileAll = equal => {
   // Arrange/Act
   const langs = "hakon swarm dug stump project jibberish config poop jibjab fire stamp zin newlang chuck"
   langs.split(" ").map(name => {
     try {
       // Act
       const parsersPath = path.join(langsDir, name, `${name}.parsers`)
-      const parsersCode = TreeNode.fromDisk(parsersPath)
+      const parsersCode = Particle.fromDisk(parsersPath)
       const tempFilePath = ParsersCompiler.compileParsersForNodeJs(parsersPath, outputDir, false)
       const rootClass = require(tempFilePath)
 
@@ -56,8 +56,8 @@ testTree.compileAll = equal => {
       equal(true, true, `Expected to compile and include "${name}" without error.`)
 
       // Act
-      // todo: should we have an example node for all langs?
-      const exampleProgram = parsersCode.getNode("parsers example")
+      // todo: should we have an example particle for all langs?
+      const exampleProgram = parsersCode.getParticle("parsers example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
         // todo: should we then execute it? compile it?
@@ -75,7 +75,7 @@ testTree.compileAll = equal => {
   })
 }
 
-testTree.jibberish = equal => {
+testParticles.jibberish = equal => {
   // Arrange
   try {
     const tempFilePath = ParsersCompiler.compileParsersForNodeJs(path.join(langsDir, `jibberish/jibberish.parsers`), outputDir, false)
@@ -87,17 +87,17 @@ testTree.jibberish = equal => {
     equal(!!new jibberish(), true, "it compiled")
 
     // Arrange
-    const program = new jibberish(`nodeWithConsts`)
+    const program = new jibberish(`particleWithConsts`)
 
     // Act/Assert
-    equal(program.nodeAt(0).score1, 28, "constants work")
+    equal(program.particleAt(0).score1, 28, "constants work")
   } catch (err) {
     console.error(err)
   } finally {
   }
 }
 
-testTree.numbers = equal => {
+testParticles.numbers = equal => {
   // Arrange
   const numbersParsersPath = path.join(langsDir, `numbers/numbers.parsers`)
   const numbersParsersCode = Disk.read(numbersParsersPath)
@@ -115,18 +115,18 @@ testTree.numbers = equal => {
     const code = `+ 2 3
 * 2 3 10`
     const program = new numbers(code)
-    const firstNode = program.nodeAt(0)
+    const firstParticle = program.particleAt(0)
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert
-    equal(firstNode.numbersCell.length, 2, "cell getters work")
-    equal(firstNode.numbersCell[0], 2, "typings work")
+    equal(firstParticle.numbersCell.length, 2, "cell getters work")
+    equal(firstParticle.numbersCell[0], 2, "typings work")
     equal(program.execute().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstNode.definition.lineHints, "+: operatorCell numbersCell...", "line hints work")
-    equal(program.toCellTypeTree(), runtimeProgram.toCellTypeTree(), "cell types worked")
+    equal(firstParticle.definition.lineHints, "+: operatorCell numbersCell...", "line hints work")
+    equal(program.toCellTypeParticles(), runtimeProgram.toCellTypeParticles(), "cell types worked")
 
     // Arrange/Act/Assert
     equal(new numbers(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
@@ -136,9 +136,9 @@ testTree.numbers = equal => {
   }
 }
 
-testTree.predictParsersFile = equal => {
+testParticles.predictParsersFile = equal => {
   // Arrange
-  const input = Disk.read(path.join(__dirname, "UnknownParsers.sample.tree"))
+  const input = Disk.read(path.join(__dirname, "UnknownParsers.sample.scroll"))
 
   // Act
   const parsersFile = new UnknownParsersProgram(input).inferParsersFileForAKeywordLanguage("foobar")
@@ -147,7 +147,7 @@ testTree.predictParsersFile = equal => {
   equal(parsersFile, Disk.read(path.join(__dirname, "UnknownParsers.expected.parsers")), "predicted parsers correct")
 }
 
-testTree.emojis = equal => {
+testParticles.emojis = equal => {
   const source = `⌨🕸🌐
  📈
   🏦😎
@@ -164,10 +164,10 @@ const langs = Disk.dir(langsDir)
 langs.forEach((name: string) => {
   const folder = path.join(langsDir, `${name}`)
   if (!Disk.isDir(folder)) return
-  testTree[`${name}InferPrefixParsers`] = equal => {
+  testParticles[`${name}InferPrefixParsers`] = equal => {
     // Arrange
     const samplePath = path.join(langsDir, name, `sample.${name}`)
-    const sampleCode = TreeNode.fromDisk(samplePath).toString()
+    const sampleCode = Particle.fromDisk(samplePath).toString()
 
     // todo: cleanup
     if (Disk.read(path.join(langsDir, name, `${name}.parsers`)).includes("nonPrefixParsers")) return equal(true, true, `skipped ${name} beause not prefix parsers`)
@@ -184,6 +184,6 @@ langs.forEach((name: string) => {
   }
 })
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

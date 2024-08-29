@@ -4,7 +4,7 @@ test basics jibberish
   require ./jibberish.node.js
   constructWithParagraph
    foo
-   nodeWithConsts
+   particleWithConsts
    nested
    lightbulbState on
    lightbulbState off

@@ -1,5 +1,5 @@
 foo
-nodeWithConsts
+particleWithConsts
 nested
 lightbulbState on
 lightbulbState off
@@ -8,7 +8,7 @@ saturation 2
 someCode
  echo hello world
 xColumnName gender
-nodeExpandsConsts
+particleExpandsConsts
 html.h1
  content hello world
 block

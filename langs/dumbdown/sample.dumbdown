@@ -6,14 +6,14 @@ paragraph
 paragraph
  Blank lines get turned into <br>
 
-link https://notation.scroll.pub/ It is built on Scroll Notation
+link https://notation.scroll.pub/ It is built on Particles Notation
 
 code
  alert(`The keyword for code blocks is "code"`)
 
 list
  - Dumbdown supports lists
- - Dumbdown is a demonstration Language from the Scroll Notation Lab
+ - Dumbdown is a demonstration Language from the Particles Notation Lab
  - This is a very early version
  - Dumbdown is released to the public domain
  - If you want to make it better, please do!

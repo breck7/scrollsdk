@@ -1,0 +1,11 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test swarm base
+ arrange
+  require ../products/Particle.js Particle
+  constructWithParagraph
+   hello world
+ getChildren
+  assertLengthIs 1
+ particleAt 0
+  content
+   assertStringIs world

@@ -18,6 +18,12 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 84.0.0 2024-8-29
+⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
+⚠️ BREAKING: Scroll Notation is now Particles Notation
+⚠️ BREAKING: Nodes/Trees are now referred to universally as Particles.
+⚠️ BREAKING: EVERYWHERE the word tree or node was used, now we use the word particle.
+
 📦 83.1.0 2024-8-26
 🎉 Parsers: tag parsers for better documentation
 
@@ -56,20 +62,20 @@ thinColumns 4
 🏥 tfs fix
 
 📦 80.1.0 2024-7-02
-🎉 added getCTime and stats to TreeFileSystem
+🎉 added getCTime and stats to ParticleFileSystem
 
 📦 80.0.0 2024-6-19
 ⚠️ BREAKING: the `Grammar` language is now called `Parsers`. This is a massive change but a simple Grammar/Parsers and grammar/parsers find/replace should update any affected code.
 
 📦 79.0.0 2024-6-18
-🎉 TreeFileSystem now supports cell parsers
-⚠️ BREAKING: TreeFileSystem now expects parsers to use the `.parsers` file extension instead of `.grammar`
+🎉 ParticleFileSystem now supports cell parsers
+⚠️ BREAKING: ParticleFileSystem now expects parsers to use the `.parsers` file extension instead of `.grammar`
 ⚠️ BREAKING: (no one should be affected) to use the previous "// parsersOnly" perf boost, end file in `.parsers`
 
 📦 78.0.0 2024-5-30
 🎉 jtree is now called the Scroll SDK
 ⚠️ BREAKING: jtree => scrollsdk
-⚠️ BREAKING: Tree Notation is now called Scroll Notation
+⚠️ BREAKING: Tree Notation is now called Particles Notation
 
 📦 77.1.1 2024-5-28
 🏥 attempt a Windows bug fix
@@ -79,7 +85,7 @@ thinColumns 4
 
 📦 77.0.0 2024-5-08
 🎉 `assembleFile` (formerly `evaluateImports`) is now faster by stripping Parser Definitions from assembled files, using them only in the returned parsers. (There are still many speed improvements to be had here)
-⚠️ BREAKING: The `TreeFileSystem.evaluateImports` method is now `TreeFileSystem.assembleFile`, and the interface of the returned object has changed.
+⚠️ BREAKING: The `ParticleFileSystem.evaluateImports` method is now `ParticleFileSystem.assembleFile`, and the interface of the returned object has changed.
 
 📦 76.2.0 2024-5-03
 🎉 only ship bare minimum files in npm package
@@ -111,13 +117,13 @@ thinColumns 4
 🏥 better error messages in Disk to help track down a CI bug
 
 📦 74.2.0 2023-4-12
-🎉 new library: `TreeFileSystem.broswer.js`
+🎉 new library: `ParticleFileSystem.broswer.js`
 
 📦 74.1.1 2023-4-9
 🏥 bug fix in TFS
 
 📦 74.1.0 2023-4-9
-🎉 Upstreamed the `imports` code from Scroll into the `TreeFileSystem` package for other TreeLangs to reuse
+🎉 Upstreamed the `imports` code from Scroll into the `ParticleFileSystem` package for other TreeLangs to reuse
 
 📦 74.0.0 2023-4-3
 This is purely a maintenance release. Unused code and npm packages were removed. The minimum supported NodeJS version is now 16.
@@ -133,10 +139,10 @@ This is a major release with significant name breaks. All logic is the same but 
 ⚠️ BREAKING:
  - Tree Langauges:
   - grammarNode, hakonNode, etc. > grammarParser, hakonParser
- - TreeNode
+ - Particle
   - createParser > createParserCombinator
   - getAncestorByNodeConstructor
-  - TreeNode.Parser > TreeNode.ParserCombinator
+  - Particle.Parser > Particle.ParserCombinator
   - getChildInstancesOfNodeTypeId > getChildInstancesOfParserId
   - findAllNodesWithNodeType > findAllNodesWithParser
  - ParsersCompiler:
@@ -145,17 +151,17 @@ This is a major release with significant name breaks. All logic is the same but 
   - rootNodeTypeDefinitionNode > rootParserDefinition
   - invalidNodeTypes > invalidParsers
   - getNodeTypeUsage > getParserUsage
-  - asCellTypeTreeWithNodeConstructorNames > asCellTypeTreeWithParserIds
-  - toPreludeCellTypeTreeWithNodeConstructorNames > toPreludeCellTypeTreeWithParserIds
+  - asCellTypeParticlesWithNodeConstructorNames > asCellTypeParticlesWithParserIds
+  - toPreludeCellTypeParticlesWithNodeConstructorNames > toPreludeCellTypeParticlesWithParserIds
   - asTreeWithNodeTypes > asTreeWithParsers
   - nodeTypeId > parserId
   - topNodeTypeDefinitions > topParserDefinitions
-  - nodeTypeFamilyTree > parserFamilyTree
-  - validConcreteAndAbstractNodeTypeDefinitions > validConcreteAndAbstractParserDefinitions
+  - nodeTypeLineage > parserLineage
+  - validConcreteAndAbstractParticleTypeDefinitions > validConcreteAndAbstractParserDefinitions
   - rootNodeTypeId > rootParserId
   - compileAndReturnRootConstructor > compileAndReturnRootParser
- - TreeComponentFramework:
-  - AbstractTreeComponent > AbstractTreeComponentParser
+ - ParticleComponentFramework:
+  - AbstractParticleComponent > AbstractParticleComponentParser
 ⚠️ BREAKING: See Grammar Release Notes for upgrading Grammar files
  link langs/grammar/releaseNotes.html Grammar Release Notes
 
@@ -204,7 +210,7 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 🏥 fix bug in `Disk.writeObjectToDisk`
 
 📦 69.4.0 2023-3-11
-🎉 new util methods upstreamed: `Utils.isAbsoluteUrl`, `TreeNode.toFlatObject`, `Disk.recursiveReaddirSync`, `Disk.writeObjectToDisk`
+🎉 new util methods upstreamed: `Utils.isAbsoluteUrl`, `Particle.toFlatObject`, `Disk.recursiveReaddirSync`, `Disk.writeObjectToDisk`
 
 📦 69.3.1 2023-3-7
 🏥 fix bug in Utils getRandomCharacters
@@ -231,7 +237,7 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 🎉 TQL: added `selectAll` keyword
 
 📦 67.3.0 2023-2-17
-🎉 TreeNode: added `quickCache`
+🎉 Particle: added `quickCache`
 🎉 TrueBase: upstreamed work from pldb. New methods and getters are:
 
 TrueBaseFolder:
@@ -265,7 +271,7 @@ loop
 
 📦 66.0.0 2023-2-7
 ⚠️ Legacy `products/jtree.browser.js` has been removed.
-⚠️ TreeNode: This is the first of the *getter releases*. Start the long overdue switch to Javascript getters for `get` methods with zero params.
+⚠️ Particle: This is the first of the *getter releases*. Start the long overdue switch to Javascript getters for `get` methods with zero params.
 table
  printTable
  data
@@ -283,7 +289,7 @@ table
 🎉 Grammar: upstreamed `sortFromSortTemplate` method from pldb
 
 📦 65.2.0 2023-2-6
-🎉 TreeNode: upstreamed `patch` method from pldb
+🎉 Particle: upstreamed `patch` method from pldb
 🎉 Utils: upstreamed some methods from pldb
 
 📦 65.1.0 2023-2-4
@@ -308,7 +314,7 @@ table
 📦 64.3.0 2023-1-31
 🎉 TQL: added support for nested dot paths like `github.stars`
 🏥 TQL: various fixes.
-🏥 TreeNode: renamed current `has` to `hasFirstWord` and `has` now works correctly for deep paths.
+🏥 Particle: renamed current `has` to `hasFirstWord` and `has` now works correctly for deep paths.
 
 📦 64.2.0 2023-1-31
 🎉 TQL: Added `sortBy` and `reverse` keywords.
@@ -329,7 +335,7 @@ This releases introduced a new language called Tree Query Language (TQL) for que
 📦 63.0.0 2023-1-26
 This is a major release that makes the code more modular and eliminates a lot of technical debt. In the past to simplify NodeJs+Browser isomorphism I created the `jtree` namespace and bundled everything together. This was a mistake. This release fixes that, and makes each subproject more independent. This should speed up future development.
 
-⚠️ BREAKING: Replace all `jtree.getVersion()` with `TreeNode.getVersion()`
+⚠️ BREAKING: Replace all `jtree.getVersion()` with `Particle.getVersion()`
 ⚠️ BREAKING: `products/TreeNotationCodeMirrorMode.js` is now `products/ParsersCodeMirrorMode.js`
 ⚠️ BREAKING: The bundled file `jtree.browser.js` is now deprecated. That file will be kept for now (for external links) but will no longer be updated and will be removed in a future version. Include exactly what you need.
 Before:
@@ -338,7 +344,7 @@ code
 After: (to get everything that was previously in the bundle)
 code
  <script src="../products/Utils.browser.js"></script>
- <script src="../products/TreeNode.browser.js"></script>
+ <script src="../products/Particle.browser.js"></script>
  <script src="../products/Parsers.ts.browser.js"></script>
  <script src="../products/ParsersCodeMirrorMode.browser.js"></script>
 
@@ -347,18 +353,18 @@ code
 Before:
 code
  const {jtree} = require("jtree")
- const tree = new jtree.TreeNode("hello world")
+ const tree = new jtree.Particle("hello world")
 After:
 code
- const {TreeNode} = require("jtree/products/TreeNode.js")
- const tree = new TreeNode("hello world")
+ const {Particle} = require("jtree/products/Particle.js")
+ const tree = new Particle("hello world")
 
 
 📦 62.2.0 2023-1-12
 🎉 removed jtree.node.js and added instructions for only importing the specific product needed directly.
 
 📦 62.1.0 2023-1-12
-🎉 new Node products to import directly from: Parsers.js, TreeNode.js, TestRacer.js, ParsersCompiler.js
+🎉 new Node products to import directly from: Parsers.js, Particle.js, TestRacer.js, ParsersCompiler.js
 
 📦 62.0.0 2023-1-11
 ⚠️ Removed Upgrader. In practice better handled by an external package which can have multiple versions of jtree as dependencies.
@@ -368,7 +374,7 @@ code
 🏥 TrueBase: search server fixes
 
 📦 61.4.0 2023-1-7
-🎉 added `TreeNode.fromFolder` method
+🎉 added `Particle.fromFolder` method
 
 📦 61.3.0 2023-1-7
 🎉 new `list` getter on Grammar backed nodes returns an array of strings split by `listDelimiter`. Fallback is same behavior as if ` ` is the listDelimiter.
@@ -482,37 +488,37 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 TrueBase: should not run trim when loading files
 
 📦 53.0.0 2021-07-27
-🎉 tcf: 60% faster rendering
-🎉 tcf/stump: removed jquery dependency
+🎉 pcf: 60% faster rendering
+🎉 pcf/stump: removed jquery dependency
 🏥 designer & sandbox regression fixes
 ⚠️ stump: removed `setStumpNodeCss`
-⚠️ tcf: by default html elements are now added w/o surrounding whitespace when mounted
-⚠️ tcf: removed `setShadowCss`
-⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement
-⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
-⚠️ tcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed
-⚠️ tcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed
-⚠️ tcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed
-⚠️ tcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed
+⚠️ pcf: by default html elements are now added w/o surrounding whitespace when mounted
+⚠️ pcf: removed `setShadowCss`
+⚠️ pcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement
+⚠️ pcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
+⚠️ pcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed
+⚠️ pcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed
+⚠️ pcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed
+⚠️ pcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed
 
 📦 52.1.0 2021-07-22
-🏥 tcf bug fix
+🏥 pcf bug fix
 
 📦 52.0.0 2021-07-22
-🎉 stump/tcf: ~200% faster when inserting lots of elements
-🎉 tcf: added keyUpCommand support
-⚠️ tcf: forceRepaint function now a no-op
-⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
-⚠️ tcf: getWillowBrowser is now "willowBrowser" getter
-⚠️ tcf: getShadowElement is now "shadowElement" getter
-⚠️ tcf: removed getShadowHtml
+🎉 stump/pcf: ~200% faster when inserting lots of elements
+🎉 pcf: added keyUpCommand support
+⚠️ pcf: forceRepaint function now a no-op
+⚠️ pcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
+⚠️ pcf: getWillowBrowser is now "willowBrowser" getter
+⚠️ pcf: getShadowElement is now "shadowElement" getter
+⚠️ pcf: removed getShadowHtml
 
 📦 51.7.0 2021-07-22
-🎉 perf improvement in TCF—don't insert CSS nodes if no CSS
+🎉 perf improvement in PCF—don't insert CSS nodes if no CSS
 
 📦 51.6.0 2021-06-25
-🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass
-⚠️ extract method on TrueBase is now "pick" on TreeNode
+🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root ParticleClass
+⚠️ extract method on TrueBase is now "pick" on Particle
 
 📦 51.5.1 2021-05-05
 🏥 code cleanup in DD lang
@@ -560,7 +566,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 toProgram method on TrueBase
 
 📦 49.6.1 2020-02-03
-🏥 TCF save mouse event on click
+🏥 PCF save mouse event on click
 🏥 getNextOrPrevious test and fix
 ⚠️ unused isShadowResizable method
 
@@ -618,13 +624,13 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 getFrom core method
 
 📦 48.0.0 2019-12-02
-⚠️ TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.
-⚠️ TCF: getNextOrPrevious is now on TreeUtils
-⚠️ TCF: no more DataShadowEvents
-⚠️ TCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
-⚠️ TCF: no longer exports WillowConstants
-⚠️ TCF: getWillowProgram is now getWillowBrowser
-⚠️ TCF: isLoaded() is now checked before calling treeComponentDidUpdate and treeComponentDidMount
+⚠️ PCF: removed AbstractParticleComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.
+⚠️ PCF: getNextOrPrevious is now on TreeUtils
+⚠️ PCF: no more DataShadowEvents
+⚠️ PCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
+⚠️ PCF: no longer exports WillowConstants
+⚠️ PCF: getWillowProgram is now getWillowBrowser
+⚠️ PCF: isLoaded() is now checked before calling particleComponentDidUpdate and particleComponentDidMount
 ⚠️ Stump: stumpCollapse is now collapse
 ⚠️ Stump: removed stumpNoOp. Empty lines are fine now.
 
@@ -648,38 +654,38 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 Swarm tests now execute in browser
 
 📦 46.0.0 2019-11-20
-🎉 getCommandNames method on TCF
-⚠️ removed AbstractCommander concept from TCF. Move methods with a Command suffix for methods on TCF classes.
+🎉 getCommandNames method on PCF
+⚠️ removed AbstractCommander concept from PCF. Move methods with a Command suffix for methods on PCF classes.
 
 📦 45.1.0 2019-11-20
-🎉 TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class
+🎉 PCF added getTextContent to ParticleComponent and getHash and setHash methods to WillowBrowser class
 🎉 added deepVisit method to core
 
 📦 45.0.1 2019-11-13
 🏥 web form generation fixes
 
 📦 45.0.0 2019-11-08
-🎉 toDefinitionLineNumberTree method added to Grammar programs
+🎉 toDefinitionLineNumberParticles method added to Grammar programs
 🎉 lengthen core method
 🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls
 🎉 toStumpString added to Grammar programs and webForm added to CLI
-⚠️ getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
+⚠️ getInPlaceCellTypeParticles: toCellTypeParticles, getInPlaceCellTypeParticlesWithNodeConstructorNames: toCellTypeParticlesWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeParticlesWithNodeConstructorNames: toPreludeCellTypeParticlesWithNodeConstructorNames
 🏥 toSideBySide fix for when later trees are longer than earlier ones
 
 📦 44.1.0 2019-11-05
 🎉 added stamp command to commandLineApp tool
-🎉 added produceProductFromInstructionsTree and buildBuilder to abstractBuilder
+🎉 added produceProductFromInstructionsParticles and buildBuilder to abstractBuilder
 🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly
 
 📦 44.0.3 2019-11-02
-🏥 in TCF rewrote queryObjectToQueryString to make working/testable in node
+🏥 in PCF rewrote queryObjectToQueryString to make working/testable in node
 
 📦 44.0.2 2019-11-02
 🏥 incorrect path in compiled grammars
 
 📦 44.0.1 2019-11-02
 🏥 some case insensitive filenames on Mac broke linux build
-🏥 removed isDesktopVersion from TCF
+🏥 removed isDesktopVersion from PCF
 
 📦 44.0.0 2019-11-01
 🎉 toBraid and toSideBySide and toComparison methods
@@ -689,12 +695,12 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 undo/redo/save methods
 🏥 sweepercraft perf fix
 🏥 table derived tables from column filtering fix
-⚠️ removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
+⚠️ removed "dirty" methods in ParticleComponentFramework. Update the lines is a better pattern.
 ⚠️ format() is now evalTemplateString()
 ⚠️ in Grammar: match is now "crux" for now
 ⚠️ getTopNodeTypeIds is now getTopNodeTypeDefinitions
 ⚠️ commandLineApp.prettify is now format
-⚠️ changed getCssClassNames behavior in TCF
+⚠️ changed getCssClassNames behavior in PCF
 ⚠️ in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
 🧹 Created TestRacer and moved tests and swarm to that
 🧹 builder will now look for compiled builder.js first
@@ -703,7 +709,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 43.0.0 2019-10-07
 ⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol
-🧹 TCF debugger work
+🧹 PCF debugger work
 
 📦 42.2.0 2019-10-04
 🎉 getNumberOfWords method
@@ -713,7 +719,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.
 
 📦 42.0.0 2019-10-01
-🎉 readded event listening code in TreeNode core class
+🎉 readded event listening code in Particle core class
 🎉 onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods
 🎉 getAncestorByNodeConstructor method
 🎉 TrueBaseServer exported class
@@ -727,7 +733,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 without method
 
 📦 41.1.0 2019-09-18
-🎉 error handling in TCF commands
+🎉 error handling in PCF commands
 🏥 uncaught command error displaying in Designer app
 🏥 generateSimulatedData regression fix and tests
 
@@ -744,23 +750,23 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 added Arrow sample language
 🎉 required and single nodeTypes are accessible to compiler string template
 🎉 added wwt sample language
-🎉 Github triangle and TCF debugger components
+🎉 Github triangle and PCF debugger components
 🎉 removeNonAscii util method
 🏥 poop demo language now compiles to csv correctly
 🧹 build fixes. No more manually fixing TypeScript build artifacts
 🧹 wwt types
 🧹 command line app now shows options when invalid command entered
-🧹 TreeComponentFramework work
+🧹 ParticleComponentFramework work
 🧹 builder improvements
 
 📦 40.2.0 2019-09-11
-🎉 getInPlacePreludeCellTypeTreeWithNodeConstructorNames
+🎉 getInPlacePreludeCellTypeParticlesWithNodeConstructorNames
 🎉 generateSimulatedData
 🎉 designer app - simulate data and explain roots buttons
 🎉 explain 2D visualizer in designer app
 🏥 highlighting fix for regression caused by blank cells fix
 🏥 generateSimulatedData improvements
-🧹 migrated Sandbox and Designer apps to TCF
+🧹 migrated Sandbox and Designer apps to PCF
 
 📦 40.1.0 2019-09-08
 🏥 missing words now trigger "MissingWord" error instead of "InvalidWord"
@@ -771,7 +777,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 📦 40.0.0 2019-09-03
 ⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
 🎉 default highlightScopes for basic cellTypes
-🏥 fixes from reducing complexity of ExtendibleTreeNode and firstCellType
+🏥 fixes from reducing complexity of ExtendibleParticle and firstCellType
 
 📦 39.6.0 2019-09-03
 🎉 added jtable
@@ -804,13 +810,13 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 refactored build system
 🧹 moved Disk to products
 🧹 removed tsconfigs
-🧹 created products.tree
+🧹 created products.scroll
 🧹 started worldWideTypes folder
-🧹 TCF tests now included in npm test
+🧹 PCF tests now included in npm test
 
 📦 38.2.0 2019-08-28
 🎉 appendSibling base method
-🎉 TreeComponentFramework added to products
+🎉 ParticleComponentFramework added to products
 🎉 added SweeperCraft demo to products
 🎉 added hakon and stump to products
 
@@ -861,7 +867,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
-🧹 added basic tests for trueBase and made sure treeComponent framework test getting run
+🧹 added basic tests for trueBase and made sure particleComponent framework test getting run
 🧹 moved repo from breck7/jtree to treenotation/jtree
 
 📦 35.1.0 2019-07-25
@@ -903,7 +909,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 now the empty Grammar language returns a forgiving grammar by default.
 🏥 now an empty nodeTypeId won't break the grammar parser
 🏥 fixes for Download Bundle command
-⚠️ getConcreteAndAbstractNodeTypeDefinitions is now getValidConcreteAndAbstractNodeTypeDefinitions
+⚠️ getConcreteAndAbstractParticleTypeDefinitions is now getValidConcreteAndAbstractParticleTypeDefinitions
 ⚠️ the empty Grammar is now valid. Should not break anything but could allow for code removal.
 ⚠️ removed getTheAnyLanguageRootConstructor(). Just use the empty grammar now.
 ⚠️ the default catch all node is now Blob node, not error node.
@@ -1005,7 +1011,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 26.3.0 2019-06-23
 🏥 extension bug in classes with more than 1 ancestor
-⚠️ getNodeTypeDefintions is now getConcreteAndAbstractNodeTypeDefinitions
+⚠️ getNodeTypeDefintions is now getConcreteAndAbstractParticleTypeDefinitions
 
 📦 26.2.0 2019-06-22
 🏥 extends now works correctly
@@ -1098,7 +1104,7 @@ regexCode
 
 📦 24.1.0 2019-05-27
 🎉 getAncestorNodeTypeNamesArray method on definition nodes
-🎉 getNodeTypeFamilyTree method on parsersPrograms
+🎉 getNodeTypeLineage method on parsersPrograms
 🎉 setWords, setWordsFrom and appendWord methods on base tree
 
 📦 24.0.0 2019-05-21
@@ -1148,7 +1154,7 @@ code
 ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
 ⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
+⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeParticles
 ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
 ⚠️ getLineSyntax is now getLineCellTypes
 
@@ -1303,7 +1309,7 @@ code
 🧹 added tap-mocha-reporter for clearer test run output
 
 📦 17.0.0 2019-03-11
-⚠️ In TreeNode, parseNodeType is now getNodeConstructor
+⚠️ In Particle, parseNodeType is now getNodeConstructor
 ⚠️ jtree.getParser is now jtree.getProgramConstructor
 ⚠️ In .grammar files @parser is now @constructor
 ⚠️ In grammar JS getParserClass is now getDefinedConstructor
@@ -1340,11 +1346,11 @@ code
 🎉 getNodesByRegex method
 🎉 fromShape method
 🎉 getFiltered method
-🎉 added sample of iris dataset to static TreeNode for handy testing and exploring
+🎉 added sample of iris dataset to static Particle for handy testing and exploring
 🏥 renameAll fix
 ⚠️ getExpanded - if multiple parent nodes match, getExpanded will extend node with matching keyword
 ⚠️ getProgramErrors() is now getProgramErrorMessages(). getProgramErrors() now returns err objects
-🧹 makeRandomTree method & updates to perf test pages
+🧹 makeRandomParticles method & updates to perf test pages
 🧹 Default sandbox port now 3333
 
 📦 15.2.0 2019-02-10
@@ -1699,7 +1705,7 @@ code
 🎉 Added getGraph method
 
 📦 3.9.0 2017-6-16
-⚠️ Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.
+⚠️ Removed Particle.ExecutableParticle. TreeNotation now has execute method by default.
 ⚠️ getWord now ignores getSize. In fact, we'll probably ditch getSize.
 
 📦 3.8.0 2017-6-15
@@ -1718,9 +1724,9 @@ code
 🏥 ETN parsing regression fix
 
 📦 3.7.0 2017-6-15
-⚠️ expose TreeNotation now and not TreeNode
-⚠️ TreeNode.ExecutableTreeNode is now TreeNotation.ExecutableETN
-⚠️ TreeNotation.ImmutableTreeNode is now TreeNotation.ImmutableNode
+⚠️ expose TreeNotation now and not Particle
+⚠️ Particle.ExecutableParticle is now TreeNotation.ExecutableETN
+⚠️ TreeNotation.ImmutableParticle is now TreeNotation.ImmutableNode
 🏥 Fixed regression introduced in 3.6 in ETN parsing in parseString method
 🎉 Updated readme with an ETN example
 
@@ -1731,7 +1737,7 @@ code
 
 📦 3.5.3 2017-6-14
 🎉 Added getChildrenByNodeType method
-🎉 Expose a simple ExecutableTreeNode class
+🎉 Expose a simple ExecutableParticle class
 🏥 Fixed bug when initiating from an ETN
 
 📦 3.5.2 2017-6-13
@@ -1756,7 +1762,7 @@ code
 📦 3.2.0 2017-6-5
 ⚠️ removed moveTo method. Use the new copyTo method follow by destroy.
 ⚠️ destroy no longer returns the detached node.
-🎉 Experimental: expose ImmutableTreeNode
+🎉 Experimental: expose ImmutableParticle
 🎉 Improvements to _parseNode(), increased test coverage, and reduced test code size
 
 📦 3.1.1 2017-6-2
@@ -1770,7 +1776,7 @@ code
 🎉 Added findTail method
 
 📦 3.0.0 2017-5-30
-⚠️ merged all subclasses into one TreeNode class.
+⚠️ merged all subclasses into one Particle class.
 ⚠️ getNodes is now getChildren
 ⚠️ setName > setHead, setValue > setTail, getName > getHead, getValue > getTail
 ⚠️ getNames > getHeads, getValues > getTails, setValue > setTail
@@ -1780,9 +1786,9 @@ code
 ⚠️ removed tree setText...do tree.touchNode().setTailWithChildren(text)
 ⚠️ removed tree setTree...do tree.touchNode().setChildren()
 ⚠️ removed tree setTail...do tree.touchNode().setTail()
-⚠️ removed tree getTail...do tree.getNode(path).getTail()
-⚠️ removed tree getTree...do tree.getNode(path).getTree()
-⚠️ removed tree getText...do tree.getNode(path).getText()
+⚠️ removed tree getTail...do tree.getParticle(path).getTail()
+⚠️ removed tree getTree...do tree.getParticle(path).getTree()
+⚠️ removed tree getText...do tree.getParticle(path).getText()
 ⚠️ node setTree is now node setChildren
 ⚠️ append now takes only 2 params, line and tree.
 ⚠️ appendLine is now just append
@@ -1862,7 +1868,7 @@ code
 ⚠️ Removed each method
 
 📦 1.0.7 2017-3-25
-🎉 Added moveTo method on TreeNode
+🎉 Added moveTo method on Particle
 
 📦 1.0.6 2017-3-19
 🎉 Added isTerminal, fromSeed, seedToTree, invert, remap, and toSeed methods

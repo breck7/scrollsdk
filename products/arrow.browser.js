@@ -1,5 +1,5 @@
 {
-  class commentParser extends ParserBackedNode {
+  class commentParser extends ParserBackedParticle {
     get commentCell() {
       return this.getWord(0)
     }
@@ -11,9 +11,9 @@
     }
   }
 
-  class arrowParser extends ParserBackedNode {
+  class arrowParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
@@ -56,7 +56,7 @@ commentParser
  crux Comment
  boolean suggestInAutocomplete false
 arrowParser
- description A demonstration prefix Language showing how in the future Scroll Notation will be used for simpler and more intelligent APIs.
+ description A demonstration prefix Language showing how in the future Particles Notation will be used for simpler and more intelligent APIs.
  root
  inScope chargeParser commentParser
  catchAllParser errorParser
@@ -102,15 +102,15 @@ tokenParser
     static rootParser = arrowParser
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class chargeParser extends ParserBackedNode {
+  class chargeParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
         undefined
@@ -125,7 +125,7 @@ tokenParser
     }
   }
 
-  class abstractChargeAttributeParser extends ParserBackedNode {}
+  class abstractChargeAttributeParser extends ParserBackedParticle {}
 
   class cardNumberParser extends abstractChargeAttributeParser {
     get keywordCell() {
@@ -163,7 +163,7 @@ tokenParser
     }
   }
 
-  class tokenParser extends ParserBackedNode {
+  class tokenParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }

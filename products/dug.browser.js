@@ -1,7 +1,7 @@
 {
-  class dugParser extends ParserBackedNode {
+  class dugParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -88,7 +88,7 @@ errorParser
     static rootParser = dugParser
   }
 
-  class abstractValueParser extends ParserBackedNode {
+  class abstractValueParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -122,13 +122,13 @@ errorParser
 
   class objectParser extends abstractValueParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(memberParser, undefined, undefined)
+      return new Particle.ParserCombinator(memberParser, undefined, undefined)
     }
   }
 
   class arrayParser extends abstractValueParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -136,9 +136,9 @@ errorParser
     }
   }
 
-  class memberParser extends ParserBackedNode {
+  class memberParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -149,7 +149,7 @@ errorParser
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }

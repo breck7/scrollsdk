@@ -4,7 +4,7 @@ const path = require("path")
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 class Disk {
-  static getTreeNode = () => require("../products/TreeNode.js").TreeNode // todo: cleanup
+  static getParticle = () => require("../products/Particle.js").Particle // todo: cleanup
   static rm = (path: scrollNotationTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: scrollNotationTypes.filepath) => fs.chmodSync(path, 0o755)
@@ -41,15 +41,15 @@ class Disk {
   static getFileName = (fileName: scrollNotationTypes.filepath) => path.parse(fileName).base
   static append = (path: scrollNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
   static appendAsync = (path: scrollNotationTypes.filepath, content: string, callback: Function) => fs.appendFile(path, content, "utf8", callback)
-  static readCsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
-  static readSsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
-  static readTsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
+  static readCsvAsParticles = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromCsv(Disk.read(path))
+  static readSsvAsParticles = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromSsv(Disk.read(path))
+  static readTsvAsParticles = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromTsv(Disk.read(path))
   static insertIntoFile = (path: scrollNotationTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
-  static detectAndReadAsTree = (path: scrollNotationTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
-  static getAllOf = (node: scrollNotationTypes.treeNode, prop: string) => node.filter((node: scrollNotationTypes.treeNode) => node.getWord(0) === prop)
-  static getDelimitedChildrenAsTree = (node: scrollNotationTypes.treeNode, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
+  static detectAndReadAsParticles = (path: scrollNotationTypes.filepath) => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
+  static getAllOf = (particle: scrollNotationTypes.particle, prop: string) => particle.filter((particle: scrollNotationTypes.particle) => particle.getWord(0) === prop)
+  static getDelimitedChildrenAsParticles = (particle: scrollNotationTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.childrenToString())
   static sleep = (ms: scrollNotationTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
-  static readTree = (path: scrollNotationTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
+  static readParticles = (path: scrollNotationTypes.filepath) => new (Disk.getParticle())(Disk.read(path))
   static sizeOf = (path: scrollNotationTypes.filepath) => fs.statSync(path).size
   static stripHtml = (text: string) => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
   static stripParentheticals = (text: string) => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
@@ -67,28 +67,28 @@ class Disk {
     const parts = dest.split(delimiter)
     return [parts[0], content, parts[2]].join(delimiter)
   }
-  // todo: move to tree base class
-  static detectDelimiterAndReadAsTree = (str: string) => {
+  // todo: move to particle base class
+  static detectDelimiterAndReadAsParticles = (str: string) => {
     const line1 = str.split("\n")[0]
-    const TreeNode = Disk.getTreeNode()
-    if (line1.includes("\t")) return TreeNode.fromTsv(str)
-    else if (line1.includes(",")) return TreeNode.fromCsv(str)
-    else if (line1.includes("|")) return TreeNode.fromDelimited(str, "|")
-    else if (line1.includes(";")) return TreeNode.fromDelimited(str, ";")
+    const Particle = Disk.getParticle()
+    if (line1.includes("\t")) return Particle.fromTsv(str)
+    else if (line1.includes(",")) return Particle.fromCsv(str)
+    else if (line1.includes("|")) return Particle.fromDelimited(str, "|")
+    else if (line1.includes(";")) return Particle.fromDelimited(str, ";")
     // todo: add more robust. align with choose delimiter
-    return TreeNode.fromSsv(str)
+    return Particle.fromSsv(str)
   }
-  static deleteDuplicates = (node: scrollNotationTypes.treeNode, prop1: any, prop2: any, reverse = false) => {
+  static deleteDuplicates = (particle: scrollNotationTypes.particle, prop1: any, prop2: any, reverse = false) => {
     const map: any = {}
-    Disk.getAllOf(node, prop1).forEach((node: scrollNotationTypes.treeNode) => {
-      const val = node.get(prop2)
+    Disk.getAllOf(particle, prop1).forEach((particle: scrollNotationTypes.particle) => {
+      const val = particle.get(prop2)
       console.log(val)
       if (map[val] && reverse) {
         map[val].destroy()
-        map[val] = node
+        map[val] = particle
       } else if (map[val]) {
-        node.destroy()
-      } else map[val] = node
+        particle.destroy()
+      } else map[val] = particle
     })
   }
   // todo: remove.
@@ -103,9 +103,9 @@ class Disk {
     const prefix = !file || file.endsWith("\n") ? "" : "\n"
     return Disk.append(path, prefix + line + "\n")
   }
-  static move = (node: scrollNotationTypes.treeNode, newPosition: scrollNotationTypes.int) => {
-    node.parent.insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
-    node.destroy()
+  static move = (particle: scrollNotationTypes.particle, newPosition: scrollNotationTypes.int) => {
+    particle.parent.insertLineAndChildren(particle.getLine(), particle.childrenToString(), newPosition)
+    particle.destroy()
   }
   static _getTextUrl = async (url: scrollNotationTypes.url) => {
     // todo: https://visionmedia.github.io/superagent/
@@ -134,17 +134,17 @@ class Disk {
     if (destination) Disk.writeJson(destination, result)
     return result
   }
-  static buildMapFrom = (tree: scrollNotationTypes.treeNode, key: string, value: string) => {
+  static buildMapFrom = (particle: scrollNotationTypes.particle, key: string, value: string) => {
     const map: scrollNotationTypes.stringMap = {}
-    tree.forEach((child: scrollNotationTypes.treeNode) => {
+    particle.forEach((child: scrollNotationTypes.particle) => {
       map[child.get(key)] = child.get(value)
     })
     return map
   }
   static csvToMap = (path: string, columnName: string) => {
-    const tree = Disk.readCsvAsTree(path)
+    const particle = Disk.readCsvAsParticles(path)
     const map: scrollNotationTypes.stringMap = {}
-    tree.forEach((child: scrollNotationTypes.treeNode) => {
+    particle.forEach((child: scrollNotationTypes.particle) => {
       const key = child.get(columnName)
       map[key] = child.toObject()
     })

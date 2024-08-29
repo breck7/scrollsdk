@@ -1,0 +1,28 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+arrange
+test willowBasics
+ arrange
+  require ../products/ParticleComponentFramework.node.js WillowBrowser
+  constructWithParagraph
+   http://localhost:8000/
+ someInputHasFocus
+  assertStringIs false
+ isNodeJs
+  assertStringIs true
+ getPageHtml
+  assertStringIncludes <body
+ getWindowTitle
+  assertStringIs 
+ setWindowTitle
+  withParagraph
+   new page title
+ getWindowTitle
+  assertStringIs new page title
+ isExternalLink /
+  assertStringIs false
+ isExternalLink https://cnn.com/
+  assertStringIs true
+ isExternalLink http://localhost:8000/foobar
+  assertStringIs false
+ isExternalLink http://localhot:8000/
+  assertStringIs true

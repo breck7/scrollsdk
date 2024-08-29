@@ -8,7 +8,7 @@ keywordCell
 // Line parsers
 zinParser
  root
- description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
+ description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-particle programming languages into one particle language.
  catchAllParser catchAllErrorParser
  inScope alohaParser
 alohaParser

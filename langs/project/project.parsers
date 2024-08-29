@@ -32,7 +32,7 @@ projectParser
     }
     lastLength = cloned.length
     for (let index = 0; index < cloned.length; index++) {
-     const file = cloned.nodeAt(index)
+     const file = cloned.particleAt(index)
      const missingDependencies = file.getMissingDependencies(included)
      if (missingDependencies.length === 0) {
       const path = file.getFilePath()
@@ -68,8 +68,8 @@ projectParser
   }
   static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
    const fs = require("fs")
-   const files = new TreeNode(arrayOfScriptPaths.join("\n"))
-   const requiredFileList = new TreeNode()
+   const files = new Particle(arrayOfScriptPaths.join("\n"))
+   const requiredFileList = new Particle()
    files.forEach(child => {
     const line = child.getLine()
     const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))

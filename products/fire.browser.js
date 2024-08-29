@@ -1,7 +1,7 @@
 {
   class fireParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,
@@ -405,7 +405,7 @@ errorParser
 
   class abstractNonTerminalParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,

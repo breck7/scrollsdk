@@ -4,14 +4,14 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Utils } = require("../products/Utils.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: scrollNotationTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert
-  equal(!!TreeNode.getVersion(), true)
+  equal(!!Particle.getVersion(), true)
 }
 
 testTree.vector = equal => {
@@ -85,7 +85,7 @@ testTree.getLineIndexAtCharacterPosition = equal => {
 
 testTree.graphSort = equal => {
   // Arrange
-  const a = new TreeNode(`dog animal
+  const a = new Particle(`dog animal
 animal
 retriever dog
 car
@@ -112,7 +112,7 @@ retriever dog`
 
 testTree.makeRandomTree = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(Utils.makeRandomTree(2)).topDownArray.length, 3)
+  equal(new Particle(Utils.makeRandomTree(2)).topDownArray.length, 3)
 }
 
 testTree.makeSemiRandomFn = equal => {

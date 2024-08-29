@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class jibberishParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
@@ -216,7 +216,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -235,7 +235,7 @@ scoresParser
 
   class blockParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           hue: hueParser,
@@ -263,7 +263,7 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
@@ -337,7 +337,7 @@ world`
 
   class someCodeParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
   }
 
@@ -352,7 +352,7 @@ world`
 
   class contentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
@@ -379,7 +379,7 @@ world`
 
   class textParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
@@ -398,5 +398,5 @@ world`
   module.exports = jibberishParser
   jibberishParser
 
-  if (!module.parent) new jibberishParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new jibberishParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

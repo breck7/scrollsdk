@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class fruitParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameCell
  paint keyword
@@ -44,7 +44,7 @@ errorParser
   class appleParser extends abstractFruitParser {
     createParserCombinator() {
       class bananaParser extends abstractFruitParser {}
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
     }
   }
 
@@ -57,5 +57,5 @@ errorParser
   module.exports = fruitParser
   fruitParser
 
-  if (!module.parent) new fruitParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new fruitParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

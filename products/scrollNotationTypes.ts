@@ -39,11 +39,11 @@ namespace scrollNotationTypes {
     parser: string
   }
 
-  export interface SerializedTreeNode {
+  export interface SerializedParticle {
     cells?: string[]
-    children?: SerializedTreeNode[]
+    children?: SerializedParticle[]
   }
-  export declare type serializedTreeNode = string
+  export declare type serializedParticle = string
 
   export declare type treeNode = any
   export declare type line = string // no NodeBreakSymbol (\n)

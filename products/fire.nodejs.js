@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class fireParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,
@@ -411,7 +411,7 @@ errorParser
 
   class abstractNonTerminalParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,
@@ -793,5 +793,5 @@ errorParser
   module.exports = fireParser
   fireParser
 
-  if (!module.parent) new fireParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new fireParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

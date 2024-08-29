@@ -1,7 +1,7 @@
 {
   class poopParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
         { regex: /✨/, parser: bladderParser },
         { regex: /🍼/, parser: bottleParser },

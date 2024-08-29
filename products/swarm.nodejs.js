@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class swarmParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { test: testParser, testOnly: testOnlyParser, skipTest: skipTestParser, "#!": hashbangParser, arrange: arrangeParser }),
         undefined
@@ -409,7 +409,7 @@ todoParser
 
   class assertParagraphIsParser extends abstractAssertionParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     getExpected() {
       return this.childrenToString()
@@ -500,7 +500,7 @@ todoParser
 
   class abstractTestBlockParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
+      return new Particle.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -564,7 +564,7 @@ todoParser
 
   class arrangeParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           async: arrangeAsyncParser,
@@ -607,7 +607,7 @@ todoParser
 
   class withParagraphParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get parameterKeywordCell() {
       return this.getWord(0)
@@ -617,7 +617,7 @@ todoParser
 
   class actParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         actParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           assertParagraphIs: assertParagraphIsParser,
@@ -667,7 +667,7 @@ todoParser
 
   class constructWithParagraphParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -683,7 +683,7 @@ todoParser
 
   class paragraphLineParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -695,7 +695,7 @@ todoParser
 
   class todoParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(todoParser, undefined, undefined)
+      return new Particle.ParserCombinator(todoParser, undefined, undefined)
     }
     get todoKeywordCell() {
       return this.getWord(0)
@@ -708,5 +708,5 @@ todoParser
   module.exports = swarmParser
   swarmParser
 
-  if (!module.parent) new swarmParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new swarmParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

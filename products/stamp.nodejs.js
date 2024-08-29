@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class stampParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
     async executeSeries(parentDir) {
       const length = this.length
@@ -53,7 +53,7 @@
           if (isDir) return `folder ` + reducedPath
           const content = fs.readFileSync(file, "utf8")
           return `file ${reducedPath}
- data${TreeNode.nest(content, 2)}`
+ data${Particle.nest(content, 2)}`
         }
       }
       const fn = fns[output]
@@ -151,7 +151,7 @@ stampParser
      if (isDir) return \`folder \` + reducedPath
      const content = fs.readFileSync(file, "utf8")
      return \`file \${reducedPath}
-   data\${TreeNode.nest(content, 2)}\`
+   data\${Particle.nest(content, 2)}\`
     }
    }
    const fn = fns[output]
@@ -252,7 +252,7 @@ folderParser
 
   class catchAllAnyLineParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -264,7 +264,7 @@ folderParser
 
   class dataParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -285,7 +285,7 @@ folderParser
 
   class fileParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -337,5 +337,5 @@ folderParser
   module.exports = stampParser
   stampParser
 
-  if (!module.parent) new stampParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new stampParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

@@ -1,7 +1,7 @@
 {
   class jibberishParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
@@ -225,7 +225,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -244,7 +244,7 @@ scoresParser
 
   class blockParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           hue: hueParser,
@@ -273,7 +273,7 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
@@ -347,7 +347,7 @@ world`
 
   class someCodeParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
   }
 
@@ -362,7 +362,7 @@ world`
 
   class commentParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
@@ -371,7 +371,7 @@ world`
 
   class contentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
@@ -398,7 +398,7 @@ world`
 
   class textParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []

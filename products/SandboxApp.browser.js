@@ -1,13 +1,13 @@
 //onsave scrollsdk build produce SandboxApp.browser.js
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
-class SandboxApp extends AbstractTreeComponentParser {
+class SandboxApp extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,
       headerComponent,
-      TreeComponentFrameworkDebuggerComponent
+      ParticleComponentFrameworkDebuggerComponent
     })
   }
   loadJsonSampleCommand() {
@@ -22,7 +22,7 @@ class SandboxApp extends AbstractTreeComponentParser {
     this.updateFromJsonSubsetCommand()
   }
   loadCsvSampleCommand() {
-    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", TreeNode.iris)
+    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", Particle.iris)
     this.updateFromCsvConsoleCommand()
   }
   _updateShareLink() {
@@ -34,14 +34,14 @@ class SandboxApp extends AbstractTreeComponentParser {
   toShareLink() {
     const treeCode = localStorage.getItem("tree")
     if (!treeCode) return ""
-    const tree = new TreeNode()
+    const tree = new Particle()
     tree.appendLineAndChildren("tree", treeCode)
     return "#" + encodeURIComponent(tree.toString())
   }
   treeFromDeepLink() {
     const hash = location.hash
     if (hash.length < 2) return ""
-    return new TreeNode(decodeURIComponent(hash.substr(1))).getNode("tree")
+    return new Particle(decodeURIComponent(hash.substr(1))).getNode("tree")
   }
   updateAllCommand(tree, eventSource) {
     const { willowBrowser } = this
@@ -75,22 +75,22 @@ class SandboxApp extends AbstractTreeComponentParser {
     return this.willowBrowser.getElementById(id).value
   }
   updateFromXmlConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
+    this.updateAllCommand(Particle.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
   }
   updateFromGridJsonConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
+    this.updateAllCommand(Particle.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
   }
   updateFromJsonConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
+    this.updateAllCommand(Particle.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
   }
   updateFromCsvConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromCsv(this.valueOf("csvConsole")), "csvConsole")
+    this.updateAllCommand(Particle.fromCsv(this.valueOf("csvConsole")), "csvConsole")
   }
   updateFromJsonSubsetCommand() {
-    this.updateAllCommand(TreeNode.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
+    this.updateAllCommand(Particle.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
   }
   updateFromTreeConsoleCommand() {
-    this.updateAllCommand(new TreeNode(this.valueOf("treeConsole")), "treeConsole")
+    this.updateAllCommand(new Particle(this.valueOf("treeConsole")), "treeConsole")
   }
   toHakonCode() {
     const theme = this.getTheme()
@@ -146,7 +146,7 @@ pre
  color green`
   }
 }
-class headerComponent extends AbstractTreeComponentParser {
+class headerComponent extends AbstractParticleComponentParser {
   toHakonCode() {
     return `#logo
  width 100px
@@ -174,12 +174,12 @@ class headerComponent extends AbstractTreeComponentParser {
    href perfTests.html
   span  | 
   a Debug
-   clickCommand toggleTreeComponentFrameworkDebuggerCommand
-  span  | Version ${TreeNode.getVersion()}
+   clickCommand toggleParticleComponentFrameworkDebuggerCommand
+  span  | Version ${Particle.getVersion()}
  p This is a simple console for exploring the base Scroll Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
 }
-class shareComponent extends AbstractTreeComponentParser {
+class shareComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -206,7 +206,7 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
     this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/sandbox`
   }
 }
-class tableComponent extends AbstractTreeComponentParser {
+class tableComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `table
  tr

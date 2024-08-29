@@ -1,7 +1,7 @@
 {
   class stumpParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           blockquote: htmlTagParser,
@@ -280,7 +280,7 @@ htmlTagParser
    return this.insertChildNode(text, index)
   }
   insertChildNode(text, index) {
-   const singleNode = new TreeNode(text).getChildren()[0]
+   const singleNode = new Particle(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
    const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
@@ -327,11 +327,11 @@ htmlTagParser
    return this.parent.getShadowClass()
   }
   // todo: should not be here
-  getStumpNodeTreeComponent() {
-   return this._treeComponent || this.parent.getStumpNodeTreeComponent()
+  getStumpNodeParticleComponent() {
+   return this._treeComponent || this.parent.getStumpNodeParticleComponent()
   }
   // todo: should not be here
-  setStumpNodeTreeComponent(treeComponent) {
+  setStumpNodeParticleComponent(treeComponent) {
    this._treeComponent = treeComponent
    return this
   }
@@ -416,7 +416,7 @@ bernParser
 
   class htmlTagParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           blockquote: htmlTagParser,
@@ -811,7 +811,7 @@ bernParser
       return this.insertChildNode(text, index)
     }
     insertChildNode(text, index) {
-      const singleNode = new TreeNode(text).getChildren()[0]
+      const singleNode = new Particle(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
       const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
       this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
@@ -850,11 +850,11 @@ bernParser
       return this.parent.getShadowClass()
     }
     // todo: should not be here
-    getStumpNodeTreeComponent() {
-      return this._treeComponent || this.parent.getStumpNodeTreeComponent()
+    getStumpNodeParticleComponent() {
+      return this._treeComponent || this.parent.getStumpNodeParticleComponent()
     }
     // todo: should not be here
-    setStumpNodeTreeComponent(treeComponent) {
+    setStumpNodeParticleComponent(treeComponent) {
       this._treeComponent = treeComponent
       return this
     }
@@ -890,7 +890,7 @@ bernParser
 
   class htmlAttributeParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
+      return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
     get htmlAttributeNameCell() {
       return this.getWord(0)
@@ -923,7 +923,7 @@ bernParser
 
   class lineOfHtmlContentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
     get anyHtmlContentCell() {
       return this.getWordsFrom(0)
@@ -938,7 +938,7 @@ bernParser
 
   class bernParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
     get bernKeywordCell() {
       return this.getWord(0)

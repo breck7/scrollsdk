@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class chuckParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
         { regex: /\+/, parser: addParser },
         { regex: /\*/, parser: multiplyParser },
         { regex: /print/, parser: printParser },
@@ -73,5 +73,5 @@ onlyNumbersParser
   module.exports = chuckParser
   chuckParser
 
-  if (!module.parent) new chuckParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new chuckParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

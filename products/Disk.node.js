@@ -3,7 +3,7 @@ const fs = require("fs")
 const path = require("path")
 class Disk {}
 _a = Disk
-Disk.getTreeNode = () => require("../products/TreeNode.js").TreeNode // todo: cleanup
+Disk.getParticle = () => require("../products/Particle.js").Particle // todo: cleanup
 Disk.rm = path => fs.unlinkSync(path)
 Disk.getCleanedString = str => str.replace(/[\,\t\n]/g, " ")
 Disk.makeExecutable = path => fs.chmodSync(path, 0o755)
@@ -40,15 +40,15 @@ Disk.isDir = path => fs.statSync(path).isDirectory()
 Disk.getFileName = fileName => path.parse(fileName).base
 Disk.append = (path, content) => fs.appendFileSync(path, content, "utf8")
 Disk.appendAsync = (path, content, callback) => fs.appendFile(path, content, "utf8", callback)
-Disk.readCsvAsTree = path => Disk.getTreeNode().fromCsv(Disk.read(path))
-Disk.readSsvAsTree = path => Disk.getTreeNode().fromSsv(Disk.read(path))
-Disk.readTsvAsTree = path => Disk.getTreeNode().fromTsv(Disk.read(path))
+Disk.readCsvAsTree = path => Disk.getParticle().fromCsv(Disk.read(path))
+Disk.readSsvAsTree = path => Disk.getParticle().fromSsv(Disk.read(path))
+Disk.readTsvAsTree = path => Disk.getParticle().fromTsv(Disk.read(path))
 Disk.insertIntoFile = (path, content, delimiter) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
 Disk.detectAndReadAsTree = path => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
 Disk.getAllOf = (node, prop) => node.filter(node => node.getWord(0) === prop)
 Disk.getDelimitedChildrenAsTree = (node, delimiter = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
 Disk.sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-Disk.readTree = path => new (Disk.getTreeNode())(Disk.read(path))
+Disk.readTree = path => new (Disk.getParticle())(Disk.read(path))
 Disk.sizeOf = path => fs.statSync(path).size
 Disk.stripHtml = text => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
 Disk.stripParentheticals = text => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
@@ -69,13 +69,13 @@ Disk.stickBetween = (content, dest, delimiter) => {
 // todo: move to tree base class
 Disk.detectDelimiterAndReadAsTree = str => {
   const line1 = str.split("\n")[0]
-  const TreeNode = Disk.getTreeNode()
-  if (line1.includes("\t")) return TreeNode.fromTsv(str)
-  else if (line1.includes(",")) return TreeNode.fromCsv(str)
-  else if (line1.includes("|")) return TreeNode.fromDelimited(str, "|")
-  else if (line1.includes(";")) return TreeNode.fromDelimited(str, ";")
+  const Particle = Disk.getParticle()
+  if (line1.includes("\t")) return Particle.fromTsv(str)
+  else if (line1.includes(",")) return Particle.fromCsv(str)
+  else if (line1.includes("|")) return Particle.fromDelimited(str, "|")
+  else if (line1.includes(";")) return Particle.fromDelimited(str, ";")
   // todo: add more robust. align with choose delimiter
-  return TreeNode.fromSsv(str)
+  return Particle.fromSsv(str)
 }
 Disk.deleteDuplicates = (node, prop1, prop2, reverse = false) => {
   const map = {}

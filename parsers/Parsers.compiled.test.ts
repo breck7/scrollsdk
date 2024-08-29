@@ -4,7 +4,7 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { HandParsersProgram, UnknownParsersProgram } = require("../products/Parsers.js")
 const { ParsersCompiler } = require("../products/ParsersCompiler.js")
 
@@ -48,7 +48,7 @@ testTree.compileAll = equal => {
     try {
       // Act
       const parsersPath = path.join(langsDir, name, `${name}.parsers`)
-      const parsersCode = TreeNode.fromDisk(parsersPath)
+      const parsersCode = Particle.fromDisk(parsersPath)
       const tempFilePath = ParsersCompiler.compileParsersForNodeJs(parsersPath, outputDir, false)
       const rootClass = require(tempFilePath)
 
@@ -167,7 +167,7 @@ langs.forEach((name: string) => {
   testTree[`${name}InferPrefixParsers`] = equal => {
     // Arrange
     const samplePath = path.join(langsDir, name, `sample.${name}`)
-    const sampleCode = TreeNode.fromDisk(samplePath).toString()
+    const sampleCode = Particle.fromDisk(samplePath).toString()
 
     // todo: cleanup
     if (Disk.read(path.join(langsDir, name, `${name}.parsers`)).includes("nonPrefixParsers")) return equal(true, true, `skipped ${name} beause not prefix parsers`)

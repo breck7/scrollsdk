@@ -69,7 +69,7 @@ stampParser
      if (isDir) return `folder ` + reducedPath
      const content = fs.readFileSync(file, "utf8")
      return `file ${reducedPath}
-   data${TreeNode.nest(content, 2)}`
+   data${Particle.nest(content, 2)}`
     }
    }
    const fn = fns[output]

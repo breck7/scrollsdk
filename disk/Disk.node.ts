@@ -4,7 +4,7 @@ const path = require("path")
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 class Disk {
-  static getTreeNode = () => require("../products/TreeNode.js").TreeNode // todo: cleanup
+  static getParticle = () => require("../products/Particle.js").Particle // todo: cleanup
   static rm = (path: scrollNotationTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: scrollNotationTypes.filepath) => fs.chmodSync(path, 0o755)
@@ -41,15 +41,15 @@ class Disk {
   static getFileName = (fileName: scrollNotationTypes.filepath) => path.parse(fileName).base
   static append = (path: scrollNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
   static appendAsync = (path: scrollNotationTypes.filepath, content: string, callback: Function) => fs.appendFile(path, content, "utf8", callback)
-  static readCsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
-  static readSsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
-  static readTsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
+  static readCsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromCsv(Disk.read(path))
+  static readSsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromSsv(Disk.read(path))
+  static readTsvAsTree = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromTsv(Disk.read(path))
   static insertIntoFile = (path: scrollNotationTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsTree = (path: scrollNotationTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
   static getAllOf = (node: scrollNotationTypes.treeNode, prop: string) => node.filter((node: scrollNotationTypes.treeNode) => node.getWord(0) === prop)
   static getDelimitedChildrenAsTree = (node: scrollNotationTypes.treeNode, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
   static sleep = (ms: scrollNotationTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
-  static readTree = (path: scrollNotationTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
+  static readTree = (path: scrollNotationTypes.filepath) => new (Disk.getParticle())(Disk.read(path))
   static sizeOf = (path: scrollNotationTypes.filepath) => fs.statSync(path).size
   static stripHtml = (text: string) => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
   static stripParentheticals = (text: string) => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
@@ -70,13 +70,13 @@ class Disk {
   // todo: move to tree base class
   static detectDelimiterAndReadAsTree = (str: string) => {
     const line1 = str.split("\n")[0]
-    const TreeNode = Disk.getTreeNode()
-    if (line1.includes("\t")) return TreeNode.fromTsv(str)
-    else if (line1.includes(",")) return TreeNode.fromCsv(str)
-    else if (line1.includes("|")) return TreeNode.fromDelimited(str, "|")
-    else if (line1.includes(";")) return TreeNode.fromDelimited(str, ";")
+    const Particle = Disk.getParticle()
+    if (line1.includes("\t")) return Particle.fromTsv(str)
+    else if (line1.includes(",")) return Particle.fromCsv(str)
+    else if (line1.includes("|")) return Particle.fromDelimited(str, "|")
+    else if (line1.includes(";")) return Particle.fromDelimited(str, ";")
     // todo: add more robust. align with choose delimiter
-    return TreeNode.fromSsv(str)
+    return Particle.fromSsv(str)
   }
   static deleteDuplicates = (node: scrollNotationTypes.treeNode, prop1: any, prop2: any, reverse = false) => {
     const map: any = {}

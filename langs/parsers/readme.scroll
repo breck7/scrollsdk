@@ -65,7 +65,7 @@ thinColumns 2
 - A common pattern in languages is to have different scopes for the first line of the file. For example, shebang lines in executable scripts or header lines in CSV files. We might want to create a way to have certain parsers inScope for line 0 and out of scope the rest of the lines.
 
 ## LSP Support
-- We should move away from TreeComponentFramework and the Designer App code base and move efforts toward having languages written in Parsers get an LSP implementation for free.
+- We should move away from ParticleComponentFramework and the Designer App code base and move efforts toward having languages written in Parsers get an LSP implementation for free.
 
 ## BNF Parsing
 - It's worth exploring using Parsers to also generate parsers for BNF languages.

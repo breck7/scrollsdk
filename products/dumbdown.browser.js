@@ -7,7 +7,7 @@
 
   class dumbdownParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         quickParagraphParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           link: linkParser,
@@ -184,7 +184,7 @@ quickParagraphParser
 
   class paragraphParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphContentParser, undefined, undefined)
     }
   }
 
@@ -196,7 +196,7 @@ quickParagraphParser
 
   class codeParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     compile() {
       return `<code>${this.indentation + this.childrenToString()}</code>`
@@ -205,7 +205,7 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 
@@ -217,7 +217,7 @@ quickParagraphParser
 
   class lineOfCodeParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     get codeCell() {
       return this.getWordsFrom(0)

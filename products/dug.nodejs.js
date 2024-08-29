@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class dugParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -128,13 +128,13 @@ errorParser
 
   class objectParser extends abstractValueParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(memberParser, undefined, undefined)
+      return new Particle.ParserCombinator(memberParser, undefined, undefined)
     }
   }
 
   class arrayParser extends abstractValueParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -144,7 +144,7 @@ errorParser
 
   class memberParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
@@ -164,5 +164,5 @@ errorParser
   module.exports = dugParser
   dugParser
 
-  if (!module.parent) new dugParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new dugParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

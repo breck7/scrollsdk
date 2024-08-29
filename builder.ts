@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-const { TreeNode } = require("./products/TreeNode.js")
+const { Particle } = require("./products/Particle.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
 const { Utils } = require("./products/Utils.js")
@@ -18,7 +18,7 @@ import { scrollNotationTypes } from "./products/scrollNotationTypes"
 // todo: remove?
 const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", parsers: "tooling ", gram: "tooling " }
 
-class Builder extends TreeNode {
+class Builder extends Particle {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
     const ts = require("typescript")
     // downlevelIteration: true, // todo: what is this again?
@@ -262,7 +262,7 @@ class Builder extends TreeNode {
   }
 
   private _getProductsTree() {
-    return TreeNode.fromDisk(__dirname + "/products.tree")
+    return Particle.fromDisk(__dirname + "/products.scroll")
   }
 
   buildJibJab() {
@@ -279,7 +279,7 @@ class Builder extends TreeNode {
   updateVersion(newVersion: scrollNotationTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
 
-    const codePath = __dirname + "/treeNode/TreeNode.ts"
+    const codePath = __dirname + "/treeNode/Particle.ts"
     const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)

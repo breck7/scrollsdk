@@ -1,7 +1,7 @@
 {
   class chuckParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
         { regex: /\+/, parser: addParser },
         { regex: /\*/, parser: multiplyParser },
         { regex: /print/, parser: printParser },

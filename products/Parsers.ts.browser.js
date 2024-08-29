@@ -1,7 +1,7 @@
 // Compiled language parsers will include these files:
 const GlobalNamespaceAdditions = {
   Utils: "Utils.js",
-  TreeNode: "TreeNode.js",
+  Particle: "Particle.js",
   HandParsersProgram: "Parsers.js",
   ParserBackedNode: "Parsers.js"
 }
@@ -120,8 +120,8 @@ class TypedWord extends TreeWord {
     return this.word + ":" + this.type
   }
 }
-// todo: can we merge these methods into base TreeNode and ditch this class?
-class ParserBackedNode extends TreeNode {
+// todo: can we merge these methods into base Particle and ditch this class?
+class ParserBackedNode extends Particle {
   get definition() {
     if (this._definition) return this._definition
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
@@ -254,8 +254,8 @@ class ParserBackedNode extends TreeNode {
     return this.topDownArray.map(child => child.indentation + child.lineCellTypes).join("\n")
   }
   getParseTable(maxColumnWidth = 40) {
-    const tree = new TreeNode(this.toCellTypeTree())
-    return new TreeNode(
+    const tree = new Particle(this.toCellTypeTree())
+    return new Particle(
       tree.topDownArray.map((node, lineNumber) => {
         const sourceNode = this.nodeAtLine(lineNumber)
         const errs = sourceNode.getErrors()
@@ -303,10 +303,10 @@ class ParserBackedNode extends TreeNode {
         trees[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
       })
     })
-    return new TreeNode(trees)
+    return new Particle(trees)
   }
   toAutoCompleteTable() {
-    return new TreeNode(
+    return new Particle(
       this._getAllAutoCompleteWords().map(result => {
         result.suggestions = result.suggestions.map(node => node.text).join(" ")
         return result
@@ -359,7 +359,7 @@ class ParserBackedNode extends TreeNode {
   }
   getParserUsage(filepath = "") {
     // returns a report on what parsers from its language the program uses
-    const usage = new TreeNode()
+    const usage = new Particle()
     const handParsersProgram = this.handParsersProgram
     handParsersProgram.validConcreteAndAbstractParserDefinitions.forEach(def => {
       const requiredCellTypeIds = def.cellParser.getRequiredCellTypeIds()
@@ -394,12 +394,12 @@ class ParserBackedNode extends TreeNode {
   _initCellTypeCache() {
     const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
-    this._cache_typeTree = new TreeNode(this.toCellTypeTree())
-    this._cache_paintTree = new TreeNode(this.toPaintTree())
+    this._cache_typeTree = new Particle(this.toCellTypeTree())
+    this._cache_paintTree = new Particle(this.toPaintTree())
     this._cache_programCellTypeStringMTime = treeMTime
   }
   createParserCombinator() {
-    return this.isRoot() ? new TreeNode.ParserCombinator(BlobParser) : new TreeNode.ParserCombinator(this.parent._getParser()._getCatchAllParser(this.parent), {})
+    return this.isRoot() ? new Particle.ParserCombinator(BlobParser) : new Particle.ParserCombinator(this.parent._getParser()._getCatchAllParser(this.parent), {})
   }
   get parserId() {
     return this.definition.parserIdFromDefinition
@@ -589,7 +589,7 @@ ${indent}${closeChildrenString}`
 }
 class BlobParser extends ParserBackedNode {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(BlobParser, {})
+    return new Particle.ParserCombinator(BlobParser, {})
   }
   getErrors() {
     return []
@@ -598,7 +598,7 @@ class BlobParser extends ParserBackedNode {
 // todo: can we remove this? hard to extend.
 class UnknownParserNode extends ParserBackedNode {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(UnknownParserNode, {})
+    return new Particle.ParserCombinator(UnknownParserNode, {})
   }
   getErrors() {
     return [new UnknownParserError(this)]
@@ -671,7 +671,7 @@ class AbstractParsersBackedCell {
     const cellDef = this.cellTypeDefinition
     const enumOptions = cellDef._getFromExtended(ParsersConstants.enum)
     if (!enumOptions) return undefined
-    const options = new TreeNode(
+    const options = new Particle(
       enumOptions
         .split(" ")
         .map(option => `option ${option}`)
@@ -1101,7 +1101,7 @@ class MissingWordError extends AbstractCellError {
   }
 }
 // todo: add standard types, enum types, from disk types
-class AbstractParsersWordTestParser extends TreeNode {}
+class AbstractParsersWordTestParser extends Particle {}
 class ParsersRegexTestParser extends AbstractParsersWordTestParser {
   isValid(str) {
     if (!this._regex) this._regex = new RegExp("^" + this.content + "$")
@@ -1149,21 +1149,21 @@ class ParsersEnumTestNode extends AbstractParsersWordTestParser {
     return this._map
   }
 }
-class cellTypeDefinitionParser extends AbstractExtendibleTreeNode {
+class cellTypeDefinitionParser extends AbstractExtendibleParticle {
   createParserCombinator() {
     const types = {}
     types[ParsersConstants.regex] = ParsersRegexTestParser
     types[ParsersConstants.reservedWords] = ParsersReservedWordsTestParser
     types[ParsersConstants.enumFromCellTypes] = EnumFromCellTypesTestParser
     types[ParsersConstants.enum] = ParsersEnumTestNode
-    types[ParsersConstants.paint] = TreeNode
-    types[ParsersConstants.comment] = TreeNode
-    types[ParsersConstants.examples] = TreeNode
-    types[ParsersConstants.min] = TreeNode
-    types[ParsersConstants.max] = TreeNode
-    types[ParsersConstants.description] = TreeNode
-    types[ParsersConstants.extends] = TreeNode
-    return new TreeNode.ParserCombinator(undefined, types)
+    types[ParsersConstants.paint] = Particle
+    types[ParsersConstants.comment] = Particle
+    types[ParsersConstants.examples] = Particle
+    types[ParsersConstants.min] = Particle
+    types[ParsersConstants.max] = Particle
+    types[ParsersConstants.description] = Particle
+    types[ParsersConstants.extends] = Particle
+    return new Particle.ParserCombinator(undefined, types)
   }
   get id() {
     return this.getWord(0)
@@ -1336,8 +1336,8 @@ class OmnifixCellParser extends AbstractCellParser {
     return cells
   }
 }
-class ParsersExampleParser extends TreeNode {}
-class ParsersCompilerParser extends TreeNode {
+class ParsersExampleParser extends Particle {}
+class ParsersCompilerParser extends Particle {
   createParserCombinator() {
     const types = [
       ParsersConstantsCompiler.stringTemplate,
@@ -1349,12 +1349,12 @@ class ParsersCompilerParser extends TreeNode {
     ]
     const map = {}
     types.forEach(type => {
-      map[type] = TreeNode
+      map[type] = Particle
     })
-    return new TreeNode.ParserCombinator(undefined, map)
+    return new Particle.ParserCombinator(undefined, map)
   }
 }
-class AbstractParserConstantParser extends TreeNode {
+class AbstractParserConstantParser extends Particle {
   constructor(children, line, parent) {
     super(children, line, parent)
     parent[this.identifier] = this.constantValue
@@ -1384,7 +1384,7 @@ class ParsersParserConstantString extends AbstractParserConstantParser {
 }
 class ParsersParserConstantFloat extends AbstractParserConstantParser {}
 class ParsersParserConstantBoolean extends AbstractParserConstantParser {}
-class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
+class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
   createParserCombinator() {
     // todo: some of these should just be on nonRootNodes
     const types = [
@@ -1418,7 +1418,7 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
     ]
     const map = {}
     types.forEach(type => {
-      map[type] = TreeNode
+      map[type] = Particle
     })
     map[ParsersConstantsConstantTypes.boolean] = ParsersParserConstantBoolean
     map[ParsersConstantsConstantTypes.int] = ParsersParserConstantInt
@@ -1426,7 +1426,7 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
     map[ParsersConstantsConstantTypes.float] = ParsersParserConstantFloat
     map[ParsersConstants.compilerParser] = ParsersCompilerParser
     map[ParsersConstants.example] = ParsersExampleParser
-    return new TreeNode.ParserCombinator(undefined, map, [{ regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser }])
+    return new Particle.ParserCombinator(undefined, map, [{ regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser }])
   }
   toTypeScriptInterface(used = new Set()) {
     let childrenInterfaces = []
@@ -1625,7 +1625,7 @@ ${properties.join("\n")}
   get parserAsJavascript() {
     if (this._isBlobParser())
       // todo: do we need this?
-      return "createParserCombinator() { return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())}"
+      return "createParserCombinator() { return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())}"
     const parserInfo = this._createParserInfo(this._getMyInScopeParserIds())
     const myFirstWordMap = parserInfo.firstWordMap
     const regexRules = parserInfo.regexTests
@@ -1648,7 +1648,7 @@ ${properties.join("\n")}
     const catchAllStr = catchAllParser ? catchAllParser : this._amIRoot() ? `this._getBlobParserCatchAllParser()` : "undefined"
     const scopedParserJavascript = this.myScopedParserDefinitions.map(def => def.asJavascriptClass).join("\n\n")
     return `createParserCombinator() {${scopedParserJavascript}
-  return new TreeNode.ParserCombinator(${catchAllStr}, ${firstWordsStr}, ${regexStr})
+  return new Particle.ParserCombinator(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`
   }
   get myScopedParserDefinitions() {
@@ -1778,7 +1778,7 @@ ${captures}
     if (!cellArray.length)
       // todo: remove this! just doing it for now until we refactor getCellArray to handle catchAlls better.
       return ""
-    const cells = new TreeNode(cellArray.map((cell, index) => cell._toStumpInput(crux)).join("\n"))
+    const cells = new Particle(cellArray.map((cell, index) => cell._toStumpInput(crux)).join("\n"))
     return `div
  label ${crux}
 ${cells.toString(1)}`
@@ -1883,9 +1883,9 @@ class parserDefinitionParser extends AbstractParserDefinitionParser {}
 class HandParsersProgram extends AbstractParserDefinitionParser {
   createParserCombinator() {
     const map = {}
-    map[ParsersConstants.comment] = TreeNode
-    return new TreeNode.ParserCombinator(UnknownParserNode, map, [
-      { regex: HandParsersProgram.blankLineRegex, parser: TreeNode },
+    map[ParsersConstants.comment] = Particle
+    return new Particle.ParserCombinator(UnknownParserNode, map, [
+      { regex: HandParsersProgram.blankLineRegex, parser: Particle },
       { regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser },
       { regex: HandParsersProgram.cellTypeFullRegex, parser: cellTypeDefinitionParser }
     ])
@@ -1908,7 +1908,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
       // todo: figure out best error pattern here for debugging
       console.log(err)
       // console.log(`Error in code: `)
-      // console.log(new TreeNode(code).toStringWithLineNumbers())
+      // console.log(new Particle(code).toStringWithLineNumbers())
     }
     return this._cache_rootParser
   }
@@ -1993,7 +1993,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     } catch (err) {
       // todo: figure out best error pattern here for debugging
       console.log(`Error in compiled parsers code for language "${this.parsersName}"`)
-      // console.log(new TreeNode(code).toStringWithLineNumbers())
+      // console.log(new Particle(code).toStringWithLineNumbers())
       console.log(err)
       throw err
     }
@@ -2052,7 +2052,7 @@ ${parserFamilyTree.toString(1)}
 subtitle Cell Types
 
 code
-${new TreeNode(Object.keys(cellTypes).join("\n")).toString(1)}
+${new Particle(Object.keys(cellTypes).join("\n")).toString(1)}
 
 subtitle Road Map
 
@@ -2078,7 +2078,7 @@ paragraph This readme was auto-generated using the
         name: languageName,
         private: true,
         dependencies: {
-          scrollsdk: TreeNode.getVersion()
+          scrollsdk: Particle.getVersion()
         }
       },
       null,
@@ -2096,7 +2096,7 @@ if (errors.length)
     const browserPath = `${languageName}.browser.js`
     files[browserPath] = this.toBrowserJavascript()
     files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
-<script src="node_modules/scrollsdk/products/TreeNode.browser.js"></script>
+<script src="node_modules/scrollsdk/products/Particle.browser.js"></script>
 <script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
@@ -2126,7 +2126,7 @@ ${testCode}`
     return this.cellTypeDefinitions[cellTypeId]
   }
   get parserFamilyTree() {
-    const tree = new TreeNode()
+    const tree = new Particle()
     Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(node => tree.touchNode(node.ancestorParserIdsArray.join(" ")))
     return tree
   }
@@ -2276,10 +2276,10 @@ PreludeKinds[PreludeCellTypeIds.numberCell] = ParsersFloatCell
 PreludeKinds[PreludeCellTypeIds.bitCell] = ParsersBitCell
 PreludeKinds[PreludeCellTypeIds.boolCell] = ParsersBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = ParsersIntCell
-class UnknownParsersProgram extends TreeNode {
+class UnknownParsersProgram extends Particle {
   _inferRootNodeForAPrefixLanguage(parsersName) {
     parsersName = HandParsersProgram.makeParserId(parsersName)
-    const rootNode = new TreeNode(`${parsersName}
+    const rootNode = new Particle(`${parsersName}
  ${ParsersConstants.root}`)
     // note: right now we assume 1 global cellTypeMap and parserMap per parsers. But we may have scopes in the future?
     const rootNodeNames = this.getFirstWords()
@@ -2314,7 +2314,7 @@ class UnknownParsersProgram extends TreeNode {
   _inferParserDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstWord)
-    const nodeDefNode = new TreeNode(parserId).nodeAt(0)
+    const nodeDefNode = new Particle(parserId).nodeAt(0)
     const childParserIds = childFirstWords.map(word => HandParsersProgram.makeParserId(word))
     if (childParserIds.length) nodeDefNode.touchNode(ParsersConstants.inScope).setWordsFrom(1, childParserIds)
     const cellsForAllInstances = instances
@@ -2355,7 +2355,7 @@ class UnknownParsersProgram extends TreeNode {
   }
   //  inferParsersFileForAnSSVLanguage(parsersName: string): string {
   //     parsersName = HandParsersProgram.makeParserId(parsersName)
-  //    const rootNode = new TreeNode(`${parsersName}
+  //    const rootNode = new Particle(`${parsersName}
   // ${ParsersConstants.root}`)
   //    // note: right now we assume 1 global cellTypeMap and parserMap per parsers. But we may have scopes in the future?
   //    const rootNodeNames = this.getFirstWords().map(word => HandParsersProgram.makeParserId(word))
@@ -2382,7 +2382,7 @@ class UnknownParsersProgram extends TreeNode {
   _formatCode(code) {
     // todo: make this run in browser too
     if (!this.isNodeJs()) return code
-    const parsersProgram = new HandParsersProgram(TreeNode.fromDisk(__dirname + "/../langs/parsers/parsers.parsers"))
+    const parsersProgram = new HandParsersProgram(Particle.fromDisk(__dirname + "/../langs/parsers/parsers.parsers"))
     const rootParser = parsersProgram.compileAndReturnRootParser()
     const program = new rootParser(code)
     return program.format().toString()

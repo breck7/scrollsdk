@@ -2,7 +2,7 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
@@ -41,12 +41,12 @@ testTree.diskTests = equal => {
   equal(Disk.exists(path), false, "file does not exist")
 
   // Arrange
-  const node = TreeNode.fromCsv(TreeNode.iris)
+  const node = Particle.fromCsv(Particle.iris)
   node.toDisk(path)
 
   // Act/Assert
   equal(Disk.exists(path), true, "file exists")
-  equal(TreeNode.fromDisk(path).toString(), node.toString(), "tree unchanged")
+  equal(Particle.fromDisk(path).toString(), node.toString(), "tree unchanged")
 
   // Cleanup
   Disk.rm(path)

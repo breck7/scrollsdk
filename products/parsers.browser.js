@@ -1,7 +1,7 @@
 {
   class parsersParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
+      return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
         { regex: /^[a-zA-Z0-9_]+Cell$/, parser: cellTypeDefinitionParser },
         { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
@@ -644,7 +644,7 @@ extendsCellTypeParser
 
   class stringParser extends abstractConstantParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -724,7 +724,7 @@ extendsCellTypeParser
 
   class compilerParser extends abstractParserRuleParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           closeChildren: closeChildrenParser,
@@ -753,7 +753,7 @@ extendsCellTypeParser
 
   class exampleParser extends abstractParserRuleParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWordsFrom(0)
@@ -786,7 +786,7 @@ extendsCellTypeParser
 
   class javascriptParser extends abstractParserRuleParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     format() {
       if (this.isNodeJs()) {
@@ -873,7 +873,7 @@ extendsCellTypeParser
 
   class catchAllExampleLineParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWord(0)
@@ -885,7 +885,7 @@ extendsCellTypeParser
 
   class catchAllJavascriptCodeLineParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     get javascriptCodeCell() {
       return this.getWordsFrom(0)
@@ -894,7 +894,7 @@ extendsCellTypeParser
 
   class catchAllMultilineStringConstantParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get stringCell() {
       return this.getWord(0)
@@ -906,7 +906,7 @@ extendsCellTypeParser
 
   class cellTypeDefinitionParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           description: cellTypeDescriptionParser,
@@ -991,7 +991,7 @@ extendsCellTypeParser
 
   class parserDefinitionParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         catchAllErrorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           boolean: booleanParser,
@@ -1060,7 +1060,7 @@ extendsCellTypeParser
 
   class slashCommentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentLineParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentLineParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)

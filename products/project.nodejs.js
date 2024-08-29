@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class projectParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -65,8 +65,8 @@ ${missing.join("\n")}
     }
     static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
       const fs = require("fs")
-      const files = new TreeNode(arrayOfScriptPaths.join("\n"))
-      const requiredFileList = new TreeNode()
+      const files = new Particle(arrayOfScriptPaths.join("\n"))
+      const requiredFileList = new Particle()
       files.forEach(child => {
         const line = child.getLine()
         const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
@@ -144,8 +144,8 @@ projectParser
   }
   static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
    const fs = require("fs")
-   const files = new TreeNode(arrayOfScriptPaths.join("\\n"))
-   const requiredFileList = new TreeNode()
+   const files = new Particle(arrayOfScriptPaths.join("\\n"))
+   const requiredFileList = new Particle()
    files.forEach(child => {
     const line = child.getLine()
     const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
@@ -224,7 +224,7 @@ fileParser
 
   class fileParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
     get fileConstantCell() {
       return this.getWord(0)
@@ -257,5 +257,5 @@ fileParser
   module.exports = projectParser
   projectParser
 
-  if (!module.parent) new projectParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new projectParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

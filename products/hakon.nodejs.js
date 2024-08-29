@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class hakonParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }), undefined)
+      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }), undefined)
     }
     getSelector() {
       return ""
@@ -129,7 +129,7 @@ selectorParser
 
   class propertyParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
+      return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -152,7 +152,7 @@ selectorParser
 
   class errorParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
+      return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
     getErrors() {
       return this._getErrorParserErrors()
@@ -164,7 +164,7 @@ selectorParser
 
   class commentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -176,7 +176,7 @@ selectorParser
 
   class selectorParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         selectorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           "border-bottom-right-radius": propertyParser,
@@ -424,5 +424,5 @@ ${propertyParsers.map(child => child.compile(spaces)).join("\n")}
   module.exports = hakonParser
   hakonParser
 
-  if (!module.parent) new hakonParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new hakonParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

@@ -340,20 +340,20 @@ const linkToObject = link => {
   }
   return obj
 }
-class SweeperCraftApp extends AbstractTreeComponentParser {
+class SweeperCraftApp extends AbstractParticleComponentParser {
   constructor() {
     super(...arguments)
     this.keyboardShortcuts = this._getKeyboardShortcuts()
   }
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
       customLinkComponent,
       shortcutsTableComponent,
       githubTriangleComponent,
-      TreeComponentFrameworkDebuggerComponent
+      ParticleComponentFrameworkDebuggerComponent
     })
   }
   clickSquareCommand(row, col) {
@@ -534,7 +534,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     })
   }
   async start() {
-    this._bindTreeComponentFrameworkCommandListenersOnBody()
+    this._bindParticleComponentFrameworkCommandListenersOnBody()
     if (!this.isNodeJs()) this._setupBrowser()
     const willowBrowser = this.willowBrowser
     const currentHash = willowBrowser.getHash().replace(/^#/, "")
@@ -584,7 +584,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
         location.hash = link
       },
       d: () => {
-        this.toggleTreeComponentFrameworkDebuggerCommand()
+        this.toggleParticleComponentFrameworkDebuggerCommand()
       }
     }
   }
@@ -616,7 +616,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     return classes
   }
 }
-class AbstractSweeperCraftComponent extends AbstractTreeComponentParser {}
+class AbstractSweeperCraftComponent extends AbstractParticleComponentParser {}
 class headerComponent extends AbstractSweeperCraftComponent {
   async treeComponentDidMount() {
     await super.treeComponentDidMount()
@@ -674,7 +674,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
 }
 class boardComponent extends AbstractSweeperCraftComponent {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -688,9 +688,9 @@ class boardComponent extends AbstractSweeperCraftComponent {
     return super.getCssClasses().concat([this._getCssGameClass()])
   }
 }
-class rowComponent extends AbstractTreeComponentParser {
+class rowComponent extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       squareComponent: squareComponent
     })
   }
@@ -785,7 +785,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
     this.setContent(this._getGameLink())
   }
 }
-class shortcutsTableComponent extends AbstractTreeComponentParser {
+class shortcutsTableComponent extends AbstractParticleComponentParser {
   triggerShortcut(letter) {
     this.root.keyboardShortcuts[letter]()
   }

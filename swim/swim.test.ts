@@ -2,14 +2,14 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: scrollNotationTypes.testTree = {}
 
 testTree.runSwimTests = equal => {
   // Arrange/Act/Assert
-  const tests = TreeNode.fromDisk(__dirname + "/TreeNode.swim")
+  const tests = Particle.fromDisk(__dirname + "/Particle.swim")
   tests.forEach((test: any) => {
     const arrange = test.getNode("arrange").childrenToString() // Note: used in the eval below
     const expected = test.getNode("assert").childrenToString()

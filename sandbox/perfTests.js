@@ -15,8 +15,8 @@ lightbulbState off
 text
 thisShouldErrorError1
 to fillThis`
-  const code = new TreeNode(programCode)
-  let long = TreeNode.toString().repeat(20)
+  const code = new Particle(programCode)
+  let long = Particle.toString().repeat(20)
   code.getNode("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
@@ -53,7 +53,7 @@ const main = (parsersCode, code) => {
 }
 
 const parseStringTest = () => {
-  const data = TreeNode.iris.repeat(100)
+  const data = Particle.iris.repeat(100)
   const map = {}
   const lineLength = data.split("\n").length
   const trials = 200
@@ -61,7 +61,7 @@ const parseStringTest = () => {
   const startTime = Date.now()
 
   for (let index = 0; index < trials; index++) {
-    map[index] = new TreeNode(data)
+    map[index] = new Particle(data)
   }
   const elapsed = Date.now() - startTime
 
@@ -71,7 +71,7 @@ const parseStringTest = () => {
 }
 
 const toStringTest = () => {
-  const data = new TreeNode(Utils.makeRandomTree(10000))
+  const data = new Particle(Utils.makeRandomTree(10000))
   const startTime = Date.now()
 
   const res = data.toString()

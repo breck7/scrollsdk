@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 {
   const { Utils } = require("./Utils.js")
-  const { TreeNode } = require("./TreeNode.js")
+  const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
   class numbersParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           "%": modParser,
@@ -114,7 +114,7 @@ errorParser
 
   class abstractArithmeticReducerParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
         undefined
@@ -163,7 +163,7 @@ errorParser
 
   class commentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -175,7 +175,7 @@ errorParser
 
   class commentContentParser extends ParserBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
@@ -206,5 +206,5 @@ errorParser
   module.exports = numbersParser
   numbersParser
 
-  if (!module.parent) new numbersParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new numbersParser(Particle.fromDisk(process.argv[2]).toString()).execute()
 }

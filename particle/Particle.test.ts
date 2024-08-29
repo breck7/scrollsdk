@@ -3528,9 +3528,9 @@ testParticles.toStringMethod = equal => {
 
   // Arrange
   const str = "view\n type bar"
-  const particle = new Particle(str).getNode("view")
+  const particleView = new Particle(str).getNode("view")
   // Act/Assert
-  equal(particle.asString, str)
+  equal(particleView.asString, str)
 }
 
 testParticles.asHtml = equal => {

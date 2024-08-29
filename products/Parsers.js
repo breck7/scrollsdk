@@ -385,19 +385,19 @@ class ParserBackedNode extends Particle {
   toPreludeCellTypeParticlesWithParserIds() {
     return this.topDownArray.map(child => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLineCellPreludeTypes()).join("\n")
   }
-  get asTreeWithParsers() {
+  get asParticlesWithParsers() {
     return this.topDownArray.map(child => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLine()).join("\n")
   }
   getCellPaintAtPosition(lineIndex, wordIndex) {
     this._initCellTypeCache()
-    const typeNode = this._cache_paintTree.topDownArray[lineIndex - 1]
+    const typeNode = this._cache_paintParticles.topDownArray[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
   }
   _initCellTypeCache() {
     const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
-    this._cache_typeTree = new Particle(this.toCellTypeParticles())
-    this._cache_paintTree = new Particle(this.toPaintParticles())
+    this._cache_typeParticles = new Particle(this.toCellTypeParticles())
+    this._cache_paintParticles = new Particle(this.toPaintParticles())
     this._cache_programCellTypeStringMTime = treeMTime
   }
   createParserCombinator() {

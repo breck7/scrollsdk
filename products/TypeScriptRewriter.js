@@ -8,8 +8,8 @@ class TypeScriptRewriter {
     this._str = `"use strict";\n` + this._str
     return this
   }
-  removeRequireTrees() {
-    this._str = this._str.replace(/(\n|^)const .* \= requireTree\(.*/g, "$1")
+  removeRequireParticles() {
+    this._str = this._str.replace(/(\n|^)const .* \= requireParticles\(.*/g, "$1")
     return this
   }
   removeTsGeneratedCrap() {
@@ -78,7 +78,7 @@ class TypeScriptRewriter {
       )
     return this
   }
-  static treeToJs(filepath, file) {
+  static particlesToJs(filepath, file) {
     const filename = Utils.getFileName(filepath)
     const baseName = Utils.removeFileExtension(filename)
     const extension = Utils.getFileExtension(filename)

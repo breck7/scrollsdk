@@ -1549,7 +1549,7 @@ class Particle extends AbstractParticle {
     return this.getChildren().slice(start, end)
   }
   // todo: make 0 and 1 a param
-  getInheritanceTree() {
+  getInheritanceParticles() {
     const paths = {}
     const result = new Particle()
     this.forEach(node => {
@@ -1600,12 +1600,12 @@ class Particle extends AbstractParticle {
       )
     )
   }
-  _setVirtualParentTree(tree) {
-    this._virtualParentTree = tree
+  _setVirtualParentParticle(tree) {
+    this._virtualParentParticle = tree
     return this
   }
   _getVirtualParentParticle() {
-    return this._virtualParentTree
+    return this._virtualParentParticle
   }
   _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
     const map = {}
@@ -1623,18 +1623,18 @@ class Particle extends AbstractParticle {
       const parentId = nodeInfo.parentId
       const parentNode = map[parentId]
       if (parentId && !parentNode) throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
-      if (parentId) nodeInfo.node._setVirtualParentTree(parentNode.node)
+      if (parentId) nodeInfo.node._setVirtualParentParticle(parentNode.node)
     })
-    nodes.forEach(node => node._expandFromVirtualParentTree())
+    nodes.forEach(node => node._expandFromVirtualParentParticle())
     return this
   }
-  _expandFromVirtualParentTree() {
+  _expandFromVirtualParentParticle() {
     if (this._isVirtualExpanded) return this
     this._isExpanding = true
     let parentNode = this._getVirtualParentParticle()
     if (parentNode) {
       if (parentNode._isExpanding) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
-      parentNode._expandFromVirtualParentTree()
+      parentNode._expandFromVirtualParentParticle()
       const clone = this.clone()
       this._setChildren(parentNode.childrenToString())
       this.extend(clone)
@@ -1979,7 +1979,7 @@ class Particle extends AbstractParticle {
       .forEach(node => node.destroy())
     return this
   }
-  // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
+  // todo: add "globalReplace" method? Which runs a global regex or string replace on the Particles doc as a string?
   firstWordSort(firstWordOrder) {
     return this._firstWordSort(firstWordOrder)
   }
@@ -2284,7 +2284,7 @@ class Particle extends AbstractParticle {
   static fromJsonSubset(str) {
     return new Particle(JSON.parse(str))
   }
-  static serializedParticleToTree(particle) {
+  static serializedParticleToParticles(particle) {
     const language = new Particle()
     const cellDelimiter = language.wordBreakSymbol
     const nodeDelimiter = language.nodeBreakSymbol
@@ -2292,12 +2292,12 @@ class Particle extends AbstractParticle {
     const tree = new Particle(undefined, line)
     if (particle.children)
       particle.children.forEach(child => {
-        tree.appendNode(this.serializedParticleToTree(child))
+        tree.appendNode(this.serializedParticleToParticles(child))
       })
     return tree
   }
   static fromJson(str) {
-    return this.serializedParticleToTree(JSON.parse(str))
+    return this.serializedParticleToParticles(JSON.parse(str))
   }
   static fromGridJson(str) {
     const lines = JSON.parse(str)

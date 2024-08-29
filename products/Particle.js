@@ -678,10 +678,10 @@ class Particle extends AbstractParticle {
     columnNames = Array.isArray(columnNames) ? columnNames : [columnNames]
     const result = new Particle()
     this.forEach(particle => {
-      const particle = result.appendLine(particle.getLine())
+      const newParticle = result.appendLine(particle.getLine())
       columnNames.forEach(name => {
         const valueParticle = particle.getParticle(name)
-        if (valueParticle) particle.appendParticle(valueParticle)
+        if (valueParticle) newParticle.appendParticle(valueParticle)
       })
     })
     return result

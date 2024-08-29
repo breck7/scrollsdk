@@ -415,11 +415,11 @@ domains
   equal(particle10.asString, expectedStr)
 
   // Arrange
-  const node = new Particle(" ").particleAt(0)
+  const particle = new Particle(" ").particleAt(0)
 
   // Act/Assert
-  equal(node.firstWord, "")
-  equal(node.content, "")
+  equal(particle.firstWord, "")
+  equal(particle.content, "")
 
   // Arrange
   const spaceChar = " "
@@ -647,9 +647,9 @@ web 25 zzzz OK
   // Act/Assert
   const lineParticles = particle.topDownArray
   tests.split("\n").forEach((testLine, lineIndex) => {
-    const node = lineParticles[lineIndex]
+    const particle = lineParticles[lineIndex]
     testLine.split("").forEach((char, charIndex) => {
-      if (char !== " ") equal(node.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
+      if (char !== " ") equal(particle.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
     })
   })
 
@@ -753,8 +753,8 @@ testParticles.getParticlesByGlobPath = equal => {
   equal(new Particle(testStrings.webpage).getParticlesByGlobPath("body div class").length, 2)
 }
 
-testParticles.nodesThatStartWith = equal => {
-  equal(new Particle(testStrings.webpage).nodesThatStartWith("body")[0].nodesThatStartWith("div").length, 5)
+testParticles.particlesThatStartWith = equal => {
+  equal(new Particle(testStrings.webpage).particlesThatStartWith("body")[0].particlesThatStartWith("div").length, 5)
 }
 
 testParticles.getParticleByColumns = equal => {
@@ -762,10 +762,10 @@ testParticles.getParticleByColumns = equal => {
   const test = new Particle(testStrings.sortByMultiple)
 
   // Act
-  const node = test.getParticleByColumns("name", "Success")
+  const particle = test.getParticleByColumns("name", "Success")
 
   // Assert
-  equal(node.parent.get("key"), "b")
+  equal(particle.parent.get("key"), "b")
 }
 
 testParticles.delete = equal => {
@@ -801,7 +801,7 @@ testParticles.delete = equal => {
   particle2.touchParticle("earth north_america united_states california san_francisco").setContent("mission")
 
   // Assert
-  equal(particle2.getParticle("earth north_america united_states california") instanceof Particle, true, "node exists")
+  equal(particle2.getParticle("earth north_america united_states california") instanceof Particle, true, "particle exists")
   equal(particle2.getParticle("earth north_america united_states california san_francisco").content, "mission", "neighborhood is set")
   equal(particle2.getParticle("earth north_america united_states california").length, 1, "length okay")
   equal(particle2.length, 1, "length okay")
@@ -843,10 +843,10 @@ other`
   const particle6 = new Particle(blankTest)
 
   // Act
-  particle6.forEach((node: scrollNotationTypes.particle) => {
-    if (!node.firstWord.startsWith("p")) return true
-    node.setContent("President")
-    node.delete("class")
+  particle6.forEach((particle: scrollNotationTypes.particle) => {
+    if (!particle.firstWord.startsWith("p")) return true
+    particle.setContent("President")
+    particle.delete("class")
   })
 
   // Assert
@@ -946,10 +946,10 @@ testParticles.duplicate = equal => {
   // Arrange
   const particle = new Particle(testStrings.fromXmlParticles)
   const lineCount = particle.asString.split(/\n/).length
-  const node = particle.getParticle("html")
+  const particle = particle.getParticle("html")
 
   // Act
-  node.duplicate()
+  particle.duplicate()
 
   // Assert
   equal(particle.asString.split(/\n/).length, lineCount * 2)
@@ -962,9 +962,9 @@ testParticles.forEach = equal => {
   var result = ""
 
   // Act
-  value.forEach(function (node: scrollNotationTypes.particle) {
-    const property = node.firstWord
-    const v = node.content
+  value.forEach(function (particle: scrollNotationTypes.particle) {
+    const property = particle.firstWord
+    const v = particle.content
     result += property.toUpperCase()
     result += v.toUpperCase()
     result += value.length
@@ -980,10 +980,10 @@ testParticles.forEach = equal => {
 
   // Act
   value2
-    .filter((node: scrollNotationTypes.particle) => node.firstWord !== "hello")
-    .forEach((node: scrollNotationTypes.particle) => {
-      const property = node.firstWord
-      const value = node.content
+    .filter((particle: scrollNotationTypes.particle) => particle.firstWord !== "hello")
+    .forEach((particle: scrollNotationTypes.particle) => {
+      const property = particle.firstWord
+      const value = particle.content
       count++
     })
   // Assert
@@ -994,7 +994,7 @@ testParticles.forEach = equal => {
   var inc = 0
 
   // Act
-  particle.forEach((node: scrollNotationTypes.particle, index: number) => {
+  particle.forEach((particle: scrollNotationTypes.particle, index: number) => {
     inc = inc + index
   })
 
@@ -1005,7 +1005,7 @@ testParticles.forEach = equal => {
 testParticles.every = equal => {
   // Arrange/Act/Assert
   equal(
-    new Particle(`a 2\nb 2\nc 2`).every((node: scrollNotationTypes.particle) => node.getWord(1) === "2"),
+    new Particle(`a 2\nb 2\nc 2`).every((particle: scrollNotationTypes.particle) => particle.getWord(1) === "2"),
     true
   )
 }
@@ -1119,22 +1119,22 @@ testParticles.firstValue = equal => {
 
 testParticles.toggleLine = equal => {
   // Arrange
-  const node = new Particle("chart").particleAt(0)
-  equal(node.has("hidden"), false)
+  const particle = new Particle("chart").particleAt(0)
+  equal(particle.has("hidden"), false)
 
   // Act
-  node.toggleLine("hidden")
+  particle.toggleLine("hidden")
 
   // Assert
-  equal(node.hasLine("hidden"), true)
-  equal(node.has("hidden"), true)
+  equal(particle.hasLine("hidden"), true)
+  equal(particle.has("hidden"), true)
 
   // Act
-  node.toggleLine("hidden")
+  particle.toggleLine("hidden")
 
   // Assert
-  equal(node.hasLine("hidden"), false)
-  equal(node.has("hidden"), false)
+  equal(particle.hasLine("hidden"), false)
+  equal(particle.has("hidden"), false)
 }
 
 testParticles.pasteText = equal => {
@@ -1479,19 +1479,19 @@ testParticles.lengthen = equal => {
 testParticles.getLine = equal => {
   // Arrange
   const particle = new Particle("hello world")
-  const node = particle.getParticle("hello")
-  const mtime = node.getLineModifiedTime() || 0
+  const particle = particle.getParticle("hello")
+  const mtime = particle.getLineModifiedTime() || 0
 
   // Assert
-  equal(node.getLine(), "hello world")
+  equal(particle.getLine(), "hello world")
   equal(particle.has("hello"), true)
 
   // Act
-  node.setLine("hi earth")
+  particle.setLine("hi earth")
 
   // Assert
   equal(particle.asString, "hi earth")
-  equal(node.getLineModifiedTime() > mtime, true)
+  equal(particle.getLineModifiedTime() > mtime, true)
   equal(particle.has("hello"), false)
 }
 
@@ -1593,7 +1593,7 @@ testParticles.getParticles = equal => {
   // Act
   const result = value
     .findParticles("hello")
-    .map((node: scrollNotationTypes.particle) => node.content)
+    .map((particle: scrollNotationTypes.particle) => particle.content)
     .join("")
 
   // Assert
@@ -1602,7 +1602,7 @@ testParticles.getParticles = equal => {
   equal(
     deep
       .findParticles("language line score")
-      .map((node: scrollNotationTypes.particle) => node.content)
+      .map((particle: scrollNotationTypes.particle) => particle.content)
       .join(""),
     "212"
   )
@@ -1622,7 +1622,7 @@ testParticles.multiply = equal => {
       return " "
     }
 
-    get nodeBreakSymbol() {
+    get particleBreakSymbol() {
       return "o"
     }
 
@@ -1702,7 +1702,7 @@ o
   o
   o`
 
-  equal(Particle.multiply(five, four).asString, twenty, "multiplying visible nodes works as expected")
+  equal(Particle.multiply(five, four).asString, twenty, "multiplying visible particles works as expected")
 }
 
 testParticles.getExpectingABranchButHittingALeaf = equal => {
@@ -1724,14 +1724,14 @@ testParticles.getParticlesByPrefixes = equal => {
   const particle = new Particle(test)
 
   // Act
-  const nodes = particle.getParticlesByLinePrefixes(["id foobar", "link blue", "color"])
-  const nodes2 = particle.getParticlesByLinePrefixes(["id foobar", "link bl"])
-  const nodes3 = particle.getParticlesByLinePrefixes(["id foobar", "ink"])
+  const particles = particle.getParticlesByLinePrefixes(["id foobar", "link blue", "color"])
+  const particles2 = particle.getParticlesByLinePrefixes(["id foobar", "link bl"])
+  const particles3 = particle.getParticlesByLinePrefixes(["id foobar", "ink"])
 
   // Assert
-  equal(nodes[0].getLine(), "color orange")
-  equal(nodes2.length, 2)
-  equal(nodes3.length, 0)
+  equal(particles[0].getLine(), "color orange")
+  equal(particles2.length, 2)
+  equal(particles3.length, 0)
 }
 
 testParticles.getIndex = equal => {
@@ -2087,20 +2087,20 @@ c = 4`)
   )
 
   // Arrange
-  const node = new Particle(`#file /foo/test-combined2.delete.js
+  const particle = new Particle(`#file /foo/test-combined2.delete.js
 foobar
  test
 foo`)
   // Assert
-  equal(node.particleAt(0).getYoungerSiblings().length, 2, "2 younger sibs")
+  equal(particle.particleAt(0).getYoungerSiblings().length, 2, "2 younger sibs")
 
   // Act
-  node.particleAt(0).shiftYoungerSibsRight()
+  particle.particleAt(0).shiftYoungerSibsRight()
   // Assert
   const expected = `foobar
  test
 foo`
-  equal(node.particleAt(0).childrenToString(), expected)
+  equal(particle.particleAt(0).childrenToString(), expected)
 }
 
 testParticles.expandChildren = equal => {
@@ -2201,9 +2201,9 @@ testParticles.htmlDsl = equal => {
   var page = ""
 
   // Act
-  html.forEach((node: scrollNotationTypes.particle) => {
-    const property = node.firstWord
-    const value = node.content
+  html.forEach((particle: scrollNotationTypes.particle) => {
+    const property = particle.firstWord
+    const value = particle.content
     page += "<" + property + ">" + value + "</" + property + ">"
   })
 
@@ -2381,7 +2381,7 @@ testParticles.createFromString = equal => {
   const startsWithSpace = new Particle(" name john")
 
   // Assert
-  equal(startsWithSpace.length, 1, "Expected 1 node")
+  equal(startsWithSpace.length, 1, "Expected 1 particle")
 
   // Arrange
   const a = new Particle("text \n this is a string\n and more")
@@ -2488,20 +2488,20 @@ chart2
  chart2
   title 2
  title Hello`
-  const node0 = value.getChildren()[0]
+  const particle0 = value.getChildren()[0]
 
   // Act
-  const node = value.getChildren()[1].copyTo(node0, node0.length)
+  const particle = value.getChildren()[1].copyTo(particle0, particle0.length)
   value.getChildren()[1].destroy()
 
   // Assert
   equal(value.asString, expected)
 
   // Act
-  node.copyTo(node0, 0)
+  particle.copyTo(particle0, 0)
 
   // Assert
-  node.destroy()
+  particle.destroy()
   equal(value.asString, expected2)
 }
 
@@ -2546,26 +2546,26 @@ testParticles.copyToRegression = equal => {
  @blue
  >div`
 
-  const migrateParticle = (node: scrollNotationTypes.particle) => {
-    if (!node.firstWord.startsWith(">")) return true
-    if (node.length) {
-      const cla = node.getParticle("class").content
-      if (cla) node.setContent(cla)
-      const css = node.getParticle("css")
+  const migrateParticle = (particle: scrollNotationTypes.particle) => {
+    if (!particle.firstWord.startsWith(">")) return true
+    if (particle.length) {
+      const cla = particle.getParticle("class").content
+      if (cla) particle.setContent(cla)
+      const css = particle.getParticle("css")
       if (css) {
-        const nodes = css.getChildren()
+        const particles = css.getChildren()
         const toMove: any = []
-        nodes.forEach((propParticle: scrollNotationTypes.particle) => {
+        particles.forEach((propParticle: scrollNotationTypes.particle) => {
           const name = propParticle.firstWord.replace(":", " ")
           propParticle.setFirstWord("@" + name)
           toMove.push(propParticle)
         })
         toMove.reverse()
-        toMove.forEach((prop: scrollNotationTypes.particle) => prop.copyTo(node, 0))
+        toMove.forEach((prop: scrollNotationTypes.particle) => prop.copyTo(particle, 0))
       }
-      node.delete("class")
-      node.delete("css")
-      node.forEach(migrateParticle)
+      particle.delete("class")
+      particle.delete("css")
+      particle.forEach(migrateParticle)
     }
   }
 
@@ -2674,7 +2674,7 @@ testParticles.multiline = equal => {
 
   // Assert
   equal(twoParticles.length, 2)
-  equal(k.getParticle("settings").length, 1, "Expected subparticle to have 1 empty node")
+  equal(k.getParticle("settings").length, 1, "Expected subparticle to have 1 empty particle")
   equal(k.getParticle("settings").contentWithChildren, twoParticles.asString, "Expected setContentWithChildren and getText to work with newlines")
   equal(k.asString, `time 123\nsettings title Untitled\n \nday 1`)
 
@@ -2717,7 +2717,7 @@ testParticles.parseParticle = equal => {
 
   // Act
   const iHateTypeScriptSometimes = <any>TestLanguageParticle
-  const node = new iHateTypeScriptSometimes(
+  const particle = new iHateTypeScriptSometimes(
     `foo bar
  foo bar
   particle bar
@@ -2726,9 +2726,9 @@ sub
   )
 
   // Assert
-  equal(node.getParticle("foo foo particle") instanceof Particle, true)
-  equal(node.getParticle("foo foo") instanceof TestLanguageParticle, true)
-  equal(node.getParticle("sub leaf") instanceof LeafParticle, true)
+  equal(particle.getParticle("foo foo particle") instanceof Particle, true)
+  equal(particle.getParticle("foo foo") instanceof TestLanguageParticle, true)
+  equal(particle.getParticle("sub leaf") instanceof LeafParticle, true)
 }
 
 testParticles.prependLine = equal => {
@@ -2772,7 +2772,7 @@ d
   )
 
   // Act/Assert
-  const result = reg.topDownArray.map((node: scrollNotationTypes.particle) => node.lineNumber).join(" ")
+  const result = reg.topDownArray.map((particle: scrollNotationTypes.particle) => particle.lineNumber).join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getParticle("a").lineNumber, 1)
 }
@@ -2821,10 +2821,10 @@ q quantity`
 
   // Act
   const remapped = new Particle(test)
-  remapped.forEach((node: scrollNotationTypes.particle) => node.remap(expandMapObj))
+  remapped.forEach((particle: scrollNotationTypes.particle) => particle.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.forEach((node: scrollNotationTypes.particle) => node.remap(contractMap))
+  expected.forEach((particle: scrollNotationTypes.particle) => particle.remap(contractMap))
 
   // Assert
   equal(test, expected.asString)
@@ -3133,19 +3133,19 @@ testParticles.setFromText = equal => {
   const str = `john doe
  age 50`
   const particle = new Particle(str)
-  const node = particle.getParticle("john")
+  const particle = particle.getParticle("john")
 
   // Act
-  node.setFromText(str)
+  particle.setFromText(str)
 
   // Assert
-  equal(node.asString, str)
+  equal(particle.asString, str)
 
   // Act
-  node.setFromText("john")
+  particle.setFromText("john")
 
   // Assert
-  equal(node.asString, "john")
+  equal(particle.asString, "john")
 }
 
 testParticles.shift = equal => {
@@ -3265,7 +3265,7 @@ testParticles.syntax = equal => {
       return "="
     }
 
-    get nodeBreakSymbol() {
+    get particleBreakSymbol() {
       return ";"
     }
 
@@ -3594,14 +3594,14 @@ testParticles.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal.topDownArray.map((node: scrollNotationTypes.particle) => node.getLine()).join(" ")
+  const preOrder = traversal.topDownArray.map((particle: scrollNotationTypes.particle) => particle.getLine()).join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
-    .map((node: scrollNotationTypes.particle) => node.getLine())
+    .map((particle: scrollNotationTypes.particle) => particle.getLine())
     .join(" ")
   const breadthfirst = traversal
     .getParentFirstArray()
-    .map((node: scrollNotationTypes.particle) => node.getLine())
+    .map((particle: scrollNotationTypes.particle) => particle.getLine())
     .join(" ")
 
   // Assert
@@ -3623,14 +3623,14 @@ testParticles.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: scrollNotationTypes.particle) => node.getLine()).join("")
+  const wikipreorder = wikipediaBinaryTree.topDownArray.map((particle: scrollNotationTypes.particle) => particle.getLine()).join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
-    .map((node: scrollNotationTypes.particle) => node.getLine())
+    .map((particle: scrollNotationTypes.particle) => particle.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
     .getChildrenFirstArray()
-    .map((node: scrollNotationTypes.particle) => node.getLine())
+    .map((particle: scrollNotationTypes.particle) => particle.getLine())
     .join("")
 
   // Assert
@@ -3659,7 +3659,7 @@ b
  a
 b
  a
-c`).getFiltered((node: scrollNotationTypes.particle) => node.firstWord === "a").length,
+c`).getFiltered((particle: scrollNotationTypes.particle) => particle.firstWord === "a").length,
     3
   )
 }
@@ -3718,7 +3718,7 @@ testParticles.toOutline = equal => {
 `
   )
   equal(
-    particle.toMappedOutline((node: scrollNotationTypes.particle) => "o"),
+    particle.toMappedOutline((particle: scrollNotationTypes.particle) => "o"),
     `└o
  └o
 `
@@ -3895,60 +3895,60 @@ testParticles.isBlank = equal => {
 testParticles.particles = equal => {
   // Arrange
   const a = new Particle("text")
-  const node = a.particleAt(0)
-  const originalMtime = node.getLineModifiedTime()
+  const particle = a.particleAt(0)
+  const originalMtime = particle.getLineModifiedTime()
 
   // Assert
   equal(originalMtime > 0, true)
-  equal(node.isTerminal(), true)
-  equal(node.firstWord, "text")
-  equal(node.content, undefined)
-  equal(node.length, 0)
+  equal(particle.isTerminal(), true)
+  equal(particle.firstWord, "text")
+  equal(particle.content, undefined)
+  equal(particle.length, 0)
 
   // Act
-  node.setContent("hello world")
+  particle.setContent("hello world")
 
   // Assert
-  equal(node.content, "hello world")
+  equal(particle.content, "hello world")
   equal(a.asString, "text hello world")
 
   // Act
-  node.setChildren("color blue")
-  node.setChildren("color blue")
+  particle.setChildren("color blue")
+  particle.setChildren("color blue")
 
   // Assert
-  equal(node.isTerminal(), false)
-  equal(node.childrenToString(), "color blue")
+  equal(particle.isTerminal(), false)
+  equal(particle.childrenToString(), "color blue")
   equal(a.asString, "text hello world\n color blue")
   equal(a.has("text"), true)
 
   // Act
-  const mtime = node.getLineModifiedTime()
-  node.setFirstWord("foo")
+  const mtime = particle.getLineModifiedTime()
+  particle.setFirstWord("foo")
 
   // Assert
   equal(a.asString, "foo hello world\n color blue")
-  equal(node.getLineModifiedTime() > mtime, true)
+  equal(particle.getLineModifiedTime() > mtime, true)
   equal(a.has("text"), false)
-  equal(node.has("color"), true)
+  equal(particle.has("color"), true)
 
   // Act
-  node.setChildren("")
+  particle.setChildren("")
 
   // Assert
-  equal(!!node.asString, true)
-  equal(node.has("color"), false)
+  equal(!!particle.asString, true)
+  equal(particle.has("color"), false)
 }
 
 testParticles.mTimeNotIncrementingRegressionTest = equal => {
   // Arrange
-  const node = new Particle("text").particleAt(0)
-  let lastMTime = node.getLineModifiedTime()
+  const particle = new Particle("text").particleAt(0)
+  let lastMTime = particle.getLineModifiedTime()
   const numOfTrials = 100
   // Previously we would get a flakey test about every 10k trials
   for (let i = 0; i < numOfTrials; i++) {
-    node.setContent(i.toString())
-    let newMTime = node.getLineModifiedTime()
+    particle.setContent(i.toString())
+    let newMTime = particle.getLineModifiedTime()
 
     // Assert
     equal(newMTime > lastMTime, true, "mtime should have increased")
@@ -3958,38 +3958,38 @@ testParticles.mTimeNotIncrementingRegressionTest = equal => {
 
 testParticles.asyncUndoRedo = async equal => {
   // Arrange
-  const node = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Assert
-  await node.saveVersion()
-  equal(node.getChangeHistory().length, 1)
-  equal(node.hasUnsavedChanges(), false)
+  await particle.saveVersion()
+  equal(particle.getChangeHistory().length, 1)
+  equal(particle.hasUnsavedChanges(), false)
 
   // Act
-  node.set("hello", "earth")
-  equal(node.hasUnsavedChanges(), true)
-  await node.saveVersion()
+  particle.set("hello", "earth")
+  equal(particle.hasUnsavedChanges(), true)
+  await particle.saveVersion()
   // Assert
-  equal(node.getChangeHistory().length, 2)
-  equal(node.get("hello"), "earth")
-  equal(node.hasUnsavedChanges(), false)
+  equal(particle.getChangeHistory().length, 2)
+  equal(particle.get("hello"), "earth")
+  equal(particle.hasUnsavedChanges(), false)
   // Act
-  await node.undo()
+  await particle.undo()
   // Assert
-  equal(node.get("hello"), "world")
-  equal(node.hasUnsavedChanges(), true)
+  equal(particle.get("hello"), "world")
+  equal(particle.hasUnsavedChanges(), true)
   // Act
-  await node.undo()
+  await particle.undo()
   // Assert
-  equal(node.get("hello"), "world")
+  equal(particle.get("hello"), "world")
   // Act
-  await node.redo()
+  await particle.redo()
   // Assert
-  equal(node.get("hello"), "earth")
+  equal(particle.get("hello"), "earth")
   // Act
-  await node.redo()
+  await particle.redo()
   // Assert
-  equal(node.get("hello"), "earth")
+  equal(particle.get("hello"), "earth")
 }
 
 testParticles.trim = equal => {

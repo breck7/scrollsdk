@@ -18,6 +18,12 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 84.0.0 2024-8-29
+⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
+⚠️ BREAKING: Scroll Notation is now Particles Notation
+⚠️ BREAKING: Nodes/Trees are now referred to universally as Particles.
+⚠️ BREAKING: EVERYWHERE the word tree or node was used, now we use the word particle.
+
 📦 83.1.0 2024-8-26
 🎉 Parsers: tag parsers for better documentation
 

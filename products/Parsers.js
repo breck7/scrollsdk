@@ -1787,7 +1787,7 @@ ${cells.toString(1)}`
   }
   toStumpString() {
     const nodeBreakSymbol = "\n"
-    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeParserIds())
+    return this._getConcreteNonErrorInScopeParticleDefinitions(this._getInScopeParserIds())
       .map(def => def._toStumpString())
       .filter(identity => identity)
       .join(nodeBreakSymbol)
@@ -1836,7 +1836,7 @@ ${cells.toString(1)}`
     const id = this.id
     return Object.values(defs).filter(def => def._doesExtend(id) && !def._isAbstract())
   }
-  _getConcreteNonErrorInScopeNodeDefinitions(parserIds) {
+  _getConcreteNonErrorInScopeParticleDefinitions(parserIds) {
     const defs = []
     parserIds.forEach(parserId => {
       const def = this.getParserDefinitionByParserId(parserId)
@@ -1857,7 +1857,7 @@ ${cells.toString(1)}`
     while (nodeCount) {
       const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
-      this._getConcreteNonErrorInScopeNodeDefinitions(inScopeParserIds.filter(parserId => !parsersAlreadySynthesized.includes(parserId)))
+      this._getConcreteNonErrorInScopeParticleDefinitions(inScopeParserIds.filter(parserId => !parsersAlreadySynthesized.includes(parserId)))
         .filter(def => this._shouldSynthesize(def, parsersAlreadySynthesized))
         .forEach(def => {
           const chain = parsersAlreadySynthesized // .slice(0)

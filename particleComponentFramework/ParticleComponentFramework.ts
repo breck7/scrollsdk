@@ -4,7 +4,7 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { Particle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
-const { ParserBackedNode } = require("../products/Parsers.js")
+const { ParserBackedParticle } = require("../products/Parsers.js")
 
 const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
@@ -131,15 +131,15 @@ class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
 }
 
 class AbstractWillowShadow {
-  constructor(stumpNode: any) {
-    this._stumpNode = stumpNode
+  constructor(stumpParticle: any) {
+    this._stumpParticle = stumpParticle
   }
 
-  private _stumpNode: any // todo: add stump type
+  private _stumpParticle: any // todo: add stump type
   private _val: string
 
-  getShadowStumpNode() {
-    return this._stumpNode
+  getShadowStumpParticle() {
+    return this._stumpParticle
   }
 
   getShadowValue() {
@@ -156,7 +156,7 @@ class AbstractWillowShadow {
   }
 
   getShadowParent() {
-    return this.getShadowStumpNode().parent.getShadow()
+    return this.getShadowStumpParticle().parent.getShadow()
   }
 
   getPositionAndDimensions(gridSize = 1) {
@@ -258,7 +258,7 @@ class AbstractWillowShadow {
     return ""
   }
 
-  insertHtmlNode(childNode: any, index?: number) {}
+  insertHtmlParticle(childParticle: any, index?: number) {}
 
   get element() {
     return {}
@@ -307,9 +307,9 @@ class AbstractWillowBrowser extends stumpParser {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
-    this._htmlStumpNode = this.nodeAt(0)
-    this._headStumpNode = this.nodeAt(0).nodeAt(0)
-    this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
+    this._htmlStumpParticle = this.nodeAt(0)
+    this._headStumpParticle = this.nodeAt(0).nodeAt(0)
+    this._bodyStumpParticle = this.nodeAt(0).nodeAt(1)
     this.addSuidsToHtmlHeadAndBodyShadows()
     this._fullHtmlPageUrlIncludingProtocolAndFileName = fullHtmlPageUrlIncludingProtocolAndFileName
     const url = new URL(fullHtmlPageUrlIncludingProtocolAndFileName)
@@ -319,9 +319,9 @@ class AbstractWillowBrowser extends stumpParser {
     this.location.host = url.host
   }
 
-  private _htmlStumpNode: any
-  private _headStumpNode: any
-  private _bodyStumpNode: any
+  private _htmlStumpParticle: any
+  private _headStumpParticle: any
+  private _bodyStumpParticle: any
   protected _offlineMode = false
   private _fullHtmlPageUrlIncludingProtocolAndFileName: string
   private _httpGetResponseCache: any = {}
@@ -403,19 +403,19 @@ class AbstractWillowBrowser extends stumpParser {
   }
 
   _getFocusedShadow() {
-    return this._focusedShadow || this.getBodyStumpNode().getShadow()
+    return this._focusedShadow || this.getBodyStumpParticle().getShadow()
   }
 
-  getHeadStumpNode() {
-    return this._headStumpNode
+  getHeadStumpParticle() {
+    return this._headStumpParticle
   }
 
-  getBodyStumpNode() {
-    return this._bodyStumpNode
+  getBodyStumpParticle() {
+    return this._bodyStumpParticle
   }
 
-  getHtmlStumpNode() {
-    return this._htmlStumpNode
+  getHtmlStumpParticle() {
+    return this._htmlStumpParticle
   }
 
   getStore() {
@@ -426,8 +426,8 @@ class AbstractWillowBrowser extends stumpParser {
   someInputHasFocus() {
     const focusedShadow = this._getFocusedShadow()
     if (!focusedShadow) return false
-    const stumpNode = focusedShadow.getShadowStumpNode()
-    return stumpNode && stumpNode.isInputType()
+    const stumpParticle = focusedShadow.getShadowStumpParticle()
+    return stumpParticle && stumpParticle.isInputType()
   }
 
   copyTextToClipboard(text: string) {}
@@ -513,16 +513,16 @@ class AbstractWillowBrowser extends stumpParser {
   async appendScript(url: string) {}
 
   getWindowTitle() {
-    // todo: deep getNodeByBase/withBase/type/word or something?
+    // todo: deep getParticleByBase/withBase/type/word or something?
     const nodes = this.topDownArray
-    const titleNode = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.titleTag)
-    return titleNode ? titleNode.content : ""
+    const titleParticle = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.titleTag)
+    return titleParticle ? titleParticle.content : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.topDownArray
-    const headNode = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.tags.head)
-    headNode.touchNode(WillowConstants.titleTag).setContent(value)
+    const headParticle = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.tags.head)
+    headParticle.touchParticle(WillowConstants.titleTag).setContent(value)
     return this
   }
 
@@ -535,10 +535,10 @@ class AbstractWillowBrowser extends stumpParser {
   }
 
   getPageHtml() {
-    return this.getHtmlStumpNode().asHtmlWithSuids()
+    return this.getHtmlStumpParticle().asHtmlWithSuids()
   }
 
-  getStumpNodeFromElement(el: any) {}
+  getStumpParticleFromElement(el: any) {}
 
   setPasteHandler(fn: Function) {
     return this
@@ -610,7 +610,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   private _cachedEl: any // todo: add typings.
 
   get element() {
-    if (!this._cachedEl) this._cachedEl = document.querySelector(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
+    if (!this._cachedEl) this._cachedEl = document.querySelector(`[${WillowConstants.uidAttribute}="${this.getShadowStumpParticle()._getUid()}"]`)
     return this._cachedEl
   }
 
@@ -636,8 +636,8 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
-  insertHtmlNode(childStumpNode: any, index: number) {
-    const { domElement } = childStumpNode
+  insertHtmlParticle(childStumpParticle: any, index: number) {
+    const { domElement } = childStumpParticle
     const { element } = this
 
     // todo: can we virtualize this?
@@ -685,7 +685,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   getShadowValue() {
     // todo: cleanup, add tests
-    if (this.getShadowStumpNode().isInputType()) return this.element.value
+    if (this.getShadowStumpParticle().isInputType()) return this.element.value
     return (this.element as any).value || this.getShadowValueFromAttr()
   }
 
@@ -775,15 +775,15 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
 // same thing, except with side effects.
 class RealWillowBrowser extends AbstractWillowBrowser {
-  findStumpNodesByShadowClass(className: string) {
-    const stumpNodes: any[] = []
+  findStumpParticlesByShadowClass(className: string) {
+    const stumpParticles: any[] = []
 
     const els: any = document.getElementsByClassName(className)
     for (let el of els) {
-      stumpNodes.push(this.getStumpNodeFromElement(this))
+      stumpParticles.push(this.getStumpParticleFromElement(this))
     }
 
-    return stumpNodes
+    return stumpParticles
   }
 
   getElementById(id: string) {
@@ -818,9 +818,9 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   addSuidsToHtmlHeadAndBodyShadows() {
-    this.getElementByTagName(WillowConstants.tags.html).setAttribute(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
-    this.getElementByTagName(WillowConstants.tags.head).setAttribute(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
-    this.getElementByTagName(WillowConstants.tags.body).setAttribute(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.html).setAttribute(WillowConstants.uidAttribute, this.getHtmlStumpParticle()._getUid())
+    this.getElementByTagName(WillowConstants.tags.head).setAttribute(WillowConstants.uidAttribute, this.getHeadStumpParticle()._getUid())
+    this.getElementByTagName(WillowConstants.tags.body).setAttribute(WillowConstants.uidAttribute, this.getBodyStumpParticle()._getUid())
   }
 
   getShadowClass() {
@@ -979,8 +979,8 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     return this
   }
 
-  getStumpNodeFromElement(el: any) {
-    return this.getHtmlStumpNode().getNodeByGuid(parseInt(el.getAttribute(WillowConstants.uidAttribute)))
+  getStumpParticleFromElement(el: any) {
+    return this.getHtmlStumpParticle().getParticleByGuid(parseInt(el.getAttribute(WillowConstants.uidAttribute)))
   }
 
   forceRepaint() {
@@ -1013,8 +1013,8 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   setLoadedDroppedFileHandler(callback: Function, helpText = "") {
-    const bodyStumpNode = this.getBodyStumpNode()
-    const bodyShadow = bodyStumpNode.getShadow()
+    const bodyStumpParticle = this.getBodyStumpParticle()
+    const bodyShadow = bodyStumpParticle.getShadow()
 
     // Added the below to ensure dragging from the chrome downloads bar works
     // http://stackoverflow.com/questions/19526430/drag-and-drop-file-uploads-from-chrome-downloads-bar
@@ -1029,10 +1029,10 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
       event.preventDefault()
       event.stopPropagation()
-      if (!bodyStumpNode.stumpNodeHasClass("dragOver")) {
-        bodyStumpNode.insertChildNode(`div ${helpText}
+      if (!bodyStumpParticle.stumpParticleHasClass("dragOver")) {
+        bodyStumpParticle.insertChildParticle(`div ${helpText}
  id dragOverHelp`)
-        bodyStumpNode.addClassToStumpNode("dragOver")
+        bodyStumpParticle.addClassToStumpParticle("dragOver")
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
         // 50ms later, add the dragleave handler, and from now on drag leave will only happen on the help
         // div
@@ -1045,16 +1045,16 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     const dragleaveHandler = (event: any) => {
       event.preventDefault()
       event.stopPropagation()
-      bodyStumpNode.removeClassFromStumpNode("dragOver")
-      bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
+      bodyStumpParticle.removeClassFromStumpParticle("dragOver")
+      bodyStumpParticle.findStumpParticleByChild("id dragOverHelp").removeStumpParticle()
       bodyShadow.offShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
     }
 
     const dropHandler = async (event: any) => {
       event.preventDefault()
       event.stopPropagation()
-      bodyStumpNode.removeClassFromStumpNode("dragOver")
-      bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
+      bodyStumpParticle.removeClassFromStumpParticle("dragOver")
+      bodyStumpParticle.findStumpParticleByChild("id dragOverHelp").removeStumpParticle()
 
       const droppedItems = event.originalEvent.dataTransfer.items
       // NOTE: YOU NEED TO STAY IN THE "DROP" EVENT, OTHERWISE THE DATATRANSFERITEMS MUTATE
@@ -1114,8 +1114,8 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   _getFocusedShadow() {
-    const stumpNode = this.getStumpNodeFromElement(document.activeElement)
-    return stumpNode && stumpNode.getShadow()
+    const stumpParticle = this.getStumpParticleFromElement(document.activeElement)
+    return stumpParticle && stumpParticle.getShadow()
   }
 }
 
@@ -1146,41 +1146,41 @@ interface childShouldUpdateResult {
 
 /** Declaration file generated by dts-gen */
 // Todo: clean up declaration file generation
-declare class abstractHtmlTag extends ParserBackedNode {
+declare class abstractHtmlTag extends ParserBackedParticle {
   constructor(...args: any[])
-  addClassToStumpNode(...args: any[]): void
-  findStumpNodeByChild(...args: any[]): void
-  findStumpNodeByChildString(...args: any[]): void
-  findStumpNodeByFirstWord(...args: any[]): void
-  findStumpNodesByChild(...args: any[]): void
-  findStumpNodesWithClass(...args: any[]): void
-  getNodeByGuid(...args: any[]): void
+  addClassToStumpParticle(...args: any[]): void
+  findStumpParticleByChild(...args: any[]): void
+  findStumpParticleByChildString(...args: any[]): void
+  findStumpParticleByFirstWord(...args: any[]): void
+  findStumpParticlesByChild(...args: any[]): void
+  findStumpParticlesWithClass(...args: any[]): void
+  getParticleByGuid(...args: any[]): void
   getShadow(...args: any[]): void
   getShadowClass(...args: any[]): void
-  getStumpNodeAttr(...args: any[]): void
-  getStumpNodeParticleComponent(...args: any[]): void
-  getStumpNodeCss(...args: any[]): void
+  getStumpParticleAttr(...args: any[]): void
+  getStumpParticleParticleComponent(...args: any[]): void
+  getStumpParticleCss(...args: any[]): void
   getTag(...args: any[]): void
-  insertChildNode(...args: any[]): abstractHtmlTag
-  insertCssChildNode(...args: any[]): abstractHtmlTag
+  insertChildParticle(...args: any[]): abstractHtmlTag
+  insertCssChildParticle(...args: any[]): abstractHtmlTag
   isInputType(...args: any[]): void
-  isStumpNodeCheckbox(...args: any[]): void
-  removeClassFromStumpNode(...args: any[]): void
-  removeCssStumpNode(...args: any[]): void
-  removeStumpNode(...args: any[]): void
-  setStumpNodeAttr(...args: any[]): void
-  setStumpNodeParticleComponent(...args: any[]): void
-  setStumpNodeCss(...args: any[]): void
+  isStumpParticleCheckbox(...args: any[]): void
+  removeClassFromStumpParticle(...args: any[]): void
+  removeCssStumpParticle(...args: any[]): void
+  removeStumpParticle(...args: any[]): void
+  setStumpParticleAttr(...args: any[]): void
+  setStumpParticleParticleComponent(...args: any[]): void
+  setStumpParticleCss(...args: any[]): void
   shouldCollapse(...args: any[]): void
-  stumpNodeHasClass(...args: any[]): void
+  stumpParticleHasClass(...args: any[]): void
   asHtmlWithSuids(...args: any[]): void
 }
 
-abstract class AbstractParticleComponentParser extends ParserBackedNode {
+abstract class AbstractParticleComponentParser extends ParserBackedParticle {
   private _commandsBuffer: scrollNotationTypes.particle[]
   private _messageBuffer: scrollNotationTypes.particle
-  private _htmlStumpNode: abstractHtmlTag
-  private _cssStumpNode: abstractHtmlTag
+  private _htmlStumpParticle: abstractHtmlTag
+  private _cssStumpParticle: abstractHtmlTag
   private _lastRenderedTime: number
   private _lastTimeToRender: number
   static _mountedParticleComponents = 0
@@ -1201,7 +1201,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
 
   start() {
     this._bindParticleComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
   }
 
   get willowBrowser() {
@@ -1234,7 +1234,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     // todo: remove. currently used by ohayo
   }
 
-  private _getCommandArgumentsFromStumpNode(stumpNode: any, commandMethod: string) {
+  private _getCommandArgumentsFromStumpParticle(stumpParticle: any, commandMethod: string) {
     if (commandMethod.includes(" ")) {
       // todo: cleanup and document
       // It seems the command arguments can from the method string or from form values.
@@ -1244,13 +1244,13 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
         dos: parts[2]
       }
     }
-    const shadow = stumpNode.getShadow()
+    const shadow = stumpParticle.getShadow()
     let valueParam
-    if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
+    if (stumpParticle.isStumpParticleCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
     // todo: fix bug if nothing is entered.
     else if (shadow.getShadowValue() !== undefined) valueParam = shadow.getShadowValue()
-    else valueParam = stumpNode.getStumpNodeAttr("value")
-    const nameParam = stumpNode.getStumpNodeAttr("name")
+    else valueParam = stumpParticle.getStumpParticleAttr("value")
+    const nameParam = stumpParticle.getStumpParticleAttr("name")
 
     return {
       uno: valueParam,
@@ -1258,22 +1258,22 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     }
   }
 
-  getStumpNodeString() {
-    return this.willowBrowser.getHtmlStumpNode().toString()
+  getStumpParticleString() {
+    return this.willowBrowser.getHtmlStumpParticle().toString()
   }
 
-  _getHtmlOnlyNodes() {
+  _getHtmlOnlyParticles() {
     const nodes: any[] = []
-    this.willowBrowser.getHtmlStumpNode().deepVisit((node: any) => {
+    this.willowBrowser.getHtmlStumpParticle().deepVisit((node: any) => {
       if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) return false
       nodes.push(node)
     })
     return nodes
   }
 
-  getStumpNodeStringWithoutCssAndSvg() {
+  getStumpParticleStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
-    const clone = new Particle(this.willowBrowser.getHtmlStumpNode().toString())
+    const clone = new Particle(this.willowBrowser.getHtmlStumpParticle().toString())
 
     clone.topDownArray.forEach((node: any) => {
       if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
@@ -1282,7 +1282,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
   }
 
   getTextContent() {
-    return this._getHtmlOnlyNodes()
+    return this._getHtmlOnlyParticles()
       .map(node => node.getTextContent())
       .filter(text => text)
       .join("\n")
@@ -1292,15 +1292,15 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => word.endsWith("Command"))
   }
 
-  private async _executeCommandOnStumpNode(stumpNode: any, commandMethod: string) {
-    const params = this._getCommandArgumentsFromStumpNode(stumpNode, commandMethod)
+  private async _executeCommandOnStumpParticle(stumpParticle: any, commandMethod: string) {
+    const params = this._getCommandArgumentsFromStumpParticle(stumpParticle, commandMethod)
     if (commandMethod.includes(" "))
       // todo: cleanup
       commandMethod = commandMethod.split(" ")[0]
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(identity => identity).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
 
-    let particleComponent = stumpNode.getStumpNodeParticleComponent()
+    let particleComponent = stumpParticle.getStumpParticleParticleComponent()
     while (!particleComponent[commandMethod]) {
       const parent = particleComponent.parent
       if (parent === particleComponent) throw new Error(`Unknown command "${commandMethod}"`)
@@ -1317,14 +1317,14 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
 
   private _bindParticleComponentFrameworkCommandListenersOnBody() {
     const willowBrowser = this.willowBrowser
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
+    const bodyShadow = willowBrowser.getBodyStumpParticle().getShadow()
     const app = this
 
     const checkAndExecute = (el: any, attr: string, evt: any) => {
-      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
+      const stumpParticle = willowBrowser.getStumpParticleFromElement(el)
       evt.preventDefault()
       evt.stopImmediatePropagation()
-      this._executeCommandOnStumpNode(stumpNode, stumpNode.getStumpNodeAttr(attr))
+      this._executeCommandOnStumpParticle(stumpParticle, stumpParticle.getStumpParticleAttr(attr))
       return false
     }
 
@@ -1378,7 +1378,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     // todo: move somewhere else?
     // todo: cleanup
     const app = this.root
-    const node = app.getNode("ParticleComponentFrameworkDebuggerComponent")
+    const node = app.getParticle("ParticleComponentFrameworkDebuggerComponent")
     if (node) {
       node.unmountAndDestroy()
     } else {
@@ -1387,8 +1387,8 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     }
   }
 
-  getStumpNode() {
-    return this._htmlStumpNode
+  getStumpParticle() {
+    return this._htmlStumpParticle
   }
 
   toHakonCode() {
@@ -1453,8 +1453,8 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
   }
 
   protected _removeHtml() {
-    this._htmlStumpNode.removeStumpNode()
-    delete this._htmlStumpNode
+    this._htmlStumpParticle.removeStumpParticle()
+    delete this._htmlStumpParticle
   }
 
   toStumpCode() {
@@ -1498,8 +1498,8 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
   }
 
   // todo: this is hacky. we do it so we can just mount all tiles to wall.
-  getStumpNodeForChildren() {
-    return this.getStumpNode()
+  getStumpParticleForChildren() {
+    return this.getStumpParticle()
   }
 
   protected _getLastRenderedTime() {
@@ -1536,10 +1536,10 @@ ${new stumpParser(this.toStumpCode()).compile()}
   }
 
   protected _updateHtml() {
-    const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.parent
-    const currentIndex = this._htmlStumpNode.getIndex()
+    const stumpParticleToMountOn = <abstractHtmlTag>this._htmlStumpParticle.parent
+    const currentIndex = this._htmlStumpParticle.getIndex()
     this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
+    this._mountHtml(stumpParticleToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
   }
 
   unmountAndDestroy() {
@@ -1549,20 +1549,20 @@ ${new stumpParser(this.toStumpCode()).compile()}
 
   // todo: move to keyword node class?
   toggle(firstWord: string, contentOptions: string[]) {
-    const currentNode = <AbstractParticleComponentParser>this.getNode(firstWord)
-    if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
-    const currentContent = currentNode === undefined ? undefined : currentNode.content
+    const currentParticle = <AbstractParticleComponentParser>this.getParticle(firstWord)
+    if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(firstWord)
+    const currentContent = currentParticle === undefined ? undefined : currentParticle.content
 
     const index = contentOptions.indexOf(currentContent)
     const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
 
     this.delete(firstWord)
-    if (newContent) this.touchNode(firstWord).setContent(newContent)
+    if (newContent) this.touchParticle(firstWord).setContent(newContent)
     return newContent
   }
 
   isMounted() {
-    return !!this._htmlStumpNode
+    return !!this._htmlStumpParticle
   }
 
   toggleAndRender(firstWord: string, contentOptions: string[]) {
@@ -1649,13 +1649,13 @@ ${new stumpParser(this.toStumpCode()).compile()}
  id ${this.getParticleComponentId()}`
   }
 
-  protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
+  protected _mount(stumpParticleToMountOn: abstractHtmlTag, index: number) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
 
     this.particleComponentWillMount()
 
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
+    this._mountHtml(stumpParticleToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
@@ -1667,39 +1667,39 @@ ${new stumpParser(this.toStumpCode()).compile()}
     if (!css) return this
 
     // todo: only insert css once per class? have a set?
-    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(`styleTag
+    this._cssStumpParticle = this._getPageHeadStump().insertCssChildParticle(`styleTag
  for ${this.constructor.name}
  bern${Particle.nest(css, 2)}`)
   }
 
   protected _getPageHeadStump(): abstractHtmlTag {
-    return this.root.willowBrowser.getHeadStumpNode()
+    return this.root.willowBrowser.getHeadStumpParticle()
   }
 
   protected _removeCss() {
-    if (!this._cssStumpNode) return this
-    this._cssStumpNode.removeCssStumpNode()
-    delete this._cssStumpNode
+    if (!this._cssStumpParticle) return this
+    this._cssStumpParticle.removeCssStumpParticle()
+    delete this._cssStumpParticle
   }
 
-  protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
-    this._htmlStumpNode.setStumpNodeParticleComponent(this)
+  protected _mountHtml(stumpParticleToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
+    this._htmlStumpParticle = stumpParticleToMountOn.insertChildParticle(htmlCode, index)
+    this._htmlStumpParticle.setStumpParticleParticleComponent(this)
   }
 
-  renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
+  renderAndGetRenderReport(stumpParticle?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
     let particleComponentUpdateReport: reasonForUpdatingOrNot = {
       shouldUpdate: false,
       reason: ""
     }
     if (isUpdateOp) particleComponentUpdateReport = this._updateAndGetUpdateReport()
-    else this._mount(stumpNode, index)
+    else this._mount(stumpParticle, index)
 
-    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    const stumpParticleForChildren = this.getStumpParticleForChildren()
 
     // Todo: insert delayed rendering?
-    const childResults = this._getChildParticleComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
+    const childResults = this._getChildParticleComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpParticleForChildren, index))
 
     if (isUpdateOp) {
       if (particleComponentUpdateReport.shouldUpdate) {

@@ -140,22 +140,22 @@ class Builder extends Particle {
     this._prettifyFile(outputFilePath)
   }
 
-  produceProductFromInstructionsParticles(productNode: any, projectRootPath: string) {
-    const outputFileName = productNode.get("outputFileName")
-    const inputFiles = productNode
-      .getNode("combineTypeScriptFiles")
+  produceProductFromInstructionsParticles(productParticle: any, projectRootPath: string) {
+    const outputFileName = productParticle.get("outputFileName")
+    const inputFiles = productParticle
+      .getParticle("combineTypeScriptFiles")
       .getWordsFrom(1)
       .map((filePath: string) => path.join(projectRootPath, filePath))
-    const firstLine = productNode.get("insertFirstLine") ? productNode.get("insertFirstLine") + "\n" : ""
-    const lastLine = productNode.get("insertLastLine") ? productNode.get("insertLastLine") : ""
-    const removeAll = productNode.getNodesByGlobPath("removeAll")
+    const firstLine = productParticle.get("insertFirstLine") ? productParticle.get("insertFirstLine") + "\n" : ""
+    const lastLine = productParticle.get("insertLastLine") ? productParticle.get("insertLastLine") : ""
+    const removeAll = productParticle.getParticlesByGlobPath("removeAll")
     const transformFn = (code: string) => {
       removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.content)))
       return firstLine + code + "\n" + lastLine
     }
-    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
+    if (productParticle.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
     else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    if (productNode.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
+    if (productParticle.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
   }
 
   _getBundleFilePath(outputFileName: scrollNotationTypes.fileName) {

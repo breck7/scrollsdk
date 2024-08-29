@@ -499,7 +499,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
 
   private _syncAndRender() {
     this._syncBoardToGame()
-    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
   }
 
   flagSquareCommand(row: int | string, col: int | string) {
@@ -701,11 +701,11 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         if (this._mainGame.isOver()) this._mainGame.watchReplay(250, () => this._syncAndRender())
       },
       "?": () => {
-        const table = this.getNode("shortcutsTableComponent")
+        const table = this.getParticle("shortcutsTableComponent")
         if (table) table.unmountAndDestroy()
         else {
           this.appendLine("shortcutsTableComponent")
-          this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+          this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
         }
       },
       e: () => {
@@ -743,13 +743,13 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
   private _restoreStateFromHash(link: string) {
     const board = link ? SweeperCraftGame.boardFromPermalink(link) : SweeperCraftGame.getRandomBoard(9, 9, 10)
     this._mainGame = new SweeperCraftGame(board)
-    let boardNode = this.getNode("boardComponent")
-    if (boardNode) {
-      if (boardNode.isMounted()) {
-        boardNode.unmountAndDestroy() // todo: cleanup
-        boardNode = this.getNode("headerComponent").appendSibling("boardComponent")
+    let boardParticle = this.getParticle("boardComponent")
+    if (boardParticle) {
+      if (boardParticle.isMounted()) {
+        boardParticle.unmountAndDestroy() // todo: cleanup
+        boardParticle = this.getParticle("headerComponent").appendSibling("boardComponent")
       }
-      boardNode.setChildren(this._mainGame.getGameAsParticles())
+      boardParticle.setChildren(this._mainGame.getGameAsParticles())
     }
 
     this._syncAndRender()

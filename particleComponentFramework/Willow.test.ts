@@ -16,26 +16,26 @@ testParticles.all = (equal: any) => {
   equal(willow2.getWindowTitle(), "willow2", "set title works")
 
   // Act
-  const bodyStumpNode = willow2.getBodyStumpNode()
-  bodyStumpNode.addClassToStumpNode("someClass")
+  const bodyStumpParticle = willow2.getBodyStumpParticle()
+  bodyStumpParticle.addClassToStumpParticle("someClass")
   // Assert
-  equal(bodyStumpNode.get("class"), "someClass")
-  equal(bodyStumpNode.stumpNodeHasClass("someClass"), true)
+  equal(bodyStumpParticle.get("class"), "someClass")
+  equal(bodyStumpParticle.stumpParticleHasClass("someClass"), true)
 
   // Act
-  bodyStumpNode.removeClassFromStumpNode("someClass")
+  bodyStumpParticle.removeClassFromStumpParticle("someClass")
   // Assert
-  equal(bodyStumpNode.stumpNodeHasClass("someClass"), false)
+  equal(bodyStumpParticle.stumpParticleHasClass("someClass"), false)
 
   // Act
-  bodyStumpNode.insertChildNode(`h6 Hello world
+  bodyStumpParticle.insertChildParticle(`h6 Hello world
  class header`)
   const html = willow2.getPageHtml()
 
   // Assert
   equal(html.includes(`Hello world</h6>`), true, "hello world included")
-  equal(bodyStumpNode.findStumpNodesByChild("class header").length, 1, "found stumpNodes")
-  equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
+  equal(bodyStumpParticle.findStumpParticlesByChild("class header").length, 1, "found stumpParticles")
+  equal(bodyStumpParticle.findStumpParticleByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

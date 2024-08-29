@@ -720,11 +720,11 @@ class Utils {
       const nodeAUniqueId = idAccessor(nodeA)
       const nodeBUniqueId = idAccessor(nodeB)
 
-      const nodeAExtendsNodeB = graph[nodeAUniqueId].has(nodeBUniqueId)
-      const nodeBExtendsNodeA = graph[nodeBUniqueId].has(nodeAUniqueId)
+      const nodeAExtendsParticleB = graph[nodeAUniqueId].has(nodeBUniqueId)
+      const nodeBExtendsParticleA = graph[nodeBUniqueId].has(nodeAUniqueId)
 
-      if (nodeAExtendsNodeB) return nodeBFirst
-      else if (nodeBExtendsNodeA) return nodeAFirst
+      if (nodeAExtendsParticleB) return nodeBFirst
+      else if (nodeBExtendsParticleA) return nodeAFirst
 
       const nodeAExtendsSomething = graph[nodeAUniqueId].size > 1
       const nodeBExtendsSomething = graph[nodeBUniqueId].size > 1
@@ -749,8 +749,8 @@ class Utils {
       const nodeAExtends = extendsIdAccessor(nodeA)
       const nodeBUniqueId = idAccessor(nodeB)
       const nodeBExtends = extendsIdAccessor(nodeB)
-      const nodeAExtendsNodeB = nodeAExtends === nodeBUniqueId
-      const nodeBExtendsNodeA = nodeBExtends === nodeAUniqueId
+      const nodeAExtendsParticleB = nodeAExtends === nodeBUniqueId
+      const nodeBExtendsParticleA = nodeBExtends === nodeAUniqueId
 
       const nodeAFirst = -1
       const nodeBFirst = 1
@@ -766,8 +766,8 @@ class Utils {
       else if (!nodeBExtends) return nodeBFirst
 
       // If A extends B, B should come first
-      if (nodeAExtendsNodeB) return nodeBFirst
-      else if (nodeBExtendsNodeA) return nodeAFirst
+      if (nodeAExtendsParticleB) return nodeBFirst
+      else if (nodeBExtendsParticleA) return nodeAFirst
 
       // Sort by what they extend
       if (nodeAExtends > nodeBExtends) return nodeBFirst

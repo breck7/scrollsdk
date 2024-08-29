@@ -1,7 +1,7 @@
 const { AbstractParticleComponentParser, ParticleComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/ParticleComponentFramework.node.js")
 const { Particle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
-const { HandParsersProgram, ParserBackedNode, UnknownParsersProgram } = require("../products/Parsers.js")
+const { HandParsersProgram, ParserBackedParticle, UnknownParsersProgram } = require("../products/Parsers.js")
 const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js")
 
 declare var parsersParser: any
@@ -56,7 +56,7 @@ class DesignerApp extends AbstractParticleComponentParser {
 
   synthesizeProgramCommand() {
     const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    this.setCodeCode(parsersProgram.rootParserDefinition.synthesizeNode().join("\n"))
+    this.setCodeCode(parsersProgram.rootParserDefinition.synthesizeParticle().join("\n"))
     this._onCodeKeyUp()
   }
 
@@ -81,8 +81,8 @@ class DesignerApp extends AbstractParticleComponentParser {
     const willowBrowser = this.willowBrowser
     const parsers = await willowBrowser.httpGetUrl(url)
     const parsersProgram = new HandParsersProgram(parsers.text)
-    const rootNodeDef = parsersProgram.rootParserDefinition
-    let sample = rootNodeDef.getNode("example").childrenToString()
+    const rootParticleDef = parsersProgram.rootParserDefinition
+    let sample = rootParticleDef.getParticle("example").childrenToString()
     if (programUrl) {
       sample = await willowBrowser.httpGetUrl(programUrl)
       sample = sample.text
@@ -173,8 +173,8 @@ class DesignerApp extends AbstractParticleComponentParser {
       await this.fetchAndLoadParsersFromUrlCommand(fromUrl, programUrl)
       return true
     } else {
-      const parsersCode = deepLink.getNode("parsers")
-      const sampleCode = deepLink.getNode("sample")
+      const parsersCode = deepLink.getParticle("parsers")
+      const sampleCode = deepLink.getParticle("sample")
       if (parsersCode && sampleCode) {
         console.log("Loading custom from deep link....")
         this._setParsersAndCode(parsersCode.childrenToString(), sampleCode.childrenToString())
@@ -202,7 +202,7 @@ class DesignerApp extends AbstractParticleComponentParser {
 
   async start() {
     this._bindParticleComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
 
     this.parsersInstance = new ParsersCodeMirrorMode("parsers", () => parsersParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("parsersConsole"), { lineWrapping: true })
 

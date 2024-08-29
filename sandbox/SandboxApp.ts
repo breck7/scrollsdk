@@ -54,7 +54,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     const hash = location.hash
     if (hash.length < 2) return ""
 
-    return new Particle(decodeURIComponent(hash.substr(1))).getNode("particle")
+    return new Particle(decodeURIComponent(hash.substr(1))).getParticle("particle")
   }
 
   updateAllCommand(particle: any, eventSource: string) {

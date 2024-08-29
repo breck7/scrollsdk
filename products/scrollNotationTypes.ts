@@ -20,7 +20,7 @@ namespace scrollNotationTypes {
     getLineIndex(): positiveInt
     getLine(): line
     getExtension(): fileExtension
-    getNode(): particle
+    getParticle(): particle
     getErrorTypeName(): string
     getCellIndex(): positiveInt
     hasSuggestion(): boolean
@@ -46,7 +46,7 @@ namespace scrollNotationTypes {
   export declare type serializedParticle = string
 
   export declare type particle = any
-  export declare type line = string // no NodeBreakSymbol (\n)
+  export declare type line = string // no ParticleBreakSymbol (\n)
   export declare type int = number
   export declare type positiveInt = number
   export declare type stringMap = { [firstWord: string]: any }
@@ -66,7 +66,7 @@ namespace scrollNotationTypes {
   export declare type templateString = string // "Hello {name}! You are {age} years old."
   export declare type firstWordPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
-  export declare type word = string // string that cannot contain the NodeBreakSymbol, WordBreakSymbol or WordBreakSymbol
+  export declare type word = string // string that cannot contain the ParticleBreakSymbol, WordBreakSymbol or WordBreakSymbol
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string

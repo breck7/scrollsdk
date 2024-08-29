@@ -57,7 +57,7 @@ testParticles.compileAll = equal => {
 
       // Act
       // todo: should we have an example node for all langs?
-      const exampleProgram = parsersCode.getNode("parsers example")
+      const exampleProgram = parsersCode.getParticle("parsers example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
         // todo: should we then execute it? compile it?
@@ -115,17 +115,17 @@ testParticles.numbers = equal => {
     const code = `+ 2 3
 * 2 3 10`
     const program = new numbers(code)
-    const firstNode = program.nodeAt(0)
+    const firstParticle = program.nodeAt(0)
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert
-    equal(firstNode.numbersCell.length, 2, "cell getters work")
-    equal(firstNode.numbersCell[0], 2, "typings work")
+    equal(firstParticle.numbersCell.length, 2, "cell getters work")
+    equal(firstParticle.numbersCell[0], 2, "typings work")
     equal(program.execute().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstNode.definition.lineHints, "+: operatorCell numbersCell...", "line hints work")
+    equal(firstParticle.definition.lineHints, "+: operatorCell numbersCell...", "line hints work")
     equal(program.toCellTypeParticles(), runtimeProgram.toCellTypeParticles(), "cell types worked")
 
     // Arrange/Act/Assert

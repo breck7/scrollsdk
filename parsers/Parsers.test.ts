@@ -72,7 +72,7 @@ testParticles.trainAndPredict = equal => {
   const hakonParser = parsersProgram.compileAndReturnRootParser()
   const testBlankProgram = new hakonParser()
   const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
+  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((node: any) => node.childrenToString())
   const model = parsersProgram.trainModel(examples)
 
   // Assert
@@ -80,17 +80,17 @@ testParticles.trainAndPredict = equal => {
   equal(predictions[0].id, "selectorParser")
 
   // Act
-  const bodyNode = testBlankProgram.appendLine("body")
+  const bodyParticle = testBlankProgram.appendLine("body")
 
   // Assert
-  const predictions2 = handParsersProgram.predictChildren(model, bodyNode)
+  const predictions2 = handParsersProgram.predictChildren(model, bodyParticle)
   equal(predictions2[0].id, "propertyParser")
 
   // Act
-  const fontSizeNode = testBlankProgram.appendLine("font-size")
+  const fontSizeParticle = testBlankProgram.appendLine("font-size")
 
   // Assert
-  const predictions3 = handParsersProgram.predictParents(model, fontSizeNode)
+  const predictions3 = handParsersProgram.predictParents(model, fontSizeParticle)
   equal(predictions3[0].id, "selectorParser")
 }
 
@@ -107,27 +107,27 @@ testParticles.jibberish = equal => {
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map((err: any) => err.message))
 
-  const parserDef = program.handParsersProgram.parserLineage.getNode("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
+  const parserDef = program.handParsersProgram.parserLineage.getParticle("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
 
   equal(parserDef.toString(), "nodeExpandsConstsParser", "parser lineage works")
 
   // Act
-  const fooNode = <any>program.getNode("foo")
-  const constNode = <any>program.getNode("nodeWithConsts")
-  const nodeExpandsConsts = <any>program.getNode("nodeExpandsConsts")
+  const fooParticle = <any>program.getParticle("foo")
+  const constParticle = <any>program.getParticle("nodeWithConsts")
+  const nodeExpandsConsts = <any>program.getParticle("nodeExpandsConsts")
 
   // Assert
-  equal(fooNode.parserId, "fooParser")
-  equal(constNode.parserId, "nodeWithConstsParser")
-  equal(constNode.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser nodeWithConstsParser")
-  equal(constNode.definition.greeting, "hello world", "constants are also present on parsers definition nodes")
+  equal(fooParticle.parserId, "fooParser")
+  equal(constParticle.parserId, "nodeWithConstsParser")
+  equal(constParticle.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser nodeWithConstsParser")
+  equal(constParticle.definition.greeting, "hello world", "constants are also present on parsers definition nodes")
 
   // Assert
-  equal(constNode.greeting, "hello world", "constant strings should work")
-  equal(constNode.score1, 28, "constant insts should work")
-  equal(constNode.score2, 3.01, "constant floats should work")
-  equal(constNode.win, true, "constant booleans should work")
-  const obj = constNode.definition.constantsObject
+  equal(constParticle.greeting, "hello world", "constant strings should work")
+  equal(constParticle.score1, 28, "constant insts should work")
+  equal(constParticle.score2, 3.01, "constant floats should work")
+  equal(constParticle.win, true, "constant booleans should work")
+  const obj = constParticle.definition.constantsObject
   equal(obj.score1, 28, "constants int works")
   equal(obj.score2, 3.01, "constants floats works")
   equal(obj.win, true, "constants bool works")
@@ -143,13 +143,13 @@ world`,
   equal(obj2.win, true, "expanding constants works")
 
   // Act
-  const addition = program.getNode("+")
+  const addition = program.getParticle("+")
 
   // Assert
   equal(addition.constructor.name, "plusParser", "correct constructor name")
 
   // Act/Assert
-  equal(program.getNode("someCode echo").constructor.name, "lineOfCodeParser", "line of code class")
+  equal(program.getParticle("someCode echo").constructor.name, "lineOfCodeParser", "line of code class")
 
   // Act
   const programWithParserBugs = makeJibberishProgram(`missing 1 2
@@ -160,7 +160,7 @@ missing2 true`)
 
   // Grandchild inheritance
   // Arrange
-  const def = (<any>program.getNode("html.h1")).definition
+  const def = (<any>program.getParticle("html.h1")).definition
 
   // Act/Assert
   equal(
@@ -182,7 +182,7 @@ langs.forEach((lang: string) => {
     const rootParser = parsersProgram.compileAndReturnRootParser()
 
     // Act
-    const simulatedProgram = parsersProgram.rootParserDefinition.synthesizeNode().join("\n")
+    const simulatedProgram = parsersProgram.rootParserDefinition.synthesizeParticle().join("\n")
 
     // Assert
     const errors = new rootParser(simulatedProgram).getAllErrors()
@@ -668,7 +668,7 @@ foobarCell
  regex test`)
 
   // Assert
-  anyProgram.findAllNodesWithParser("regexParser").forEach((node: any) => {
+  anyProgram.findAllParticlesWithParser("regexParser").forEach((node: any) => {
     node.setWord(0, "regexString")
   })
   equal(

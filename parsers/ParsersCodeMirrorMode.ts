@@ -329,12 +329,12 @@ class ParsersCodeMirrorMode {
     let nextCharacter = stream.next()
     const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
     const WordBreakSymbol = " "
-    const NodeBreakSymbol = "\n"
+    const ParticleBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
 
       if (nextCharacter === WordBreakSymbol) {
-        if (peek === undefined || peek === NodeBreakSymbol) {
+        if (peek === undefined || peek === ParticleBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }

@@ -1,7 +1,7 @@
 {
-  class fireParser extends ParserBackedNode {
+  class fireParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,
@@ -99,7 +99,7 @@ leftAnyCell
 // Line Parsers
 fireParser
  root
- description A useless prefix Language that compiles to Javascript for testing Scroll Notation features.
+ description A useless prefix Language that compiles to Javascript for testing Particles Notation features.
  compilesTo js
  inScope hashbangParser abstractTerminalParser abstractNonTerminalParser
  catchAllParser errorParser
@@ -403,9 +403,9 @@ errorParser
     static rootParser = fireParser
   }
 
-  class abstractNonTerminalParser extends ParserBackedNode {
+  class abstractNonTerminalParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           block: blockParser,
@@ -482,7 +482,7 @@ errorParser
     }
   }
 
-  class abstractTerminalParser extends ParserBackedNode {
+  class abstractTerminalParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -769,7 +769,7 @@ errorParser
     }
   }
 
-  class hashbangParser extends ParserBackedNode {
+  class hashbangParser extends ParserBackedParticle {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -778,7 +778,7 @@ errorParser
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }

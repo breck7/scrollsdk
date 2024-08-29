@@ -1,7 +1,7 @@
 {
-  class numbersParser extends ParserBackedNode {
+  class numbersParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         errorParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           "%": modParser,
@@ -43,7 +43,7 @@ operatorCell
 // Line Parsers
 numbersParser
  root
- description A useless Language for testing Scroll Notation features.
+ description A useless Language for testing Particles Notation features.
  inScope abstractArithmeticReducerParser commentParser hashBangParser
  catchAllParser errorParser
  javascript
@@ -106,9 +106,9 @@ errorParser
     static rootParser = numbersParser
   }
 
-  class abstractArithmeticReducerParser extends ParserBackedNode {
+  class abstractArithmeticReducerParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
         undefined
@@ -155,9 +155,9 @@ errorParser
     }
   }
 
-  class commentParser extends ParserBackedNode {
+  class commentParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -167,16 +167,16 @@ errorParser
     }
   }
 
-  class commentContentParser extends ParserBackedNode {
+  class commentContentParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class hashBangParser extends ParserBackedNode {
+  class hashBangParser extends ParserBackedParticle {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -185,7 +185,7 @@ errorParser
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }

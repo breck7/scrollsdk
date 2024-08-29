@@ -60,17 +60,17 @@ test uids
    div hello world
     id bam
     class someClass
- getFirstNode
+ getFirstParticle
   asHtmlWithSuids
    assertTypeIs string
    assertStringIncludes stumpUid
-  isStumpNodeCheckbox
+  isStumpParticleCheckbox
    assertStringIs false
   asHtml
    assertTypeIs string
   isInputType
    assertStringIs false
-  getStumpNodeAttr id
+  getStumpParticleAttr id
    assertStringIs bam
 test syntax
  arrange
@@ -79,7 +79,7 @@ test syntax
    div
     bern
      Hello world
- toCellTypeTree
+ toCellTypeParticles
   assertParagraphIs
    htmlTagNameCell
     bernKeywordCell

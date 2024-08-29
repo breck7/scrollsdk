@@ -1,0 +1,84 @@
+nodeProduct
+ outputFileName ParticleComponentFramework.node.js
+ combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
+ insertLastLine module.exports = { AbstractParticleComponentParser, WillowBrowser, AbstractGithubTriangleComponent, ParticleComponentFrameworkDebuggerComponent }
+nodeProduct
+ outputFileName Particle.js
+ insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
+nodeProduct
+ outputFileName Parsers.js
+ insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+nodeProduct
+ outputFileName TestRacer.js
+ insertLastLine module.exports = {TestRacer}
+ combineTypeScriptFiles testRacer/TestRacer.ts
+nodeProduct
+ outputFileName ParsersCodeMirrorMode.js
+ insertLastLine module.exports = {ParsersCodeMirrorMode}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+nodeProduct
+ outputFileName ParsersCompiler.js
+ insertLastLine module.exports = {ParsersCompiler}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCompiler.ts
+nodeProduct
+ outputFileName Disk.node.js
+ insertLastLine module.exports = {Disk}
+ combineTypeScriptFiles disk/Disk.node.ts
+nodeProduct
+ outputFileName Utils.js
+ insertLastLine module.exports = {Utils}
+ combineTypeScriptFiles utils/Utils.ts
+nodeProduct
+ outputFileName ParticleFileSystem.js
+ insertLastLine module.exports = {ParticleFileSystem}
+ combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
+nodeProduct
+ outputFileName Kitchen.node.js
+ combineTypeScriptFiles products/scrollNotationTypes.ts kitchen/Kitchen.node.ts
+ insertLastLine module.exports = {Kitchen}
+nodeProduct
+ outputFileName TypeScriptRewriter.js
+ combineTypeScriptFiles typeScriptRewriter/TypeScriptRewriter.ts
+ insertLastLine module.exports = {TypeScriptRewriter}
+browserProduct
+ outputFileName SweeperCraft.browser.js
+ combineTypeScriptFiles particleComponentFramework/sweepercraft/SweeperCraft.ts
+browserProduct
+ outputFileName ParticleComponentFramework.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
+browserProduct
+ outputFileName Particle.test.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/Particle.test.ts
+browserProduct
+ outputFileName Parsers.ts.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+browserProduct
+ outputFileName Utils.browser.js
+ combineTypeScriptFiles utils/Utils.ts
+browserProduct
+ outputFileName ParticleFileSystem.browser.js
+ combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
+browserProduct
+ outputFileName Particle.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.browser.ts particle/Particle.ts
+browserProduct
+ outputFileName TestRacer.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts testRacer/TestRacer.ts
+browserProduct
+ outputFileName ParsersCodeMirrorMode.browser.js
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+browserProduct
+ outputFileName DesignerApp.browser.js
+ combineTypeScriptFiles designer/DesignerApp.ts
+browserProduct
+ combineTypeScriptFiles sandbox/SandboxApp.ts
+ outputFileName SandboxApp.browser.js

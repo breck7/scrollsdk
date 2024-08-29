@@ -1,13 +1,13 @@
 //onsave scrollsdk build produce SandboxApp.browser.js
-// Todo: add inputs at the top to change the edge, node, and cell delimiters.
-class SandboxApp extends AbstractTreeComponentParser {
+// Todo: add inputs at the top to change the edge, particle, and cell delimiters.
+class SandboxApp extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,
       headerComponent,
-      TreeComponentFrameworkDebuggerComponent
+      ParticleComponentFrameworkDebuggerComponent
     })
   }
   loadJsonSampleCommand() {
@@ -15,14 +15,14 @@ class SandboxApp extends AbstractTreeComponentParser {
       "toJsonSubset",
       `{
  "name": "scrollsdk",
- "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Languages",
+ "description": "Particles Notation parser, compiler-compiler, and virtual machine for Languages",
  "keywords": "scrollsdk"
 }`
     )
     this.updateFromJsonSubsetCommand()
   }
   loadCsvSampleCommand() {
-    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", TreeNode.iris)
+    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", Particle.iris)
     this.updateFromCsvConsoleCommand()
   }
   _updateShareLink() {
@@ -32,65 +32,65 @@ class SandboxApp extends AbstractTreeComponentParser {
     this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
   toShareLink() {
-    const treeCode = localStorage.getItem("tree")
-    if (!treeCode) return ""
-    const tree = new TreeNode()
-    tree.appendLineAndChildren("tree", treeCode)
-    return "#" + encodeURIComponent(tree.toString())
+    const particleCode = localStorage.getItem("particle")
+    if (!particleCode) return ""
+    const particle = new Particle()
+    particle.appendLineAndChildren("particle", particleCode)
+    return "#" + encodeURIComponent(particle.toString())
   }
-  treeFromDeepLink() {
+  particleFromDeepLink() {
     const hash = location.hash
     if (hash.length < 2) return ""
-    return new TreeNode(decodeURIComponent(hash.substr(1))).getNode("tree")
+    return new Particle(decodeURIComponent(hash.substr(1))).getParticle("particle")
   }
-  updateAllCommand(tree, eventSource) {
+  updateAllCommand(particle, eventSource) {
     const { willowBrowser } = this
-    if (eventSource !== "treeConsole") willowBrowser.setValueOfElementWithIdHack("treeConsole", tree.toString())
-    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", tree.asJsonSubset)
-    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", tree.asCsv)
-    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", tree.asXml)
-    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", tree.asGridJson)
-    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", tree.asJson)
-    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", tree.asOutline)
-    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", tree.asHtml)
-    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", tree.asTable)
-    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", tree.asHtmlCube)
-    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", tree.asYaml)
+    if (eventSource !== "particleConsole") willowBrowser.setValueOfElementWithIdHack("particleConsole", particle.toString())
+    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", particle.asJsonSubset)
+    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", particle.asCsv)
+    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", particle.asXml)
+    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", particle.asGridJson)
+    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", particle.asJson)
+    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", particle.asOutline)
+    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", particle.asHtml)
+    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", particle.asTable)
+    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", particle.asHtmlCube)
+    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", particle.asYaml)
     let win = window
-    win.tree = tree
-    localStorage.setItem("tree", tree.toString())
+    win.particle = particle
+    localStorage.setItem("particle", particle.toString())
     this._updateShareLink() // todo: where to put this?
   }
-  async treeComponentDidMount() {
+  async particleComponentDidMount() {
     // todo: refactor!!! split these into components
-    const treeConsoleEl = this.willowBrowser.getElementById("treeConsole")
+    const particleConsoleEl = this.willowBrowser.getElementById("particleConsole")
     // Init vars
-    const deepLink = this.treeFromDeepLink()
-    if (deepLink) treeConsoleEl.value = deepLink.childrenToString()
-    else if (localStorage.getItem("tree")) treeConsoleEl.value = localStorage.getItem("tree")
+    const deepLink = this.particleFromDeepLink()
+    if (deepLink) particleConsoleEl.value = deepLink.childrenToString()
+    else if (localStorage.getItem("particle")) particleConsoleEl.value = localStorage.getItem("particle")
     // Trigger start
-    this.updateFromTreeConsoleCommand()
+    this.updateFromParticlesConsoleCommand()
   }
   valueOf(id) {
     return this.willowBrowser.getElementById(id).value
   }
   updateFromXmlConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
+    this.updateAllCommand(Particle.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
   }
   updateFromGridJsonConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
+    this.updateAllCommand(Particle.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
   }
   updateFromJsonConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
+    this.updateAllCommand(Particle.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
   }
   updateFromCsvConsoleCommand() {
-    this.updateAllCommand(TreeNode.fromCsv(this.valueOf("csvConsole")), "csvConsole")
+    this.updateAllCommand(Particle.fromCsv(this.valueOf("csvConsole")), "csvConsole")
   }
   updateFromJsonSubsetCommand() {
-    this.updateAllCommand(TreeNode.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
+    this.updateAllCommand(Particle.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
   }
-  updateFromTreeConsoleCommand() {
-    this.updateAllCommand(new TreeNode(this.valueOf("treeConsole")), "treeConsole")
+  updateFromParticlesConsoleCommand() {
+    this.updateAllCommand(new Particle(this.valueOf("particleConsole")), "particleConsole")
   }
   toHakonCode() {
     const theme = this.getTheme()
@@ -146,7 +146,7 @@ pre
  color green`
   }
 }
-class headerComponent extends AbstractTreeComponentParser {
+class headerComponent extends AbstractParticleComponentParser {
   toHakonCode() {
     return `#logo
  width 100px
@@ -161,8 +161,8 @@ class headerComponent extends AbstractTreeComponentParser {
    img
     id logo
     src ../images/helloWorld3D.svg
-    title TreeNotation.org
-  span Scroll Notation Sandbox
+    title Scroll.pub
+  span Particles Notation Sandbox
  p
   a Parser Designer
    href ../designer/index.html
@@ -174,12 +174,12 @@ class headerComponent extends AbstractTreeComponentParser {
    href perfTests.html
   span  | 
   a Debug
-   clickCommand toggleTreeComponentFrameworkDebuggerCommand
-  span  | Version ${TreeNode.getVersion()}
- p This is a simple console for exploring the base Scroll Notation. In dev tools, you can access the parsed tree below as "window.tree"`
+   clickCommand toggleParticleComponentFrameworkDebuggerCommand
+  span  | Version ${Particle.getVersion()}
+ p This is a simple console for exploring the base Particles Notation. In dev tools, you can access the parsed particle below as "window.particle"`
   }
 }
-class shareComponent extends AbstractTreeComponentParser {
+class shareComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -206,15 +206,15 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
     this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/sandbox`
   }
 }
-class tableComponent extends AbstractTreeComponentParser {
+class tableComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `table
  tr
   td
-   div Scroll Notation
+   div Particles Notation
    textarea
-    id treeConsole
-    keyUpCommand updateFromTreeConsoleCommand
+    id particleConsole
+    keyUpCommand updateFromParticlesConsoleCommand
   td
    div asGridJson
    textarea

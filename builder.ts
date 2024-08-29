@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-const { TreeNode } = require("./products/TreeNode.js")
+const { Particle } = require("./products/Particle.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
 const { Utils } = require("./products/Utils.js")
@@ -18,7 +18,7 @@ import { scrollNotationTypes } from "./products/scrollNotationTypes"
 // todo: remove?
 const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", parsers: "tooling ", gram: "tooling " }
 
-class Builder extends TreeNode {
+class Builder extends Particle {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
     const ts = require("typescript")
     // downlevelIteration: true, // todo: what is this again?
@@ -140,22 +140,22 @@ class Builder extends TreeNode {
     this._prettifyFile(outputFilePath)
   }
 
-  produceProductFromInstructionsTree(productNode: any, projectRootPath: string) {
-    const outputFileName = productNode.get("outputFileName")
-    const inputFiles = productNode
-      .getNode("combineTypeScriptFiles")
+  produceProductFromInstructionsParticles(productParticle: any, projectRootPath: string) {
+    const outputFileName = productParticle.get("outputFileName")
+    const inputFiles = productParticle
+      .getParticle("combineTypeScriptFiles")
       .getWordsFrom(1)
       .map((filePath: string) => path.join(projectRootPath, filePath))
-    const firstLine = productNode.get("insertFirstLine") ? productNode.get("insertFirstLine") + "\n" : ""
-    const lastLine = productNode.get("insertLastLine") ? productNode.get("insertLastLine") : ""
-    const removeAll = productNode.getNodesByGlobPath("removeAll")
+    const firstLine = productParticle.get("insertFirstLine") ? productParticle.get("insertFirstLine") + "\n" : ""
+    const lastLine = productParticle.get("insertLastLine") ? productParticle.get("insertLastLine") : ""
+    const removeAll = productParticle.getParticlesByGlobPath("removeAll")
     const transformFn = (code: string) => {
-      removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.content)))
+      removeAll.forEach((particle: any) => (code = Utils.removeAll(code, particle.content)))
       return firstLine + code + "\n" + lastLine
     }
-    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
+    if (productParticle.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
     else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    if (productNode.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
+    if (productParticle.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
   }
 
   _getBundleFilePath(outputFileName: scrollNotationTypes.fileName) {
@@ -187,9 +187,9 @@ class Builder extends TreeNode {
     this._buildTsc(Disk.read(__filename), path.join(__dirname, "builder.js"))
   }
 
-  makeParsersFileTestTree(parsersPath: scrollNotationTypes.parsersFilePath) {
+  makeParsersFileTestParticles(parsersPath: scrollNotationTypes.parsersFilePath) {
     // todo: can we ditch these dual tests at some point? ideally Parsers should be bootstrapped correct?
-    const testTree: any = {}
+    const testParticles: any = {}
     const checkParsersFile = (equal: Function, program: any) => {
       // Act
       const errs = program.getAllErrors()
@@ -200,12 +200,12 @@ class Builder extends TreeNode {
 
     const handParsersProgram = new HandParsersProgram(Disk.read(parsersPath))
 
-    testTree[`parsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, ParsersCompiler.compileParsersAndCreateProgram(parsersPath, path.join(__dirname, "langs", "parsers", "parsers.parsers")))
-    testTree[`handParsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, handParsersProgram)
+    testParticles[`parsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, ParsersCompiler.compileParsersAndCreateProgram(parsersPath, path.join(__dirname, "langs", "parsers", "parsers.parsers")))
+    testParticles[`handParsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, handParsersProgram)
 
-    Object.assign(testTree, handParsersProgram.examplesToTestBlocks())
+    Object.assign(testParticles, handParsersProgram.examplesToTestBlocks())
 
-    return testTree
+    return testParticles
   }
 
   _help(filePath = process.argv[1]) {
@@ -239,14 +239,14 @@ class Builder extends TreeNode {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName) return this.produceProductFromInstructionsTree(this._getProductsTree().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
+    if (outputFileName) return this.produceProductFromInstructionsParticles(this._getProductParticles().where("outputFileName", "=", outputFileName).particleAt(0), __dirname)
 
-    console.log("Available options:\n" + this._getProductsTree().getColumn("outputFileName").join("\n"))
+    console.log("Available options:\n" + this._getProductParticles().getColumn("outputFileName").join("\n"))
   }
 
   produceAll() {
-    this._getProductsTree().forEach((node: any) => {
-      this.produceProductFromInstructionsTree(node, __dirname)
+    this._getProductParticles().forEach((particle: any) => {
+      this.produceProductFromInstructionsParticles(particle, __dirname)
     })
   }
 
@@ -261,8 +261,8 @@ class Builder extends TreeNode {
     ParsersCompiler.compileParsersForNodeJs(newFilePath, this._getProductFolder(), true, ".")
   }
 
-  private _getProductsTree() {
-    return TreeNode.fromDisk(__dirname + "/products.tree")
+  private _getProductParticles() {
+    return Particle.fromDisk(__dirname + "/products.scroll")
   }
 
   buildJibJab() {
@@ -279,7 +279,7 @@ class Builder extends TreeNode {
   updateVersion(newVersion: scrollNotationTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
 
-    const codePath = __dirname + "/treeNode/TreeNode.ts"
+    const codePath = __dirname + "/particle/Particle.ts"
     const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
@@ -291,18 +291,18 @@ class Builder extends TreeNode {
     this._startServer(9999, __dirname + "/")
   }
 
-  _makeTestTreeForFolder(dir: scrollNotationTypes.absoluteFolderPath) {
+  _makeTestParticlesForFolder(dir: scrollNotationTypes.absoluteFolderPath) {
     const allTestFiles: string[] = Disk.recursiveReaddirSyncSimple(dir)
     const swarm = require("./products/swarm.nodejs.js")
 
-    const fileTestTree: any = {}
+    const fileTestParticles: any = {}
 
-    allTestFiles.filter(file => file.endsWith(".parsers")).forEach(file => (fileTestTree[file] = this.makeParsersFileTestTree(file)))
+    allTestFiles.filter(file => file.endsWith(".parsers")).forEach(file => (fileTestParticles[file] = this.makeParsersFileTestParticles(file)))
 
-    allTestFiles.filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach(file => (fileTestTree[file] = require(file).testTree))
+    allTestFiles.filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach(file => (fileTestParticles[file] = require(file).testParticles))
 
-    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file)))
-    return fileTestTree
+    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => Object.assign(fileTestParticles, new swarm(Disk.read(file)).compileToRacer(file)))
+    return fileTestParticles
   }
 
   async test() {
@@ -310,16 +310,16 @@ class Builder extends TreeNode {
 designer
 sandbox
 kitchen
-treeNode
+particle
 swim
 testRacer
-treeFileSystem
+particleFileSystem
 parsers
 utils
-treeComponentFramework`.split("\n")
-    const fileTree = {}
-    folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))
-    const runner = new TestRacer(fileTree)
+particleComponentFramework`.split("\n")
+    const fileTestParticles = {}
+    folders.forEach(folder => Object.assign(fileTestParticles, this._makeTestParticlesForFolder(__dirname + `/${folder}/`)))
+    const runner = new TestRacer(fileTestParticles)
     await runner.execute()
     runner.finish()
   }

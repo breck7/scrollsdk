@@ -17,7 +17,7 @@ opSymbolCell
 // Line Parsers
 jibberishParser
  root
- description A useless Language built for testing Scroll Notation code.
+ description A useless Language built for testing Particles Notation code.
  javascript
   execute() {
    return 42
@@ -96,7 +96,7 @@ lightbulbStateParser
 nestedParser
  extends abstractTopLevelParser
  crux nested
-nodeWithConstsParser
+particleWithConstsParser
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'`
@@ -108,11 +108,11 @@ nodeWithConstsParser
  float score2 3.01
  boolean win true
  extends abstractTopLevelParser
- crux nodeWithConsts
-nodeExpandsConstsParser
+ crux particleWithConsts
+particleExpandsConstsParser
  string greeting hola
- extends nodeWithConstsParser
- crux nodeExpandsConsts
+ extends particleWithConstsParser
+ crux particleExpandsConsts
 someCodeParser
  catchAllParser lineOfCodeParser
  extends abstractTopLevelParser

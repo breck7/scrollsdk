@@ -1,13 +1,13 @@
 {
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class dumbdownParser extends ParserBackedNode {
+  class dumbdownParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
+      return new Particle.ParserCombinator(
         quickParagraphParser,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           link: linkParser,
@@ -164,7 +164,7 @@ quickParagraphParser
     static rootParser = dumbdownParser
   }
 
-  class abstractTopLevelParser extends ParserBackedNode {
+  class abstractTopLevelParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -184,11 +184,11 @@ quickParagraphParser
 
   class paragraphParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(paragraphContentParser, undefined, undefined)
+      return new Particle.ParserCombinator(paragraphContentParser, undefined, undefined)
     }
   }
 
-  class paragraphContentParser extends ParserBackedNode {
+  class paragraphContentParser extends ParserBackedParticle {
     get textCell() {
       return this.getWordsFrom(0)
     }
@@ -196,7 +196,7 @@ quickParagraphParser
 
   class codeParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     compile() {
       return `<code>${this.indentation + this.childrenToString()}</code>`
@@ -205,26 +205,26 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 
-  class blankLineParser extends ParserBackedNode {
+  class blankLineParser extends ParserBackedParticle {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class lineOfCodeParser extends ParserBackedNode {
+  class lineOfCodeParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
+      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     get codeCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class dashParser extends ParserBackedNode {
+  class dashParser extends ParserBackedParticle {
     get dashCell() {
       return this.getWord(0)
     }
@@ -258,7 +258,7 @@ quickParagraphParser
 
   class title6Parser extends title2Parser {}
 
-  class quickParagraphParser extends ParserBackedNode {
+  class quickParagraphParser extends ParserBackedParticle {
     get textCell() {
       return this.getWordsFrom(0)
     }

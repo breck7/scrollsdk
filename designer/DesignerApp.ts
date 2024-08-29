@@ -1,7 +1,7 @@
-const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { AbstractParticleComponentParser, ParticleComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/ParticleComponentFramework.node.js")
+const { Particle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
-const { HandParsersProgram, ParserBackedNode, UnknownParsersProgram } = require("../products/Parsers.js")
+const { HandParsersProgram, ParserBackedParticle, UnknownParsersProgram } = require("../products/Parsers.js")
 const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js")
 
 declare var parsersParser: any
@@ -13,16 +13,16 @@ declare var JSZip: any
 declare var dumbdownParser: any
 declare type html = string
 
-class DesignerApp extends AbstractTreeComponentParser {
+class DesignerApp extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       githubTriangleComponent,
       samplesComponent,
       tableComponent,
       shareComponent,
       headerComponent,
       otherErrorsComponent,
-      TreeComponentFrameworkDebuggerComponent
+      ParticleComponentFrameworkDebuggerComponent
     })
   }
 
@@ -56,7 +56,7 @@ class DesignerApp extends AbstractTreeComponentParser {
 
   synthesizeProgramCommand() {
     const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    this.setCodeCode(parsersProgram.rootParserDefinition.synthesizeNode().join("\n"))
+    this.setCodeCode(parsersProgram.rootParserDefinition.synthesizeParticle().join("\n"))
     this._onCodeKeyUp()
   }
 
@@ -81,8 +81,8 @@ class DesignerApp extends AbstractTreeComponentParser {
     const willowBrowser = this.willowBrowser
     const parsers = await willowBrowser.httpGetUrl(url)
     const parsersProgram = new HandParsersProgram(parsers.text)
-    const rootNodeDef = parsersProgram.rootParserDefinition
-    let sample = rootNodeDef.getNode("example").childrenToString()
+    const rootParticleDef = parsersProgram.rootParserDefinition
+    let sample = rootParticleDef.getParticle("example").childrenToString()
     if (programUrl) {
       sample = await willowBrowser.httpGetUrl(programUrl)
       sample = sample.text
@@ -114,19 +114,19 @@ class DesignerApp extends AbstractTreeComponentParser {
   private _toIceTray(program: any) {
     const columns = program.programWidth
 
-    const cellTypes = new TreeNode(program.asCellTypeTreeWithParserIds)
-    const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithParserIds())
+    const cellTypes = new Particle(program.asCellTypeParticlesWithParserIds)
+    const rootCellTypes = new Particle(program.toPreludeCellTypeParticlesWithParserIds())
 
     const table = program.programAsCells
       .map((line: any, lineIndex: number) => {
-        const parser = cellTypes.nodeAt(lineIndex).getWord(0)
+        const parser = cellTypes.particleAt(lineIndex).getWord(0)
         let cells = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
         for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
           const cell = line[cellIndex]
           if (!cell) cells += `<td>&nbsp;</td>`
           else {
-            const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
-            const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const cellType = cellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
+            const rootCellType = rootCellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
             const cellTypeDivs = [cellType, rootCellType] // todo: add full ancestry
             cells += `<td><span class="cellTypeSpan">${cellTypeDivs.join(" ")}</span>${cell.getWord()}</td>`
           }
@@ -160,7 +160,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const hash = location.hash
     if (hash.length < 2) return false
 
-    const deepLink = new TreeNode(decodeURIComponent(hash.substr(1)))
+    const deepLink = new Particle(decodeURIComponent(hash.substr(1)))
     const standard = deepLink.get("standard")
     const fromUrl = deepLink.get("url")
     const programUrl = deepLink.get("programUrl")
@@ -173,8 +173,8 @@ class DesignerApp extends AbstractTreeComponentParser {
       await this.fetchAndLoadParsersFromUrlCommand(fromUrl, programUrl)
       return true
     } else {
-      const parsersCode = deepLink.getNode("parsers")
-      const sampleCode = deepLink.getNode("sample")
+      const parsersCode = deepLink.getParticle("parsers")
+      const sampleCode = deepLink.getParticle("sample")
       if (parsersCode && sampleCode) {
         console.log("Loading custom from deep link....")
         this._setParsersAndCode(parsersCode.childrenToString(), sampleCode.childrenToString())
@@ -201,8 +201,8 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
 
   async start() {
-    this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this._bindParticleComponentFrameworkCommandListenersOnBody()
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
 
     this.parsersInstance = new ParsersCodeMirrorMode("parsers", () => parsersParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("parsersConsole"), { lineWrapping: true })
 
@@ -282,7 +282,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const parsersCode = this.getParsersCode()
     this.parsersProgram = new parsersParser(parsersCode)
     const errs = this.parsersProgram.getAllErrors().map((err: any) => err.toObject())
-    this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
     const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
 
@@ -297,10 +297,10 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
 
   toShareLink() {
-    const tree = new TreeNode()
-    tree.appendLineAndChildren("parsers", this.getParsersCode())
-    tree.appendLineAndChildren("sample", this.getCodeValue())
-    return "#" + encodeURIComponent(tree.asString)
+    const particle = new Particle()
+    particle.appendLineAndChildren("parsers", this.getParsersCode())
+    particle.appendLineAndChildren("sample", this.getCodeValue())
+    return "#" + encodeURIComponent(particle.asString)
   }
 
   _onCodeKeyUp() {
@@ -313,7 +313,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     this.program = new parsersParser(code)
     const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
 
-    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
+    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new Particle(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = this.codeInstance.getCursor()
 
@@ -444,7 +444,7 @@ a
   }
 }
 
-class samplesComponent extends AbstractTreeComponentParser {
+class samplesComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     const langs = this.root.languages
       .map(
@@ -460,7 +460,7 @@ ${langs}`
   }
 }
 
-class shareComponent extends AbstractTreeComponentParser {
+class shareComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -483,7 +483,7 @@ class shareComponent extends AbstractTreeComponentParser {
   }
 }
 
-class otherErrorsComponent extends AbstractTreeComponentParser {
+class otherErrorsComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `div
  id otherErrorsDiv`
@@ -495,8 +495,8 @@ class otherErrorsComponent extends AbstractTreeComponentParser {
 }
 
 // Todo: use these 3
-class compiledResultsComponent extends AbstractTreeComponentParser {}
-class executionResultsComponent extends AbstractTreeComponentParser {
+class compiledResultsComponent extends AbstractParticleComponentParser {}
+class executionResultsComponent extends AbstractParticleComponentParser {
   toHakonCode() {
     return `#execResultsTextArea
  border 0
@@ -509,15 +509,15 @@ class executionResultsComponent extends AbstractTreeComponentParser {
   }
 }
 
-class explainResultsComponent extends AbstractTreeComponentParser {
+class explainResultsComponent extends AbstractParticleComponentParser {
   toStumpCode() {
     return `div`
   }
 }
 
-class tableComponent extends AbstractTreeComponentParser {
+class tableComponent extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       compiledResultsComponent: compiledResultsComponent,
       executionResultsComponent: executionResultsComponent,
       explainResultsComponent: explainResultsComponent
@@ -589,7 +589,7 @@ class tableComponent extends AbstractTreeComponentParser {
   }
 }
 
-class headerComponent extends AbstractTreeComponentParser {
+class headerComponent extends AbstractParticleComponentParser {
   _getTitle() {
     return `Parser Designer`
   }
@@ -614,7 +614,7 @@ class headerComponent extends AbstractTreeComponentParser {
     title Notation.Scroll.pub
   span ${this._getTitle()}
  p
-  a Scroll Notation Sandbox
+  a Particles Notation Sandbox
    href ../sandbox/index.html
   span  | 
   a Help
@@ -628,13 +628,13 @@ class headerComponent extends AbstractTreeComponentParser {
    clickCommand resetCommand
   span  | 
   a Debug
-   clickCommand toggleTreeComponentFrameworkDebuggerCommand
-  span  | Version ${TreeNode.getVersion()}
+   clickCommand toggleParticleComponentFrameworkDebuggerCommand
+  span  | Version ${Particle.getVersion()}
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building languages on top of Scroll Notation. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
+  p This is a simple web IDE for designing and building languages on top of Particles Notation. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }
 

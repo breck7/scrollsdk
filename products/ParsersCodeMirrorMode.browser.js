@@ -175,8 +175,8 @@ const tmToCm = {
     }
   }
 }
-const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
-  const matchingBranch = styleTree[scopeSegments.shift()]
+const textMateScopeToCodeMirrorStyle = (scopeSegments, style = tmToCm) => {
+  const matchingBranch = style[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
 class ParsersCodeMirrorMode {
@@ -290,11 +290,11 @@ class ParsersCodeMirrorMode {
     let nextCharacter = stream.next()
     const lineNumber = stream.lineOracle.line + 1 // state.lineIndex
     const WordBreakSymbol = " "
-    const NodeBreakSymbol = "\n"
+    const ParticleBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
       if (nextCharacter === WordBreakSymbol) {
-        if (peek === undefined || peek === NodeBreakSymbol) {
+        if (peek === undefined || peek === ParticleBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }

@@ -15,7 +15,7 @@ const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js"
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.parsers")
 const irisParsers = Disk.read(irisPath)
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
 class MockStream {
   constructor(str: string) {
@@ -90,7 +90,7 @@ class MockCodeMirror {
   }
 }
 
-testTree.codeMirrorTest = equal => {
+testParticles.codeMirrorTest = equal => {
   const code = `testParser
  root`
 
@@ -106,7 +106,7 @@ testTree.codeMirrorTest = equal => {
   equal(tokenLines.join(" "), `def bracket atom`)
 }
 
-testTree.iris = equal => {
+testParticles.iris = equal => {
   const irisParser = new HandParsersProgram(irisParsers).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
@@ -135,7 +135,7 @@ testTree.iris = equal => {
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }
 
-testTree.codeMirrorTest2 = equal => {
+testParticles.codeMirrorTest2 = equal => {
   const code = `testParser
  root
 foobarParser`
@@ -153,7 +153,7 @@ foobarParser`
   equal(tokenLines.join(" "), `def bracket atom def`)
 }
 
-testTree.regressionTest = equal => {
+testParticles.regressionTest = equal => {
   const code = Disk.read(__dirname + "/ParsersCodeMirrorMode.regression.stamp")
 
   const mock = new MockCodeMirror(
@@ -168,7 +168,7 @@ testTree.regressionTest = equal => {
   equal(tokenLines.length, 217)
 }
 
-testTree.regression2 = equal => {
+testParticles.regression2 = equal => {
   const code = `object
  prettier
   object`
@@ -186,6 +186,6 @@ testTree.regression2 = equal => {
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

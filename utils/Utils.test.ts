@@ -4,44 +4,44 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Utils } = require("../products/Utils.js")
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.version = equal => {
+testParticles.version = equal => {
   // Arrange/Act/Assert
-  equal(!!TreeNode.getVersion(), true)
+  equal(!!Particle.getVersion(), true)
 }
 
-testTree.vector = equal => {
+testParticles.vector = equal => {
   // Arrange/Act/Assert
   equal(Utils.sum(Utils.makeVector(5, 3)), 15)
 }
 
-testTree.titleToPermalink = equal => {
+testParticles.titleToPermalink = equal => {
   // Arrange/Act/Assert
   equal(Utils.titleToPermalink("C#"), "c-sharp")
 }
 
-testTree.isAbsoluteUrl = equal => {
+testParticles.isAbsoluteUrl = equal => {
   // AAA
   equal(Utils.isAbsoluteUrl("https://"), true)
   equal(Utils.isAbsoluteUrl("http://"), true)
   equal(Utils.isAbsoluteUrl("link.html"), false)
 }
 
-testTree.getNextOrPrevious = equal => {
+testParticles.getNextOrPrevious = equal => {
   // A/A/A
   equal(Utils.getNextOrPrevious([1, 2, 3], 2), 3)
 }
 
-testTree.getRandomCharacters = equal => {
+testParticles.getRandomCharacters = equal => {
   // AAA
   equal(Utils.getRandomCharacters(9).length, 9)
 }
 
-testTree.didYouMean = equal => {
+testParticles.didYouMean = equal => {
   // Arrange/Act/Assert
   const didYouMean = Utils.didYouMean
   equal(didYouMean("lamr", ["couch", "sofa", "lamp"]), "lamp")
@@ -50,12 +50,12 @@ testTree.didYouMean = equal => {
   equal(didYouMean("height", ["Height", "weight", "sign"]), "Height")
 }
 
-testTree.getLineIndexAtCharacterPosition = equal => {
+testParticles.getLineIndexAtCharacterPosition = equal => {
   // Arrange/Act/Assert
   equal(Utils.getClassNameFromFilePath(`foobar/FooBam.js`), "FooBam")
 }
 
-testTree.getParentFolder = equal => {
+testParticles.getParentFolder = equal => {
   // Arrange/Act/Assert
   equal(Utils.getParentFolder(`foobar/FooBam.js`), "foobar/")
   equal(Utils.getParentFolder(`/`), "/")
@@ -66,15 +66,15 @@ testTree.getParentFolder = equal => {
   equal(Utils.getParentFolder(`/bam/boom/bah`), "/bam/boom/")
 }
 
-testTree.getUniqueWordsArray = equal => {
+testParticles.getUniqueWordsArray = equal => {
   equal(Utils.getUniqueWordsArray(`hi hi hey`).length, 2)
 }
 
-testTree.ucfirst = equal => {
+testParticles.ucfirst = equal => {
   equal(Utils.ucfirst(`hi`), "Hi")
 }
 
-testTree.getLineIndexAtCharacterPosition = equal => {
+testParticles.getLineIndexAtCharacterPosition = equal => {
   // Arrange/Act/Assert
   equal(Utils.getLineIndexAtCharacterPosition(`abc`, 0), 0)
   equal(Utils.getLineIndexAtCharacterPosition(`abc`, 2), 0)
@@ -83,9 +83,9 @@ testTree.getLineIndexAtCharacterPosition = equal => {
   equal(Utils.getLineIndexAtCharacterPosition(``, 0), 0)
 }
 
-testTree.graphSort = equal => {
+testParticles.graphSort = equal => {
   // Arrange
-  const a = new TreeNode(`dog animal
+  const a = new Particle(`dog animal
 animal
 retriever dog
 car
@@ -93,8 +93,8 @@ cat animal
 house`)
   a.sort(
     Utils._makeGraphSortFunction(
-      (node: any) => node.getWord(0),
-      (node: any) => node.getWord(1)
+      (particle: any) => particle.getWord(0),
+      (particle: any) => particle.getWord(1)
     )
   )
 
@@ -110,12 +110,12 @@ retriever dog`
   )
 }
 
-testTree.makeRandomTree = equal => {
+testParticles.makeRandomParticles = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(Utils.makeRandomTree(2)).topDownArray.length, 3)
+  equal(new Particle(Utils.makeRandomParticles(2)).topDownArray.length, 3)
 }
 
-testTree.makeSemiRandomFn = equal => {
+testParticles.makeSemiRandomFn = equal => {
   const rand = Utils.makeSemiRandomFn(1)
   const first = rand()
   const expected = 0.7098480789645691
@@ -127,6 +127,6 @@ testTree.makeSemiRandomFn = equal => {
   equal(Utils.randomUniformInt(0, 100, 2), 97)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

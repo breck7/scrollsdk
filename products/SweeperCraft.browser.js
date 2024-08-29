@@ -166,7 +166,7 @@ class SweeperCraftGame {
       if (!bombCount) this._clickNeighbors(row, col)
     })
   }
-  getGameAsTree() {
+  getGameAsParticles() {
     return ("rowComponent\n" + " squareComponent\n".repeat(this._numberOfColumns)).repeat(this._numberOfRows).trim()
   }
   _getNeighbors(row, column) {
@@ -340,20 +340,20 @@ const linkToObject = link => {
   }
   return obj
 }
-class SweeperCraftApp extends AbstractTreeComponentParser {
+class SweeperCraftApp extends AbstractParticleComponentParser {
   constructor() {
     super(...arguments)
     this.keyboardShortcuts = this._getKeyboardShortcuts()
   }
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
       customLinkComponent,
       shortcutsTableComponent,
       githubTriangleComponent,
-      TreeComponentFrameworkDebuggerComponent
+      ParticleComponentFrameworkDebuggerComponent
     })
   }
   clickSquareCommand(row, col) {
@@ -375,7 +375,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
   }
   _syncAndRender() {
     this._syncBoardToGame()
-    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
   }
   flagSquareCommand(row, col) {
     row = typeof row === "string" ? parseInt(row) : row
@@ -534,7 +534,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     })
   }
   async start() {
-    this._bindTreeComponentFrameworkCommandListenersOnBody()
+    this._bindParticleComponentFrameworkCommandListenersOnBody()
     if (!this.isNodeJs()) this._setupBrowser()
     const willowBrowser = this.willowBrowser
     const currentHash = willowBrowser.getHash().replace(/^#/, "")
@@ -560,11 +560,11 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
         if (this._mainGame.isOver()) this._mainGame.watchReplay(250, () => this._syncAndRender())
       },
       "?": () => {
-        const table = this.getNode("shortcutsTableComponent")
+        const table = this.getParticle("shortcutsTableComponent")
         if (table) table.unmountAndDestroy()
         else {
           this.appendLine("shortcutsTableComponent")
-          this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+          this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
         }
       },
       e: () => {
@@ -584,28 +584,28 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
         location.hash = link
       },
       d: () => {
-        this.toggleTreeComponentFrameworkDebuggerCommand()
+        this.toggleParticleComponentFrameworkDebuggerCommand()
       }
     }
   }
   // todo: there's probably a better pattern than this.
   _syncBoardToGame() {
     this.topDownArray
-      .filter(node => node instanceof AbstractSweeperCraftComponent)
-      .forEach(node => {
-        node._syncBoardToGame()
+      .filter(particle => particle instanceof AbstractSweeperCraftComponent)
+      .forEach(particle => {
+        particle._syncBoardToGame()
       })
   }
   _restoreStateFromHash(link) {
     const board = link ? SweeperCraftGame.boardFromPermalink(link) : SweeperCraftGame.getRandomBoard(9, 9, 10)
     this._mainGame = new SweeperCraftGame(board)
-    let boardNode = this.getNode("boardComponent")
-    if (boardNode) {
-      if (boardNode.isMounted()) {
-        boardNode.unmountAndDestroy() // todo: cleanup
-        boardNode = this.getNode("headerComponent").appendSibling("boardComponent")
+    let boardParticle = this.getParticle("boardComponent")
+    if (boardParticle) {
+      if (boardParticle.isMounted()) {
+        boardParticle.unmountAndDestroy() // todo: cleanup
+        boardParticle = this.getParticle("headerComponent").appendSibling("boardComponent")
       }
-      boardNode.setChildren(this._mainGame.getGameAsTree())
+      boardParticle.setChildren(this._mainGame.getGameAsParticles())
     }
     this._syncAndRender()
   }
@@ -616,13 +616,13 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     return classes
   }
 }
-class AbstractSweeperCraftComponent extends AbstractTreeComponentParser {}
+class AbstractSweeperCraftComponent extends AbstractParticleComponentParser {}
 class headerComponent extends AbstractSweeperCraftComponent {
-  async treeComponentDidMount() {
-    await super.treeComponentDidMount()
+  async particleComponentDidMount() {
+    await super.particleComponentDidMount()
     if (!this.isNodeJs()) this._initTimerInterval()
   }
-  treeComponentWillUnmount() {
+  particleComponentWillUnmount() {
     clearInterval(this._timerInterval)
     delete this._timerInterval
   }
@@ -674,7 +674,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
 }
 class boardComponent extends AbstractSweeperCraftComponent {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -688,9 +688,9 @@ class boardComponent extends AbstractSweeperCraftComponent {
     return super.getCssClasses().concat([this._getCssGameClass()])
   }
 }
-class rowComponent extends AbstractTreeComponentParser {
+class rowComponent extends AbstractParticleComponentParser {
   createParserCombinator() {
-    return new TreeNode.ParserCombinator(undefined, {
+    return new Particle.ParserCombinator(undefined, {
       squareComponent: squareComponent
     })
   }
@@ -785,7 +785,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
     this.setContent(this._getGameLink())
   }
 }
-class shortcutsTableComponent extends AbstractTreeComponentParser {
+class shortcutsTableComponent extends AbstractParticleComponentParser {
   triggerShortcut(letter) {
     this.root.keyboardShortcuts[letter]()
   }
@@ -839,7 +839,7 @@ class shortcutsTableComponent extends AbstractTreeComponentParser {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft`
+    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework/sweepercraft`
   }
 }
 window.SweeperCraftApp = SweeperCraftApp

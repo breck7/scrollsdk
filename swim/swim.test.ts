@@ -2,22 +2,22 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const { TreeNode } = require("../products/TreeNode.js")
+const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.runSwimTests = equal => {
+testParticles.runSwimTests = equal => {
   // Arrange/Act/Assert
-  const tests = TreeNode.fromDisk(__dirname + "/TreeNode.swim")
+  const tests = Particle.fromDisk(__dirname + "/Particle.swim")
   tests.forEach((test: any) => {
-    const arrange = test.getNode("arrange").childrenToString() // Note: used in the eval below
-    const expected = test.getNode("assert").childrenToString()
-    const code = test.getNode("act").childrenToString()
+    const arrange = test.getParticle("arrange").childrenToString() // Note: used in the eval below
+    const expected = test.getParticle("assert").childrenToString()
+    const code = test.getParticle("act").childrenToString()
     equal(eval(code), expected, test.getLine())
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

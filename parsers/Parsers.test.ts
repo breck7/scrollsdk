@@ -22,9 +22,9 @@ const jibberishParsersPath = path.join(jibberishRootDir, "jibberish.parsers")
 const jibberishParsersCode = Disk.read(jibberishParsersPath)
 const poopParsersPath = path.join(__dirname, "..", "langs", "poop", "poop.parsers")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.emptyProgram = equal => {
+testParticles.emptyProgram = equal => {
   // Arrange/Act/Assert
   const program = new HandParsersProgram()
   const errs = program.getAllErrors()
@@ -34,7 +34,7 @@ testTree.emptyProgram = equal => {
   equal(errs.length, 0, "should be no errors")
 }
 
-testTree.parsersLangBasics = equal => {
+testParticles.parsersLangBasics = equal => {
   // Arrange/Act
   const parsersProgram = new HandParsersProgram(jibberishParsersCode)
   const errs = parsersProgram.getAllErrors()
@@ -66,13 +66,13 @@ const makeProgram = (parsersCode: string, code: string) => {
   return new rootParser(code)
 }
 
-testTree.trainAndPredict = equal => {
+testParticles.trainAndPredict = equal => {
   // Arrange/Act
   const parsersProgram = new HandParsersProgram(hakonParsers)
   const hakonParser = parsersProgram.compileAndReturnRootParser()
   const testBlankProgram = new hakonParser()
   const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
+  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.childrenToString())
   const model = parsersProgram.trainModel(examples)
 
   // Assert
@@ -80,21 +80,21 @@ testTree.trainAndPredict = equal => {
   equal(predictions[0].id, "selectorParser")
 
   // Act
-  const bodyNode = testBlankProgram.appendLine("body")
+  const bodyParticle = testBlankProgram.appendLine("body")
 
   // Assert
-  const predictions2 = handParsersProgram.predictChildren(model, bodyNode)
+  const predictions2 = handParsersProgram.predictChildren(model, bodyParticle)
   equal(predictions2[0].id, "propertyParser")
 
   // Act
-  const fontSizeNode = testBlankProgram.appendLine("font-size")
+  const fontSizeParticle = testBlankProgram.appendLine("font-size")
 
   // Assert
-  const predictions3 = handParsersProgram.predictParents(model, fontSizeNode)
+  const predictions3 = handParsersProgram.predictParents(model, fontSizeParticle)
   equal(predictions3[0].id, "selectorParser")
 }
 
-testTree.jibberish = equal => {
+testParticles.jibberish = equal => {
   // Arrange
   const sampleJibberishCode = Disk.read(path.join(jibberishRootDir, "sample.jibberish"))
 
@@ -107,27 +107,27 @@ testTree.jibberish = equal => {
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map((err: any) => err.message))
 
-  const parserDef = program.handParsersProgram.parserFamilyTree.getNode("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
+  const parserDef = program.handParsersProgram.parserLineage.getParticle("abstractTopLevelParser particleWithConstsParser particleExpandsConstsParser")
 
-  equal(parserDef.toString(), "nodeExpandsConstsParser", "family tree works")
+  equal(parserDef.toString(), "particleExpandsConstsParser", "parser lineage works")
 
   // Act
-  const fooNode = <any>program.getNode("foo")
-  const constNode = <any>program.getNode("nodeWithConsts")
-  const nodeExpandsConsts = <any>program.getNode("nodeExpandsConsts")
+  const fooParticle = <any>program.getParticle("foo")
+  const constParticle = <any>program.getParticle("particleWithConsts")
+  const particleExpandsConsts = <any>program.getParticle("particleExpandsConsts")
 
   // Assert
-  equal(fooNode.parserId, "fooParser")
-  equal(constNode.parserId, "nodeWithConstsParser")
-  equal(constNode.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser nodeWithConstsParser")
-  equal(constNode.definition.greeting, "hello world", "constants are also present on parsers definition nodes")
+  equal(fooParticle.parserId, "fooParser")
+  equal(constParticle.parserId, "particleWithConstsParser")
+  equal(constParticle.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser particleWithConstsParser")
+  equal(constParticle.definition.greeting, "hello world", "constants are also present on parsers definition particles")
 
   // Assert
-  equal(constNode.greeting, "hello world", "constant strings should work")
-  equal(constNode.score1, 28, "constant insts should work")
-  equal(constNode.score2, 3.01, "constant floats should work")
-  equal(constNode.win, true, "constant booleans should work")
-  const obj = constNode.definition.constantsObject
+  equal(constParticle.greeting, "hello world", "constant strings should work")
+  equal(constParticle.score1, 28, "constant insts should work")
+  equal(constParticle.score2, 3.01, "constant floats should work")
+  equal(constParticle.win, true, "constant booleans should work")
+  const obj = constParticle.definition.constantsObject
   equal(obj.score1, 28, "constants int works")
   equal(obj.score2, 3.01, "constants floats works")
   equal(obj.win, true, "constants bool works")
@@ -138,18 +138,18 @@ testTree.jibberish = equal => {
 world`,
     "constants multiline string works"
   )
-  const obj2 = nodeExpandsConsts.definition.constantsObject
+  const obj2 = particleExpandsConsts.definition.constantsObject
   equal(obj2.greeting, "hola", "expanding constants works and last wins")
   equal(obj2.win, true, "expanding constants works")
 
   // Act
-  const addition = program.getNode("+")
+  const addition = program.getParticle("+")
 
   // Assert
   equal(addition.constructor.name, "plusParser", "correct constructor name")
 
   // Act/Assert
-  equal(program.getNode("someCode echo").constructor.name, "lineOfCodeParser", "line of code class")
+  equal(program.getParticle("someCode echo").constructor.name, "lineOfCodeParser", "line of code class")
 
   // Act
   const programWithParserBugs = makeJibberishProgram(`missing 1 2
@@ -160,7 +160,7 @@ missing2 true`)
 
   // Grandchild inheritance
   // Arrange
-  const def = (<any>program.getNode("html.h1")).definition
+  const def = (<any>program.getParticle("html.h1")).definition
 
   // Act/Assert
   equal(
@@ -176,13 +176,13 @@ const langs = Disk.dir(path.normalize(__dirname + `/../langs/`))
 langs.forEach((lang: string) => {
   const folder = path.normalize(`${__dirname}/../langs/${lang}`)
   if (!Disk.isDir(folder)) return
-  testTree[`${lang}SimTest`] = equal => {
+  testParticles[`${lang}SimTest`] = equal => {
     const parsersCode = Disk.read(path.normalize(`${folder}/${lang}.parsers`))
     const parsersProgram = new HandParsersProgram(parsersCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
 
     // Act
-    const simulatedProgram = parsersProgram.rootParserDefinition.synthesizeNode().join("\n")
+    const simulatedProgram = parsersProgram.rootParserDefinition.synthesizeParticle().join("\n")
 
     // Assert
     const errors = new rootParser(simulatedProgram).getAllErrors()
@@ -191,15 +191,15 @@ langs.forEach((lang: string) => {
   }
 })
 
-testTree.iris = equal => {
+testParticles.iris = equal => {
   // Arrange
   const programWithBugs = makeIrisProgram(`6.1 3 4.9  virginica`)
 
   // Act/Assert
-  equal(programWithBugs.toCellTypeTree(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
+  equal(programWithBugs.toCellTypeParticles(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
 }
 
-testTree.jibberishErrors = equal => {
+testParticles.jibberishErrors = equal => {
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
@@ -217,7 +217,7 @@ testTree.jibberishErrors = equal => {
   equal(programWithBugs.invalidParsers.length, 0)
 }
 
-testTree.toTypeScriptInterface = equal => {
+testParticles.toTypeScriptInterface = equal => {
   // Arrange
   const parsersProgram = new HandParsersProgram(arrowParsers).compileAndReturnRootParser()
   // Act // Assert
@@ -239,7 +239,7 @@ interface arrowParser {
   )
 }
 
-testTree.makeError = equal => {
+testParticles.makeError = equal => {
   // Arrange/Act/Assert
   const program = makeJibberishProgram("")
   const message = "My custom error"
@@ -250,16 +250,16 @@ testTree.makeError = equal => {
   equal(error.lineNumber, 1)
 }
 
-testTree.cellTypeTree = equal => {
+testParticles.cellTypeParticles = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
-  const a = (<any>someJibberishProgram.nodeAt(1)).definition
+  const a = (<any>someJibberishProgram.particleAt(1)).definition
 
   // Assert
   equal(
-    someJibberishProgram.toCellTypeTree(),
+    someJibberishProgram.toCellTypeParticles(),
     `topLevelPropertyCell
 opSymbolCell intCell intCell intCell`,
     "word types should match"
@@ -267,8 +267,8 @@ opSymbolCell intCell intCell intCell`,
   equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
 
   // Act
-  const parsers = someJibberishProgram.asCellTypeTreeWithParserIds
-  const treeWithParsers = someJibberishProgram.asTreeWithParsers
+  const parsers = someJibberishProgram.asCellTypeParticlesWithParserIds
+  const particlesWithParsers = someJibberishProgram.asParticlesWithParsers
 
   // Assert
   equal(
@@ -278,24 +278,24 @@ plusParser opSymbolCell intCell intCell intCell`,
     "parsers word types should match"
   )
   equal(
-    treeWithParsers,
+    particlesWithParsers,
     `fooParser foo
 plusParser + 2 3 2`,
-    "treeWithParsers word types should match"
+    "particlesWithParsers word types should match"
   )
 }
 
-testTree.preludeTypes = equal => {
+testParticles.preludeTypes = equal => {
   // Act/Assert
-  equal(makeNumbersProgram(`+ 2`).nodeAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
+  equal(makeNumbersProgram(`+ 2`).particleAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
 }
 
-testTree.exponentialNotation = equal => {
+testParticles.exponentialNotation = equal => {
   // Act/Assert
-  equal(makeNumbersProgram(`+ 2e3`).nodeAt(0).getErrors().length, 0)
+  equal(makeNumbersProgram(`+ 2e3`).particleAt(0).getErrors().length, 0)
 }
 
-testTree.format = equal => {
+testParticles.format = equal => {
   // Arrange
   const normalCode = `someLangParser
  root
@@ -318,7 +318,7 @@ saturationParser
   equal(formatted, normalCode, "code is already in formatted form")
 }
 
-testTree.formatDo = equal => {
+testParticles.formatDo = equal => {
   // Arrange
   const unsortedCode = `someLangParser
  root
@@ -344,7 +344,7 @@ h1Parser
   equal(makeParsersProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
 }
 
-testTree.cokeRegression = equal => {
+testParticles.cokeRegression = equal => {
   // Arrange
   const lang = `cokeParser
  root
@@ -365,16 +365,16 @@ cokes 22 11`
   const errs = program.getAllErrors()
   equal(errs.length, 0)
   if (errs.length) console.log(errs.map((err: any) => err.message).join("\n"))
-  equal(typeof program.toPaintTree(), "string")
+  equal(typeof program.toPaintParticles(), "string")
 }
 
-testTree.paints = equal => {
+testParticles.paints = equal => {
   // Arrange
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
   // Act
-  const scopes = someJibberishProgram.toPaintTree()
+  const scopes = someJibberishProgram.toPaintParticles()
 
   // Assert
   equal(
@@ -384,9 +384,9 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   )
 
   // Arrange/Act/Assert
-  equal(makeJibberishProgram(`fault`).toPaintTree(), `invalid`)
-  equal(makeJibberishProgram(`fault fault`).toPaintTree(), `invalid invalid`)
-  equal(makeNumbersProgram(`+ 2`).toPaintTree(), `keyword.operator.arithmetic constant.numeric`)
+  equal(makeJibberishProgram(`fault`).toPaintParticles(), `invalid`)
+  equal(makeJibberishProgram(`fault fault`).toPaintParticles(), `invalid invalid`)
+  equal(makeNumbersProgram(`+ 2`).toPaintParticles(), `keyword.operator.arithmetic constant.numeric`)
 
   // Arrange
   const program = makeJibberishProgram(`lightbulbState on
@@ -394,14 +394,14 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
 
   // Act/Assert
   equal(
-    program.toPaintTree(),
+    program.toPaintParticles(),
     `constant.language source
  invalid`
   )
   equal(program.getAllErrors().length, 1)
 }
 
-testTree.autocomplete = equal => {
+testParticles.autocomplete = equal => {
   // Arrange
   let program = makeNumbersProgram(`+ 2 3
 com
@@ -412,7 +412,7 @@ com
   equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
   const acResults = program.getAutocompleteResultsAt(2, 0).matches
-  equal(acResults.length, 7, "all nodes")
+  equal(acResults.length, 7, "all particles")
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0, "should be none")
 
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
@@ -429,7 +429,7 @@ com
   equal(program.execute().join(" "), "5 60")
 }
 
-testTree.extraWord = equal => {
+testParticles.extraWord = equal => {
   // Arrange
   const program = makeParsersProgram(`foobarParser
  root foo2`)
@@ -437,13 +437,13 @@ testTree.extraWord = equal => {
   // Act/Assert
   equal(program.getAllErrors().length, 1)
   equal(
-    program.toCellTypeTree(),
+    program.toCellTypeParticles(),
     `parserIdCell
  propertyKeywordCell extraWordCell`
   )
 }
 
-testTree.autocompleteAdditionalWords = equal => {
+testParticles.autocompleteAdditionalWords = equal => {
   // Arrange
   const program = makeParsersProgram(`fooCell
  paint comme`)
@@ -452,7 +452,7 @@ testTree.autocompleteAdditionalWords = equal => {
   equal(program.getAutocompleteResultsAt(1, 11).matches.length, 5)
 }
 
-testTree.autocompleteAdvanced = equal => {
+testParticles.autocompleteAdvanced = equal => {
   // Arrange
   const program = makeParsersProgram(`latinParser
  root
@@ -466,16 +466,16 @@ faveNumberParser
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
 
-  equal(program.toSideBySide([program.toDefinitionLineNumberTree()]).numberOfLines, 8)
+  equal(program.toSideBySide([program.toDefinitionLineNumberParticles()]).numberOfLines, 8)
 }
 
 // todo: fix autocomplete for omnifix languages
-// testTree._autocompleteUnicode = equal => {
+// testParticles._autocompleteUnicode = equal => {
 //   // Arrange/Act/Assert
 //   equal(makePoopProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 5)
 // }
 
-testTree.autocompleteCustom = equal => {
+testParticles.autocompleteCustom = equal => {
   // Arrange/Act/Assert
   equal(makeJibberishProgram(`xColumnName `).getAutocompleteResultsAt(0, 12).matches.length, 3)
   equal(makeJibberishProgram(`xColumnName eight`).getAutocompleteResultsAt(0, 12).matches.length, 2)
@@ -483,10 +483,10 @@ testTree.autocompleteCustom = equal => {
   equal(makeJibberishProgram(`xColumnName genders`).getAllErrors().length, 1, "should have 1 error. genders doesnt fit.")
 }
 
-testTree.blobParsers = equal => {
+testParticles.blobParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar
- This is a blob node.
+ This is a blob particle.
  this is some text.
  hello world
  
@@ -502,10 +502,10 @@ testTree.blobParsers = equal => {
   }
 
   // Regression test. The below should not throw
-  equal(anyProgram.topDownArray.map((node: any) => node.parserId).length > 0, true, "passed blob regression")
+  equal(anyProgram.topDownArray.map((particle: any) => particle.parserId).length > 0, true, "passed blob regression")
 }
 
-testTree.sublimeSyntaxFile = equal => {
+testParticles.sublimeSyntaxFile = equal => {
   // Arrange/Act
   const parsersProgram = new HandParsersProgram(jibberishParsersCode)
   const code = parsersProgram.toSublimeSyntaxFile()
@@ -514,7 +514,7 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree.toStumpString = equal => {
+testParticles.toStumpString = equal => {
   // Arrange/Act
   const parsersProgram = new HandParsersProgram(arrowParsers).compileAndReturnRootParser()
   const code = new parsersProgram().definition.getParserDefinitionByParserId("chargeParser").toStumpString()
@@ -548,8 +548,8 @@ div
   equal(code, expected, "form correct")
 }
 
-// todo: reenable once we have the requirement of at least 1 root node
-// testTree.requiredParsers = equal => {
+// todo: reenable once we have the requirement of at least 1 root particle
+// testParticles.requiredParsers = equal => {
 //   // Arrange/Act
 //   const path = parsersParsersPath
 //   const anyProgram = makeProgram(
@@ -564,7 +564,7 @@ div
 //   equal(errs.length, 1)
 // }
 
-testTree.minimumParsers = equal => {
+testParticles.minimumParsers = equal => {
   // Arrange/Act
   const rootParser = new HandParsersProgram(
     `anyLangParser
@@ -589,7 +589,7 @@ anyCell`
   equal(errs.length, 0)
 }
 
-testTree.rootCatchAllParser = equal => {
+testParticles.rootCatchAllParser = equal => {
   // Arrange
   const abcLang = new HandParsersProgram(`abcParser
  root`).compileAndReturnRootParser()
@@ -597,7 +597,7 @@ testTree.rootCatchAllParser = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.toCellTypeTree(), "extraWordCell", "one word")
+  equal(program.toCellTypeParticles(), "extraWordCell", "one word")
 
   // Arrange
   const abcLangWithErrors = new HandParsersProgram(`abcParser
@@ -610,7 +610,7 @@ errorParser
   equal(new abcLangWithErrors("foobar").getAllErrors().length, 1)
 }
 
-testTree.blankParserId = equal => {
+testParticles.blankParserId = equal => {
   // Arrange
   const abcLang = new HandParsersProgram(`parser `).compileAndReturnRootParser()
 
@@ -618,31 +618,31 @@ testTree.blankParserId = equal => {
   equal(new abcLang("foobar").getAllErrors().length, 0)
 }
 
-testTree.parsersWithLoop = equal => {
+testParticles.parsersWithLoop = equal => {
   // Arrange/Act/Assert
   try {
     const rootParser = new HandParsersProgram(
       `langWithLoopParser
  root
- catchAllParser nodeAParser
-nodeAParser
- extends nodeCParser
+ catchAllParser particleAParser
+particleAParser
+ extends particleCParser
  catchAllCellType anyCell
-nodeBParser
- extends nodeAParser
-nodeCParser
- extends nodeBParser
+particleBParser
+ extends particleAParser
+particleCParser
+ extends particleBParser
 anyCell`
     ).compileAndReturnRootParser()
 
-    new rootParser("nodeA")
+    new rootParser("particleA")
     equal(false, true, "Should have thrown error")
   } catch (err) {
     equal(err.toString().includes("Loop"), true, `Expected correct error thrown when parsers. Got: ${err.toString()}`)
   }
 }
 
-testTree.duplicateParsers = equal => {
+testParticles.duplicateParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`type foo
 type bar`)
@@ -651,7 +651,7 @@ type bar`)
   equal(anyProgram.getAllErrors().length, 2)
 }
 
-testTree.abstractParsers = equal => {
+testParticles.abstractParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`someAbstractClass
 extendsAbstract 2`)
@@ -660,7 +660,7 @@ extendsAbstract 2`)
   equal(anyProgram.getAllErrors().length, 1)
 }
 
-testTree.updateParserIds = equal => {
+testParticles.updateParserIds = equal => {
   // Arrange/Act
   const anyProgram = makeParsersProgram(`someLangParser
  root
@@ -668,8 +668,8 @@ foobarCell
  regex test`)
 
   // Assert
-  anyProgram.findAllNodesWithParser("regexParser").forEach((node: any) => {
-    node.setWord(0, "regexString")
+  anyProgram.findAllParticlesWithParser("regexParser").forEach((particle: any) => {
+    particle.setWord(0, "regexString")
   })
   equal(
     anyProgram.toString(),
@@ -680,7 +680,7 @@ foobarCell
   )
 }
 
-testTree.toNodeJsJavascript = equal => {
+testParticles.toNodeJsJavascript = equal => {
   // Arrange
   let program = new HandParsersProgram(parsersParsers)
   // Act
@@ -689,7 +689,7 @@ testTree.toNodeJsJavascript = equal => {
   equal(typeof compiledParser, "string")
 }
 
-testTree.invalidParsersRegression = equal => {
+testParticles.invalidParsersRegression = equal => {
   // Arrange
   let program = new HandParsersProgram(`oldStyle something
  root`)
@@ -699,7 +699,7 @@ testTree.invalidParsersRegression = equal => {
   equal(typeof compiledParser, "string")
 }
 
-testTree.bundler = equal => {
+testParticles.bundler = equal => {
   // Arrange
   const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
 
@@ -711,7 +711,7 @@ testTree.bundler = equal => {
 }
 
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
-Object.assign(testTree, jibberishParsersProgram.examplesToTestBlocks())
+Object.assign(testParticles, jibberishParsersProgram.examplesToTestBlocks())
 
 // Arrange/Act
 const badParsersProgram = new HandParsersProgram(
@@ -727,8 +727,8 @@ addParser
 keywordCell
 intCell`
 )
-Object.assign(testTree, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
+Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

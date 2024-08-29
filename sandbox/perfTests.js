@@ -8,19 +8,19 @@ const logFn = msg => {
 const getBigCode = () => {
   const programCode = `foo
  whoodat
-nodeWithConsts
+particleWithConsts
 lightbulbState on
 lightbulbState off
 + 2 3 2
 text
 thisShouldErrorError1
 to fillThis`
-  const code = new TreeNode(programCode)
-  let long = TreeNode.toString().repeat(20)
-  code.getNode("text").setChildren(long)
+  const code = new Particle(programCode)
+  let long = Particle.toString().repeat(20)
+  code.getParticle("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
-  code.getNode("to").setChildren(long.trim())
+  code.getParticle("to").setChildren(long.trim())
   return code
 }
 
@@ -53,7 +53,7 @@ const main = (parsersCode, code) => {
 }
 
 const parseStringTest = () => {
-  const data = TreeNode.iris.repeat(100)
+  const data = Particle.iris.repeat(100)
   const map = {}
   const lineLength = data.split("\n").length
   const trials = 200
@@ -61,7 +61,7 @@ const parseStringTest = () => {
   const startTime = Date.now()
 
   for (let index = 0; index < trials; index++) {
-    map[index] = new TreeNode(data)
+    map[index] = new Particle(data)
   }
   const elapsed = Date.now() - startTime
 
@@ -71,7 +71,7 @@ const parseStringTest = () => {
 }
 
 const toStringTest = () => {
-  const data = new TreeNode(Utils.makeRandomTree(10000))
+  const data = new Particle(Utils.makeRandomParticles(10000))
   const startTime = Date.now()
 
   const res = data.toString()

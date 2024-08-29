@@ -54,7 +54,7 @@ var ParsersCellParser
 })(ParsersCellParser || (ParsersCellParser = {}))
 var ParsersConstants
 ;(function (ParsersConstants) {
-  // node types
+  // particle types
   ParsersConstants["extensions"] = "extensions"
   ParsersConstants["comment"] = "//"
   ParsersConstants["parser"] = "parser"
@@ -111,8 +111,8 @@ var ParsersConstants
   ParsersConstants["paint"] = "paint"
 })(ParsersConstants || (ParsersConstants = {}))
 class TypedWord extends ParticleWord {
-  constructor(node, cellIndex, type) {
-    super(node, cellIndex)
+  constructor(particle, cellIndex, type) {
+    super(particle, cellIndex)
     this._type = type
   }
   get type() {
@@ -138,36 +138,36 @@ class ParserBackedParticle extends Particle {
   makeError(message) {
     return new ParserDefinedError(this, message)
   }
-  get nodeIndex() {
+  get particleIndex() {
     // StringMap<int> {firstWord: index}
     // When there are multiple tails with the same firstWord, _index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
-    return this._nodeIndex || this._makeParticleIndex()
+    return this._particleIndex || this._makeParticleIndex()
   }
   _clearIndex() {
-    delete this._nodeIndex
+    delete this._particleIndex
     return super._clearIndex()
   }
   _makeIndex(startAt = 0) {
-    if (this._nodeIndex) this._makeParticleIndex(startAt)
+    if (this._particleIndex) this._makeParticleIndex(startAt)
     return super._makeIndex(startAt)
   }
   _makeParticleIndex(startAt = 0) {
-    if (!this._nodeIndex || !startAt) this._nodeIndex = {}
-    const nodes = this._getChildrenArray()
-    const newIndex = this._nodeIndex
-    const length = nodes.length
+    if (!this._particleIndex || !startAt) this._particleIndex = {}
+    const particles = this._getChildrenArray()
+    const newIndex = this._particleIndex
+    const length = particles.length
     for (let index = startAt; index < length; index++) {
-      const node = nodes[index]
-      const ancestors = Array.from(node.definition._getAncestorSet()).forEach(id => {
+      const particle = particles[index]
+      const ancestors = Array.from(particle.definition._getAncestorSet()).forEach(id => {
         if (!newIndex[id]) newIndex[id] = []
-        newIndex[id].push(node)
+        newIndex[id].push(particle)
       })
     }
     return newIndex
   }
   getChildInstancesOfParserId(parserId) {
-    return this.nodeIndex[parserId] || []
+    return this.particleIndex[parserId] || []
   }
   doesExtend(parserId) {
     return this.definition._doesExtend(parserId)
@@ -199,10 +199,10 @@ class ParserBackedParticle extends Particle {
     const cell = this.parsedCells[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
-  // note: this is overwritten by the root node of a runtime parsers program.
+  // note: this is overwritten by the root particle of a runtime parsers program.
   // some of the magic that makes this all work. but maybe there's a better way.
   get handParsersProgram() {
-    if (this.isRoot()) throw new Error(`Root node without getHandParsersProgram defined.`)
+    if (this.isRoot()) throw new Error(`Root particle without getHandParsersProgram defined.`)
     return this.root.handParsersProgram
   }
   getRunTimeEnumOptions(cell) {
@@ -222,15 +222,15 @@ class ParserBackedParticle extends Particle {
   get requiredParticleErrors() {
     const errors = []
     Object.values(this.definition.firstWordMapWithDefinitions).forEach(def => {
-      if (def.isRequired() && !this.nodeIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
+      if (def.isRequired() && !this.particleIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
     })
     return errors
   }
   get programAsCells() {
     // todo: what is this?
-    return this.topDownArray.map(node => {
-      const cells = node.parsedCells
-      let indents = node.getIndentLevel() - 1
+    return this.topDownArray.map(particle => {
+      const cells = particle.parsedCells
+      let indents = particle.getIndentLevel() - 1
       while (indents) {
         cells.unshift(undefined)
         indents--
@@ -243,14 +243,14 @@ class ParserBackedParticle extends Particle {
   }
   get allTypedWords() {
     const words = []
-    this.topDownArray.forEach(node => node.wordTypes.forEach((cell, index) => words.push(new TypedWord(node, index, cell.cellTypeId))))
+    this.topDownArray.forEach(particle => particle.wordTypes.forEach((cell, index) => words.push(new TypedWord(particle, index, cell.cellTypeId))))
     return words
   }
   findAllWordsWithCellType(cellTypeId) {
     return this.allTypedWords.filter(typedWord => typedWord.type === cellTypeId)
   }
   findAllParticlesWithParser(parserId) {
-    return this.topDownArray.filter(node => node.definition.parserIdFromDefinition === parserId)
+    return this.topDownArray.filter(particle => particle.definition.parserIdFromDefinition === parserId)
   }
   toCellTypeParticles() {
     return this.topDownArray.map(child => child.indentation + child.lineCellTypes).join("\n")
@@ -258,7 +258,7 @@ class ParserBackedParticle extends Particle {
   getParseTable(maxColumnWidth = 40) {
     const particle = new Particle(this.toCellTypeParticles())
     return new Particle(
-      particle.topDownArray.map((node, lineNumber) => {
+      particle.topDownArray.map((particle, lineNumber) => {
         const sourceNode = this.particleAtLine(lineNumber)
         const errs = sourceNode.getErrors()
         const errorCount = errs.length
@@ -266,7 +266,7 @@ class ParserBackedParticle extends Particle {
           lineNumber: lineNumber,
           source: sourceNode.indentation + sourceNode.getLine(),
           parser: sourceNode.constructor.name,
-          cellTypes: node.content,
+          cellTypes: particle.content,
           errorCount: errorCount
         }
         if (errorCount) obj.errorMessages = errs.map(err => err.message).join(";")
@@ -310,14 +310,14 @@ class ParserBackedParticle extends Particle {
   toAutoCompleteTable() {
     return new Particle(
       this._getAllAutoCompleteWords().map(result => {
-        result.suggestions = result.suggestions.map(node => node.text).join(" ")
+        result.suggestions = result.suggestions.map(particle => particle.text).join(" ")
         return result
       })
     ).asTable
   }
   getAutocompleteResultsAt(lineIndex, charIndex) {
     const lineNode = this.particleAtLine(lineIndex) || this
-    const nodeInScope = lineNode.getParticleInScopeAtCharIndex(charIndex)
+    const particleInScope = lineNode.getParticleInScopeAtCharIndex(charIndex)
     // todo: add more tests
     // todo: second param this.childrenToString()
     // todo: change to getAutocomplete definitions
@@ -327,21 +327,21 @@ class ParserBackedParticle extends Particle {
       startCharIndex: wordProperties.startCharIndex,
       endCharIndex: wordProperties.endCharIndex,
       word: wordProperties.word,
-      matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
+      matches: particleInScope.getAutocompleteResults(wordProperties.word, wordIndex)
     }
   }
   _sortWithParentParsersUpTop() {
     const lineage = new HandParsersProgram(this.toString()).parserLineage
     const rank = {}
-    lineage.topDownArray.forEach((node, index) => {
-      rank[node.getWord(0)] = index
+    lineage.topDownArray.forEach((particle, index) => {
+      rank[particle.getWord(0)] = index
     })
-    const nodeAFirst = -1
-    const nodeBFirst = 1
-    this.sort((nodeA, nodeB) => {
-      const nodeARank = rank[nodeA.getWord(0)]
-      const nodeBRank = rank[nodeB.getWord(0)]
-      return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst
+    const particleAFirst = -1
+    const particleBFirst = 1
+    this.sort((particleA, particleB) => {
+      const particleARank = rank[particleA.getWord(0)]
+      const particleBRank = rank[particleB.getWord(0)]
+      return particleARank < particleBRank ? particleAFirst : particleBFirst
     })
     return this
   }
@@ -367,9 +367,9 @@ class ParserBackedParticle extends Particle {
       const requiredCellTypeIds = def.cellParser.getRequiredCellTypeIds()
       usage.appendLine([def.parserIdFromDefinition, "line-id", "parser", requiredCellTypeIds.join(" ")].join(" "))
     })
-    this.topDownArray.forEach((node, lineNumber) => {
-      const stats = usage.getParticle(node.parserId)
-      stats.appendLine([filepath + "-" + lineNumber, node.words.join(" ")].join(" "))
+    this.topDownArray.forEach((particle, lineNumber) => {
+      const stats = usage.getParticle(particle.parserId)
+      stats.appendLine([filepath + "-" + lineNumber, particle.words.join(" ")].join(" "))
     })
     return usage
   }
@@ -419,8 +419,8 @@ class ParserBackedParticle extends Particle {
     const parent = this.parent
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
     if (hits.length > 1)
-      hits.forEach((node, index) => {
-        if (node === this) errors.push(new ParserUsedMultipleTimesError(node))
+      hits.forEach((particle, index) => {
+        if (particle === this) errors.push(new ParserUsedMultipleTimesError(particle))
       })
     return errors
   }
@@ -430,9 +430,9 @@ class ParserBackedParticle extends Particle {
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
     if (hits.length > 1) {
       const set = new Set()
-      hits.forEach((node, index) => {
-        const line = node.getLine()
-        if (set.has(line)) errors.push(new ParserUsedMultipleTimesError(node))
+      hits.forEach((particle, index) => {
+        const line = particle.getLine()
+        if (set.has(line)) errors.push(new ParserUsedMultipleTimesError(particle))
         set.add(line)
       })
     }
@@ -453,7 +453,7 @@ class ParserBackedParticle extends Particle {
   get parsedCells() {
     return this.definition.cellParser.getCellArray(this)
   }
-  // todo: just make a fn that computes proper spacing and then is given a node to print
+  // todo: just make a fn that computes proper spacing and then is given a particle to print
   get lineCellTypes() {
     return this.parsedCells.map(slot => slot.cellTypeId).join(" ")
   }
@@ -480,9 +480,9 @@ class ParserBackedParticle extends Particle {
   _getFields() {
     // fields are like cells
     const fields = {}
-    this.forEach(node => {
-      const def = node.definition
-      if (def.isRequired() || def.isSingle) fields[node.getWord(0)] = node.content
+    this.forEach(particle => {
+      const def = particle.definition
+      if (def.isRequired() || def.isSingle) fields[particle.getWord(0)] = particle.content
     })
     return fields
   }
@@ -511,7 +511,7 @@ class ParserBackedParticle extends Particle {
     return this.listDelimiter ? this.content.split(this.listDelimiter) : super.list
   }
   get typedContent() {
-    // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
+    // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the particle level
     // todo: this currently parse anything other than string types
     if (this.listDelimiter) return this.content.split(this.listDelimiter)
     const cells = this.parsedCells
@@ -537,7 +537,7 @@ class ParserBackedParticle extends Particle {
     if (shouldReturnValueAsObject) return [key, this.typedMap]
     const hasChildrenAndContent = typedContent !== undefined && hasChildren
     const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
-    // If the node has a content and a subparticle return it as a string, as
+    // If the particle has a content and a subparticle return it as a string, as
     // Javascript object values can't be both a leaf and a particle.
     if (shouldReturnValueAsContentPlusChildren) return [key, this.contentWithChildren]
     return [key, typedContent]
@@ -548,10 +548,10 @@ class ParserBackedParticle extends Particle {
   }
   get typedMap() {
     const obj = {}
-    this.forEach(node => {
-      if (!node._shouldSerialize) return true
-      const tuple = node.typedTuple
-      if (!node.isArrayElement) obj[tuple[0]] = tuple[1]
+    this.forEach(particle => {
+      if (!particle._shouldSerialize) return true
+      const tuple = particle.typedTuple
+      if (!particle.isArrayElement) obj[tuple[0]] = tuple[1]
       else {
         if (!obj[tuple[0]]) obj[tuple[0]] = []
         obj[tuple[0]].push(tuple[1])
@@ -610,16 +610,16 @@ class UnknownParserParticle extends ParserBackedParticle {
 A cell contains a word but also the type information for that word.
 */
 class AbstractParsersBackedCell {
-  constructor(node, index, typeDef, cellTypeId, isCatchAll, parserDefinitionParser) {
+  constructor(particle, index, typeDef, cellTypeId, isCatchAll, parserDefinitionParser) {
     this._typeDef = typeDef
-    this._node = node
+    this._particle = particle
     this._isCatchAll = isCatchAll
     this._index = index
     this._cellTypeId = cellTypeId
     this._parserDefinitionParser = parserDefinitionParser
   }
   getWord() {
-    return this._node.getWord(this._index)
+    return this._particle.getWord(this._index)
   }
   get definitionLineNumber() {
     return this._typeDef.lineNumber
@@ -628,7 +628,7 @@ class AbstractParsersBackedCell {
     return this._cellTypeId
   }
   getParticle() {
-    return this._node
+    return this._particle
   }
   get cellIndex() {
     return this._index
@@ -864,8 +864,8 @@ class ParsersUnknownCellTypeCell extends AbstractParsersBackedCell {
   }
 }
 class AbstractParticleError {
-  constructor(node) {
-    this._node = node
+  constructor(particle) {
+    this._particle = particle
   }
   getLineIndex() {
     return this.lineNumber - 1
@@ -928,7 +928,7 @@ class AbstractParticleError {
     return this.getParticle().handParsersProgram.extensionName
   }
   getParticle() {
-    return this._node
+    return this._particle
   }
   get errorTypeName() {
     return this.constructor.name.replace("Error", "")
@@ -980,23 +980,23 @@ class AbstractCellError extends AbstractParticleError {
 }
 class UnknownParserError extends AbstractParticleError {
   get message() {
-    const node = this.getParticle()
-    const parentNode = node.parent
+    const particle = this.getParticle()
+    const parentNode = particle.parent
     const options = parentNode._getParser().getFirstWordOptions()
-    return super.message + ` Invalid parser "${node.firstWord}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
+    return super.message + ` Invalid parser "${particle.firstWord}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
   }
   get wordSuggestion() {
-    const node = this.getParticle()
-    const parentNode = node.parent
+    const particle = this.getParticle()
+    const parentNode = particle.parent
     return Utils.didYouMean(
-      node.firstWord,
+      particle.firstWord,
       parentNode.getAutocompleteResults("", 0).map(option => option.text)
     )
   }
   get suggestionMessage() {
     const suggestion = this.wordSuggestion
-    const node = this.getParticle()
-    if (suggestion) return `Change "${node.firstWord}" to "${suggestion}"`
+    const particle = this.getParticle()
+    if (suggestion) return `Change "${particle.firstWord}" to "${suggestion}"`
     return ""
   }
   applySuggestion() {
@@ -1006,9 +1006,9 @@ class UnknownParserError extends AbstractParticleError {
   }
 }
 class ParserDefinedError extends AbstractParticleError {
-  constructor(node, message) {
+  constructor(particle, message) {
     super()
-    this._node = node
+    this._particle = particle
     this._message = message
   }
   get message() {
@@ -1032,8 +1032,8 @@ class BlankLineError extends UnknownParserError {
   }
 }
 class MissingRequiredParserError extends AbstractParticleError {
-  constructor(node, missingParserId) {
-    super(node)
+  constructor(particle, missingParserId) {
+    super(particle)
     this._missingParserId = missingParserId
   }
   get message() {
@@ -1217,8 +1217,8 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     return options
   }
   _getEnumFromCellTypeOptions(program) {
-    const node = this._getParticleFromExtended(ParsersConstants.enumFromCellTypes)
-    return node ? Object.keys(node.getParticle(ParsersConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
+    const particle = this._getParticleFromExtended(ParsersConstants.enumFromCellTypes)
+    return particle ? Object.keys(particle.getParticle(ParsersConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
   }
   _getAutocompleteWordOptions(program) {
     return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || []
@@ -1232,7 +1232,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     return this._getChildrenByParserInExtended(AbstractParsersWordTestParser)
   }
   isValid(str, programRootNode) {
-    return this._getAllTests().every(node => node.isValid(str, programRootNode))
+    return this._getAllTests().every(particle => particle.isValid(str, programRootNode))
   }
   get cellTypeId() {
     return this.getWord(0)
@@ -1264,8 +1264,8 @@ class AbstractCellParser {
   _isCatchAllCell(cellIndex, numberOfRequiredCells, totalWordCount) {
     return cellIndex >= numberOfRequiredCells
   }
-  getCellArray(node = undefined) {
-    const wordCount = node ? node.words.length : 0
+  getCellArray(particle = undefined) {
+    const wordCount = particle ? particle.words.length : 0
     const def = this._definition
     const parsersProgram = def.languageDefinitionProgram
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
@@ -1286,7 +1286,7 @@ class AbstractCellParser {
         cellTypeDefinition = parsersProgram.getCellTypeDefinitionById(cellTypeId)
       }
       const anyCellConstructor = cellConstructor
-      cells[cellIndex] = new anyCellConstructor(node, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
+      cells[cellIndex] = new anyCellConstructor(particle, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
     }
     return cells
   }
@@ -1302,12 +1302,12 @@ class PostfixCellParser extends AbstractCellParser {
   }
 }
 class OmnifixCellParser extends AbstractCellParser {
-  getCellArray(node = undefined) {
+  getCellArray(particle = undefined) {
     const cells = []
     const def = this._definition
-    const program = node ? node.root : undefined
+    const program = particle ? particle.root : undefined
     const parsersProgram = def.languageDefinitionProgram
-    const words = node ? node.words : []
+    const words = particle ? particle.words : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => parsersProgram.getCellTypeDefinitionById(cellTypeId))
     const catchAllCellTypeId = this.catchAllCellTypeId
     const catchAllCellTypeDef = catchAllCellTypeId && parsersProgram.getCellTypeDefinitionById(catchAllCellTypeId)
@@ -1318,22 +1318,22 @@ class OmnifixCellParser extends AbstractCellParser {
         if (cellTypeDefinition.isValid(word, program)) {
           // todo: cleanup cellIndex/wordIndex stuff
           cellConstructor = cellTypeDefinition.getCellConstructor()
-          cells.push(new cellConstructor(node, wordIndex, cellTypeDefinition, cellTypeDefinition.id, false, def))
+          cells.push(new cellConstructor(particle, wordIndex, cellTypeDefinition, cellTypeDefinition.id, false, def))
           requiredCellTypeDefs.splice(index, 1)
           return true
         }
       }
       if (catchAllCellTypeDef && catchAllCellTypeDef.isValid(word, program)) {
         cellConstructor = catchAllCellTypeDef.getCellConstructor()
-        cells.push(new cellConstructor(node, wordIndex, catchAllCellTypeDef, catchAllCellTypeId, true, def))
+        cells.push(new cellConstructor(particle, wordIndex, catchAllCellTypeDef, catchAllCellTypeId, true, def))
         return true
       }
-      cells.push(new ParsersUnknownCellTypeCell(node, wordIndex, undefined, undefined, false, def))
+      cells.push(new ParsersUnknownCellTypeCell(particle, wordIndex, undefined, undefined, false, def))
     })
     const wordCount = words.length
     requiredCellTypeDefs.forEach((cellTypeDef, index) => {
       let cellConstructor = cellTypeDef.getCellConstructor()
-      cells.push(new cellConstructor(node, wordCount + index, cellTypeDef, cellTypeDef.id, false, def))
+      cells.push(new cellConstructor(particle, wordCount + index, cellTypeDef, cellTypeDef.id, false, def))
     })
     return cells
   }
@@ -1472,7 +1472,7 @@ ${properties.join("\n")}
     const obj = {}
     const items = extended ? this._getChildrenByParserInExtended(AbstractParserConstantParser) : this.getChildrenByParser(AbstractParserConstantParser)
     items.reverse() // Last definition wins.
-    items.forEach(node => (obj[node.identifier] = node))
+    items.forEach(particle => (obj[particle.identifier] = particle))
     return obj
   }
   get examples() {
@@ -1534,7 +1534,7 @@ ${properties.join("\n")}
     const catchAllCellTypeId = this.get(ParsersConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(parsersProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
     // Constants
-    Object.values(this._getUniqueConstantParticles(false)).forEach(node => getters.push(node.getGetter()))
+    Object.values(this._getUniqueConstantParticles(false)).forEach(particle => getters.push(particle.getGetter()))
     return getters.join("\n")
   }
   _createParserInfo(parserIdsInScope) {
@@ -1595,9 +1595,9 @@ ${properties.join("\n")}
     const def = this.programParserDefinitionCache[parserId]
     if (def) return def
     this.languageDefinitionProgram._addDefaultCatchAllBlobParser() // todo: cleanup. Why did I do this? Needs to be removed or documented.
-    const nodeDef = this.languageDefinitionProgram.programParserDefinitionCache[parserId]
-    if (!nodeDef) throw new Error(`No definition found for parser id "${parserId}". Node: \n---\n${this.asString}\n---`)
-    return nodeDef
+    const particleDef = this.languageDefinitionProgram.programParserDefinitionCache[parserId]
+    if (!particleDef) throw new Error(`No definition found for parser id "${parserId}". Node: \n---\n${this.asString}\n---`)
+    return particleDef
   }
   isDefined(parserId) {
     return !!this.programParserDefinitionCache[parserId]
@@ -1620,7 +1620,7 @@ ${properties.join("\n")}
     return this._getFromExtended(ParsersConstants.baseParser) === ParsersConstants.blobParser
   }
   get errorMethodToJavascript() {
-    if (this._isBlobParser()) return "getErrors() { return [] }" // Skips parsing child nodes for perf gains.
+    if (this._isBlobParser()) return "getErrors() { return [] }" // Skips parsing child particles for perf gains.
     if (this._isErrorParser()) return "getErrors() { return this._getErrorParserErrors() }"
     return ""
   }
@@ -1660,8 +1660,8 @@ ${properties.join("\n")}
     if (this._isBlobParser()) return "this._getBlobParserCatchAllParser()"
     const parserId = this.get(ParsersConstants.catchAllParser)
     if (!parserId) return ""
-    const nodeDef = this.getParserDefinitionByParserId(parserId)
-    return nodeDef.generatedClassName
+    const particleDef = this.getParserDefinitionByParserId(parserId)
+    return particleDef.generatedClassName
   }
   get asJavascriptClass() {
     const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.cellGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
@@ -1685,8 +1685,8 @@ ${properties.join("\n")}
     let obj = {}
     const items = this._getChildrenByParserInExtended(ParsersCompilerParser)
     items.reverse() // Last definition wins.
-    items.forEach(node => {
-      obj = Object.assign(obj, node.toObject()) // todo: what about multiline strings?
+    items.forEach(particle => {
+      obj = Object.assign(obj, particle.toObject()) // todo: what about multiline strings?
     })
     return obj
   }
@@ -1786,11 +1786,11 @@ ${captures}
 ${cells.toString(1)}`
   }
   toStumpString() {
-    const nodeBreakSymbol = "\n"
+    const particleBreakSymbol = "\n"
     return this._getConcreteNonErrorInScopeParticleDefinitions(this._getInScopeParserIds())
       .map(def => def._toStumpString())
       .filter(identity => identity)
-      .join(nodeBreakSymbol)
+      .join(particleBreakSymbol)
   }
   _generateSimulatedLine(seed) {
     // todo: generate simulated data from catch all
@@ -1847,14 +1847,14 @@ ${cells.toString(1)}`
     return defs
   }
   // todo: refactor
-  synthesizeParticle(nodeCount = 1, indentCount = -1, parsersAlreadySynthesized = [], seed = Date.now()) {
+  synthesizeParticle(particleCount = 1, indentCount = -1, parsersAlreadySynthesized = [], seed = Date.now()) {
     let inScopeParserIds = this._getInScopeParserIds()
     const catchAllParserId = this._getFromExtended(ParsersConstants.catchAllParser)
     if (catchAllParserId) inScopeParserIds.push(catchAllParserId)
     const thisId = this.id
     if (!parsersAlreadySynthesized.includes(thisId)) parsersAlreadySynthesized.push(thisId)
     const lines = []
-    while (nodeCount) {
+    while (particleCount) {
       const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
       this._getConcreteNonErrorInScopeParticleDefinitions(inScopeParserIds.filter(parserId => !parsersAlreadySynthesized.includes(parserId)))
@@ -1864,7 +1864,7 @@ ${cells.toString(1)}`
           chain.push(def.id)
           def.synthesizeParticle(1, indentCount + 1, chain, seed).forEach(line => lines.push(line))
         })
-      nodeCount--
+      particleCount--
     }
     return lines
   }
@@ -1918,27 +1918,27 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return ""
   }
   trainModel(programs, rootParser = this.compileAndReturnRootParser()) {
-    const nodeDefs = this.validConcreteAndAbstractParserDefinitions
-    const nodeDefCountIncludingRoot = nodeDefs.length + 1
-    const matrix = Utils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
+    const particleDefs = this.validConcreteAndAbstractParserDefinitions
+    const particleDefCountIncludingRoot = particleDefs.length + 1
+    const matrix = Utils.makeMatrix(particleDefCountIncludingRoot, particleDefCountIncludingRoot, 0)
     const idToIndex = {}
     const indexToId = {}
-    nodeDefs.forEach((def, index) => {
+    particleDefs.forEach((def, index) => {
       const id = def.id
       idToIndex[id] = index + 1
       indexToId[index + 1] = id
     })
     programs.forEach(code => {
       const exampleProgram = new rootParser(code)
-      exampleProgram.topDownArray.forEach(node => {
-        const nodeIndex = idToIndex[node.definition.id]
-        const parentNode = node.parent
-        if (!nodeIndex) return undefined
-        if (parentNode.isRoot()) matrix[0][nodeIndex]++
+      exampleProgram.topDownArray.forEach(particle => {
+        const particleIndex = idToIndex[particle.definition.id]
+        const parentNode = particle.parent
+        if (!particleIndex) return undefined
+        if (parentNode.isRoot()) matrix[0][particleIndex]++
         else {
           const parentIndex = idToIndex[parentNode.definition.id]
           if (!parentIndex) return undefined
-          matrix[parentIndex][nodeIndex]++
+          matrix[parentIndex][particleIndex]++
         }
       })
     })
@@ -1962,19 +1962,19 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     predictions.sort(Utils.makeSortByFn(prediction => prediction.count)).reverse()
     return predictions
   }
-  predictChildren(model, node) {
-    return this._mapPredictions(this._predictChildren(model, node), model)
+  predictChildren(model, particle) {
+    return this._mapPredictions(this._predictChildren(model, particle), model)
   }
-  predictParents(model, node) {
-    return this._mapPredictions(this._predictParents(model, node), model)
+  predictParents(model, particle) {
+    return this._mapPredictions(this._predictParents(model, particle), model)
   }
-  _predictChildren(model, node) {
-    return model.matrix[node.isRoot() ? 0 : model.idToIndex[node.definition.id]]
+  _predictChildren(model, particle) {
+    return model.matrix[particle.isRoot() ? 0 : model.idToIndex[particle.definition.id]]
   }
-  _predictParents(model, node) {
-    if (node.isRoot()) return []
-    const nodeIndex = model.idToIndex[node.definition.id]
-    return model.matrix.map(row => row[nodeIndex])
+  _predictParents(model, particle) {
+    if (particle.isRoot()) return []
+    const particleIndex = model.idToIndex[particle.definition.id]
+    return model.matrix.map(row => row[particleIndex])
   }
   _setDirName(name) {
     this._dirName = name
@@ -2032,7 +2032,7 @@ ${exampleNode ? exampleNode.childrenToString(1) : ""}
 subtitle Quick facts about ${languageName}
 
 list
- - ${languageName} has ${parserLineage.topDownArray.length} node types.
+ - ${languageName} has ${parserLineage.topDownArray.length} particle types.
  - ${languageName} has ${Object.keys(cellTypes).length} cell types
  - The source code for ${languageName} is ${this.topDownArray.length} lines long.
 
@@ -2044,7 +2044,7 @@ code
 subtitle Testing
 
 code
- node test.js
+ particle test.js
 
 subtitle Node Types
 
@@ -2062,8 +2062,8 @@ paragraph Here are the "todos" present in the source code for ${languageName}:
 
 list
 ${this.topDownArray
-  .filter(node => node.getWord(0) === "todo")
-  .map(node => ` - ${node.getLine()}`)
+  .filter(particle => particle.getWord(0) === "todo")
+  .map(particle => ` - ${particle.getLine()}`)
   .join("\n")}
 
 paragraph This readme was auto-generated using the
@@ -2092,14 +2092,14 @@ const errors = program.getAllErrors()
 console.log("Sample program compiled with " + errors.length + " errors.")
 if (errors.length)
  console.log(errors.map(error => error.message))`
-    const nodePath = `${languageName}.node.js`
-    files[nodePath] = this.toNodeJsJavascript()
-    files[ParsersBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
+    const particlePath = `${languageName}.particle.js`
+    files[particlePath] = this.toNodeJsJavascript()
+    files[ParsersBundleFiles.indexJs] = `module.exports = require("./${particlePath}")`
     const browserPath = `${languageName}.browser.js`
     files[browserPath] = this.toBrowserJavascript()
-    files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Particle.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
+    files[ParsersBundleFiles.indexHtml] = `<script src="particle_modules/scrollsdk/products/Utils.browser.js"></script>
+<script src="particle_modules/scrollsdk/products/Particle.browser.js"></script>
+<script src="particle_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
 const sampleCode = \`${sampleCode.toString()}\`
@@ -2129,14 +2129,14 @@ ${testCode}`
   }
   get parserLineage() {
     const particle = new Particle()
-    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(node => particle.touchNode(node.ancestorParserIdsArray.join(" ")))
+    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(particle => particle.touchNode(particle.ancestorParserIdsArray.join(" ")))
     return particle
   }
   get languageDefinitionProgram() {
     return this
   }
   get validConcreteAndAbstractParserDefinitions() {
-    return this.getChildrenByParser(parserDefinitionParser).filter(node => node._hasValidParserId())
+    return this.getChildrenByParser(parserDefinitionParser).filter(particle => particle._hasValidParserId())
   }
   get lastRootParserDefinitionParticle() {
     return this.findLast(def => def instanceof AbstractParserDefinitionParser && def.has(ParsersConstants.root) && def._hasValidParserId())
@@ -2144,7 +2144,7 @@ ${testCode}`
   _initRootParserDefinitionParticle() {
     if (this._cache_rootParserParticle) return
     if (!this._cache_rootParserParticle) this._cache_rootParserParticle = this.lastRootParserDefinitionParticle
-    // By default, have a very permissive basic root node.
+    // By default, have a very permissive basic root particle.
     // todo: whats the best design pattern to use for this sort of thing?
     if (!this._cache_rootParserParticle) {
       this._cache_rootParserParticle = this.concat(`${ParsersConstants.DefaultRootParser}
@@ -2206,7 +2206,7 @@ ${testCode}`
   }
   _rootParticleDefToJavascriptClass(scrollsdkProductsPath, forNodeJs = true) {
     const defs = this.validConcreteAndAbstractParserDefinitions
-    // todo: throw if there is no root node defined
+    // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootParserDefinition
     const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(ParsersConstants._rootNodeJsHeader)
@@ -2295,30 +2295,30 @@ class UnknownParsersProgram extends Particle {
   }
   _renameIntegerKeywords(clone) {
     // todo: why are we doing this?
-    for (let node of clone.getTopDownArrayIterator()) {
-      const firstWordIsAnInteger = !!node.firstWord.match(/^\d+$/)
-      const parentFirstWord = node.parent.firstWord
-      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(HandParsersProgram.makeParserId(parentFirstWord + UnknownParsersProgram._childSuffix))
+    for (let particle of clone.getTopDownArrayIterator()) {
+      const firstWordIsAnInteger = !!particle.firstWord.match(/^\d+$/)
+      const parentFirstWord = particle.parent.firstWord
+      if (firstWordIsAnInteger && parentFirstWord) particle.setFirstWord(HandParsersProgram.makeParserId(parentFirstWord + UnknownParsersProgram._childSuffix))
     }
   }
   _getKeywordMaps(clone) {
     const keywordsToChildKeywords = {}
     const keywordsToNodeInstances = {}
-    for (let node of clone.getTopDownArrayIterator()) {
-      const firstWord = node.firstWord
+    for (let particle of clone.getTopDownArrayIterator()) {
+      const firstWord = particle.firstWord
       if (!keywordsToChildKeywords[firstWord]) keywordsToChildKeywords[firstWord] = {}
       if (!keywordsToNodeInstances[firstWord]) keywordsToNodeInstances[firstWord] = []
-      keywordsToNodeInstances[firstWord].push(node)
-      node.forEach(child => (keywordsToChildKeywords[firstWord][child.firstWord] = true))
+      keywordsToNodeInstances[firstWord].push(particle)
+      particle.forEach(child => (keywordsToChildKeywords[firstWord][child.firstWord] = true))
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToNodeInstances: keywordsToNodeInstances }
   }
   _inferParserDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstWord)
-    const nodeDefNode = new Particle(parserId).particleAt(0)
+    const particleDefNode = new Particle(parserId).particleAt(0)
     const childParserIds = childFirstWords.map(word => HandParsersProgram.makeParserId(word))
-    if (childParserIds.length) nodeDefNode.touchNode(ParsersConstants.inScope).setWordsFrom(1, childParserIds)
+    if (childParserIds.length) particleDefNode.touchNode(ParsersConstants.inScope).setWordsFrom(1, childParserIds)
     const cellsForAllInstances = instances
       .map(line => line.content)
       .filter(identity => identity)
@@ -2346,14 +2346,14 @@ class UnknownParsersProgram extends Particle {
       }
     }
     const needsCruxProperty = !firstWord.endsWith(UnknownParsersProgram._childSuffix + ParsersConstants.parserSuffix) // todo: cleanup
-    if (needsCruxProperty) nodeDefNode.set(ParsersConstants.crux, firstWord)
-    if (catchAllCellType) nodeDefNode.set(ParsersConstants.catchAllCellType, catchAllCellType)
+    if (needsCruxProperty) particleDefNode.set(ParsersConstants.crux, firstWord)
+    if (catchAllCellType) particleDefNode.set(ParsersConstants.catchAllCellType, catchAllCellType)
     const cellLine = cellTypeIds.slice()
     cellLine.unshift(PreludeCellTypeIds.keywordCell)
-    if (cellLine.length > 0) nodeDefNode.set(ParsersConstants.cells, cellLine.join(edgeSymbol))
-    //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(ParsersConstants.cells, cellTypeIds[0])
+    if (cellLine.length > 0) particleDefNode.set(ParsersConstants.cells, cellLine.join(edgeSymbol))
+    //if (!catchAllCellType && cellTypeIds.length === 1) particleDefNode.set(ParsersConstants.cells, cellTypeIds[0])
     // Todo: add conditional frequencies
-    return nodeDefNode.parent.toString()
+    return particleDefNode.parent.toString()
   }
   //  inferParsersFileForAnSSVLanguage(parsersName: string): string {
   //     parsersName = HandParsersProgram.makeParserId(parsersName)
@@ -2378,8 +2378,8 @@ class UnknownParsersProgram extends Particle {
       .map(firstWord => this._inferParserDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
     const cellTypeDefs = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
-    const nodeBreakSymbol = this.nodeBreakSymbol
-    return this._formatCode([this._inferRootNodeForAPrefixLanguage(parsersName).toString(), cellTypeDefs.join(nodeBreakSymbol), parserDefs.join(nodeBreakSymbol)].filter(identity => identity).join("\n"))
+    const particleBreakSymbol = this.particleBreakSymbol
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(parsersName).toString(), cellTypeDefs.join(particleBreakSymbol), parserDefs.join(particleBreakSymbol)].filter(identity => identity).join("\n"))
   }
   _formatCode(code) {
     // todo: make this run in browser too

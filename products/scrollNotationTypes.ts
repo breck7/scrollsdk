@@ -11,8 +11,8 @@ namespace scrollNotationTypes {
   }
 
   export interface inheritanceInfo {
-    node: particle
-    nodeId: string
+    particle: particle
+    particleId: string
     parentId: string
   }
 
@@ -84,11 +84,11 @@ namespace scrollNotationTypes {
   export declare type fileExtension = string
   export declare type globPath = string // * firstWord firstWord *
   export declare type targetLanguageId = fileExtension
-  export declare type sortFn = (nodeA: particle, nodeB: particle) => triInt
-  export declare type filterFn = (node: particle, index: int) => boolean
-  export declare type forEachFn = (node: particle, index: int) => void
-  export declare type everyFn = (node: particle, index: int) => boolean
-  export declare type nodeToStringFn = (node: particle) => string
+  export declare type sortFn = (particleA: particle, particleB: particle) => triInt
+  export declare type filterFn = (particle: particle, index: int) => boolean
+  export declare type forEachFn = (particle: particle, index: int) => void
+  export declare type everyFn = (particle: particle, index: int) => boolean
+  export declare type particleToStringFn = (particle: particle) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
   export declare type typeScriptCode = string
   export declare type javascriptCode = string

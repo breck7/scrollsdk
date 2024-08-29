@@ -150,7 +150,7 @@ class Builder extends Particle {
     const lastLine = productParticle.get("insertLastLine") ? productParticle.get("insertLastLine") : ""
     const removeAll = productParticle.getParticlesByGlobPath("removeAll")
     const transformFn = (code: string) => {
-      removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.content)))
+      removeAll.forEach((particle: any) => (code = Utils.removeAll(code, particle.content)))
       return firstLine + code + "\n" + lastLine
     }
     if (productParticle.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
@@ -239,14 +239,14 @@ class Builder extends Particle {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName) return this.produceProductFromInstructionsParticles(this._getProductParticles().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
+    if (outputFileName) return this.produceProductFromInstructionsParticles(this._getProductParticles().where("outputFileName", "=", outputFileName).particleAt(0), __dirname)
 
     console.log("Available options:\n" + this._getProductParticles().getColumn("outputFileName").join("\n"))
   }
 
   produceAll() {
-    this._getProductParticles().forEach((node: any) => {
-      this.produceProductFromInstructionsParticles(node, __dirname)
+    this._getProductParticles().forEach((particle: any) => {
+      this.produceProductFromInstructionsParticles(particle, __dirname)
     })
   }
 

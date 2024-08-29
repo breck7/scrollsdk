@@ -242,14 +242,14 @@ class ParticleFileSystem implements Storage {
         if (filePath.endsWith(PARSERS_EXTENSION)) return content
         // Strip scroll content
         return new Particle(content)
-          .filter((node: scrollNotationTypes.particle) => node.getLine().match(parserDefinitionRegex) || node.getLine().match(cellDefinitionRegex))
-          .map((node: scrollNotationTypes.particle) => node.asString)
+          .filter((particle: scrollNotationTypes.particle) => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(cellDefinitionRegex))
+          .map((particle: scrollNotationTypes.particle) => particle.asString)
           .join("\n")
       })
       .join("\n")
       .trim()
 
-    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js nodes)
+    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js particles)
     return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
   }
 

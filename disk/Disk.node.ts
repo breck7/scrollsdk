@@ -46,8 +46,8 @@ class Disk {
   static readTsvAsParticles = (path: scrollNotationTypes.filepath) => Disk.getParticle().fromTsv(Disk.read(path))
   static insertIntoFile = (path: scrollNotationTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsParticles = (path: scrollNotationTypes.filepath) => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
-  static getAllOf = (node: scrollNotationTypes.particle, prop: string) => node.filter((node: scrollNotationTypes.particle) => node.getWord(0) === prop)
-  static getDelimitedChildrenAsParticles = (node: scrollNotationTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(node.childrenToString())
+  static getAllOf = (particle: scrollNotationTypes.particle, prop: string) => particle.filter((particle: scrollNotationTypes.particle) => particle.getWord(0) === prop)
+  static getDelimitedChildrenAsParticles = (particle: scrollNotationTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.childrenToString())
   static sleep = (ms: scrollNotationTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
   static readParticles = (path: scrollNotationTypes.filepath) => new (Disk.getParticle())(Disk.read(path))
   static sizeOf = (path: scrollNotationTypes.filepath) => fs.statSync(path).size
@@ -78,17 +78,17 @@ class Disk {
     // todo: add more robust. align with choose delimiter
     return Particle.fromSsv(str)
   }
-  static deleteDuplicates = (node: scrollNotationTypes.particle, prop1: any, prop2: any, reverse = false) => {
+  static deleteDuplicates = (particle: scrollNotationTypes.particle, prop1: any, prop2: any, reverse = false) => {
     const map: any = {}
-    Disk.getAllOf(node, prop1).forEach((node: scrollNotationTypes.particle) => {
-      const val = node.get(prop2)
+    Disk.getAllOf(particle, prop1).forEach((particle: scrollNotationTypes.particle) => {
+      const val = particle.get(prop2)
       console.log(val)
       if (map[val] && reverse) {
         map[val].destroy()
-        map[val] = node
+        map[val] = particle
       } else if (map[val]) {
-        node.destroy()
-      } else map[val] = node
+        particle.destroy()
+      } else map[val] = particle
     })
   }
   // todo: remove.
@@ -103,9 +103,9 @@ class Disk {
     const prefix = !file || file.endsWith("\n") ? "" : "\n"
     return Disk.append(path, prefix + line + "\n")
   }
-  static move = (node: scrollNotationTypes.particle, newPosition: scrollNotationTypes.int) => {
-    node.parent.insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
-    node.destroy()
+  static move = (particle: scrollNotationTypes.particle, newPosition: scrollNotationTypes.int) => {
+    particle.parent.insertLineAndChildren(particle.getLine(), particle.childrenToString(), newPosition)
+    particle.destroy()
   }
   static _getTextUrl = async (url: scrollNotationTypes.url) => {
     // todo: https://visionmedia.github.io/superagent/

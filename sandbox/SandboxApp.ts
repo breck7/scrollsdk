@@ -3,7 +3,7 @@
 const { AbstractParticleComponentParser, ParticleComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/ParticleComponentFramework.node.js")
 const { Particle } = require("../products/Particle.js")
 
-// Todo: add inputs at the top to change the edge, node, and cell delimiters.
+// Todo: add inputs at the top to change the edge, particle, and cell delimiters.
 
 class SandboxApp extends AbstractParticleComponentParser {
   createParserCombinator() {

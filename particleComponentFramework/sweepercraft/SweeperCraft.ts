@@ -734,9 +734,9 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
   // todo: there's probably a better pattern than this.
   private _syncBoardToGame() {
     this.topDownArray
-      .filter((node: any) => node instanceof AbstractSweeperCraftComponent)
-      .forEach((node: AbstractSweeperCraftComponent) => {
-        node._syncBoardToGame()
+      .filter((particle: any) => particle instanceof AbstractSweeperCraftComponent)
+      .forEach((particle: AbstractSweeperCraftComponent) => {
+        particle._syncBoardToGame()
       })
   }
 

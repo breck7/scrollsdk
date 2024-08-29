@@ -93,8 +93,8 @@ cat animal
 house`)
   a.sort(
     Utils._makeGraphSortFunction(
-      (node: any) => node.getWord(0),
-      (node: any) => node.getWord(1)
+      (particle: any) => particle.getWord(0),
+      (particle: any) => particle.getWord(1)
     )
   )
 

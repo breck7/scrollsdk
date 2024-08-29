@@ -119,14 +119,14 @@ class DesignerApp extends AbstractParticleComponentParser {
 
     const table = program.programAsCells
       .map((line: any, lineIndex: number) => {
-        const parser = cellTypes.nodeAt(lineIndex).getWord(0)
+        const parser = cellTypes.particleAt(lineIndex).getWord(0)
         let cells = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
         for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
           const cell = line[cellIndex]
           if (!cell) cells += `<td>&nbsp;</td>`
           else {
-            const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
-            const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const cellType = cellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
+            const rootCellType = rootCellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
             const cellTypeDivs = [cellType, rootCellType] // todo: add full ancestry
             cells += `<td><span class="cellTypeSpan">${cellTypeDivs.join(" ")}</span>${cell.getWord()}</td>`
           }

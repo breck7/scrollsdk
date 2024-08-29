@@ -307,9 +307,9 @@ class AbstractWillowBrowser extends stumpParser {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
-    this._htmlStumpParticle = this.nodeAt(0)
-    this._headStumpParticle = this.nodeAt(0).nodeAt(0)
-    this._bodyStumpParticle = this.nodeAt(0).nodeAt(1)
+    this._htmlStumpParticle = this.particleAt(0)
+    this._headStumpParticle = this.particleAt(0).particleAt(0)
+    this._bodyStumpParticle = this.particleAt(0).particleAt(1)
     this.addSuidsToHtmlHeadAndBodyShadows()
     this._fullHtmlPageUrlIncludingProtocolAndFileName = fullHtmlPageUrlIncludingProtocolAndFileName
     const url = new URL(fullHtmlPageUrlIncludingProtocolAndFileName)
@@ -357,14 +357,14 @@ class AbstractWillowBrowser extends stumpParser {
 
   toPrettyDeepLink(particleCode: string, queryObject: any) {
     // todo: move things to a constant.
-    const nodeBreakSymbol = "~"
+    const particleBreakSymbol = "~"
     const edgeSymbol = "_"
     const obj = Object.assign({}, queryObject)
 
-    if (!particleCode.includes(nodeBreakSymbol) && !particleCode.includes(edgeSymbol)) {
-      obj.nodeBreakSymbol = nodeBreakSymbol
+    if (!particleCode.includes(particleBreakSymbol) && !particleCode.includes(edgeSymbol)) {
+      obj.particleBreakSymbol = particleBreakSymbol
       obj.edgeSymbol = edgeSymbol
-      obj.data = encodeURIComponent(particleCode.replace(/ /g, edgeSymbol).replace(/\n/g, nodeBreakSymbol))
+      obj.data = encodeURIComponent(particleCode.replace(/ /g, edgeSymbol).replace(/\n/g, particleBreakSymbol))
     } else obj.data = encodeURIComponent(particleCode)
 
     return this.getAppWebPageUrl() + "?" + this.queryObjectToQueryString(obj)
@@ -514,14 +514,14 @@ class AbstractWillowBrowser extends stumpParser {
 
   getWindowTitle() {
     // todo: deep getParticleByBase/withBase/type/word or something?
-    const nodes = this.topDownArray
-    const titleParticle = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.titleTag)
+    const particles = this.topDownArray
+    const titleParticle = particles.find((particle: scrollNotationTypes.particle) => particle.firstWord === WillowConstants.titleTag)
     return titleParticle ? titleParticle.content : ""
   }
 
   setWindowTitle(value: string) {
-    const nodes = this.topDownArray
-    const headParticle = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.tags.head)
+    const particles = this.topDownArray
+    const headParticle = particles.find((particle: scrollNotationTypes.particle) => particle.firstWord === WillowConstants.tags.head)
     headParticle.touchParticle(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1263,27 +1263,27 @@ abstract class AbstractParticleComponentParser extends ParserBackedParticle {
   }
 
   _getHtmlOnlyParticles() {
-    const nodes: any[] = []
-    this.willowBrowser.getHtmlStumpParticle().deepVisit((node: any) => {
-      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) return false
-      nodes.push(node)
+    const particles: any[] = []
+    this.willowBrowser.getHtmlStumpParticle().deepVisit((particle: any) => {
+      if (particle.firstWord === "styleTag" || (particle.content || "").startsWith("<svg ")) return false
+      particles.push(particle)
     })
-    return nodes
+    return particles
   }
 
   getStumpParticleStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
     const clone = new Particle(this.willowBrowser.getHtmlStumpParticle().toString())
 
-    clone.topDownArray.forEach((node: any) => {
-      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
+    clone.topDownArray.forEach((particle: any) => {
+      if (particle.firstWord === "styleTag" || (particle.content || "").startsWith("<svg ")) particle.destroy()
     })
     return clone.toString()
   }
 
   getTextContent() {
     return this._getHtmlOnlyParticles()
-      .map(node => node.getTextContent())
+      .map(particle => particle.getTextContent())
       .filter(text => text)
       .join("\n")
   }
@@ -1378,9 +1378,9 @@ abstract class AbstractParticleComponentParser extends ParserBackedParticle {
     // todo: move somewhere else?
     // todo: cleanup
     const app = this.root
-    const node = app.getParticle("ParticleComponentFrameworkDebuggerComponent")
-    if (node) {
-      node.unmountAndDestroy()
+    const particle = app.getParticle("ParticleComponentFrameworkDebuggerComponent")
+    if (particle) {
+      particle.unmountAndDestroy()
     } else {
       app.appendLine("ParticleComponentFrameworkDebuggerComponent")
       app.renderAndGetRenderReport()
@@ -1547,7 +1547,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
     return this.destroy()
   }
 
-  // todo: move to keyword node class?
+  // todo: move to keyword particle class?
   toggle(firstWord: string, contentOptions: string[]) {
     const currentParticle = <AbstractParticleComponentParser>this.getParticle(firstWord)
     if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(firstWord)

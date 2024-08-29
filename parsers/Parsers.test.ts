@@ -72,7 +72,7 @@ testParticles.trainAndPredict = equal => {
   const hakonParser = parsersProgram.compileAndReturnRootParser()
   const testBlankProgram = new hakonParser()
   const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((node: any) => node.childrenToString())
+  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.childrenToString())
   const model = parsersProgram.trainModel(examples)
 
   // Assert
@@ -107,20 +107,20 @@ testParticles.jibberish = equal => {
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map((err: any) => err.message))
 
-  const parserDef = program.handParsersProgram.parserLineage.getParticle("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
+  const parserDef = program.handParsersProgram.parserLineage.getParticle("abstractTopLevelParser particleWithConstsParser particleExpandsConstsParser")
 
-  equal(parserDef.toString(), "nodeExpandsConstsParser", "parser lineage works")
+  equal(parserDef.toString(), "particleExpandsConstsParser", "parser lineage works")
 
   // Act
   const fooParticle = <any>program.getParticle("foo")
-  const constParticle = <any>program.getParticle("nodeWithConsts")
-  const nodeExpandsConsts = <any>program.getParticle("nodeExpandsConsts")
+  const constParticle = <any>program.getParticle("particleWithConsts")
+  const particleExpandsConsts = <any>program.getParticle("particleExpandsConsts")
 
   // Assert
   equal(fooParticle.parserId, "fooParser")
-  equal(constParticle.parserId, "nodeWithConstsParser")
-  equal(constParticle.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser nodeWithConstsParser")
-  equal(constParticle.definition.greeting, "hello world", "constants are also present on parsers definition nodes")
+  equal(constParticle.parserId, "particleWithConstsParser")
+  equal(constParticle.definition.ancestorParserIdsArray.join(" "), "abstractTopLevelParser particleWithConstsParser")
+  equal(constParticle.definition.greeting, "hello world", "constants are also present on parsers definition particles")
 
   // Assert
   equal(constParticle.greeting, "hello world", "constant strings should work")
@@ -138,7 +138,7 @@ testParticles.jibberish = equal => {
 world`,
     "constants multiline string works"
   )
-  const obj2 = nodeExpandsConsts.definition.constantsObject
+  const obj2 = particleExpandsConsts.definition.constantsObject
   equal(obj2.greeting, "hola", "expanding constants works and last wins")
   equal(obj2.win, true, "expanding constants works")
 
@@ -255,7 +255,7 @@ testParticles.cellTypeParticles = equal => {
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
-  const a = (<any>someJibberishProgram.nodeAt(1)).definition
+  const a = (<any>someJibberishProgram.particleAt(1)).definition
 
   // Assert
   equal(
@@ -287,12 +287,12 @@ plusParser + 2 3 2`,
 
 testParticles.preludeTypes = equal => {
   // Act/Assert
-  equal(makeNumbersProgram(`+ 2`).nodeAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
+  equal(makeNumbersProgram(`+ 2`).particleAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
 }
 
 testParticles.exponentialNotation = equal => {
   // Act/Assert
-  equal(makeNumbersProgram(`+ 2e3`).nodeAt(0).getErrors().length, 0)
+  equal(makeNumbersProgram(`+ 2e3`).particleAt(0).getErrors().length, 0)
 }
 
 testParticles.format = equal => {
@@ -412,7 +412,7 @@ com
   equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
   const acResults = program.getAutocompleteResultsAt(2, 0).matches
-  equal(acResults.length, 7, "all nodes")
+  equal(acResults.length, 7, "all particles")
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0, "should be none")
 
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
@@ -486,7 +486,7 @@ testParticles.autocompleteCustom = equal => {
 testParticles.blobParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar
- This is a blob node.
+ This is a blob particle.
  this is some text.
  hello world
  
@@ -502,7 +502,7 @@ testParticles.blobParsers = equal => {
   }
 
   // Regression test. The below should not throw
-  equal(anyProgram.topDownArray.map((node: any) => node.parserId).length > 0, true, "passed blob regression")
+  equal(anyProgram.topDownArray.map((particle: any) => particle.parserId).length > 0, true, "passed blob regression")
 }
 
 testParticles.sublimeSyntaxFile = equal => {
@@ -548,7 +548,7 @@ div
   equal(code, expected, "form correct")
 }
 
-// todo: reenable once we have the requirement of at least 1 root node
+// todo: reenable once we have the requirement of at least 1 root particle
 // testParticles.requiredParsers = equal => {
 //   // Arrange/Act
 //   const path = parsersParsersPath
@@ -624,18 +624,18 @@ testParticles.parsersWithLoop = equal => {
     const rootParser = new HandParsersProgram(
       `langWithLoopParser
  root
- catchAllParser nodeAParser
-nodeAParser
- extends nodeCParser
+ catchAllParser particleAParser
+particleAParser
+ extends particleCParser
  catchAllCellType anyCell
-nodeBParser
- extends nodeAParser
-nodeCParser
- extends nodeBParser
+particleBParser
+ extends particleAParser
+particleCParser
+ extends particleBParser
 anyCell`
     ).compileAndReturnRootParser()
 
-    new rootParser("nodeA")
+    new rootParser("particleA")
     equal(false, true, "Should have thrown error")
   } catch (err) {
     equal(err.toString().includes("Loop"), true, `Expected correct error thrown when parsers. Got: ${err.toString()}`)
@@ -668,8 +668,8 @@ foobarCell
  regex test`)
 
   // Assert
-  anyProgram.findAllParticlesWithParser("regexParser").forEach((node: any) => {
-    node.setWord(0, "regexString")
+  anyProgram.findAllParticlesWithParser("regexParser").forEach((particle: any) => {
+    particle.setWord(0, "regexString")
   })
   equal(
     anyProgram.toString(),

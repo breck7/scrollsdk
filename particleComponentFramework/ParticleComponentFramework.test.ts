@@ -24,7 +24,7 @@ testParticles.all = (equal: any) => {
   equal(!!app.getTheme(), true, "get theme")
   equal(!!app.willowBrowser, true, "get willow")
 
-  equal(app.willowBrowser.toPrettyDeepLink(`foo bar`, { filename: "bam.foo" }), "http://localhost:8000/index.html?filename=bam.foo&nodeBreakSymbol=%7E&edgeSymbol=_&data=foo_bar")
+  equal(app.willowBrowser.toPrettyDeepLink(`foo bar`, { filename: "bam.foo" }), "http://localhost:8000/index.html?filename=bam.foo&particleBreakSymbol=%7E&edgeSymbol=_&data=foo_bar")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

@@ -415,7 +415,7 @@ domains
   equal(particle10.asString, expectedStr)
 
   // Arrange
-  const node = new Particle(" ").nodeAt(0)
+  const node = new Particle(" ").particleAt(0)
 
   // Act/Assert
   equal(node.firstWord, "")
@@ -428,14 +428,14 @@ ${spaceChar}
 ${spaceChar}
 ${spaceChar}`
   // Act/Assert
-  equal(new Particle(s).nodeAt(0).length, 3)
+  equal(new Particle(s).particleAt(0).length, 3)
 
   // Arrange
   s = `
 ${spaceChar}${spaceChar}
 ${spaceChar}`
   // Act/Assert
-  equal(new Particle(s).nodeAt(0).length, 2)
+  equal(new Particle(s).particleAt(0).length, 2)
 }
 
 testParticles.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
@@ -451,14 +451,14 @@ testParticles.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
   }
   const iHateTypeScriptSometimes = <any>TestParticles
 
-  equal(new iHateTypeScriptSometimes(test).nodeAt(0).length, 2)
+  equal(new iHateTypeScriptSometimes(test).particleAt(0).length, 2)
 
   const rootParticle = new iHateTypeScriptSometimes()
   const particle = rootParticle.appendLineAndChildren("", new iHateTypeScriptSometimes())
   particle.appendLine("")
   particle.appendLine("")
   const newParticle = new iHateTypeScriptSometimes(rootParticle.asString)
-  equal(newParticle.nodeAt(0).length, 2)
+  equal(newParticle.particleAt(0).length, 2)
 }
 
 testParticles.duplicateReferences = equal => {
@@ -578,11 +578,11 @@ testParticles.at = equal => {
   const value = new Particle("hello world\nhow are you\nhola friend")
 
   // Assert
-  equal(value.nodeAt(0).content, "world")
-  equal(value.nodeAt(1).content, "are you")
-  equal(value.nodeAt(2).content, "friend")
-  equal(value.nodeAt(3), undefined)
-  equal(value.nodeAt(-1).content, "friend")
+  equal(value.particleAt(0).content, "world")
+  equal(value.particleAt(1).content, "are you")
+  equal(value.particleAt(2).content, "friend")
+  equal(value.particleAt(3), undefined)
+  equal(value.particleAt(-1).content, "friend")
 }
 
 testParticles.getWordBoundaryCharIndices = equal => {
@@ -628,7 +628,7 @@ web 25 zzzz OK
  notes No notes`)
 
   // Act/Assert
-  const props = particle.nodeAtLine(3).getWordProperties(2)
+  const props = particle.particleAtLine(3).getWordProperties(2)
   equal(props.startCharIndex, 10)
   equal(props.endCharIndex, 15)
 }
@@ -927,7 +927,7 @@ yo hey`
   const particle = new Particle(template)
 
   // Act
-  particle.nodeAt(1).destroy()
+  particle.particleAt(1).destroy()
 
   // Assert
   equal(particle.asString, "hey ho\nyo hey")
@@ -1060,13 +1060,13 @@ testParticles.first = equal => {
   const value = new Particle("hello world\nhi mom")
 
   // Assert
-  equal(value.nodeAt(0).content, "world")
+  equal(value.particleAt(0).content, "world")
 
   // Arrange
   const value2 = new Particle("hello world\nhi mom")
 
   // Assert
-  equal(value2.nodeAt(0).asString, "hello world")
+  equal(value2.particleAt(0).asString, "hello world")
 }
 
 testParticles.firstProperty = equal => {
@@ -1074,7 +1074,7 @@ testParticles.firstProperty = equal => {
   const value = new Particle("hello world\nhi mom")
 
   // Assert
-  equal(value.nodeAt(0).firstWord, "hello")
+  equal(value.particleAt(0).firstWord, "hello")
 }
 
 testParticles.hasDuplicates = equal => {
@@ -1082,8 +1082,8 @@ testParticles.hasDuplicates = equal => {
   equal(new Particle(testStrings.sortByMultiple).hasDuplicateFirstWords(), true)
   equal(new Particle().hasDuplicateFirstWords(), false, "empty")
   equal(new Particle("a\na").hasDuplicateFirstWords(), true)
-  equal(new Particle("a\n a\n b").nodeAt(0).hasDuplicateFirstWords(), false)
-  equal(new Particle("a\n b\n b").nodeAt(0).hasDuplicateFirstWords(), true)
+  equal(new Particle("a\n a\n b").particleAt(0).hasDuplicateFirstWords(), false)
+  equal(new Particle("a\n b\n b").particleAt(0).hasDuplicateFirstWords(), true)
 }
 
 testParticles.toYaml = equal => {
@@ -1114,12 +1114,12 @@ testParticles.firstValue = equal => {
   const value = new Particle("hello world\nhi mom")
 
   // Assert
-  equal(value.nodeAt(0).content, "world")
+  equal(value.particleAt(0).content, "world")
 }
 
 testParticles.toggleLine = equal => {
   // Arrange
-  const node = new Particle("chart").nodeAt(0)
+  const node = new Particle("chart").particleAt(0)
   equal(node.has("hidden"), false)
 
   // Act
@@ -1248,7 +1248,7 @@ testParticles.fromCsv = equal => {
 
   // Assert
   equal(particle2.length, 1)
-  equal(particle2.nodeAt(0).getParticle("Country").content, "USA")
+  equal(particle2.particleAt(0).getParticle("Country").content, "USA")
 
   // Arrange
   const particle3 = Particle.fromCsv("")
@@ -1441,17 +1441,17 @@ testParticles.fromSsv = equal => {
   const fixedCol = Particle.fromSsv(testStrings.ssvFixedColumns)
 
   // Assert
-  equal(fixedCol.nodeAt(0).getParticle("comment").content, testStrings.ssvFixedColumnComment1)
-  equal(fixedCol.nodeAt(1).getParticle("comment").content, testStrings.ssvFixedColumnComment2)
-  equal(fixedCol.nodeAt(1).length, 2)
+  equal(fixedCol.particleAt(0).getParticle("comment").content, testStrings.ssvFixedColumnComment1)
+  equal(fixedCol.particleAt(1).getParticle("comment").content, testStrings.ssvFixedColumnComment2)
+  equal(fixedCol.particleAt(1).length, 2)
 
   // Arrange/Act
   const missingCols = Particle.fromSsv(testStrings.ssvMissingColumns)
 
   // Assert
-  equal(missingCols.nodeAt(0).length, 3)
-  equal(missingCols.nodeAt(1).length, 3)
-  equal(missingCols.nodeAt(2).length, 3)
+  equal(missingCols.particleAt(0).length, 3)
+  equal(missingCols.particleAt(1).length, 3)
+  equal(missingCols.particleAt(2).length, 3)
 }
 
 testParticles.fromTsv = equal => {
@@ -1810,7 +1810,7 @@ testParticles.simpleParticleLanguage = equal => {
   equal(program.getChildrenByParser(SubstractionParticleParser).length, 0)
 
   // Act
-  program.nodeAt(0).replaceParticle((str: any) => str.replace("+", "-"))
+  program.particleAt(0).replaceParticle((str: any) => str.replace("+", "-"))
 
   // Assert
   equal(program.getChildrenByParser(AdditionParticleParser).length, 2)
@@ -1845,8 +1845,8 @@ testParticles.getPathVector = equal => {
   // Assert
   equal(parent.getPathVector().join(" "), indexPath.join(" "))
   equal(child.getPathVector().join(" "), "5 0 4 0 0 0")
-  equal(particle.nodeAt(parent.getPathVector()), parent)
-  equal(particle.nodeAt(child.getPathVector()), child)
+  equal(particle.particleAt(parent.getPathVector()), parent)
+  equal(particle.particleAt(child.getPathVector()), child)
 
   // Act
   const newNamePath = particle.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
@@ -2027,7 +2027,7 @@ body {
   equal(splitParticles2.length, 3)
   equal(new Particle(`abc\n#find`).split(`#fi`).length, 1, "should not split on partial matches")
   equal(new Particle(`abc\n#find\n`).split(`#find`).length, 2, "should split on end of line")
-  equal(splitParticles[1].nodeAt(1).getWord(1), "hi")
+  equal(splitParticles[1].particleAt(1).getWord(1), "hi")
 
   // Act/Assert
   equal(splitParticles.join("\n"), test)
@@ -2050,14 +2050,14 @@ chart`
 
   // Act/Assert
   // Test Noops:
-  equal(particle.shiftLeft() && particle.shiftRight() && particle.nodeAt(0).shiftLeft() && true, true)
+  equal(particle.shiftLeft() && particle.shiftRight() && particle.particleAt(0).shiftLeft() && true, true)
 
   equal(particle.length, 3)
-  equal(particle.nodeAt(1).shiftRight().parent.getLine(), "reddit")
+  equal(particle.particleAt(1).shiftRight().parent.getLine(), "reddit")
   equal(particle.length, 2)
 
   // Act/Assert
-  equal(particle.nodeAtLine(1).shiftLeft().parent.asString, str)
+  equal(particle.particleAtLine(1).shiftLeft().parent.asString, str)
   equal(particle.length, 3)
 
   // Arrange
@@ -2068,9 +2068,9 @@ chart`
   const particle2 = new Particle(str2)
 
   // Act
-  particle2.nodeAtLine(2).shiftRight()
-  particle2.nodeAtLine(3).shiftRight()
-  equal(particle2.nodeAtLine(1).length, 2)
+  particle2.particleAtLine(2).shiftRight()
+  particle2.particleAtLine(3).shiftRight()
+  equal(particle2.particleAtLine(1).length, 2)
 
   // Arrange/Act/Assert
   equal(
@@ -2078,7 +2078,7 @@ chart`
 a = 2
 b = 3
 c = 4`)
-      .nodeAtLine(0)
+      .particleAtLine(0)
       .shiftYoungerSibsRight().root.asString,
     `file foo.js
  a = 2
@@ -2092,15 +2092,15 @@ foobar
  test
 foo`)
   // Assert
-  equal(node.nodeAt(0).getYoungerSiblings().length, 2, "2 younger sibs")
+  equal(node.particleAt(0).getYoungerSiblings().length, 2, "2 younger sibs")
 
   // Act
-  node.nodeAt(0).shiftYoungerSibsRight()
+  node.particleAt(0).shiftYoungerSibsRight()
   // Assert
   const expected = `foobar
  test
 foo`
-  equal(node.nodeAt(0).childrenToString(), expected)
+  equal(node.particleAt(0).childrenToString(), expected)
 }
 
 testParticles.expandChildren = equal => {
@@ -2260,7 +2260,7 @@ testParticles.insert = equal => {
   particle.insertLine("test dad", 10)
 
   // Assert
-  equal(particle.nodeAt(2).content, "dad", "Expected insert at int greater than length to append")
+  equal(particle.particleAt(2).content, "dad", "Expected insert at int greater than length to append")
   equal(particle.length, 3)
 
   // Insert using a negative index
@@ -2268,34 +2268,34 @@ testParticles.insert = equal => {
   particle.insertLine("test2 sister", -1)
 
   // Assert
-  equal(particle.nodeAt(2).content, "sister")
-  equal(particle.nodeAt(3).content, "dad")
+  equal(particle.particleAt(2).content, "sister")
+  equal(particle.particleAt(3).content, "dad")
 }
 
 testParticles.last = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).content, "mom")
+  equal(value.particleAt(-1).content, "mom")
 
   // Arrange
   const value2 = new Particle("hello world\nhi mom")
   // Assert
-  equal(value2.nodeAt(-1).asString, "hi mom")
+  equal(value2.particleAt(-1).asString, "hi mom")
 }
 
 testParticles.lastProperty = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).firstWord, "hi")
+  equal(value.particleAt(-1).firstWord, "hi")
 }
 
 testParticles.lastValue = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).content, "mom")
+  equal(value.particleAt(-1).content, "mom")
 }
 
 testParticles.createFromArray = equal => {
@@ -2971,11 +2971,11 @@ testParticles.reverse = equal => {
   const particle2 = Particle.fromCsv("name,age\nbill,20\nmike,40\ntim,30")
 
   // Act
-  particle2.nodeAt(0).reverse()
+  particle2.particleAt(0).reverse()
 
   // Assert
-  equal(particle2.nodeAt(0).nodeAt(0).firstWord, "age", "Expected reversed properties")
-  equal(particle2.nodeAt(1).nodeAt(0).firstWord, "name", "Expected unchanged properties")
+  equal(particle2.particleAt(0).particleAt(0).firstWord, "age", "Expected reversed properties")
+  equal(particle2.particleAt(1).particleAt(0).firstWord, "name", "Expected unchanged properties")
 }
 
 testParticles.set = equal => {
@@ -3354,7 +3354,7 @@ testParticles.nest = equal => {
 
   equal(new Particle(`${Particle.nest("foo bar", 0)}`).getParticle("foo").content, "bar")
   equal(new Particle(`${Particle.nest("foo bar", 1)}`).getParticle(" foo").content, "bar")
-  equal(new Particle(`${Particle.nest("foo bar", 2)}`).nodeAt([0, 0]).content, "foo bar")
+  equal(new Particle(`${Particle.nest("foo bar", 2)}`).particleAt([0, 0]).content, "foo bar")
 }
 
 testParticles.toDataTable = equal => {
@@ -3700,7 +3700,7 @@ testParticles.getFrom = equal => {
  string person Jai`
   )
   // Act/Assert
-  equal(particle.nodeAt(0).getFrom("string person"), "Jai")
+  equal(particle.particleAt(0).getFrom("string person"), "Jai")
 }
 
 testParticles.toOutline = equal => {
@@ -3787,7 +3787,7 @@ testParticles.typeTests = equal => {
 }
 
 testParticles.setTests = equal => {
-  let base = new Particle(`foo bar`).nodeAt(0)
+  let base = new Particle(`foo bar`).particleAt(0)
   equal(base.getWordsAsSet().has("bar"), true)
   equal(base.getWordsAsSet().has("bar2"), false)
   equal(base.appendWordIfMissing("bar").asString, `foo bar`)
@@ -3802,21 +3802,21 @@ testParticles.getBiDirectionalMaps = equal => {
 }
 
 testParticles.delimitedTests = equal => {
-  let base = new Particle(`foo.csv`).nodeAt(0)
+  let base = new Particle(`foo.csv`).particleAt(0)
   equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n name,age\n Joe,100`)
 
-  base = new Particle(`foo.csv`).nodeAt(0)
+  base = new Particle(`foo.csv`).particleAt(0)
   equal(base.setChildrenAsDelimited(`person\n name Joe\n age 100`).asString, `foo.csv\n name,age\n Joe,100`)
 
   let template = `foo.csv\n person\n  name Joe\n  age 100`
 
-  base = new Particle(template).nodeAt(0)
+  base = new Particle(template).particleAt(0)
   equal(base.convertChildrenToDelimited().asString, `foo.csv\n name,age\n Joe,100`, "convert children to delimited works")
 
-  base = new Particle(template).nodeAt(0)
+  base = new Particle(template).particleAt(0)
   equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Frank,100`]).length, 3)
 
-  base = new Particle(template).nodeAt(0)
+  base = new Particle(template).particleAt(0)
   equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Joe,100`]).length, 2)
 }
 
@@ -3877,10 +3877,10 @@ testParticles.isBlank = equal => {
   // Arrange
   const a = new Particle("text\n\ntest \ntest2  ")
   // Assert
-  equal(a.nodeAt(0).isBlankLine(), false)
-  equal(a.nodeAt(1).isBlankLine(), true)
-  equal(a.nodeAt(0).isEmpty(), true)
-  equal(a.nodeAt(0).isEmpty(), true)
+  equal(a.particleAt(0).isBlankLine(), false)
+  equal(a.particleAt(1).isBlankLine(), true)
+  equal(a.particleAt(0).isEmpty(), true)
+  equal(a.particleAt(0).isEmpty(), true)
   equal(a.isEmpty(), false)
   equal(a.isBlankLine(), false)
   equal(a.getParticle("test").isBlankLine(), false)
@@ -3895,7 +3895,7 @@ testParticles.isBlank = equal => {
 testParticles.particles = equal => {
   // Arrange
   const a = new Particle("text")
-  const node = a.nodeAt(0)
+  const node = a.particleAt(0)
   const originalMtime = node.getLineModifiedTime()
 
   // Assert
@@ -3942,7 +3942,7 @@ testParticles.particles = equal => {
 
 testParticles.mTimeNotIncrementingRegressionTest = equal => {
   // Arrange
-  const node = new Particle("text").nodeAt(0)
+  const node = new Particle("text").particleAt(0)
   let lastMTime = node.getLineModifiedTime()
   const numOfTrials = 100
   // Previously we would get a flakey test about every 10k trials
@@ -4009,7 +4009,7 @@ testParticles.queryMethods = equal => {
   // Act/Assert
   let result = particle.select(["sepal_width", "species"]).where("sepal_width", ">", 3.7)
   equal(result.length, 1)
-  equal(result.nodeAt(0).get("species"), "virginica")
+  equal(result.particleAt(0).get("species"), "virginica")
 
   // Act/Assert
   equal(particle.select(["sepal_width"]).length, 10)
@@ -4036,7 +4036,7 @@ testParticles.queryMethods = equal => {
     1
   )
 
-  equal(particle.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").nodeAt(0).get("species"), "virginica", "last and first work")
+  equal(particle.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").particleAt(0).get("species"), "virginica", "last and first work")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

@@ -56,7 +56,7 @@ testParticles.compileAll = equal => {
       equal(true, true, `Expected to compile and include "${name}" without error.`)
 
       // Act
-      // todo: should we have an example node for all langs?
+      // todo: should we have an example particle for all langs?
       const exampleProgram = parsersCode.getParticle("parsers example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
@@ -87,10 +87,10 @@ testParticles.jibberish = equal => {
     equal(!!new jibberish(), true, "it compiled")
 
     // Arrange
-    const program = new jibberish(`nodeWithConsts`)
+    const program = new jibberish(`particleWithConsts`)
 
     // Act/Assert
-    equal(program.nodeAt(0).score1, 28, "constants work")
+    equal(program.particleAt(0).score1, 28, "constants work")
   } catch (err) {
     console.error(err)
   } finally {
@@ -115,7 +115,7 @@ testParticles.numbers = equal => {
     const code = `+ 2 3
 * 2 3 10`
     const program = new numbers(code)
-    const firstParticle = program.nodeAt(0)
+    const firstParticle = program.particleAt(0)
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert

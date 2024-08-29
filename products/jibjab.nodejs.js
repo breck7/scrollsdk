@@ -24,8 +24,8 @@
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
           comment: commentParser,
@@ -71,7 +71,7 @@ jibberishParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 jibjabParser
  root
- description Adds a comment node to Jibberish
+ description Adds a comment particle to Jibberish
  extends jibberishParser
 abstractBaseClassParser
 extendsAbstractParser
@@ -144,7 +144,7 @@ lightbulbStateParser
 nestedParser
  extends abstractTopLevelParser
  crux nested
-nodeWithConstsParser
+particleWithConstsParser
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'\`
@@ -156,11 +156,11 @@ nodeWithConstsParser
  float score2 3.01
  boolean win true
  extends abstractTopLevelParser
- crux nodeWithConsts
-nodeExpandsConstsParser
+ crux particleWithConsts
+particleExpandsConstsParser
  string greeting hola
- extends nodeWithConstsParser
- crux nodeExpandsConsts
+ extends particleWithConstsParser
+ crux particleExpandsConsts
 someCodeParser
  catchAllParser lineOfCodeParser
  extends abstractTopLevelParser
@@ -266,8 +266,8 @@ scoresParser
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
           comment: commentParser
@@ -317,7 +317,7 @@ scoresParser
 
   class nestedParser extends abstractTopLevelParser {}
 
-  class nodeWithConstsParser extends abstractTopLevelParser {
+  class particleWithConstsParser extends abstractTopLevelParser {
     get win() {
       return true
     }
@@ -345,7 +345,7 @@ world`
     }
   }
 
-  class nodeExpandsConstsParser extends nodeWithConstsParser {
+  class particleExpandsConstsParser extends particleWithConstsParser {
     get greeting() {
       return `hola`
     }

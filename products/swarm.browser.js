@@ -196,7 +196,7 @@ assertTypeIsParser
 abstractArrangeFlagParser
  cells keywordCell
 arrangeAsyncParser
- description Add this flag in the arrange node to test async methods.
+ description Add this flag in the arrange particle to test async methods.
  extends abstractArrangeFlagParser
  crux async
 arrangeRequireParser
@@ -206,7 +206,7 @@ arrangeRequireParser
  catchAllCellType anyCell
 arrangeStaticParser
  crux static
- description Add this to the arrange node to import class directly without initiating it for static method testing.
+ description Add this to the arrange particle to import class directly without initiating it for static method testing.
  extends abstractArrangeFlagParser
 abstractTestBlockParser
  catchAllCellType anyCell

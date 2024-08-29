@@ -18,8 +18,8 @@
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
           text: textParser
@@ -128,7 +128,7 @@ lightbulbStateParser
 nestedParser
  extends abstractTopLevelParser
  crux nested
-nodeWithConstsParser
+particleWithConstsParser
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'\`
@@ -140,11 +140,11 @@ nodeWithConstsParser
  float score2 3.01
  boolean win true
  extends abstractTopLevelParser
- crux nodeWithConsts
-nodeExpandsConstsParser
+ crux particleWithConsts
+particleExpandsConstsParser
  string greeting hola
- extends nodeWithConstsParser
- crux nodeExpandsConsts
+ extends particleWithConstsParser
+ crux particleExpandsConsts
 someCodeParser
  catchAllParser lineOfCodeParser
  extends abstractTopLevelParser
@@ -245,8 +245,8 @@ scoresParser
           xColumnName: xColumnNameParser,
           lightbulbState: lightbulbStateParser,
           nested: nestedParser,
-          nodeWithConsts: nodeWithConstsParser,
-          nodeExpandsConsts: nodeExpandsConstsParser,
+          particleWithConsts: particleWithConstsParser,
+          particleExpandsConsts: particleExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser
         }),
@@ -295,7 +295,7 @@ scoresParser
 
   class nestedParser extends abstractTopLevelParser {}
 
-  class nodeWithConstsParser extends abstractTopLevelParser {
+  class particleWithConstsParser extends abstractTopLevelParser {
     get win() {
       return true
     }
@@ -323,7 +323,7 @@ world`
     }
   }
 
-  class nodeExpandsConstsParser extends nodeWithConstsParser {
+  class particleExpandsConstsParser extends particleWithConstsParser {
     get greeting() {
       return `hola`
     }

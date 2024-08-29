@@ -4,7 +4,7 @@ test jibjab
   require ./jibjab.node.js
   constructWithParagraph
    foo
-   nodeWithConsts
+   particleWithConsts
    nested
    comment Hello world. this is a comment.
  getAllErrors

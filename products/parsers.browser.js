@@ -24,7 +24,7 @@ javascriptSafeAlphaNumericIdentifierCell
 anyCell
 
 baseParsersCell
- description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error nodes always report an error.
+ description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error particles always report an error.
  // todo Remove?
  enum blobParser errorParser
  paint variable.parameter
@@ -51,7 +51,7 @@ constantIdentifierCell
  // todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\\w+
  paint constant.other
- description A word that can be assigned to the node class in the target language.
+ description A word that can be assigned to the parser in the target language.
 
 constructorFilePathCell
 
@@ -90,7 +90,7 @@ lowercaseCell
 
 parserIdCell
  examples commentParser addParser
- description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
+ description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the parser will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
  paint variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes parserIdCell
@@ -165,7 +165,7 @@ abstractCompilerRuleParser
 
 closeChildrenParser
  extends abstractCompilerRuleParser
- description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
+ description When compiling a parent particle to a string, this string is appended to the compiled and joined children. Default is blank.
  cruxFromId
 
 indentCharacterParser
@@ -174,13 +174,13 @@ indentCharacterParser
  cruxFromId
 
 catchAllCellDelimiterParser
- description If a node has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
+ description If a particle has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
  extends abstractCompilerRuleParser
  cruxFromId
 
 openChildrenParser
  extends abstractCompilerRuleParser
- description When compiling a parent node to a string, this string is prepended to the compiled and joined children. Default is blank.
+ description When compiling a parent particle to a string, this string is prepended to the compiled and joined children. Default is blank.
  cruxFromId
 
 stringTemplateParser
@@ -189,7 +189,7 @@ stringTemplateParser
  cruxFromId
 
 joinChildrenWithParser
- description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
+ description When compiling a parent particle to a string, child particles are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleParser
  cruxFromId
 
@@ -242,7 +242,7 @@ extensionsParser
  extends abstractParserRuleParser
  catchAllCellType fileExtensionCell
  description File extension for your dialect.
- // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's parserId will be used as the default file extension.
+ // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root particle's parserId will be used as the default file extension.
  cruxFromId
  tags deprecate
 
@@ -260,7 +260,7 @@ baseParserParser
 catchAllCellTypeParser
  cells propertyKeywordCell cellTypeIdCell
  description Use for lists.
- // Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the node's line, parse these words as this type. Often used with \`listDelimiterParser\`.
+ // Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the particle's line, parse these words as this type. Often used with \`listDelimiterParser\`.
  extends abstractParserRuleParser
  cruxFromId
  tags analyzePhase
@@ -275,7 +275,7 @@ cellParserParser
 
 catchAllParserParser
  description Attach this to unmatched lines.
- // If a parser is not found in the inScope list, instantiate this type of node instead.
+ // If a parser is not found in the inScope list, instantiate this type of particle instead.
  cells propertyKeywordCell parserIdCell
  extends abstractParserRuleParser
  cruxFromId
@@ -310,7 +310,7 @@ cellTypeDescriptionParser
  tags assemblePhase
 
 exampleParser
- // todo Should this just be a "string" constant on nodes?
+ // todo Should this just be a "string" constant on particles?
  description Set example for docs and tests.
  catchAllCellType exampleAnyCell
  catchAllParser catchAllExampleLineParser
@@ -365,7 +365,7 @@ javascriptParser
  cruxFromId
 
 abstractParseRuleParser
- // Each node should have a pattern that it matches on unless it's a catch all node.
+ // Each particle should have a pattern that it matches on unless it's a catch all particle.
  extends abstractParserRuleParser
  cruxFromId
 
@@ -413,7 +413,7 @@ uniqueLineParser
 
 uniqueFirstWordParser
  description Assert unique first words. For pattern parsers.
- // For catch all parsers or pattern nodes, use this to indicate the 
+ // For catch all parsers or pattern particles, use this to indicate the 
  extends abstractValidationRuleParser
  tags analyzePhase
 
@@ -427,7 +427,7 @@ listDelimiterParser
 
 contentKeyParser
  description Deprecated. For to/from JSON.
- // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
+ // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the particle to an object and set a property with this key and the value set to the particle's content.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
@@ -435,7 +435,7 @@ contentKeyParser
 childrenKeyParser
  // todo: deprecate?
  description Deprecated. For to/from JSON.
- // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the node to an object and set a property with this key and the value set to the node's children.
+ // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the particle to an object and set a property with this key and the value set to the particle's children.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell

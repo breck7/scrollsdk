@@ -20,13 +20,13 @@
       let day = ""
       let lastTime = ""
       const rows = this.topDownArray
-        .map(node => {
-          if (node.doesExtend("dayParser")) {
-            day = node.getDay()
+        .map(particle => {
+          if (particle.doesExtend("dayParser")) {
+            day = particle.getDay()
             return undefined
           }
-          lastTime = !node.getTime || node.getTime() === undefined ? lastTime : node.getTime()
-          return node.compile(day, lastTime)
+          lastTime = !particle.getTime || particle.getTime() === undefined ? lastTime : particle.getTime()
+          return particle.compile(day, lastTime)
         })
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
@@ -63,13 +63,13 @@ poopParser
    let day = ""
    let lastTime = ""
    const rows = this.topDownArray
-    .map(node => {
-     if (node.doesExtend("dayParser")) {
-      day = node.getDay()
+    .map(particle => {
+     if (particle.doesExtend("dayParser")) {
+      day = particle.getDay()
       return undefined
      }
-     lastTime = !node.getTime || node.getTime() === undefined ? lastTime : node.getTime()
-     return node.compile(day, lastTime)
+     lastTime = !particle.getTime || particle.getTime() === undefined ? lastTime : particle.getTime()
+     return particle.compile(day, lastTime)
     })
     .filter(identity => identity)
    return \`date,time,event,notes\\n\` + rows.join("\\n")

@@ -8,7 +8,7 @@
     }
     compile() {
       return this.topDownArray
-        .filter(node => node.isSelectorParser)
+        .filter(particle => particle.isSelectorParser)
         .map(child => child.compile())
         .join("")
     }
@@ -55,7 +55,7 @@ hakonParser
   }
   compile() {
    return this.topDownArray
-    .filter(node => node.isSelectorParser)
+    .filter(particle => particle.isSelectorParser)
     .map(child => child.compile())
     .join("")
   }
@@ -107,7 +107,7 @@ selectorParser
     .join(",")
   }
   compile() {
-   const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+   const propertyParsers = this.getChildren().filter(particle => particle.doesExtend("propertyParser"))
    if (!propertyParsers.length) return ""
    const spaces = "  "
    return \`\${this.getSelector()} {
@@ -406,7 +406,7 @@ selectorParser
         .join(",")
     }
     compile() {
-      const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+      const propertyParsers = this.getChildren().filter(particle => particle.doesExtend("propertyParser"))
       if (!propertyParsers.length) return ""
       const spaces = "  "
       return `${this.getSelector()} {

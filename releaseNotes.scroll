@@ -145,12 +145,12 @@ This is a major release with significant name breaks. All logic is the same but 
   - rootNodeTypeDefinitionNode > rootParserDefinition
   - invalidNodeTypes > invalidParsers
   - getNodeTypeUsage > getParserUsage
-  - asCellTypeTreeWithNodeConstructorNames > asCellTypeTreeWithParserIds
-  - toPreludeCellTypeTreeWithNodeConstructorNames > toPreludeCellTypeTreeWithParserIds
+  - asCellTypeParticlesWithNodeConstructorNames > asCellTypeParticlesWithParserIds
+  - toPreludeCellTypeParticlesWithNodeConstructorNames > toPreludeCellTypeParticlesWithParserIds
   - asTreeWithNodeTypes > asTreeWithParsers
   - nodeTypeId > parserId
   - topNodeTypeDefinitions > topParserDefinitions
-  - nodeTypeFamilyTree > parserFamilyTree
+  - nodeTypeLineage > parserLineage
   - validConcreteAndAbstractParticleTypeDefinitions > validConcreteAndAbstractParserDefinitions
   - rootNodeTypeId > rootParserId
   - compileAndReturnRootConstructor > compileAndReturnRootParser
@@ -659,16 +659,16 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 web form generation fixes
 
 📦 45.0.0 2019-11-08
-🎉 toDefinitionLineNumberTree method added to Grammar programs
+🎉 toDefinitionLineNumberParticles method added to Grammar programs
 🎉 lengthen core method
 🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls
 🎉 toStumpString added to Grammar programs and webForm added to CLI
-⚠️ getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
+⚠️ getInPlaceCellTypeParticles: toCellTypeParticles, getInPlaceCellTypeParticlesWithNodeConstructorNames: toCellTypeParticlesWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeParticlesWithNodeConstructorNames: toPreludeCellTypeParticlesWithNodeConstructorNames
 🏥 toSideBySide fix for when later trees are longer than earlier ones
 
 📦 44.1.0 2019-11-05
 🎉 added stamp command to commandLineApp tool
-🎉 added produceProductFromInstructionsTree and buildBuilder to abstractBuilder
+🎉 added produceProductFromInstructionParticles and buildBuilder to abstractBuilder
 🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly
 
 📦 44.0.3 2019-11-02
@@ -754,7 +754,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 builder improvements
 
 📦 40.2.0 2019-09-11
-🎉 getInPlacePreludeCellTypeTreeWithNodeConstructorNames
+🎉 getInPlacePreludeCellTypeParticlesWithNodeConstructorNames
 🎉 generateSimulatedData
 🎉 designer app - simulate data and explain roots buttons
 🎉 explain 2D visualizer in designer app
@@ -1098,7 +1098,7 @@ regexCode
 
 📦 24.1.0 2019-05-27
 🎉 getAncestorNodeTypeNamesArray method on definition nodes
-🎉 getNodeTypeFamilyTree method on parsersPrograms
+🎉 getNodeTypeLineage method on parsersPrograms
 🎉 setWords, setWordsFrom and appendWord methods on base tree
 
 📦 24.0.0 2019-05-21
@@ -1148,7 +1148,7 @@ code
 ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
 ⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
+⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeParticles
 ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
 ⚠️ getLineSyntax is now getLineCellTypes
 
@@ -1344,7 +1344,7 @@ code
 🏥 renameAll fix
 ⚠️ getExpanded - if multiple parent nodes match, getExpanded will extend node with matching keyword
 ⚠️ getProgramErrors() is now getProgramErrorMessages(). getProgramErrors() now returns err objects
-🧹 makeRandomTree method & updates to perf test pages
+🧹 makeRandomParticles method & updates to perf test pages
 🧹 Default sandbox port now 3333
 
 📦 15.2.0 2019-02-10

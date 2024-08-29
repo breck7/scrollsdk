@@ -4,7 +4,7 @@ ParticleComponentFramework is a *research* web framework for building reactive w
 
 # The Vision
 ParticleComponentFramework is a step toward a world where web app development and debugging is much simpler! Every app can be dumped to a string and you can see all the state in the app in that string. See for yourself in the SweeperCraft app--just press "d" to dump the app to a string.
- https://sdk.scroll.pub/treeComponentFramework/sweepercraft/ SweeperCraft app
+ https://sdk.scroll.pub/particleComponentFramework/sweepercraft/ SweeperCraft app
 
 With ParticleComponentFramework, you build your components in Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use TreeScript (coming soon). You define your components in those and then you create a high level Language specifically for your app to stitch those components together.
 
@@ -17,7 +17,7 @@ This framework is currently a *research project*. We expect to have **version 1 
 
 # Examples
 The github repo contains a demonstration game called "SweeperCraft" that let's you design your own Minesweeper board.
- https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft github repo
+ https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework/sweepercraft github repo
 
 This framework also powers:
 

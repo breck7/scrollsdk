@@ -462,7 +462,7 @@ class Utils {
     return str
   }
   // todo: add seed!
-  static makeRandomTree(lines = 1000, seed = Date.now()) {
+  static makeRandomParticles(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
     const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)

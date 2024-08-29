@@ -5,15 +5,15 @@ const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.disk = equal => {
+testParticles.disk = equal => {
   const tfs = new ParticleFileSystem()
   // Arrange/Act/Assert
   equal(tfs.assembleFile(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
 }
 
-testTree.inMemory = equal => {
+testParticles.inMemory = equal => {
   // Arrange/Act/Assert
   const files = {
     "/hello": "world",
@@ -27,6 +27,6 @@ testTree.inMemory = equal => {
   equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

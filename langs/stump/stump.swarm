@@ -79,7 +79,7 @@ test syntax
    div
     bern
      Hello world
- toCellTypeTree
+ toCellTypeParticles
   assertParagraphIs
    htmlTagNameCell
     bernKeywordCell

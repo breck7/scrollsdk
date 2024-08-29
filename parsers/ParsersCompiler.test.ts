@@ -8,9 +8,9 @@ const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const { ParsersCompiler } = require("../products/ParsersCompiler.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.compileParsersAndCreateProgram = equal => {
+testParticles.compileParsersAndCreateProgram = equal => {
   // Arrange
   const jibberishRootDir = __dirname + "/../langs/jibberish/"
   const programPath = jibberishRootDir + "sample.jibberish"
@@ -25,7 +25,7 @@ testTree.compileParsersAndCreateProgram = equal => {
   equal(result, 42)
 }
 
-testTree.combineTests = equal => {
+testParticles.combineTests = equal => {
   // Arrange
   const combined = ParsersCompiler.combineFiles([__dirname + "/*.swarm"])
 
@@ -33,7 +33,7 @@ testTree.combineTests = equal => {
   equal(combined.toString().includes("constructWithParagraph"), true, "Included something from a swarm file")
 }
 
-testTree.diskTests = equal => {
+testParticles.diskTests = equal => {
   // Arrange
   const path = __dirname + `/temp-disk.csv`
 
@@ -41,12 +41,12 @@ testTree.diskTests = equal => {
   equal(Disk.exists(path), false, "file does not exist")
 
   // Arrange
-  const node = Particle.fromCsv(Particle.iris)
-  node.toDisk(path)
+  const particle = Particle.fromCsv(Particle.iris)
+  particle.toDisk(path)
 
   // Act/Assert
   equal(Disk.exists(path), true, "file exists")
-  equal(Particle.fromDisk(path).toString(), node.toString(), "tree unchanged")
+  equal(Particle.fromDisk(path).toString(), particle.toString(), "particle unchanged")
 
   // Cleanup
   Disk.rm(path)
@@ -55,7 +55,7 @@ testTree.diskTests = equal => {
   equal(Disk.exists(path), false, "file does not exist")
 }
 
-testTree.findProjectRoot = equal => {
+testParticles.findProjectRoot = equal => {
   const dir = Utils.findProjectRoot(__dirname, "scrollsdk")
   equal(typeof dir, "string")
   equal(dir.includes("parsers"), false, "correct parent dir selected")
@@ -75,6 +75,6 @@ testTree.findProjectRoot = equal => {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

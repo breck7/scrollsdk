@@ -1,5 +1,5 @@
 const { Utils } = require("../products/Utils.js")
-const { Particle, TreeWord, ExtendibleParticle, AbstractExtendibleParticle } = require("../products/Particle.js")
+const { Particle, ParticleWord, ExtendibleParticle, AbstractExtendibleParticle } = require("../products/Particle.js")
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
@@ -136,7 +136,7 @@ enum ParsersConstants {
   paint = "paint"
 }
 
-class TypedWord extends TreeWord {
+class TypedWord extends ParticleWord {
   private _type: string
   constructor(node: Particle, cellIndex: number, type: string) {
     super(node, cellIndex)
@@ -160,7 +160,7 @@ abstract class ParserBackedNode extends Particle {
     return this._definition
   }
 
-  get rootParsersTree() {
+  get rootParsersParticles() {
     return this.definition.root
   }
 
@@ -276,7 +276,7 @@ abstract class ParserBackedNode extends Particle {
   }
 
   protected get requiredNodeErrors() {
-    const errors: scrollNotationTypes.TreeError[] = []
+    const errors: scrollNotationTypes.ParticleError[] = []
     Object.values(this.definition.firstWordMapWithDefinitions).forEach(def => {
       if (def.isRequired() && !this.nodeIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
     })
@@ -314,14 +314,14 @@ abstract class ParserBackedNode extends Particle {
     return this.topDownArray.filter((node: ParserBackedNode) => node.definition.parserIdFromDefinition === parserId)
   }
 
-  toCellTypeTree() {
+  toCellTypeParticles() {
     return this.topDownArray.map(child => child.indentation + child.lineCellTypes).join("\n")
   }
 
   getParseTable(maxColumnWidth = 40) {
-    const tree = new Particle(this.toCellTypeTree())
+    const particle = new Particle(this.toCellTypeParticles())
     return new Particle(
-      tree.topDownArray.map((node, lineNumber) => {
+      particle.topDownArray.map((node, lineNumber) => {
         const sourceNode = this.nodeAtLine(lineNumber)
         const errs = sourceNode.getErrors()
         const errorCount = errs.length
@@ -363,15 +363,15 @@ abstract class ParserBackedNode extends Particle {
   }
 
   toAutoCompleteCube(fillChar = "") {
-    const trees: any[] = [this.clone()]
+    const particles: any[] = [this.clone()]
     const filled = this.clone().fill(fillChar)
     this._getAllAutoCompleteWords().forEach(hole => {
       hole.suggestions.forEach((suggestion, index) => {
-        if (!trees[index + 1]) trees[index + 1] = filled.clone()
-        trees[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
+        if (!particles[index + 1]) particles[index + 1] = filled.clone()
+        particles[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
       })
     })
-    return new Particle(trees)
+    return new Particle(particles)
   }
 
   toAutoCompleteTable() {
@@ -402,9 +402,9 @@ abstract class ParserBackedNode extends Particle {
   }
 
   private _sortWithParentParsersUpTop() {
-    const familyTree = new HandParsersProgram(this.toString()).parserFamilyTree
+    const lineage = new HandParsersProgram(this.toString()).parserLineage
     const rank: scrollNotationTypes.stringMap = {}
-    familyTree.topDownArray.forEach((node, index) => {
+    lineage.topDownArray.forEach((node, index) => {
       rank[node.getWord(0)] = index
     })
     const nodeAFirst = -1
@@ -448,43 +448,43 @@ abstract class ParserBackedNode extends Particle {
     return usage
   }
 
-  toPaintTree() {
+  toPaintParticles() {
     return this.topDownArray.map((child: ParserBackedNode) => child.indentation + child.getLinePaints()).join("\n")
   }
 
-  toDefinitionLineNumberTree() {
+  toDefinitionLineNumberParticles() {
     return this.topDownArray.map((child: ParserBackedNode) => child.definition.lineNumber + " " + child.indentation + child.cellDefinitionLineNumbers.join(" ")).join("\n")
   }
 
-  get asCellTypeTreeWithParserIds() {
+  get asCellTypeParticlesWithParserIds() {
     return this.topDownArray.map((child: ParserBackedNode) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.lineCellTypes).join("\n")
   }
 
-  toPreludeCellTypeTreeWithParserIds() {
+  toPreludeCellTypeParticlesWithParserIds() {
     return this.topDownArray.map((child: ParserBackedNode) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLineCellPreludeTypes()).join("\n")
   }
 
-  get asTreeWithParsers() {
+  get asParticlesWithParsers() {
     return this.topDownArray.map((child: ParserBackedNode) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLine()).join("\n")
   }
 
   getCellPaintAtPosition(lineIndex: number, wordIndex: number): scrollNotationTypes.paint | undefined {
     this._initCellTypeCache()
-    const typeNode = this._cache_paintTree.topDownArray[lineIndex - 1]
+    const typeNode = this._cache_paintParticles.topDownArray[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
   }
 
   private _cache_programCellTypeStringMTime: number
-  private _cache_paintTree: Particle
-  private _cache_typeTree: Particle
+  private _cache_paintParticles: Particle
+  private _cache_typeParticles: Particle
 
   protected _initCellTypeCache(): void {
-    const treeMTime = this.getLineOrChildrenModifiedTime()
-    if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
+    const particleMTime = this.getLineOrChildrenModifiedTime()
+    if (this._cache_programCellTypeStringMTime === particleMTime) return undefined
 
-    this._cache_typeTree = new Particle(this.toCellTypeTree())
-    this._cache_paintTree = new Particle(this.toPaintTree())
-    this._cache_programCellTypeStringMTime = treeMTime
+    this._cache_typeParticles = new Particle(this.toCellTypeParticles())
+    this._cache_paintParticles = new Particle(this.toPaintParticles())
+    this._cache_programCellTypeStringMTime = particleMTime
   }
 
   createParserCombinator() {
@@ -507,7 +507,7 @@ abstract class ParserBackedNode extends Particle {
   }
 
   private get singleParserUsedTwiceErrors() {
-    const errors: scrollNotationTypes.TreeError[] = []
+    const errors: scrollNotationTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedNode
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
 
@@ -519,7 +519,7 @@ abstract class ParserBackedNode extends Particle {
   }
 
   private get uniqueLineAppearsTwiceErrors() {
-    const errors: scrollNotationTypes.TreeError[] = []
+    const errors: scrollNotationTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedNode
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
 
@@ -535,7 +535,7 @@ abstract class ParserBackedNode extends Particle {
   }
 
   get scopeErrors() {
-    let errors: scrollNotationTypes.TreeError[] = []
+    let errors: scrollNotationTypes.ParticleError[] = []
     const def = this.definition
     if (def.isSingle) errors = errors.concat(this.singleParserUsedTwiceErrors) // todo: speedup. takes ~1s on pldb.
     if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors) // todo: speedup. takes ~1s on pldb.
@@ -659,8 +659,8 @@ abstract class ParserBackedNode extends Particle {
     const hasChildrenAndContent = typedContent !== undefined && hasChildren
     const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
 
-    // If the node has a content and a subtree return it as a string, as
-    // Javascript object values can't be both a leaf and a tree.
+    // If the node has a content and a subparticle return it as a string, as
+    // Javascript object values can't be both a leaf and a particle.
     if (shouldReturnValueAsContentPlusChildren) return [key, this.contentWithChildren]
 
     return [key, typedContent]
@@ -728,7 +728,7 @@ class BlobParser extends ParserBackedNode {
     return new Particle.ParserCombinator(BlobParser, {})
   }
 
-  getErrors(): scrollNotationTypes.TreeError[] {
+  getErrors(): scrollNotationTypes.ParticleError[] {
     return []
   }
 }
@@ -739,7 +739,7 @@ class UnknownParserNode extends ParserBackedNode {
     return new Particle.ParserCombinator(UnknownParserNode, {})
   }
 
-  getErrors(): scrollNotationTypes.TreeError[] {
+  getErrors(): scrollNotationTypes.ParticleError[] {
     return [new UnknownParserError(this)]
   }
 }
@@ -878,7 +878,7 @@ ${options.toString(1)}`
     return this.cellTypeDefinition.isValid(word, <ParserBackedNode>this.getNode().root) && this._isValid()
   }
 
-  getErrorIfAny(): scrollNotationTypes.TreeError {
+  getErrorIfAny(): scrollNotationTypes.ParticleError {
     const word = this.getWord()
     if (word !== undefined && this.isValid()) return undefined
 
@@ -1049,7 +1049,7 @@ class ParsersExtraWordCellTypeCell extends AbstractParsersBackedCell<string> {
     return this.getWord()
   }
 
-  getErrorIfAny(): scrollNotationTypes.TreeError {
+  getErrorIfAny(): scrollNotationTypes.ParticleError {
     return new ExtraWordError(this)
   }
 }
@@ -1072,12 +1072,12 @@ class ParsersUnknownCellTypeCell extends AbstractParsersBackedCell<string> {
     return this.getWord()
   }
 
-  getErrorIfAny(): scrollNotationTypes.TreeError {
+  getErrorIfAny(): scrollNotationTypes.ParticleError {
     return new UnknownCellTypeError(this)
   }
 }
 
-abstract class AbstractTreeError implements scrollNotationTypes.TreeError {
+abstract class AbstractParticleError implements scrollNotationTypes.ParticleError {
   constructor(node: ParserBackedNode) {
     this._node = node
   }
@@ -1199,7 +1199,7 @@ abstract class AbstractTreeError implements scrollNotationTypes.TreeError {
   }
 }
 
-abstract class AbstractCellError extends AbstractTreeError {
+abstract class AbstractCellError extends AbstractParticleError {
   constructor(cell: AbstractParsersBackedCell<any>) {
     super(cell.getNode())
     this._cell = cell
@@ -1223,7 +1223,7 @@ abstract class AbstractCellError extends AbstractTreeError {
   private _cell: AbstractParsersBackedCell<any>
 }
 
-class UnknownParserError extends AbstractTreeError {
+class UnknownParserError extends AbstractParticleError {
   get message(): string {
     const node = this.getNode()
     const parentNode = node.parent
@@ -1256,7 +1256,7 @@ class UnknownParserError extends AbstractTreeError {
   }
 }
 
-class ParserDefinedError extends AbstractTreeError {
+class ParserDefinedError extends AbstractParticleError {
   constructor(node: ParserBackedNode, message: string) {
     super()
     this._node = node
@@ -1288,7 +1288,7 @@ class BlankLineError extends UnknownParserError {
   }
 }
 
-class MissingRequiredParserError extends AbstractTreeError {
+class MissingRequiredParserError extends AbstractParticleError {
   constructor(node: ParserBackedNode, missingParserId: scrollNotationTypes.firstWord) {
     super(node)
     this._missingParserId = missingParserId
@@ -1301,7 +1301,7 @@ class MissingRequiredParserError extends AbstractTreeError {
   }
 }
 
-class ParserUsedMultipleTimesError extends AbstractTreeError {
+class ParserUsedMultipleTimesError extends AbstractParticleError {
   get message(): string {
     return super.message + ` Multiple "${this.getNode().firstWord}" found.`
   }
@@ -1315,7 +1315,7 @@ class ParserUsedMultipleTimesError extends AbstractTreeError {
   }
 }
 
-class LineAppearsMultipleTimesError extends AbstractTreeError {
+class LineAppearsMultipleTimesError extends AbstractParticleError {
   get message(): string {
     return super.message + ` "${this.getNode().getLine()}" appears multiple times.`
   }
@@ -2493,7 +2493,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     const languageName = this.extensionName
     const rootNodeDef = this.rootParserDefinition
     const cellTypes = this.cellTypeDefinitions
-    const parserFamilyTree = this.parserFamilyTree
+    const parserLineage = this.parserLineage
     const exampleNode = rootNodeDef.examples[0]
     return `title ${languageName} Readme
 
@@ -2507,7 +2507,7 @@ ${exampleNode ? exampleNode.childrenToString(1) : ""}
 subtitle Quick facts about ${languageName}
 
 list
- - ${languageName} has ${parserFamilyTree.topDownArray.length} node types.
+ - ${languageName} has ${parserLineage.topDownArray.length} node types.
  - ${languageName} has ${Object.keys(cellTypes).length} cell types
  - The source code for ${languageName} is ${this.topDownArray.length} lines long.
 
@@ -2524,7 +2524,7 @@ code
 subtitle Node Types
 
 code
-${parserFamilyTree.toString(1)}
+${parserLineage.toString(1)}
 
 subtitle Cell Types
 
@@ -2616,10 +2616,10 @@ ${testCode}`
     return this.cellTypeDefinitions[cellTypeId]
   }
 
-  get parserFamilyTree() {
-    const tree = new Particle()
-    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(node => tree.touchNode(node.ancestorParserIdsArray.join(" ")))
-    return tree
+  get parserLineage() {
+    const particle = new Particle()
+    Object.values(this.validConcreteAndAbstractParserDefinitions).forEach(node => particle.touchNode(node.ancestorParserIdsArray.join(" ")))
+    return particle
   }
 
   get languageDefinitionProgram() {

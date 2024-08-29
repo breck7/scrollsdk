@@ -11,16 +11,16 @@ namespace scrollNotationTypes {
   }
 
   export interface inheritanceInfo {
-    node: treeNode
+    node: particle
     nodeId: string
     parentId: string
   }
 
-  export interface TreeError {
+  export interface ParticleError {
     getLineIndex(): positiveInt
     getLine(): line
     getExtension(): fileExtension
-    getNode(): treeNode
+    getNode(): particle
     getErrorTypeName(): string
     getCellIndex(): positiveInt
     hasSuggestion(): boolean
@@ -31,7 +31,7 @@ namespace scrollNotationTypes {
 
   export interface regexTest {
     regex: RegExp
-    parser: TreeParser
+    parser: ParticleParser
   }
 
   export interface regexTestDef {
@@ -45,7 +45,7 @@ namespace scrollNotationTypes {
   }
   export declare type serializedParticle = string
 
-  export declare type treeNode = any
+  export declare type particle = any
   export declare type line = string // no NodeBreakSymbol (\n)
   export declare type int = number
   export declare type positiveInt = number
@@ -58,9 +58,9 @@ namespace scrollNotationTypes {
 
   export declare type rawRowJavascriptObject = Object
 
-  // A subset of JSON that has the property that it translates to and from JSON and Tree identically.
+  // A subset of JSON that has the property that it translates to and from JSON and Particles identically.
   // So, this rules out JSON objects with non-string types or spaces in their key name.
-  // For closer fidelity to JSON, use a tree language.
+  // For closer fidelity to JSON, use Parsers.
   export declare type jsonSubset = string
 
   export declare type templateString = string // "Hello {name}! You are {age} years old."
@@ -75,7 +75,7 @@ namespace scrollNotationTypes {
   export declare type requirePath = string // something that could go in a "require" statement
   export declare type url = string
   export declare type typeScriptFilePath = filepath
-  export declare type treeProgramFilePath = filepath
+  export declare type particleProgramFilePath = filepath
   export declare type parsersFilePath = filepath
   export declare type fileName = string
   export declare type parsersName = string
@@ -84,20 +84,20 @@ namespace scrollNotationTypes {
   export declare type fileExtension = string
   export declare type globPath = string // * firstWord firstWord *
   export declare type targetLanguageId = fileExtension
-  export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
-  export declare type filterFn = (node: treeNode, index: int) => boolean
-  export declare type forEachFn = (node: treeNode, index: int) => void
-  export declare type everyFn = (node: treeNode, index: int) => boolean
-  export declare type nodeToStringFn = (node: treeNode) => string
+  export declare type sortFn = (nodeA: particle, nodeB: particle) => triInt
+  export declare type filterFn = (node: particle, index: int) => boolean
+  export declare type forEachFn = (node: particle, index: int) => void
+  export declare type everyFn = (node: particle, index: int) => boolean
+  export declare type nodeToStringFn = (node: particle) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
   export declare type typeScriptCode = string
   export declare type javascriptCode = string
   export declare type id = string
   export declare type portNumber = int
 
-  export declare type testTree = { [testName: string]: (equalMethod: Function) => void }
+  export declare type testParticles = { [testName: string]: (equalMethod: Function) => void }
 
-  export declare type idAccessorFunction = (tree: treeNode) => id
+  export declare type idAccessorFunction = (particle: particle) => id
 
   export declare type parserId = string // todo: add character restrictions.
   export declare type cellTypeId = string // todo: add character restrictions.
@@ -109,17 +109,17 @@ namespace scrollNotationTypes {
 
   export declare type javascriptClassPath = string // "scrollsdk.Foo.Bar"
 
-  export declare type children = string | Object | treeNode | any // todo: specify better.
+  export declare type children = string | Object | particle | any // todo: specify better.
 
-  export declare type TreeParser = Function // A constructor extending TreeParser
-  export declare type TreeProgramParser = Function // A constructor extending AbstractRuntimeNode
-  export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
+  export declare type ParticleParser = Function // A constructor extending ParticleParser
+  export declare type ParticleProgramParser = Function // A constructor extending AbstractRuntimeParticle
+  export declare type particleProgram = particle // A constructor extending AbstractRuntimeParticle
 
-  export declare type upgradeFunction = (tree: treeNode) => treeNode
+  export declare type upgradeFunction = (particle: particle) => particle
   export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
   export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 
-  export declare type firstWordToParserMap = { [firstWord: string]: TreeParser }
+  export declare type firstWordToParserMap = { [firstWord: string]: ParticleParser }
 }
 
 export { scrollNotationTypes }

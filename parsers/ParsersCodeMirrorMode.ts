@@ -187,17 +187,17 @@ const tmToCm = {
   }
 }
 
-const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: scrollNotationTypes.stringMap = tmToCm): CmToken => {
-  const matchingBranch = styleTree[scopeSegments.shift()]
+const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], style: scrollNotationTypes.stringMap = tmToCm): CmToken => {
+  const matchingBranch = style[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
 
-interface treeNotationCodeMirrorState {
+interface particleCodeMirrorState {
   cellIndex: number
 }
 
 class ParsersCodeMirrorMode {
-  constructor(name: string, getRootParserFn: () => scrollNotationTypes.TreeProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getRootParserFn: () => scrollNotationTypes.ParticleProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getRootParserFn = getRootParserFn
     this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
@@ -206,10 +206,10 @@ class ParsersCodeMirrorMode {
 
   private _name: string
   private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getRootParserFn: () => scrollNotationTypes.TreeProgramParser
+  private _getRootParserFn: () => scrollNotationTypes.ParticleProgramParser
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
-  private _cachedProgram: scrollNotationTypes.treeProgram
+  private _cachedProgram: scrollNotationTypes.particleProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
@@ -263,7 +263,7 @@ class ParsersCodeMirrorMode {
     }
   }
 
-  token(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState) {
+  token(stream: CodeMirrorLib.StringStream, state: particleCodeMirrorState) {
     return this._advanceStreamAndReturnTokenType(stream, state)
   }
 
@@ -325,7 +325,7 @@ class ParsersCodeMirrorMode {
     return this
   }
 
-  private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string {
+  private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: particleCodeMirrorState): string {
     let nextCharacter = stream.next()
     const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
     const WordBreakSymbol = " "
@@ -371,13 +371,13 @@ class ParsersCodeMirrorMode {
   }
 
   // todo: remove.
-  startState(): treeNotationCodeMirrorState {
+  startState(): particleCodeMirrorState {
     return {
       cellIndex: 0
     }
   }
 
-  _incrementLine(state: treeNotationCodeMirrorState) {
+  _incrementLine(state: particleCodeMirrorState) {
     state.cellIndex = 0
   }
 }

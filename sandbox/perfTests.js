@@ -71,7 +71,7 @@ const parseStringTest = () => {
 }
 
 const toStringTest = () => {
-  const data = new Particle(Utils.makeRandomTree(10000))
+  const data = new Particle(Utils.makeRandomParticles(10000))
   const startTime = Date.now()
 
   const res = data.toString()

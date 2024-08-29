@@ -5,9 +5,9 @@ const { SweeperCraftApp, SweeperCraftGame } = require("./SweeperCraft")
 const { Particle } = require("../../products/Particle.js")
 const { TestRacer } = require("../../products/TestRacer.js")
 
-const testTree: any = {}
+const testParticles: any = {}
 
-testTree.sweeperCraftBasics = async (equal: any) => {
+testParticles.sweeperCraftBasics = async (equal: any) => {
   const app = new SweeperCraftApp(`headerComponent
 boardComponent
 controlsComponent
@@ -21,7 +21,7 @@ githubTriangleComponent`)
   equal(!!app, true)
 }
 
-testTree.createGame = (equal: any) => {
+testParticles.createGame = (equal: any) => {
   // Arrange/Act
   const game = new SweeperCraftGame([[0]])
 
@@ -39,7 +39,7 @@ testTree.createGame = (equal: any) => {
   equal(game2.getNumberOfMines(), 2, "Has expected number of mines")
 }
 
-testTree.invalidBoardtests = (equal: any) => {
+testParticles.invalidBoardtests = (equal: any) => {
   try {
     // Arrange/Act
     new SweeperCraftGame()
@@ -70,7 +70,7 @@ testTree.invalidBoardtests = (equal: any) => {
   }
 }
 
-testTree.flagging = (equal: any) => {
+testParticles.flagging = (equal: any) => {
   // Arrange
   const game = new SweeperCraftGame([[0, 1, 1]])
 
@@ -103,7 +103,7 @@ testTree.flagging = (equal: any) => {
   equal(game.getNumberOfMines(true), 2, "Mine count increased.")
 }
 
-testTree.undo = (equal: any) => {
+testParticles.undo = (equal: any) => {
   // Arrange
   const game = new SweeperCraftGame([[0, 1, 1]])
 
@@ -125,7 +125,7 @@ testTree.undo = (equal: any) => {
   equal(game.getNumberOfFlags(), 2, "Expected 2 flags")
 }
 
-testTree.winGame = (equal: any) => {
+testParticles.winGame = (equal: any) => {
   // Arrange
   const game = new SweeperCraftGame([
     [0, 0, 0, 0],
@@ -148,7 +148,7 @@ testTree.winGame = (equal: any) => {
   equal(game.wasClicked(0, 2), true, "Square was clicked by recursion")
 }
 
-testTree.loseGame = (equal: any) => {
+testParticles.loseGame = (equal: any) => {
   // Arrange
   const game = new SweeperCraftGame([[0, 1, 0]])
 
@@ -166,7 +166,7 @@ testTree.loseGame = (equal: any) => {
   equal(!game.isWon(), true)
 }
 
-testTree.retryGame = (equal: any) => {
+testParticles.retryGame = (equal: any) => {
   // Arrange
   const game = new SweeperCraftGame([[0, 1, 0]])
 
@@ -201,7 +201,7 @@ testTree.retryGame = (equal: any) => {
   equal(game.isWon(), true)
 }
 
-testTree.getZeroedBoard = (equal: any) => {
+testParticles.getZeroedBoard = (equal: any) => {
   // Arrange
   const testCases = [
     {
@@ -224,7 +224,7 @@ testTree.getZeroedBoard = (equal: any) => {
   })
 }
 
-testTree.genRandomBoard = (equal: any) => {
+testParticles.genRandomBoard = (equal: any) => {
   // Act
   try {
     SweeperCraftGame.getRandomBoard(0, 0, 1)
@@ -251,7 +251,7 @@ testTree.genRandomBoard = (equal: any) => {
   equal(deepEqual, false, "Random boards are different")
 }
 
-testTree.boardSum = (equal: any) => {
+testParticles.boardSum = (equal: any) => {
   // Arrange
   const testCases = [
     {
@@ -288,7 +288,7 @@ testTree.boardSum = (equal: any) => {
   })
 }
 
-testTree.getNeighbors = (equal: any) => {
+testParticles.getNeighbors = (equal: any) => {
   // Arrange
   const testCases = [
     {
@@ -340,6 +340,6 @@ testTree.getNeighbors = (equal: any) => {
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

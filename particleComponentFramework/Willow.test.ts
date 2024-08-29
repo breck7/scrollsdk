@@ -4,9 +4,9 @@ import { WillowBrowser } from "./ParticleComponentFramework"
 
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: any = {}
+const testParticles: any = {}
 
-testTree.all = (equal: any) => {
+testParticles.all = (equal: any) => {
   // Arrange
   const willow2 = new WillowBrowser("http://localhost:8000/index.html")
 
@@ -38,5 +38,5 @@ testTree.all = (equal: any) => {
   equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
-export { testTree }
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
+export { testParticles }

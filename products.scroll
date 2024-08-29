@@ -1,11 +1,11 @@
 nodeProduct
  outputFileName ParticleComponentFramework.node.js
- combineTypeScriptFiles products/scrollNotationTypes.ts treeComponentFramework/ParticleComponentFramework.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
  insertLastLine module.exports = { AbstractParticleComponentParser, WillowBrowser, AbstractGithubTriangleComponent, ParticleComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName Particle.js
- insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, TreeEvents, TreeWord }
- combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/AbstractParticle.node.ts treeNode/Particle.ts
+ insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
 nodeProduct
  outputFileName Parsers.js
  insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedNode, UnknownParserError, UnknownParsersProgram }
@@ -44,15 +44,15 @@ nodeProduct
  insertLastLine module.exports = {TypeScriptRewriter}
 browserProduct
  outputFileName SweeperCraft.browser.js
- combineTypeScriptFiles treeComponentFramework/sweepercraft/SweeperCraft.ts
+ combineTypeScriptFiles particleComponentFramework/sweepercraft/SweeperCraft.ts
 browserProduct
  outputFileName ParticleComponentFramework.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts treeComponentFramework/ParticleComponentFramework.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
 browserProduct
  outputFileName Particle.test.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/Particle.test.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/Particle.test.ts
 browserProduct
  outputFileName Parsers.ts.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
@@ -66,7 +66,7 @@ browserProduct
 browserProduct
  outputFileName Particle.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/AbstractParticle.browser.ts treeNode/Particle.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.browser.ts particle/Particle.ts
 browserProduct
  outputFileName TestRacer.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes

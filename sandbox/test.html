@@ -24,15 +24,15 @@
     <script type="text/javascript">
       const main = async () => {
         const runTestMethod = new URLSearchParams(new URL(location.href).search).get("runTestMethod")
-        let testsToRun = testTree
+        let testsToRun = testParticles
         if (runTestMethod) {
           testsToRun = {}
-          testsToRun[runTestMethod] = testTree[runTestMethod]
+          testsToRun[runTestMethod] = testParticles[runTestMethod]
         }
         const bodyTag = document.getElementsByTagName("body")[0]
-        const fileTree = {}
-        fileTree.core = testsToRun
-        const racer = new TestRacer(fileTree).setLogFunction(message => {
+        const fileTestParticles = {}
+        fileTestParticles.core = testsToRun
+        const racer = new TestRacer(fileTestParticles).setLogFunction(message => {
           const result = document.createElement("div")
           result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
           bodyTag.prepend(result)

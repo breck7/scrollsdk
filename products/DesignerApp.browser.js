@@ -91,8 +91,8 @@ class DesignerApp extends AbstractParticleComponentParser {
   }
   _toIceTray(program) {
     const columns = program.programWidth
-    const cellTypes = new Particle(program.asCellTypeTreeWithParserIds)
-    const rootCellTypes = new Particle(program.toPreludeCellTypeTreeWithParserIds())
+    const cellTypes = new Particle(program.asCellTypeParticlesWithParserIds)
+    const rootCellTypes = new Particle(program.toPreludeCellTypeParticlesWithParserIds())
     const table = program.programAsCells
       .map((line, lineIndex) => {
         const parser = cellTypes.nodeAt(lineIndex).getWord(0)

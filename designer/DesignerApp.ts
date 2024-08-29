@@ -114,8 +114,8 @@ class DesignerApp extends AbstractParticleComponentParser {
   private _toIceTray(program: any) {
     const columns = program.programWidth
 
-    const cellTypes = new Particle(program.asCellTypeTreeWithParserIds)
-    const rootCellTypes = new Particle(program.toPreludeCellTypeTreeWithParserIds())
+    const cellTypes = new Particle(program.asCellTypeParticlesWithParserIds)
+    const rootCellTypes = new Particle(program.toPreludeCellTypeParticlesWithParserIds())
 
     const table = program.programAsCells
       .map((line: any, lineIndex: number) => {
@@ -297,10 +297,10 @@ class DesignerApp extends AbstractParticleComponentParser {
   }
 
   toShareLink() {
-    const tree = new Particle()
-    tree.appendLineAndChildren("parsers", this.getParsersCode())
-    tree.appendLineAndChildren("sample", this.getCodeValue())
-    return "#" + encodeURIComponent(tree.asString)
+    const particle = new Particle()
+    particle.appendLineAndChildren("parsers", this.getParsersCode())
+    particle.appendLineAndChildren("sample", this.getCodeValue())
+    return "#" + encodeURIComponent(particle.asString)
   }
 
   _onCodeKeyUp() {
@@ -634,7 +634,7 @@ class headerComponent extends AbstractParticleComponentParser {
   id helpSection
   style display: none;
   p This is a simple web IDE for designing and building languages on top of Scroll Notation. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }
 

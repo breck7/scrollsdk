@@ -355,17 +355,17 @@ class AbstractWillowBrowser extends stumpParser {
     return params.toString()
   }
 
-  toPrettyDeepLink(treeCode: string, queryObject: any) {
+  toPrettyDeepLink(particleCode: string, queryObject: any) {
     // todo: move things to a constant.
     const nodeBreakSymbol = "~"
     const edgeSymbol = "_"
     const obj = Object.assign({}, queryObject)
 
-    if (!treeCode.includes(nodeBreakSymbol) && !treeCode.includes(edgeSymbol)) {
+    if (!particleCode.includes(nodeBreakSymbol) && !particleCode.includes(edgeSymbol)) {
       obj.nodeBreakSymbol = nodeBreakSymbol
       obj.edgeSymbol = edgeSymbol
-      obj.data = encodeURIComponent(treeCode.replace(/ /g, edgeSymbol).replace(/\n/g, nodeBreakSymbol))
-    } else obj.data = encodeURIComponent(treeCode)
+      obj.data = encodeURIComponent(particleCode.replace(/ /g, edgeSymbol).replace(/\n/g, nodeBreakSymbol))
+    } else obj.data = encodeURIComponent(particleCode)
 
     return this.getAppWebPageUrl() + "?" + this.queryObjectToQueryString(obj)
   }
@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.topDownArray
-    const titleNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.topDownArray
-    const headNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
+    const headNode = nodes.find((node: scrollNotationTypes.particle) => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1177,8 +1177,8 @@ declare class abstractHtmlTag extends ParserBackedNode {
 }
 
 abstract class AbstractParticleComponentParser extends ParserBackedNode {
-  private _commandsBuffer: scrollNotationTypes.treeNode[]
-  private _messageBuffer: scrollNotationTypes.treeNode
+  private _commandsBuffer: scrollNotationTypes.particle[]
+  private _messageBuffer: scrollNotationTypes.particle
   private _htmlStumpNode: abstractHtmlTag
   private _cssStumpNode: abstractHtmlTag
   private _lastRenderedTime: number
@@ -1300,16 +1300,16 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(identity => identity).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
 
-    let treeComponent = stumpNode.getStumpNodeParticleComponent()
-    while (!treeComponent[commandMethod]) {
-      const parent = treeComponent.parent
-      if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
+    let particleComponent = stumpNode.getStumpNodeParticleComponent()
+    while (!particleComponent[commandMethod]) {
+      const parent = particleComponent.parent
+      if (parent === particleComponent) throw new Error(`Unknown command "${commandMethod}"`)
       if (!parent) debugger
-      treeComponent = parent
+      particleComponent = parent
     }
 
     try {
-      await treeComponent[commandMethod](params.uno, params.dos)
+      await particleComponent[commandMethod](params.uno, params.dos)
     } catch (err) {
       this.onCommandError(err)
     }
@@ -1418,7 +1418,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     return this._messageBuffer
   }
 
-  // todo: move this to tree class? or other higher level class?
+  // todo: move this to particle class? or other higher level class?
   addStumpCodeMessageToLog(message: string) {
     // note: we have 1 parameter, and are going to do type inference first.
     // Todo: add actions that can be taken from a message?
@@ -1445,11 +1445,11 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     )
       return undefined
     this._getChildParticleComponents().forEach((child: any) => child.unmount())
-    this.treeComponentWillUnmount()
+    this.particleComponentWillUnmount()
     this._removeCss()
     this._removeHtml()
     delete this._lastRenderedTime
-    this.treeComponentDidUnmount()
+    this.particleComponentDidUnmount()
   }
 
   protected _removeHtml() {
@@ -1466,17 +1466,17 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     return this._getJavascriptPrototypeChainUpTo("AbstractParticleComponentParser")
   }
 
-  treeComponentWillMount() {}
+  particleComponentWillMount() {}
 
-  async treeComponentDidMount() {
+  async particleComponentDidMount() {
     AbstractParticleComponentParser._mountedParticleComponents++
   }
 
-  treeComponentDidUnmount() {
+  particleComponentDidUnmount() {
     AbstractParticleComponentParser._mountedParticleComponents--
   }
 
-  treeComponentWillUnmount() {}
+  particleComponentWillUnmount() {}
 
   getNewestTimeToRender() {
     return this._lastTimeToRender
@@ -1487,7 +1487,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedNode {
     return this
   }
 
-  async treeComponentDidUpdate() {}
+  async particleComponentDidUpdate() {}
 
   protected _getChildParticleComponents() {
     return this.getChildrenByParser(AbstractParticleComponentParser)
@@ -1525,7 +1525,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
     this._removeCss()
     this._mountCss()
     // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
-    // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
+    // okay. i see why we might do that for non tile particleComponents. but for Tile particleComponents, seems like we arent nesting, so why not?
     // for now
     if (this._hasChildrenParticleComponents()) return { shouldUpdate: false, reason: "did not update because is a parent" }
 
@@ -1628,7 +1628,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
 
   getParticleComponentId() {
     // html ids can't begin with a number
-    return "treeComponent" + this._getUid()
+    return "particleComponent" + this._getUid()
   }
 
   private _toLoadedOrLoadingStumpCode() {
@@ -1652,7 +1652,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
   protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
 
-    this.treeComponentWillMount()
+    this.particleComponentWillMount()
 
     this._mountCss()
     this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
@@ -1689,11 +1689,11 @@ ${new stumpParser(this.toStumpCode()).compile()}
 
   renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
-    let treeComponentUpdateReport: reasonForUpdatingOrNot = {
+    let particleComponentUpdateReport: reasonForUpdatingOrNot = {
       shouldUpdate: false,
       reason: ""
     }
-    if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
+    if (isUpdateOp) particleComponentUpdateReport = this._updateAndGetUpdateReport()
     else this._mount(stumpNode, index)
 
     const stumpNodeForChildren = this.getStumpNodeForChildren()
@@ -1702,22 +1702,22 @@ ${new stumpParser(this.toStumpCode()).compile()}
     const childResults = this._getChildParticleComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
 
     if (isUpdateOp) {
-      if (treeComponentUpdateReport.shouldUpdate) {
+      if (particleComponentUpdateReport.shouldUpdate) {
         try {
-          if (this.isLoaded()) this.treeComponentDidUpdate()
+          if (this.isLoaded()) this.particleComponentDidUpdate()
         } catch (err) {
           console.error(err)
         }
       }
     } else {
       try {
-        if (this.isLoaded()) this.treeComponentDidMount()
+        if (this.isLoaded()) this.particleComponentDidMount()
       } catch (err) {
         console.error(err)
       }
     }
 
-    let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${treeComponentUpdateReport.shouldUpdate} ${treeComponentUpdateReport.reason}`
+    let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${particleComponentUpdateReport.shouldUpdate} ${particleComponentUpdateReport.reason}`
     childResults.forEach((child: any) => (str += "\n" + child.toString(1)))
     return new Particle(str)
   }
@@ -1754,8 +1754,8 @@ class ParticleComponentFrameworkDebuggerComponent extends AbstractParticleCompon
   clickCommand toggleParticleComponentFrameworkDebuggerCommand
  div
   span This app is powered by the
-  a Tree Component Framework
-   href https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework
+  a ParticleComponentFramework
+   href https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework
  p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern

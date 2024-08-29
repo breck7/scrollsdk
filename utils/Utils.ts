@@ -607,7 +607,7 @@ class Utils {
   }
 
   // todo: add seed!
-  static makeRandomTree(lines = 1000, seed = Date.now()) {
+  static makeRandomParticles(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
     const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
@@ -713,7 +713,7 @@ class Utils {
   }
 
   static _makeGraphSortFunctionFromGraph(idAccessor: scrollNotationTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
-    return (nodeA: scrollNotationTypes.treeNode, nodeB: scrollNotationTypes.treeNode) => {
+    return (nodeA: scrollNotationTypes.particle, nodeB: scrollNotationTypes.particle) => {
       const nodeAFirst = -1
       const nodeBFirst = 1
 
@@ -743,7 +743,7 @@ class Utils {
   }
 
   static _makeGraphSortFunction(idAccessor: scrollNotationTypes.idAccessorFunction, extendsIdAccessor: scrollNotationTypes.idAccessorFunction) {
-    return (nodeA: scrollNotationTypes.treeNode, nodeB: scrollNotationTypes.treeNode) => {
+    return (nodeA: scrollNotationTypes.particle, nodeB: scrollNotationTypes.particle) => {
       // -1 === a before b
       const nodeAUniqueId = idAccessor(nodeA)
       const nodeAExtends = extendsIdAccessor(nodeA)

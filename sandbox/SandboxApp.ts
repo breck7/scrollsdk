@@ -43,51 +43,51 @@ class SandboxApp extends AbstractParticleComponentParser {
   }
 
   toShareLink() {
-    const treeCode = localStorage.getItem("tree")
-    if (!treeCode) return ""
-    const tree = new Particle()
-    tree.appendLineAndChildren("tree", treeCode)
-    return "#" + encodeURIComponent(tree.toString())
+    const particleCode = localStorage.getItem("particle")
+    if (!particleCode) return ""
+    const particle = new Particle()
+    particle.appendLineAndChildren("particle", particleCode)
+    return "#" + encodeURIComponent(particle.toString())
   }
 
-  private treeFromDeepLink() {
+  private particleFromDeepLink() {
     const hash = location.hash
     if (hash.length < 2) return ""
 
-    return new Particle(decodeURIComponent(hash.substr(1))).getNode("tree")
+    return new Particle(decodeURIComponent(hash.substr(1))).getNode("particle")
   }
 
-  updateAllCommand(tree: any, eventSource: string) {
+  updateAllCommand(particle: any, eventSource: string) {
     const { willowBrowser } = this
-    if (eventSource !== "treeConsole") willowBrowser.setValueOfElementWithIdHack("treeConsole", tree.toString())
-    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", tree.asJsonSubset)
-    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", tree.asCsv)
-    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", tree.asXml)
-    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", tree.asGridJson)
-    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", tree.asJson)
-    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", tree.asOutline)
-    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", tree.asHtml)
-    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", tree.asTable)
-    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", tree.asHtmlCube)
-    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", tree.asYaml)
+    if (eventSource !== "particleConsole") willowBrowser.setValueOfElementWithIdHack("particleConsole", particle.toString())
+    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", particle.asJsonSubset)
+    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", particle.asCsv)
+    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", particle.asXml)
+    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", particle.asGridJson)
+    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", particle.asJson)
+    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", particle.asOutline)
+    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", particle.asHtml)
+    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", particle.asTable)
+    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", particle.asHtmlCube)
+    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", particle.asYaml)
 
     let win = <any>window
-    win.tree = tree
-    localStorage.setItem("tree", tree.toString())
+    win.particle = particle
+    localStorage.setItem("particle", particle.toString())
     this._updateShareLink() // todo: where to put this?
   }
 
-  async treeComponentDidMount() {
+  async particleComponentDidMount() {
     // todo: refactor!!! split these into components
-    const treeConsoleEl = this.willowBrowser.getElementById("treeConsole")
+    const particleConsoleEl = this.willowBrowser.getElementById("particleConsole")
 
     // Init vars
-    const deepLink = this.treeFromDeepLink()
-    if (deepLink) treeConsoleEl.value = deepLink.childrenToString()
-    else if (localStorage.getItem("tree")) treeConsoleEl.value = localStorage.getItem("tree")
+    const deepLink = this.particleFromDeepLink()
+    if (deepLink) particleConsoleEl.value = deepLink.childrenToString()
+    else if (localStorage.getItem("particle")) particleConsoleEl.value = localStorage.getItem("particle")
 
     // Trigger start
-    this.updateFromTreeConsoleCommand()
+    this.updateFromParticlesConsoleCommand()
   }
 
   valueOf(id: string) {
@@ -114,8 +114,8 @@ class SandboxApp extends AbstractParticleComponentParser {
     this.updateAllCommand(Particle.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
   }
 
-  updateFromTreeConsoleCommand() {
-    this.updateAllCommand(new Particle(this.valueOf("treeConsole")), "treeConsole")
+  updateFromParticlesConsoleCommand() {
+    this.updateAllCommand(new Particle(this.valueOf("particleConsole")), "particleConsole")
   }
 
   toHakonCode() {
@@ -189,7 +189,7 @@ class headerComponent extends AbstractParticleComponentParser {
    img
     id logo
     src ../images/helloWorld3D.svg
-    title TreeNotation.org
+    title Scroll.pub
   span Scroll Notation Sandbox
  p
   a Parser Designer
@@ -204,7 +204,7 @@ class headerComponent extends AbstractParticleComponentParser {
   a Debug
    clickCommand toggleParticleComponentFrameworkDebuggerCommand
   span  | Version ${Particle.getVersion()}
- p This is a simple console for exploring the base Scroll Notation. In dev tools, you can access the parsed tree below as "window.tree"`
+ p This is a simple console for exploring the base Scroll Notation. In dev tools, you can access the parsed particle below as "window.particle"`
   }
 }
 
@@ -241,8 +241,8 @@ class tableComponent extends AbstractParticleComponentParser {
   td
    div Scroll Notation
    textarea
-    id treeConsole
-    keyUpCommand updateFromTreeConsoleCommand
+    id particleConsole
+    keyUpCommand updateFromParticlesConsoleCommand
   td
    div asGridJson
    textarea

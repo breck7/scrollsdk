@@ -21,7 +21,7 @@ interface AssembledFile {
   afterImportPass: string // codeWithoutImportsNorParserDefinitions
   importFilePaths: string[]
   isImportOnly: boolean
-  parser?: scrollNotationTypes.treeNode
+  parser?: scrollNotationTypes.particle
   filepathsWithParserDefinitions: string[]
 }
 
@@ -150,17 +150,17 @@ class ParticleFileSystem implements Storage {
   }
 
   private _storage: Storage
-  private _treeCache: { [filepath: string]: typeof Particle } = {}
+  private _particleCache: { [filepath: string]: typeof Particle } = {}
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _expandedImportCache: { [filepath: string]: AssembledFile } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
-  private _getFileAsTree(absoluteFilePath: string) {
-    const { _treeCache } = this
-    if (_treeCache[absoluteFilePath] === undefined) {
-      _treeCache[absoluteFilePath] = new Particle(this._storage.read(absoluteFilePath))
+  private _getFileAsParticles(absoluteFilePath: string) {
+    const { _particleCache } = this
+    if (_particleCache[absoluteFilePath] === undefined) {
+      _particleCache[absoluteFilePath] = new Particle(this._storage.read(absoluteFilePath))
     }
-    return _treeCache[absoluteFilePath]
+    return _particleCache[absoluteFilePath]
   }
 
   private _assembleFile(absoluteFilePath: string) {
@@ -242,8 +242,8 @@ class ParticleFileSystem implements Storage {
         if (filePath.endsWith(PARSERS_EXTENSION)) return content
         // Strip scroll content
         return new Particle(content)
-          .filter((node: scrollNotationTypes.treeNode) => node.getLine().match(parserDefinitionRegex) || node.getLine().match(cellDefinitionRegex))
-          .map((node: scrollNotationTypes.treeNode) => node.asString)
+          .filter((node: scrollNotationTypes.particle) => node.getLine().match(parserDefinitionRegex) || node.getLine().match(cellDefinitionRegex))
+          .map((node: scrollNotationTypes.particle) => node.asString)
           .join("\n")
       })
       .join("\n")

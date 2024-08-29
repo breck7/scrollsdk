@@ -4,9 +4,9 @@ const hakon = require("../../products/hakon.nodejs.js")
 
 const { TestRacer } = require("../../products/TestRacer.js")
 
-const testTree = {}
+const testParticles = {}
 
-testTree.all = equal => {
+testParticles.all = equal => {
   // Arrange
   const program = new hakon(`body
  color red`)
@@ -21,5 +21,5 @@ testTree.all = equal => {
 `
   )
 }
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
-module.exports = { testTree }
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
+module.exports = { testParticles }

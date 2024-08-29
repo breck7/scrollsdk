@@ -246,7 +246,7 @@ class SweeperCraftGame {
     })
   }
 
-  getGameAsTree() {
+  getGameAsParticles() {
     return ("rowComponent\n" + " squareComponent\n".repeat(this._numberOfColumns)).repeat(this._numberOfRows).trim()
   }
 
@@ -749,7 +749,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         boardNode.unmountAndDestroy() // todo: cleanup
         boardNode = this.getNode("headerComponent").appendSibling("boardComponent")
       }
-      boardNode.setChildren(this._mainGame.getGameAsTree())
+      boardNode.setChildren(this._mainGame.getGameAsParticles())
     }
 
     this._syncAndRender()
@@ -768,12 +768,12 @@ abstract class AbstractSweeperCraftComponent extends AbstractParticleComponentPa
 }
 
 class headerComponent extends AbstractSweeperCraftComponent {
-  async treeComponentDidMount() {
-    await super.treeComponentDidMount()
+  async particleComponentDidMount() {
+    await super.particleComponentDidMount()
     if (!this.isNodeJs()) this._initTimerInterval()
   }
 
-  treeComponentWillUnmount() {
+  particleComponentWillUnmount() {
     clearInterval(this._timerInterval)
     delete this._timerInterval
   }
@@ -1032,7 +1032,7 @@ class shortcutsTableComponent extends AbstractParticleComponentParser {
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft`
+  githubLink = `https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework/sweepercraft`
 }
 
 export { SweeperCraftApp, SweeperCraftGame }

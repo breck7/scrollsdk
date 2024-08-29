@@ -4,13 +4,13 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Disk } = require("../products/Disk.node.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.exists = equal => {
+testParticles.exists = equal => {
   // Arrange/Act/Assert
   equal(Disk.exists(__filename), true)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

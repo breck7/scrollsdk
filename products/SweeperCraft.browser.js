@@ -166,7 +166,7 @@ class SweeperCraftGame {
       if (!bombCount) this._clickNeighbors(row, col)
     })
   }
-  getGameAsTree() {
+  getGameAsParticles() {
     return ("rowComponent\n" + " squareComponent\n".repeat(this._numberOfColumns)).repeat(this._numberOfRows).trim()
   }
   _getNeighbors(row, column) {
@@ -605,7 +605,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         boardNode.unmountAndDestroy() // todo: cleanup
         boardNode = this.getNode("headerComponent").appendSibling("boardComponent")
       }
-      boardNode.setChildren(this._mainGame.getGameAsTree())
+      boardNode.setChildren(this._mainGame.getGameAsParticles())
     }
     this._syncAndRender()
   }
@@ -839,7 +839,7 @@ class shortcutsTableComponent extends AbstractParticleComponentParser {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft`
+    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework/sweepercraft`
   }
 }
 window.SweeperCraftApp = SweeperCraftApp

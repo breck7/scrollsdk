@@ -12,7 +12,7 @@ declare type mapFn = (value: any, index: int, array: any[]) => any
 enum FileFormat {
   csv = "csv",
   tsv = "tsv",
-  tree = "tree"
+  particle = "particles"
 }
 
 const TN_WORD_BREAK_SYMBOL = " "
@@ -21,21 +21,21 @@ const TN_NODE_BREAK_SYMBOL = "\n"
 
 declare type removeAfterRunning = boolean
 
-declare type TreeEventHandler = (event: AbstractTreeEvent) => removeAfterRunning
+declare type ParticleEventHandler = (event: AbstractParticleEvent) => removeAfterRunning
 
-abstract class AbstractTreeEvent {
+abstract class AbstractParticleEvent {
   public targetNode: Particle
   constructor(targetNode: Particle) {
     this.targetNode = targetNode
   }
 }
 
-class ChildAddedTreeEvent extends AbstractTreeEvent {}
-class ChildRemovedTreeEvent extends AbstractTreeEvent {}
-class DescendantChangedTreeEvent extends AbstractTreeEvent {}
-class LineChangedTreeEvent extends AbstractTreeEvent {}
+class ChildAddedParticleEvent extends AbstractParticleEvent {}
+class ChildRemovedParticleEvent extends AbstractParticleEvent {}
+class DescendantChangedParticleEvent extends AbstractParticleEvent {}
+class LineChangedParticleEvent extends AbstractParticleEvent {}
 
-class TreeWord {
+class ParticleWord {
   private _node: Particle
   private _cellIndex: number
   constructor(node: Particle, cellIndex: number) {
@@ -50,7 +50,7 @@ class TreeWord {
   }
 }
 
-const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
+const ParticleEvents = { ChildAddedParticleEvent, ChildRemovedParticleEvent, DescendantChangedParticleEvent, LineChangedParticleEvent }
 
 enum WhereOperators {
   equal = "=",
@@ -73,10 +73,10 @@ enum ScrollNotationConstants {
 
 class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
-  private _catchAllParser: scrollNotationTypes.TreeParser
+  private _catchAllParser: scrollNotationTypes.ParticleParser
   private _firstWordMap: Map<string, Function>
   private _regexTests: scrollNotationTypes.regexTest[]
-  constructor(catchAllParser: scrollNotationTypes.TreeParser, firstWordMap: scrollNotationTypes.firstWordToParserMap = {}, regexTests: scrollNotationTypes.regexTest[] = undefined) {
+  constructor(catchAllParser: scrollNotationTypes.ParticleParser, firstWordMap: scrollNotationTypes.firstWordToParserMap = {}, regexTests: scrollNotationTypes.regexTest[] = undefined) {
     this._catchAllParser = catchAllParser
     this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
@@ -101,11 +101,11 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextNode: scrollNotationTypes.treeNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): scrollNotationTypes.TreeParser {
+  _getParser(line: string, contextNode: scrollNotationTypes.particle, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): scrollNotationTypes.ParticleParser {
     return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
 
-  _getCatchAllParser(contextNode: scrollNotationTypes.treeNode) {
+  _getCatchAllParser(contextNode: scrollNotationTypes.particle) {
     if (this._catchAllParser) return this._catchAllParser
 
     const parent = contextNode.parent
@@ -115,7 +115,7 @@ class ParserCombinator {
     return contextNode.constructor
   }
 
-  private _getParserFromRegexTests(line: string): scrollNotationTypes.TreeParser {
+  private _getParserFromRegexTests(line: string): scrollNotationTypes.ParticleParser {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
     if (hit) return hit.parser
@@ -152,7 +152,7 @@ class Particle extends AbstractParticle {
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
 
-  getErrors(): scrollNotationTypes.TreeError[] {
+  getErrors(): scrollNotationTypes.ParticleError[] {
     return []
   }
 
@@ -425,8 +425,8 @@ class Particle extends AbstractParticle {
     return this.isRoot() ? "" : this.root._getProjectRootDir()
   }
 
-  // Concat 2 trees amd return a new true, but replace any nodes
-  // in this tree that start with the same node from the first tree with
+  // Concat 2 particles amd return a new particle, but replace any particles
+  // in this particle that start with the same particle from the first particle with
   // that patched version. Does not recurse.
   patch(two: Particle) {
     const copy = this.clone()
@@ -558,11 +558,11 @@ class Particle extends AbstractParticle {
   }
 
   // Note: This currently does not return any errors resulting from "required" or "single"
-  getAllErrors(lineStartsAt = 1): scrollNotationTypes.TreeError[] {
-    const errors: scrollNotationTypes.TreeError[] = []
+  getAllErrors(lineStartsAt = 1): scrollNotationTypes.ParticleError[] {
+    const errors: scrollNotationTypes.ParticleError[] = []
     for (let node of this.topDownArray) {
       node._cachedLineNumber = lineStartsAt // todo: cleanup
-      const errs: scrollNotationTypes.TreeError[] = node.getErrors()
+      const errs: scrollNotationTypes.ParticleError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       // delete node._cachedLineNumber
       lineStartsAt++
@@ -698,8 +698,8 @@ class Particle extends AbstractParticle {
     const length = this.length
     const hasChildrenNoContent = content === undefined && length
     const hasContentAndHasChildren = content !== undefined && length
-    // If the node has a content and a subtree return it as a string, as
-    // Javascript object values can't be both a leaf and a tree.
+    // If the node has a content and a subparticle return it as a string, as
+    // Javascript object values can't be both a leaf and a particle.
     const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.contentWithChildren : content
     return [this.firstWord, tupleValue]
   }
@@ -749,12 +749,12 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  toSideBySide(treesOrStrings: (Particle | string)[], delimiter = " ") {
-    treesOrStrings = <Particle[]>treesOrStrings.map(tree => (tree instanceof Particle ? tree : new Particle(tree)))
+  toSideBySide(particlesOrStrings: (Particle | string)[], delimiter = " ") {
+    particlesOrStrings = <Particle[]>particlesOrStrings.map(particle => (particle instanceof Particle ? particle : new Particle(particle)))
     const clone = this.toParticle()
     const nodeBreakSymbol = "\n"
     let next: any
-    while ((next = treesOrStrings.shift())) {
+    while ((next = particlesOrStrings.shift())) {
       clone.lengthen(next.numberOfLines)
       clone.rightPad()
       next
@@ -768,9 +768,9 @@ class Particle extends AbstractParticle {
     return clone
   }
 
-  toComparison(treeNode: Particle | string) {
+  toComparison(particle: Particle | string) {
     const nodeBreakSymbol = "\n"
-    const lines = treeNode.toString().split(nodeBreakSymbol)
+    const lines = particle.toString().split(nodeBreakSymbol)
     return new Particle(
       this.toString()
         .split(nodeBreakSymbol)
@@ -779,11 +779,11 @@ class Particle extends AbstractParticle {
     )
   }
 
-  toBraid(treesOrStrings: (Particle | string)[]) {
-    treesOrStrings.unshift(this)
+  toBraid(particlesOrStrings: (Particle | string)[]) {
+    particlesOrStrings.unshift(this)
     const nodeDelimiter = this.nodeBreakSymbol
     return new Particle(
-      Utils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+      Utils.interweave(particlesOrStrings.map(particle => particle.toString().split(nodeDelimiter)))
         .map(line => (line === undefined ? "" : line))
         .join(nodeDelimiter)
     )
@@ -823,10 +823,10 @@ class Particle extends AbstractParticle {
     columnNames = Array.isArray(columnNames) ? columnNames : [columnNames]
     const result = new Particle()
     this.forEach(node => {
-      const tree = result.appendLine(node.getLine())
+      const particle = result.appendLine(node.getLine())
       ;(<string[]>columnNames).forEach((name: string) => {
         const valueNode = node.getNode(name)
-        if (valueNode) tree.appendNode(valueNode)
+        if (valueNode) particle.appendNode(valueNode)
       })
     })
     return result
@@ -979,7 +979,7 @@ class Particle extends AbstractParticle {
     return node.nodeAt(indexOrIndexArray.slice(1))
   }
 
-  // Flatten a tree node into an object like {twitter:"pldb", "twitter.followers":123}.
+  // Flatten a particle into an object like {twitter:"pldb", "twitter.followers":123}.
   // Assumes you have a nested key/value list with no multiline strings.
   toFlatObject(delimiter = ".") {
     let newObject: scrollNotationTypes.stringMap = {}
@@ -1059,9 +1059,9 @@ class Particle extends AbstractParticle {
     if (!this.isNodeJs()) throw new Error("This method only works in Node.js")
     const format = Particle._getFileFormat(path)
     const formats = {
-      tree: (tree: Particle) => tree.toString(),
-      csv: (tree: Particle) => tree.asCsv,
-      tsv: (tree: Particle) => tree.asTsv
+      particles: (particle: Particle) => particle.toString(),
+      csv: (particle: Particle) => particle.asCsv,
+      tsv: (particle: Particle) => particle.asTsv
     }
     this.require("fs").writeFileSync(path, <string>(<any>formats)[format](this), "utf8")
     return this
@@ -1204,15 +1204,14 @@ class Particle extends AbstractParticle {
     return ""
   }
 
-  // move to treenode
   pick(fields: string[]) {
-    const newTree = new Particle(this.toString()) // todo: why not clone?
+    const newParticle = new Particle(this.toString()) // todo: why not clone?
     const map = Utils.arrayToMap(fields)
-    newTree.nodeAt(0).forEach((node: scrollNotationTypes.treeNode) => {
+    newParticle.nodeAt(0).forEach((node: scrollNotationTypes.particle) => {
       if (!map[node.getWord(0)]) node.destroy()
     })
 
-    return newTree
+    return newParticle
   }
 
   getNodesByGlobPath(query: scrollNotationTypes.globPath): Particle[] {
@@ -1309,7 +1308,7 @@ class Particle extends AbstractParticle {
     const potentialParentNodes = getPotentialParentNodesByIdFn(this.parent, parentId)
     if (!potentialParentNodes.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
-    if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
+    if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance paths. Multiple unique ids found for "${parentId}"`)
 
     const parentNode = potentialParentNodes[0]
 
@@ -1597,7 +1596,7 @@ class Particle extends AbstractParticle {
       return this
     }
 
-    // set from tree object
+    // set from particle
     if (content instanceof Particle) {
       content.forEach(node => this._insertLineAndChildren(node.getLine(), node.childrenToString()))
       return this
@@ -1821,7 +1820,7 @@ class Particle extends AbstractParticle {
   }
 
   // Recurse if predicate passes
-  deepVisit(predicate: (treeNode: any) => boolean) {
+  deepVisit(predicate: (particle: any) => boolean) {
     this.forEach(node => {
       if (predicate(node) !== false) node.deepVisit(predicate)
     })
@@ -1862,7 +1861,7 @@ class Particle extends AbstractParticle {
   }
 
   // todo: make 0 and 1 a param
-  getInheritanceTree() {
+  getInheritanceParticles() {
     const paths: scrollNotationTypes.stringMap = {}
     const result = new Particle()
     this.forEach(node => {
@@ -1900,7 +1899,7 @@ class Particle extends AbstractParticle {
 
   protected static _getFileFormat(path: string) {
     const format = path.split(".").pop()
-    return (<any>FileFormat)[format] ? format : FileFormat.tree
+    return (<any>FileFormat)[format] ? format : FileFormat.particles
   }
 
   static ParserCombinator = ParserCombinator
@@ -1947,14 +1946,14 @@ class Particle extends AbstractParticle {
     )
   }
 
-  private _virtualParentTree: Particle
-  protected _setVirtualParentTree(tree: Particle) {
-    this._virtualParentTree = tree
+  private _virtualParentParticle: Particle
+  protected _setVirtualParentParticle(particle: Particle) {
+    this._virtualParentParticle = particle
     return this
   }
 
   protected _getVirtualParentParticle() {
-    return this._virtualParentTree
+    return this._virtualParentParticle
   }
 
   private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes: Particle[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
@@ -1973,17 +1972,17 @@ class Particle extends AbstractParticle {
       const parentId = nodeInfo.parentId
       const parentNode = map[parentId]
       if (parentId && !parentNode) throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
-      if (parentId) nodeInfo.node._setVirtualParentTree(parentNode.node)
+      if (parentId) nodeInfo.node._setVirtualParentParticle(parentNode.node)
     })
 
-    nodes.forEach(node => node._expandFromVirtualParentTree())
+    nodes.forEach(node => node._expandFromVirtualParentParticle())
     return this
   }
 
   private _isVirtualExpanded: boolean
   private _isExpanding: boolean // for loop detection
 
-  protected _expandFromVirtualParentTree() {
+  protected _expandFromVirtualParentParticle() {
     if (this._isVirtualExpanded) return this
 
     this._isExpanding = true
@@ -1991,7 +1990,7 @@ class Particle extends AbstractParticle {
     let parentNode = this._getVirtualParentParticle()
     if (parentNode) {
       if (parentNode._isExpanding) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
-      parentNode._expandFromVirtualParentTree()
+      parentNode._expandFromVirtualParentParticle()
       const clone = this.clone()
       this._setChildren(parentNode.childrenToString())
       this.extend(clone)
@@ -2061,11 +2060,11 @@ class Particle extends AbstractParticle {
       const params = def.getWordsFrom(2)
       const replaceFn = (str: string) => {
         const paramValues = str.split(wordBreakSymbol).slice(2)
-        let newTree = def.childrenToString()
+        let newParticle = def.childrenToString()
         params.forEach((param, index) => {
-          newTree = newTree.replace(new RegExp(param, "g"), paramValues[index])
+          newParticle = newParticle.replace(new RegExp(param, "g"), paramValues[index])
         })
-        return newTree
+        return newParticle
       }
       uses.forEach(node => {
         node.replaceNode(replaceFn)
@@ -2199,7 +2198,7 @@ class Particle extends AbstractParticle {
   setProperties(propMap: scrollNotationTypes.stringMap) {
     const props = Object.keys(propMap)
     const values = Object.values(propMap)
-    // todo: is there a built in tree method to do this?
+    // todo: is there a built in particle method to do this?
     props.forEach((prop, index) => {
       const value = <string>values[index]
       if (!value) return true
@@ -2399,7 +2398,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
+  // todo: add "globalReplace" method? Which runs a global regex or string replace on the Particle as a string?
 
   firstWordSort(firstWordOrder: scrollNotationTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
@@ -2411,9 +2410,9 @@ class Particle extends AbstractParticle {
     return this.setWords(words)
   }
 
-  private _listeners: Map<any, TreeEventHandler[]>
+  private _listeners: Map<any, ParticleEventHandler[]>
 
-  trigger(event: AbstractTreeEvent) {
+  trigger(event: AbstractParticleEvent) {
     if (this._listeners && this._listeners.has(event.constructor)) {
       const listeners = this._listeners.get(event.constructor)
       const listenersToRemove: int[] = []
@@ -2425,30 +2424,30 @@ class Particle extends AbstractParticle {
     }
   }
 
-  triggerAncestors(event: AbstractTreeEvent) {
+  triggerAncestors(event: AbstractParticleEvent) {
     if (this.isRoot()) return
     const parent = this.parent
     parent.trigger(event)
     parent.triggerAncestors(event)
   }
 
-  onLineChanged(eventHandler: TreeEventHandler) {
-    return this._addEventListener(LineChangedTreeEvent, eventHandler)
+  onLineChanged(eventHandler: ParticleEventHandler) {
+    return this._addEventListener(LineChangedParticleEvent, eventHandler)
   }
 
-  onDescendantChanged(eventHandler: TreeEventHandler) {
-    return this._addEventListener(DescendantChangedTreeEvent, eventHandler)
+  onDescendantChanged(eventHandler: ParticleEventHandler) {
+    return this._addEventListener(DescendantChangedParticleEvent, eventHandler)
   }
 
-  onChildAdded(eventHandler: TreeEventHandler) {
-    return this._addEventListener(ChildAddedTreeEvent, eventHandler)
+  onChildAdded(eventHandler: ParticleEventHandler) {
+    return this._addEventListener(ChildAddedParticleEvent, eventHandler)
   }
 
-  onChildRemoved(eventHandler: TreeEventHandler) {
-    return this._addEventListener(ChildRemovedTreeEvent, eventHandler)
+  onChildRemoved(eventHandler: ParticleEventHandler) {
+    return this._addEventListener(ChildRemovedParticleEvent, eventHandler)
   }
 
-  private _addEventListener(eventClass: any, eventHandler: TreeEventHandler) {
+  private _addEventListener(eventClass: any, eventHandler: ParticleEventHandler) {
     if (!this._listeners) this._listeners = new Map()
     if (!this._listeners.has(eventClass)) this._listeners.set(eventClass, [])
     this._listeners.get(eventClass).push(eventHandler)
@@ -2577,9 +2576,9 @@ class Particle extends AbstractParticle {
     return this.addUniqueRowsToNestedDelimited(header, rows)
   }
 
-  setChildrenAsDelimited(tree: Particle | string, delimiter = Utils._chooseDelimiter(tree.toString())) {
-    tree = tree instanceof Particle ? tree : new Particle(tree)
-    return this.setChildren(tree.toDelimited(delimiter))
+  setChildrenAsDelimited(particle: Particle | string, delimiter = Utils._chooseDelimiter(particle.toString())) {
+    particle = particle instanceof Particle ? particle : new Particle(particle)
+    return this.setChildren(particle.toDelimited(delimiter))
   }
 
   convertChildrenToDelimited(delimiter = Utils._chooseDelimiter(this.childrenToString())) {
@@ -2630,8 +2629,8 @@ class Particle extends AbstractParticle {
 
   templateToString(obj: scrollNotationTypes.stringMap): string {
     // todo: compile/cache for perf?
-    const tree = this.clone()
-    tree.topDownArray.forEach(node => {
+    const particle = this.clone()
+    particle.topDownArray.forEach(node => {
       const line = node.getLine().replace(/{([^\}]+)}/g, (match, path) => {
         const replacement = obj[path]
         if (replacement === undefined) throw new Error(`In string template no match found on line "${node.getLine()}"`)
@@ -2639,7 +2638,7 @@ class Particle extends AbstractParticle {
       })
       node.pasteText(line)
     })
-    return tree.toString()
+    return particle.toString()
   }
 
   shiftRight(): Particle {
@@ -2778,21 +2777,21 @@ class Particle extends AbstractParticle {
     return new Particle(JSON.parse(str))
   }
 
-  static serializedParticleToTree(treeNode: scrollNotationTypes.SerializedParticle) {
+  static serializedParticleToParticle(particle: scrollNotationTypes.SerializedParticle) {
     const language = new Particle()
     const cellDelimiter = language.wordBreakSymbol
     const nodeDelimiter = language.nodeBreakSymbol
-    const line = treeNode.cells ? treeNode.cells.join(cellDelimiter) : undefined
-    const tree = new Particle(undefined, line)
-    if (treeNode.children)
-      treeNode.children.forEach(child => {
-        tree.appendNode(this.serializedParticleToTree(child))
+    const line = particle.cells ? particle.cells.join(cellDelimiter) : undefined
+    const particle = new Particle(undefined, line)
+    if (particle.children)
+      particle.children.forEach(child => {
+        particle.appendNode(this.serializedParticleToParticle(child))
       })
-    return tree
+    return particle
   }
 
   static fromJson(str: scrollNotationTypes.serializedParticle) {
-    return this.serializedParticleToTree(JSON.parse(str))
+    return this.serializedParticleToParticle(JSON.parse(str))
   }
 
   static fromGridJson(str: string) {
@@ -2890,10 +2889,10 @@ class Particle extends AbstractParticle {
     return productNode
   }
 
-  // Given an array return a tree
+  // Given an array return a particle
   static _rowsToParticle(rows: string[][], delimiter: string, hasHeaders: boolean) {
     const numberOfColumns = rows[0].length
-    const treeNode = new Particle()
+    const particle = new Particle()
     const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
@@ -2917,9 +2916,9 @@ class Particle extends AbstractParticle {
         obj[names[index]] = cellValue
       })
 
-      treeNode.pushContentAndChildren(undefined, obj)
+      particle.pushContentAndChildren(undefined, obj)
     }
-    return treeNode
+    return particle
   }
 
   // todo: cleanup. add types
@@ -2945,9 +2944,9 @@ class Particle extends AbstractParticle {
     const xml = this._xmlParser(str)
 
     try {
-      return this._treeNodeFromXml(xml).getNode("children")
+      return this._particleFromXml(xml).getNode("children")
     } catch (err) {
-      return this._treeNodeFromXml(this._parseXml2(str)).getNode("children")
+      return this._particleFromXml(this._parseXml2(str)).getNode("children")
     }
   }
 
@@ -2981,7 +2980,7 @@ class Particle extends AbstractParticle {
   }
 
   // todo: cleanup typings
-  static _treeNodeFromXml(xml: any) {
+  static _particleFromXml(xml: any) {
     const result = new Particle()
     const children = new Particle()
 
@@ -3001,7 +3000,7 @@ class Particle extends AbstractParticle {
 
         if (child.tagName && child.tagName.match(/parsererror/i)) throw new Error("Parse Error")
 
-        if (child.childNodes.length > 0 && child.tagName) children.appendLineAndChildren(child.tagName, this._treeNodeFromXml(child))
+        if (child.childNodes.length > 0 && child.tagName) children.appendLineAndChildren(child.tagName, this._particleFromXml(child))
         else if (child.tagName) children.appendLine(child.tagName)
         else if (child.data) {
           const data = child.data.trim()
@@ -3049,7 +3048,7 @@ class Particle extends AbstractParticle {
     const format = this._getFileFormat(path)
     const content = require("fs").readFileSync(path, "utf8")
     const methods: { [kind: string]: (content: string) => Particle } = {
-      tree: (content: string) => new Particle(content),
+      particles: (content: string) => new Particle(content),
       csv: (content: string) => this.fromCsv(content),
       tsv: (content: string) => this.fromTsv(content)
     }
@@ -3060,13 +3059,13 @@ class Particle extends AbstractParticle {
   static fromFolder(folderPath: string, filepathPredicate = (filepath: string) => filepath !== ".DS_Store"): Particle {
     const path = require("path")
     const fs = require("fs")
-    const tree = new Particle()
+    const particle = new Particle()
     const files = fs
       .readdirSync(folderPath)
       .map((filename: string) => path.join(folderPath, filename))
       .filter((filepath: string) => !fs.statSync(filepath).isDirectory() && filepathPredicate(filepath))
-      .forEach((filePath: string) => tree.appendLineAndChildren(filePath, fs.readFileSync(filePath, "utf8")))
-    return tree
+      .forEach((filePath: string) => particle.appendLineAndChildren(filePath, fs.readFileSync(filePath, "utf8")))
+    return particle
   }
 }
 
@@ -3076,14 +3075,14 @@ abstract class AbstractExtendibleParticle extends Particle {
     return hit ? hit.get(firstWordPath) : undefined
   }
 
-  _getFamilyTree() {
-    const tree = new Particle()
+  _getLineage() {
+    const particle = new Particle()
     this.forEach(node => {
       const path = node._getAncestorsArray().map((node: AbstractExtendibleParticle) => node.id)
       path.reverse()
-      tree.touchNode(path.join(TN_EDGE_SYMBOL))
+      particle.touchNode(path.join(TN_EDGE_SYMBOL))
     })
-    return tree
+    return particle
   }
 
   // todo: be more specific with the param
@@ -3171,4 +3170,4 @@ class ExtendibleParticle extends AbstractExtendibleParticle {
   }
 }
 
-export { Particle, ExtendibleParticle, AbstractExtendibleParticle, TreeEvents, TreeWord }
+export { Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }

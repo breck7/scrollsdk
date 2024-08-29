@@ -3,9 +3,9 @@
 const numbers = require("../../products/numbers.nodejs.js")
 const { TestRacer } = require("../../products/TestRacer.js")
 
-const testTree = {}
+const testParticles = {}
 
-testTree.all = equal => {
+testParticles.all = equal => {
   // Arrange
   const program = new numbers(`+ 2 2 1 2
 - 2 2`)
@@ -18,5 +18,5 @@ testTree.all = equal => {
   equal(new numbers(`+ 2 2 1 1`).execute().join(""), `6`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
-module.exports = { testTree }
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
+module.exports = { testParticles }

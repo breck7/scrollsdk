@@ -100,7 +100,7 @@ class ParticleFileSystem {
   getCTime(absolutePath) {
     return this._storage.getMTime(absolutePath)
   }
-  _getFileAsTree(absoluteFilePath) {
+  _getFileAsParticles(absoluteFilePath) {
     const { _treeCache } = this
     if (_treeCache[absoluteFilePath] === undefined) {
       _treeCache[absoluteFilePath] = new Particle(this._storage.read(absoluteFilePath))

@@ -1380,7 +1380,7 @@ class ParticleComponentFrameworkDebuggerComponent extends AbstractParticleCompon
  div
   span This app is powered by the
   a Tree Component Framework
-   href https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework
+   href https://github.com/breck7/scrollsdk/tree/main/particleComponentFramework
  p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern

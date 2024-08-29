@@ -69,7 +69,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     if (deepLink) treeConsoleEl.value = deepLink.childrenToString()
     else if (localStorage.getItem("tree")) treeConsoleEl.value = localStorage.getItem("tree")
     // Trigger start
-    this.updateFromTreeConsoleCommand()
+    this.updateFromParticlesConsoleCommand()
   }
   valueOf(id) {
     return this.willowBrowser.getElementById(id).value
@@ -89,7 +89,7 @@ class SandboxApp extends AbstractParticleComponentParser {
   updateFromJsonSubsetCommand() {
     this.updateAllCommand(Particle.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
   }
-  updateFromTreeConsoleCommand() {
+  updateFromParticlesConsoleCommand() {
     this.updateAllCommand(new Particle(this.valueOf("treeConsole")), "treeConsole")
   }
   toHakonCode() {
@@ -161,7 +161,7 @@ class headerComponent extends AbstractParticleComponentParser {
    img
     id logo
     src ../images/helloWorld3D.svg
-    title TreeNotation.org
+    title Scroll.pub
   span Scroll Notation Sandbox
  p
   a Parser Designer
@@ -214,7 +214,7 @@ class tableComponent extends AbstractParticleComponentParser {
    div Scroll Notation
    textarea
     id treeConsole
-    keyUpCommand updateFromTreeConsoleCommand
+    keyUpCommand updateFromParticlesConsoleCommand
   td
    div asGridJson
    textarea

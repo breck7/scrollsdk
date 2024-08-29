@@ -5,9 +5,9 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 
-testTree.runSwimTests = equal => {
+testParticles.runSwimTests = equal => {
   // Arrange/Act/Assert
   const tests = Particle.fromDisk(__dirname + "/Particle.swim")
   tests.forEach((test: any) => {
@@ -18,6 +18,6 @@ testTree.runSwimTests = equal => {
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

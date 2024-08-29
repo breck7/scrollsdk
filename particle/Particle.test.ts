@@ -2,7 +2,7 @@
 
 import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const testTree: scrollNotationTypes.testTree = {}
+const testParticles: scrollNotationTypes.testParticles = {}
 const { Particle, ExtendibleParticle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
@@ -88,11 +88,11 @@ state
  key c
 `
 
-testObjects.json2tree = [
+testObjects.json2particles = [
   { id: 755, settings: "123" },
   { id: 756, settings: "456" }
 ]
-testStrings.json2tree = `docs
+testStrings.json2particles = `docs
  0
   id 755
   settings 123
@@ -148,7 +148,7 @@ testStrings.toXmlPrettyResult = `<html>
 </html>
 `
 
-testStrings.fromXmlTree = `html
+testStrings.fromXmlParticles = `html
  class main
  children
   head
@@ -236,7 +236,7 @@ testStrings.ssv = `id title summary
 1 "Some book" "An expose, on the result of one ""plus"" one"
 2 "The answer, my friend, is..." """Two"""`
 
-testStrings.ssvFixedColumnComment1 = "This is some comment with trees"
+testStrings.ssvFixedColumnComment1 = "This is some comment with particles"
 testStrings.ssvFixedColumnComment2 = "Each row should be capped to 2 columns"
 testStrings.ssvFixedColumns = `id comment
 123 ${testStrings.ssvFixedColumnComment1}
@@ -248,7 +248,7 @@ california ca 35000000
 texas tx
 washington wa 6000000`
 
-testStrings.renameTreesBy = `
+testStrings.renameParticlesBy = `
 0
  name John Doe
  email johndoe@email.com
@@ -258,7 +258,7 @@ testStrings.renameTreesBy = `
 `
 
 testStrings.newLines = `
-tree
+particle
  palm
   green true
 
@@ -302,67 +302,67 @@ testObjects.tsv = {
   spouse: null
 }
 
-testTree.constructorTests = equal => {
+testParticles.constructorTests = equal => {
   // Assert
   equal(!!Particle, true, "Particle class should exist")
-  equal(new Particle() instanceof Particle, true, "Particle should return a tree")
+  equal(new Particle() instanceof Particle, true, "Particle should return a particle")
 
   // Arrange/Act
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Assert
-  equal(tree.length, 1, "types array should have 1 property")
-  equal(tree.indexOf("hello"), 0, "types array should be correct")
-  equal(tree.getNode("hello").content, "world", "Properties should be accessible")
-  equal(typeof tree.getNode("hello").content, "string", "Leafs should be strings")
+  equal(particle.length, 1, "types array should have 1 property")
+  equal(particle.indexOf("hello"), 0, "types array should be correct")
+  equal(particle.getNode("hello").content, "world", "Properties should be accessible")
+  equal(typeof particle.getNode("hello").content, "string", "Leafs should be strings")
 
   // Act
-  tree.touchNode("foo").setContent("bar")
+  particle.touchNode("foo").setContent("bar")
 
   // Assert
-  equal(tree.getNode("foo").content, "bar", "Trees should be modifiable")
+  equal(particle.getNode("foo").content, "bar", "Particles should be modifiable")
 
   // Arrange
-  const tree2 = new Particle("foobar\n one 1")
+  const particle2 = new Particle("foobar\n one 1")
 
   // Assert
-  equal(tree2.getNode("foobar").content, undefined, "Value should be empty")
-  equal(tree2.getNode("foobar").getNode("one").content, "1", "Value should be 1")
+  equal(particle2.getNode("foobar").content, undefined, "Value should be empty")
+  equal(particle2.getNode("foobar").getNode("one").content, "1", "Value should be 1")
 
-  equal(typeof tree2.getNode("foobar"), "object", "Trees should be objects")
-  equal(tree2.getNode("foobar") instanceof Particle, true, "Nested trees should be trees")
+  equal(typeof particle2.getNode("foobar"), "object", "Particles should be objects")
+  equal(particle2.getNode("foobar") instanceof Particle, true, "Nested particles should be particles")
 
   // Arrange
-  const tree3 = new Particle("list\nsingle value")
+  const particle3 = new Particle("list\nsingle value")
 
   // Assert
-  equal(tree3.length, 2, "Particle should have 2 names")
-  equal(tree3.getNode("list").length, 0, "A name without a trailing tree should be length 0")
+  equal(particle3.length, 2, "Particle should have 2 names")
+  equal(particle3.getNode("list").length, 0, "A name without a trailing particle should be length 0")
 
   // Arrange
-  const tree4 = new Particle("body")
+  const particle4 = new Particle("body")
 
   // Assert
-  equal(tree4.getNode("body").length, 0, "A name without a trailing tree should be a tree")
+  equal(particle4.getNode("body").length, 0, "A name without a trailing particle should be a particle")
 
   // Arrange
-  const tree5 = new Particle({
+  const particle5 = new Particle({
     foobar: "hello"
   })
 
   // Assert
-  equal(tree5.getNode("foobar").content, "hello", "Trees can be created from object literals")
+  equal(particle5.getNode("foobar").content, "hello", "Particles can be created from object literals")
 
   // Arrange
-  const tree6 = new Particle({
+  const particle6 = new Particle({
     foobar: new Particle("hello world")
   })
 
   // Assert
-  equal(tree6.getNode("foobar hello").content, "world", "Trees can be created from objects mixed with trees")
+  equal(particle6.getNode("foobar hello").content, "world", "Particles can be created from objects mixed with particles")
 
   // Arrange
-  const tree7 = new Particle({
+  const particle7 = new Particle({
     foobar: {
       hello: {
         world: "success"
@@ -371,12 +371,12 @@ testTree.constructorTests = equal => {
   })
 
   // Assert
-  equal(tree7.getNode("foobar hello world").content, "success", "Trees can be created from deep objects")
+  equal(particle7.getNode("foobar hello world").content, "success", "Particles can be created from deep objects")
 }
 
-testTree.multlineConstructorTests = equal => {
+testParticles.multlineConstructorTests = equal => {
   // Arrange
-  const treeString = `user
+  const particleString = `user
 name Aristotle
 admin false
 stage
@@ -396,13 +396,13 @@ domains
       title Hello, World
     block1
      content Hello world`
-  const tree8 = new Particle(treeString)
+  const particle8 = new Particle(particleString)
 
   // Assert
-  equal(tree8.topDownArray.length, 20)
-  equal(tree8.numberOfLines, 20)
-  equal(tree8.numberOfWords, 30)
-  equal(tree8.getNode("domains test.test.com pages home settings data title").content, "Hello, World", "Multiline creation should be okay.")
+  equal(particle8.topDownArray.length, 20)
+  equal(particle8.numberOfLines, 20)
+  equal(particle8.numberOfWords, 30)
+  equal(particle8.getNode("domains test.test.com pages home settings data title").content, "Hello, World", "Multiline creation should be okay.")
 
   // Arrange
   const emptyArray = { post: { kind: {}, age: 100 } }
@@ -410,9 +410,9 @@ domains
  kind
  age 100`
   // Act
-  const tree10 = new Particle(emptyArray)
+  const particle10 = new Particle(emptyArray)
   // Assert
-  equal(tree10.asString, expectedStr)
+  equal(particle10.asString, expectedStr)
 
   // Arrange
   const node = new Particle(" ").nodeAt(0)
@@ -438,30 +438,30 @@ ${spaceChar}`
   equal(new Particle(s).nodeAt(0).length, 2)
 }
 
-testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
+testParticles.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
   // Arrange
   let test = `
  :
  :`
   // Act/Assert
-  class TestTree extends Particle {
+  class TestParticles extends Particle {
     get wordBreakSymbol() {
       return ":"
     }
   }
-  const iHateTypeScriptSometimes = <any>TestTree
+  const iHateTypeScriptSometimes = <any>TestParticles
 
   equal(new iHateTypeScriptSometimes(test).nodeAt(0).length, 2)
 
-  const rootTree = new iHateTypeScriptSometimes()
-  const tree = rootTree.appendLineAndChildren("", new iHateTypeScriptSometimes())
-  tree.appendLine("")
-  tree.appendLine("")
-  const newTree = new iHateTypeScriptSometimes(rootTree.asString)
-  equal(newTree.nodeAt(0).length, 2)
+  const rootParticle = new iHateTypeScriptSometimes()
+  const particle = rootParticle.appendLineAndChildren("", new iHateTypeScriptSometimes())
+  particle.appendLine("")
+  particle.appendLine("")
+  const newParticle = new iHateTypeScriptSometimes(rootParticle.asString)
+  equal(newParticle.nodeAt(0).length, 2)
 }
 
-testTree.duplicateReferences = equal => {
+testParticles.duplicateReferences = equal => {
   // Arrange
   let b = ["abc"]
   let a = {
@@ -483,88 +483,88 @@ testTree.duplicateReferences = equal => {
   equal(new Particle(abc).get("two foo"), "bar")
 }
 
-testTree.append = equal => {
+testParticles.append = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Act
-  tree.appendLine("foo bar")
-  tree.touchNode("foo2").setContent("bar")
+  particle.appendLine("foo bar")
+  particle.touchNode("foo2").setContent("bar")
 
   // Assert
-  equal(tree.getNode("foo").content, "bar")
+  equal(particle.getNode("foo").content, "bar")
 
   // Act
-  tree.appendLine("foo two")
+  particle.appendLine("foo two")
 
   // Assert
-  equal(tree.length, 4)
+  equal(particle.length, 4)
 }
 
-testTree.deleteBlanks = equal => {
+testParticles.deleteBlanks = equal => {
   // AAA
   equal(new Particle("hello world\n\n\nhelmet\nthe").deleteBlanks().length, 3)
 }
 
-testTree.getNodesByRegex = equal => {
+testParticles.getNodesByRegex = equal => {
   // AAA
   equal(new Particle("hello world\nhelmet\nthe").getNodesByRegex(/^he/).length, 2)
 }
 
-testTree.getWord = equal => {
+testParticles.getWord = equal => {
   // Arrange
-  const tree = new Particle("a b c")
-  const aNode = tree.getNode("a")
+  const particle = new Particle("a b c")
+  const aNode = particle.getNode("a")
 
   // Act/Assert
   equal(aNode.getWord(1), "b")
   equal(aNode.getWord(-1), "c")
 }
 
-testTree.getOneOf = equal => {
+testParticles.getOneOf = equal => {
   // Arrange
-  const tree = new Particle(`tint blue\nColor red`)
+  const particle = new Particle(`tint blue\nColor red`)
 
   // Act/Assert
-  equal(tree.getOneOf(["Color", "tint"]), "red")
-  equal(tree.getOneOf(["tint", "Color"]), "blue")
-  equal(tree.getOneOf(["height"]), "")
+  equal(particle.getOneOf(["Color", "tint"]), "red")
+  equal(particle.getOneOf(["tint", "Color"]), "blue")
+  equal(particle.getOneOf(["height"]), "")
 }
 
-testTree.pick = equal => {
+testParticles.pick = equal => {
   // Arrange
-  const tree = new Particle(`tint blue\nColor red`)
+  const particle = new Particle(`tint blue\nColor red`)
 
   // Act/Assert
-  equal(tree.pick(["Color", "tint"]).asString, `tint blue\nColor red`)
-  equal(tree.getOneOf(["height"]).toString(), "")
+  equal(particle.pick(["Color", "tint"]).asString, `tint blue\nColor red`)
+  equal(particle.getOneOf(["height"]).toString(), "")
 }
 
-testTree.setProperties = equal => {
+testParticles.setProperties = equal => {
   // Arrange
-  const tree = new Particle(``)
-  tree.setProperties({ foo: "bar", one: "2" })
+  const particle = new Particle(``)
+  particle.setProperties({ foo: "bar", one: "2" })
 
   // Act/Assert
-  equal(tree.get("one"), "2")
+  equal(particle.get("one"), "2")
 }
 
-testTree.setPropertyIfMissing = equal => {
+testParticles.setPropertyIfMissing = equal => {
   // Arrange
-  const tree = new Particle(``)
-  tree.setProperties({ foo: "bar", one: "2" })
-  tree.setPropertyIfMissing("one", "3")
-  tree.setPropertyIfMissing("two", "a")
+  const particle = new Particle(``)
+  particle.setProperties({ foo: "bar", one: "2" })
+  particle.setPropertyIfMissing("one", "3")
+  particle.setPropertyIfMissing("two", "a")
 
   // Act/Assert
-  equal(tree.get("one"), "2")
-  equal(tree.get("two"), "a")
+  equal(particle.get("one"), "2")
+  equal(particle.get("two"), "a")
 }
 
-testTree.setWords = equal => {
+testParticles.setWords = equal => {
   // Arrange
-  const tree = new Particle("a b c")
-  const aNode = tree.getNode("a")
+  const particle = new Particle("a b c")
+  const aNode = particle.getNode("a")
 
   // Act/Assert
   equal(aNode.appendWord("d").asString, "a b c d")
@@ -573,7 +573,7 @@ testTree.setWords = equal => {
   equal(aNode.deleteWordAt(2).asString, "f h")
 }
 
-testTree.at = equal => {
+testParticles.at = equal => {
   // Arrange
   const value = new Particle("hello world\nhow are you\nhola friend")
 
@@ -585,57 +585,57 @@ testTree.at = equal => {
   equal(value.nodeAt(-1).content, "friend")
 }
 
-testTree.getWordBoundaryCharIndices = equal => {
+testParticles.getWordBoundaryCharIndices = equal => {
   // Arrange
-  const tree = new Particle(`
+  const particle = new Particle(`
 a
 web 25 zzzz OK
  notes No notes`)
 
   // Act
-  const boundaries = tree.getAllWordBoundaryCoordinates()
+  const boundaries = particle.getAllWordBoundaryCoordinates()
 
   // Assert
   equal(boundaries.length, 9)
 }
 
-testTree.toDelimited = equal => {
+testParticles.toDelimited = equal => {
   const test = `name|example
 python|"Hello world"`
-  const tree = Particle.fromDelimited(test, "|", "'")
+  const particle = Particle.fromDelimited(test, "|", "'")
 
   // Act/Assert
-  equal(tree.toDelimited("|", undefined, false), test)
+  equal(particle.toDelimited("|", undefined, false), test)
 }
 
-testTree.fill = equal => {
+testParticles.fill = equal => {
   Object.keys(testStrings).forEach(key => {
     // Arrange
-    const tree = new Particle(testStrings[key])
-    const filledTree = tree.clone().fill("x")
+    const particle = new Particle(testStrings[key])
+    const filledParticle = particle.clone().fill("x")
     // Act/Assert
-    equal(tree.length, filledTree.length)
-    equal(tree.numberOfLines, filledTree.numberOfLines)
-    equal(tree.numberOfWords, filledTree.numberOfWords)
+    equal(particle.length, filledParticle.length)
+    equal(particle.numberOfLines, filledParticle.numberOfLines)
+    equal(particle.numberOfWords, filledParticle.numberOfWords)
   })
 }
 
-testTree.getWordProperties = equal => {
+testParticles.getWordProperties = equal => {
   // Arrange
-  const tree = new Particle(`
+  const particle = new Particle(`
 a
 web 25 zzzz OK
  notes No notes`)
 
   // Act/Assert
-  const props = tree.nodeAtLine(3).getWordProperties(2)
+  const props = particle.nodeAtLine(3).getWordProperties(2)
   equal(props.startCharIndex, 10)
   equal(props.endCharIndex, 15)
 }
 
-testTree.getWordIndexAtCharacterIndex = equal => {
+testParticles.getWordIndexAtCharacterIndex = equal => {
   // Arrange
-  const tree = new Particle(`
+  const particle = new Particle(`
 a
 web 25 zzzz OK
  notes No notes`)
@@ -645,7 +645,7 @@ web 25 zzzz OK
  000000111222222`
 
   // Act/Assert
-  const lineNodes = tree.topDownArray
+  const lineNodes = particle.topDownArray
   tests.split("\n").forEach((testLine, lineIndex) => {
     const node = lineNodes[lineIndex]
     testLine.split("").forEach((char, charIndex) => {
@@ -663,7 +663,7 @@ web 25 zzzz OK
   equal(nested.getNode("a b").getWordIndexAtCharacterIndex(0), -1)
 }
 
-testTree.clone = equal => {
+testParticles.clone = equal => {
   // Arrange/Act
   const a = new Particle("hello world")
   const b = a.clone()
@@ -733,7 +733,7 @@ testTree.clone = equal => {
   equal((<any>a).hi, undefined)
 }
 
-testTree.concat = equal => {
+testParticles.concat = equal => {
   // Arrange
   const a = new Particle("hello world")
   const b = new Particle("hi mom")
@@ -746,18 +746,18 @@ testTree.concat = equal => {
   equal(newNodes.length, 1)
 }
 
-testTree.getNodesByGlobPath = equal => {
+testParticles.getNodesByGlobPath = equal => {
   // Arrange/Act/Assert
   equal(new Particle(testStrings.webpage).getNodesByGlobPath("* div").length, 5)
   equal(new Particle(testStrings.webpage).getNodesByGlobPath("*").length, new Particle(testStrings.webpage).length)
   equal(new Particle(testStrings.webpage).getNodesByGlobPath("body div class").length, 2)
 }
 
-testTree.nodesThatStartWith = equal => {
+testParticles.nodesThatStartWith = equal => {
   equal(new Particle(testStrings.webpage).nodesThatStartWith("body")[0].nodesThatStartWith("div").length, 5)
 }
 
-testTree.getNodeByColumns = equal => {
+testParticles.getNodeByColumns = equal => {
   // Arrange
   const test = new Particle(testStrings.sortByMultiple)
 
@@ -768,82 +768,82 @@ testTree.getNodeByColumns = equal => {
   equal(node.parent.get("key"), "b")
 }
 
-testTree.delete = equal => {
+testParticles.delete = equal => {
   // Arrange
-  const tree = new Particle()
-  tree.touchNode("name").setContent("Breck")
+  const particle = new Particle()
+  particle.touchNode("name").setContent("Breck")
 
   // Assert
-  equal(tree.getNode("name").content, "Breck", "name is set")
-  equal(tree.length, 1, "length okay")
-  equal(tree.getFirstNode().content, "Breck")
+  equal(particle.getNode("name").content, "Breck", "name is set")
+  equal(particle.length, 1, "length okay")
+  equal(particle.getFirstNode().content, "Breck")
 
   // Act
-  tree.delete("name")
+  particle.delete("name")
 
   // Assert
-  equal(tree.getNode("name"), undefined, "name is gone")
-  equal(tree.length, 0, "length okay")
+  equal(particle.getNode("name"), undefined, "name is gone")
+  equal(particle.length, 0, "length okay")
 
   // Act
-  tree.touchNode("name").setContent("Breck")
-  tree.touchNode("age").setContent("100")
-  tree.touchNode("table").setContent("true")
-  tree.delete("age")
+  particle.touchNode("name").setContent("Breck")
+  particle.touchNode("age").setContent("100")
+  particle.touchNode("table").setContent("true")
+  particle.delete("age")
 
   // Assert
-  equal(tree.getNode("age"), undefined, "age is gone")
-  equal(tree.length, 2, "expected 2 elements remaining")
+  equal(particle.getNode("age"), undefined, "age is gone")
+  equal(particle.length, 2, "expected 2 elements remaining")
 
   // Test deep delete
   // Arrange
-  const tree2 = new Particle()
-  tree2.touchNode("earth north_america united_states california san_francisco").setContent("mission")
+  const particle2 = new Particle()
+  particle2.touchNode("earth north_america united_states california san_francisco").setContent("mission")
 
   // Assert
-  equal(tree2.getNode("earth north_america united_states california") instanceof Particle, true, "node exists")
-  equal(tree2.getNode("earth north_america united_states california san_francisco").content, "mission", "neighborhood is set")
-  equal(tree2.getNode("earth north_america united_states california").length, 1, "length okay")
-  equal(tree2.length, 1, "length okay")
+  equal(particle2.getNode("earth north_america united_states california") instanceof Particle, true, "node exists")
+  equal(particle2.getNode("earth north_america united_states california san_francisco").content, "mission", "neighborhood is set")
+  equal(particle2.getNode("earth north_america united_states california").length, 1, "length okay")
+  equal(particle2.length, 1, "length okay")
 
   // Act
-  const deleteResult = tree2.delete("earth north_america united_states california san_francisco")
+  const deleteResult = particle2.delete("earth north_america united_states california san_francisco")
 
   // Assert
-  equal(deleteResult instanceof Particle, true, "returns tree")
-  equal(tree2.getNode("earth north_america united_states california san_francisco"), undefined, "neighborhood is gone")
+  equal(deleteResult instanceof Particle, true, "returns particle")
+  equal(particle2.getNode("earth north_america united_states california san_francisco"), undefined, "neighborhood is gone")
 
   // Test deleting a non-existant property
   // Arrange
-  const tree3 = new Particle("property meta\n")
+  const particle3 = new Particle("property meta\n")
 
   // Act
-  tree3.delete("content")
+  particle3.delete("content")
 
   // Assert
-  equal(tree3.getNode("property").content, "meta", "delete a non existing entry works")
+  equal(particle3.getNode("property").content, "meta", "delete a non existing entry works")
 
   // Delete a property that has multiple matches
   // Arrange
-  const tree4 = new Particle("time 123\ntime 456")
+  const particle4 = new Particle("time 123\ntime 456")
 
   // Assert
-  equal(tree4.length, 2)
+  equal(particle4.length, 2)
 
   // Act
-  tree4.delete("time")
+  particle4.delete("time")
 
   // Assert
-  equal(tree4.length, 0)
+  equal(particle4.length, 0)
 
   // Arrange
   const blankTest = `presidents
  class President
 other`
-  const tree6 = new Particle(blankTest)
+  const particle6 = new Particle(blankTest)
 
   // Act
-  tree6.forEach((node: scrollNotationTypes.treeNode) => {
+  particle6.forEach((node: scrollNotationTypes.particle) => {
     if (!node.firstWord.startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
@@ -851,13 +851,13 @@ other`
 
   // Assert
   equal(
-    tree6.asString,
+    particle6.asString,
     `presidents President
 other`
   )
 }
 
-testTree.deleteRegression = equal => {
+testParticles.deleteRegression = equal => {
   // Arrange
   const test = `data
  row
@@ -901,14 +901,14 @@ testTree.deleteRegression = equal => {
   const migrateFn = (str: string) => {
     const board = new Particle(str)
     const dataNodes = board.findNodes("data")
-    dataNodes.forEach((nodeTree: scrollNotationTypes.treeNode) => {
-      const rows = nodeTree.findNodes("row")
+    dataNodes.forEach((particle: scrollNotationTypes.particle) => {
+      const rows = particle.findNodes("row")
       if (!rows.length) return
-      const mapped = rows.map((row: scrollNotationTypes.treeNode) => row.toObject())
+      const mapped = rows.map((row: scrollNotationTypes.particle) => row.toObject())
       const csv = new Particle(mapped).asCsv
-      nodeTree.touchNode("format").setContent("csv")
-      nodeTree.touchNode("content").setContentWithChildren(csv)
-      nodeTree.delete("row")
+      particle.touchNode("format").setContent("csv")
+      particle.touchNode("content").setContentWithChildren(csv)
+      particle.delete("row")
     })
     return board.asString
   }
@@ -918,51 +918,51 @@ testTree.deleteRegression = equal => {
   equal(result.findNodes("row").length, 0)
 }
 
-testTree.destroy = equal => {
+testParticles.destroy = equal => {
   const template = `hey ho
 hi
  hello world
 yo hey`
   // Arrange
-  const tree = new Particle(template)
+  const particle = new Particle(template)
 
   // Act
-  tree.nodeAt(1).destroy()
+  particle.nodeAt(1).destroy()
 
   // Assert
-  equal(tree.asString, "hey ho\nyo hey")
+  equal(particle.asString, "hey ho\nyo hey")
 }
 
-testTree.duplicateProperties = equal => {
+testParticles.duplicateProperties = equal => {
   // Arrange
-  const tree = new Particle("time 123\ntime 456")
+  const particle = new Particle("time 123\ntime 456")
 
   // Assert
-  equal(tree.length, 2)
-  equal(tree.asString, "time 123\ntime 456")
+  equal(particle.length, 2)
+  equal(particle.asString, "time 123\ntime 456")
 }
 
-testTree.duplicate = equal => {
+testParticles.duplicate = equal => {
   // Arrange
-  const tree = new Particle(testStrings.fromXmlTree)
-  const lineCount = tree.asString.split(/\n/).length
-  const node = tree.getNode("html")
+  const particle = new Particle(testStrings.fromXmlParticles)
+  const lineCount = particle.asString.split(/\n/).length
+  const node = particle.getNode("html")
 
   // Act
   node.duplicate()
 
   // Assert
-  equal(tree.asString.split(/\n/).length, lineCount * 2)
+  equal(particle.asString.split(/\n/).length, lineCount * 2)
 }
 
-testTree.forEach = equal => {
+testParticles.forEach = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   var count = 0
   var result = ""
 
   // Act
-  value.forEach(function (node: scrollNotationTypes.treeNode) {
+  value.forEach(function (node: scrollNotationTypes.particle) {
     const property = node.firstWord
     const v = node.content
     result += property.toUpperCase()
@@ -980,8 +980,8 @@ testTree.forEach = equal => {
 
   // Act
   value2
-    .filter((node: scrollNotationTypes.treeNode) => node.firstWord !== "hello")
-    .forEach((node: scrollNotationTypes.treeNode) => {
+    .filter((node: scrollNotationTypes.particle) => node.firstWord !== "hello")
+    .forEach((node: scrollNotationTypes.particle) => {
       const property = node.firstWord
       const value = node.content
       count++
@@ -990,11 +990,11 @@ testTree.forEach = equal => {
   equal(count, 1)
 
   // Arrange
-  const tree = new Particle("hello world\nhi world")
+  const particle = new Particle("hello world\nhi world")
   var inc = 0
 
   // Act
-  tree.forEach((node: scrollNotationTypes.treeNode, index: number) => {
+  particle.forEach((node: scrollNotationTypes.particle, index: number) => {
     inc = inc + index
   })
 
@@ -1002,15 +1002,15 @@ testTree.forEach = equal => {
   equal(inc, 1, "index worked")
 }
 
-testTree.every = equal => {
+testParticles.every = equal => {
   // Arrange/Act/Assert
   equal(
-    new Particle(`a 2\nb 2\nc 2`).every((node: scrollNotationTypes.treeNode) => node.getWord(1) === "2"),
+    new Particle(`a 2\nb 2\nc 2`).every((node: scrollNotationTypes.particle) => node.getWord(1) === "2"),
     true
   )
 }
 
-testTree.extend = equal => {
+testParticles.extend = equal => {
   // Arrange
   const sourceStr = `name Jane
 color blue`
@@ -1027,8 +1027,8 @@ color blue`
   const extension = { person: "Joe", weight: 100, items: { car: "red", foo: "bar" } }
 
   // Act
-  const tree = new Particle(original).extend(extension)
-  const result = tree.toObject()
+  const particle = new Particle(original).extend(extension)
+  const result = particle.toObject()
 
   // Assert
   equal(result.person, "Joe")
@@ -1036,7 +1036,7 @@ color blue`
   equal(result.weight, "100")
   equal(result.items.car, "red", "expected deep to work")
   equal(result.items.foo, "bar")
-  equal(tree.getNode("items").length, 2)
+  equal(particle.getNode("items").length, 2)
 
   // Arrange
   const test = `>foo
@@ -1055,7 +1055,7 @@ color blue`
   equal(extended.getNode(">foo >bar >bam class").content, "boom")
 }
 
-testTree.first = equal => {
+testParticles.first = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
 
@@ -1069,7 +1069,7 @@ testTree.first = equal => {
   equal(value2.nodeAt(0).asString, "hello world")
 }
 
-testTree.firstProperty = equal => {
+testParticles.firstProperty = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
 
@@ -1077,7 +1077,7 @@ testTree.firstProperty = equal => {
   equal(value.nodeAt(0).firstWord, "hello")
 }
 
-testTree.hasDuplicates = equal => {
+testParticles.hasDuplicates = equal => {
   // Arrange/Act/Assert
   equal(new Particle(testStrings.sortByMultiple).hasDuplicateFirstWords(), true)
   equal(new Particle().hasDuplicateFirstWords(), false, "empty")
@@ -1086,12 +1086,12 @@ testTree.hasDuplicates = equal => {
   equal(new Particle("a\n b\n b").nodeAt(0).hasDuplicateFirstWords(), true)
 }
 
-testTree.toYaml = equal => {
+testParticles.toYaml = equal => {
   // Arrange/Act/Assert
   equal(new Particle(testStrings.lime).asYaml, testStrings.limeToYaml)
 }
 
-testTree.asGridJson = equal => {
+testParticles.asGridJson = equal => {
   // Arrange/Act/Assert
   const tests = Object.keys(testStrings).forEach(key => {
     const program = testStrings[key]
@@ -1100,7 +1100,7 @@ testTree.asGridJson = equal => {
   })
 }
 
-testTree.toJson = equal => {
+testParticles.toJson = equal => {
   // Arrange/Act/Assert
   const tests = Object.keys(testStrings).forEach(key => {
     const program = testStrings[key]
@@ -1109,7 +1109,7 @@ testTree.toJson = equal => {
   })
 }
 
-testTree.firstValue = equal => {
+testParticles.firstValue = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
 
@@ -1117,7 +1117,7 @@ testTree.firstValue = equal => {
   equal(value.nodeAt(0).content, "world")
 }
 
-testTree.toggleLine = equal => {
+testParticles.toggleLine = equal => {
   // Arrange
   const node = new Particle("chart").nodeAt(0)
   equal(node.has("hidden"), false)
@@ -1137,23 +1137,23 @@ testTree.toggleLine = equal => {
   equal(node.has("hidden"), false)
 }
 
-testTree.pasteText = equal => {
+testParticles.pasteText = equal => {
   // Arrange
-  const tree = new Particle(`a
+  const particle = new Particle(`a
  b`)
   // Act
-  tree.getNode("a b").pasteText(`foo
+  particle.getNode("a b").pasteText(`foo
  bar`)
   // Assert
   equal(
-    tree.asString,
+    particle.asString,
     `a
  foo
   bar`
   )
 }
 
-testTree.templateToString = equal => {
+testParticles.templateToString = equal => {
   // Arrange
   const templateString = new Particle(`html
  head
@@ -1205,7 +1205,7 @@ div
   )
 }
 
-testTree.patch = equal => {
+testParticles.patch = equal => {
   // Arrange
   const one = new Particle(`name Git
 appeared 2012`)
@@ -1221,7 +1221,7 @@ appeared 2005`)
   equal(three.get("creators"), "Linus Torvalds")
 }
 
-testTree.evalTemplateString = equal => {
+testParticles.evalTemplateString = equal => {
   // Arrange
   const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"
   const person = new Particle("firstName Tom\nlastName B\naddress\n city Boston")
@@ -1233,47 +1233,47 @@ testTree.evalTemplateString = equal => {
   equal(result, "Hi Tom B! I hope you are enjoying the weather in Boston!")
 }
 
-testTree.fromCsv = equal => {
+testParticles.fromCsv = equal => {
   // Arrange/Act
-  const tree = Particle.fromCsv(testStrings.csv)
+  const particle = Particle.fromCsv(testStrings.csv)
   const withQuotes = Particle.fromCsv('"Date","Age"\n"123","345"')
 
   // Assert
-  equal(tree.asString, testStrings.delimited)
-  equal(tree.length, 2, "expected 2 rows")
-  equal(tree.asCsv, testStrings.csv, "Expected toCsv to output same data as fromCsv")
+  equal(particle.asString, testStrings.delimited)
+  equal(particle.length, 2, "expected 2 rows")
+  equal(particle.asCsv, testStrings.csv, "Expected toCsv to output same data as fromCsv")
 
   // Arrange
-  const tree2 = Particle.fromCsv("Age,Birth Place,Country\n12,Brockton,USA")
+  const particle2 = Particle.fromCsv("Age,Birth Place,Country\n12,Brockton,USA")
 
   // Assert
-  equal(tree2.length, 1)
-  equal(tree2.nodeAt(0).getNode("Country").content, "USA")
+  equal(particle2.length, 1)
+  equal(particle2.nodeAt(0).getNode("Country").content, "USA")
 
   // Arrange
-  const tree3 = Particle.fromCsv("")
+  const particle3 = Particle.fromCsv("")
 
   // Assert
-  equal(tree3.asString, "", "Expected empty string to be handled correctly")
+  equal(particle3.asString, "", "Expected empty string to be handled correctly")
 
   // Assert
   equal(withQuotes.getNode("0 Date").content, "123", "Expected quotes to be handled properly")
 
   // Arrange
-  const tree4 = Particle.fromCsv('height\n"32,323"')
+  const particle4 = Particle.fromCsv('height\n"32,323"')
 
   // Assert
-  equal(tree4.getNode("0 height").content, "32,323")
+  equal(particle4.getNode("0 height").content, "32,323")
 
   // Test quote escaping
   // Arrange
   const csvWithQuotes = 'name,favoriteChar\nbob,"""."'
 
   // Act
-  const tree5 = Particle.fromCsv(csvWithQuotes)
+  const particle5 = Particle.fromCsv(csvWithQuotes)
 
   // Assert
-  equal(tree5.asString, '0\n name bob\n favoriteChar ".', "Four double quotes should return one double quote")
+  equal(particle5.asString, '0\n name bob\n favoriteChar ".', "Four double quotes should return one double quote")
 
   // Test \r characters
   // Arrange
@@ -1293,7 +1293,7 @@ testTree.fromCsv = equal => {
   equal(testCase.getNode("1 name"), undefined, "property should be gone")
 }
 
-testTree.fromCsvNoHeaders = equal => {
+testParticles.fromCsvNoHeaders = equal => {
   // Arrange
   const a = Particle.fromDelimitedNoHeaders(testStrings.csvNoHeaders, ",", '"')
 
@@ -1302,7 +1302,7 @@ testTree.fromCsvNoHeaders = equal => {
   equal(a.getNode("1 2").content, "blue")
 }
 
-testTree.fromDelimited = equal => {
+testParticles.fromDelimited = equal => {
   // Arrange
   const a = Particle.fromDelimited(testStrings.fromDelimited, "^", "~")
 
@@ -1323,7 +1323,7 @@ joe,23`,
   // Assert
 }
 
-testTree.fromDelimitedWindowsLineEndings = equal => {
+testParticles.fromDelimitedWindowsLineEndings = equal => {
   // Arrange
   const str = "A,B\n1,3"
   const str2 = "A,B\n\r1,3"
@@ -1336,7 +1336,7 @@ testTree.fromDelimitedWindowsLineEndings = equal => {
   equal(result2.get("0 B"), "3")
 }
 
-testTree.siblingsWithClone = equal => {
+testParticles.siblingsWithClone = equal => {
   // Arrange
   const test = new Particle(`a
 b
@@ -1350,7 +1350,7 @@ c`)
   equal(clone.lastNode().getOlderSiblings().length, 2)
 }
 
-testTree.siblings = equal => {
+testParticles.siblings = equal => {
   // Arrange
   const test = new Particle(`a
 b
@@ -1389,7 +1389,7 @@ c`
   )
 }
 
-testTree.expandLastFromTopMatter = equal => {
+testParticles.expandLastFromTopMatter = equal => {
   // Arrange
   const test = new Particle(`titleComponent
  class title
@@ -1412,7 +1412,7 @@ html
   )
 }
 
-testTree.replaceNode = equal => {
+testParticles.replaceNode = equal => {
   // Arrange
   const test = new Particle(`a
 b`)
@@ -1429,7 +1429,7 @@ b`
   )
 }
 
-testTree.fromSsv = equal => {
+testParticles.fromSsv = equal => {
   // Arrange/Act
   const a = Particle.fromSsv(testStrings.ssv)
 
@@ -1454,7 +1454,7 @@ testTree.fromSsv = equal => {
   equal(missingCols.nodeAt(2).length, 3)
 }
 
-testTree.fromTsv = equal => {
+testParticles.fromTsv = equal => {
   // Arrange/Act
   const a = Particle.fromTsv(testStrings.tsv)
 
@@ -1471,84 +1471,84 @@ testTree.fromTsv = equal => {
   equal(b.getNode("0 height").content, "23")
 }
 
-testTree.lengthen = equal => {
+testParticles.lengthen = equal => {
   // AAA
   equal(new Particle().lengthen(3).asString, "\n\n")
 }
 
-testTree.getLine = equal => {
+testParticles.getLine = equal => {
   // Arrange
-  const tree = new Particle("hello world")
-  const node = tree.getNode("hello")
+  const particle = new Particle("hello world")
+  const node = particle.getNode("hello")
   const mtime = node.getLineModifiedTime() || 0
 
   // Assert
   equal(node.getLine(), "hello world")
-  equal(tree.has("hello"), true)
+  equal(particle.has("hello"), true)
 
   // Act
   node.setLine("hi earth")
 
   // Assert
-  equal(tree.asString, "hi earth")
+  equal(particle.asString, "hi earth")
   equal(node.getLineModifiedTime() > mtime, true)
-  equal(tree.has("hello"), false)
+  equal(particle.has("hello"), false)
 }
 
-testTree.getIndentation = equal => {
+testParticles.getIndentation = equal => {
   // Arrange
-  const tree = new Particle(testStrings.webpageTrimmed)
+  const particle = new Particle(testStrings.webpageTrimmed)
 
   // Act/assert
-  equal(tree.getNode("body").indentation, "")
-  equal(tree.getNode("body div").indentation, " ")
-  equal(tree.getNode("body div content").indentation, "  ")
+  equal(particle.getNode("body").indentation, "")
+  equal(particle.getNode("body div").indentation, " ")
+  equal(particle.getNode("body div content").indentation, "  ")
 
-  equal(testStrings.webpageTrimmed, tree.topDownArray.map((line: scrollNotationTypes.treeNode) => line.indentation + line.getLine()).join("\n"))
+  equal(testStrings.webpageTrimmed, particle.topDownArray.map((line: scrollNotationTypes.particle) => line.indentation + line.getLine()).join("\n"))
 }
 
-testTree.content = equal => {
+testParticles.content = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Assert
-  equal(tree.getNode("hello").content, "world")
-  equal(tree.get("hello"), "world")
+  equal(particle.getNode("hello").content, "world")
+  equal(particle.get("hello"), "world")
 
   // Act
   // Test get with ints
-  tree.touchNode("2").setContent("hi")
+  particle.touchNode("2").setContent("hi")
 
   // Assert
-  equal(tree.getNode("2").content, "hi", "Expected int strings to work.")
+  equal(particle.getNode("2").content, "hi", "Expected int strings to work.")
 
   // Assert
   // Test get with invalid values
   equal(new Particle().getNode("some"), undefined, "expected undefined")
   equal(new Particle().getNode("some long path"), undefined)
-  equal(tree.getNode(""), undefined)
+  equal(particle.getNode(""), undefined)
 
   // Test get with duplicate properties
   // Arrange
-  const tree2 = new Particle("height 45px\nheight 50px\nwidth 56px")
+  const particle2 = new Particle("height 45px\nheight 50px\nwidth 56px")
 
   // Assert
-  equal(tree2.length, 3)
+  equal(particle2.length, 3)
 
   // Act/Assert
   // When getting a duplicate property last item should win
-  equal(tree2.getNode("height").content, "50px", "Expected to get last value in instance with duplicate property.")
+  equal(particle2.getNode("height").content, "50px", "Expected to get last value in instance with duplicate property.")
 
   // todo: remove ability of get to take non-strings
   // Arrange
-  const treeWithNumbers = new Particle("1 bob\n0 brenda")
+  const particleWithNumbers = new Particle("1 bob\n0 brenda")
 
   // Act/Assert
-  equal(treeWithNumbers.getNode("0").content, "brenda")
-  equal(treeWithNumbers.getNode("1").content, "bob")
+  equal(particleWithNumbers.getNode("0").content, "brenda")
+  equal(particleWithNumbers.getNode("1").content, "bob")
 }
 
-testTree.getInheritanceTree = equal => {
+testParticles.getInheritanceParticles = equal => {
   // Arrange
   const classes = `abstractParser
 abstractModalParser abstractParser
@@ -1557,11 +1557,11 @@ abstractButton abstractParser
 helpButton abstractButton`
 
   // Act
-  const inheritanceTree = new Particle(classes).getInheritanceTree()
+  const inheritanceParticles = new Particle(classes).getInheritanceParticles()
 
   // Assert
   equal(
-    inheritanceTree.asString,
+    inheritanceParticles.asString,
     `abstractParser
  abstractModalParser
   helpModal
@@ -1570,7 +1570,7 @@ helpButton abstractButton`
   )
 }
 
-testTree.getLines = equal => {
+testParticles.getLines = equal => {
   // Arrange
   const value = new Particle("hello\n world")
 
@@ -1578,7 +1578,7 @@ testTree.getLines = equal => {
   equal(value.getLines().join("").indexOf(" "), -1)
 }
 
-testTree.getNodes = equal => {
+testParticles.getNodes = equal => {
   // Arrange
   const value = new Particle("hello world\nhello world")
   const deep = new Particle(`language
@@ -1593,7 +1593,7 @@ testTree.getNodes = equal => {
   // Act
   const result = value
     .findNodes("hello")
-    .map((node: scrollNotationTypes.treeNode) => node.content)
+    .map((node: scrollNotationTypes.particle) => node.content)
     .join("")
 
   // Assert
@@ -1602,13 +1602,13 @@ testTree.getNodes = equal => {
   equal(
     deep
       .findNodes("language line score")
-      .map((node: scrollNotationTypes.treeNode) => node.content)
+      .map((node: scrollNotationTypes.particle) => node.content)
       .join(""),
     "212"
   )
 }
 
-testTree.getContentsArray = equal => {
+testParticles.getContentsArray = equal => {
   // Arrange
   const html = new Particle("h1 hello world\nh1 hello world")
 
@@ -1616,7 +1616,7 @@ testTree.getContentsArray = equal => {
   equal(html.getContentsArray().join("\n"), "hello world\nhello world")
 }
 
-testTree.multiply = equal => {
+testParticles.multiply = equal => {
   class MathNode extends Particle {
     get wordBreakSymbol() {
       return " "
@@ -1705,7 +1705,7 @@ o
   equal(Particle.multiply(five, four).asString, twenty, "multiplying visible nodes works as expected")
 }
 
-testTree.getExpectingABranchButHittingALeaf = equal => {
+testParticles.getExpectingABranchButHittingALeaf = equal => {
   // Arrange
   const value = new Particle("posts leaf")
 
@@ -1713,7 +1713,7 @@ testTree.getExpectingABranchButHittingALeaf = equal => {
   equal(value.getNode("posts branch"), undefined)
 }
 
-testTree.getNodesByPrefixes = equal => {
+testParticles.getNodesByPrefixes = equal => {
   // Arrange
   const test = `id foobar
  link
@@ -1721,12 +1721,12 @@ testTree.getNodesByPrefixes = equal => {
   color orange
  link black
   color green`
-  const tree = new Particle(test)
+  const particle = new Particle(test)
 
   // Act
-  const nodes = tree.getNodesByLinePrefixes(["id foobar", "link blue", "color"])
-  const nodes2 = tree.getNodesByLinePrefixes(["id foobar", "link bl"])
-  const nodes3 = tree.getNodesByLinePrefixes(["id foobar", "ink"])
+  const nodes = particle.getNodesByLinePrefixes(["id foobar", "link blue", "color"])
+  const nodes2 = particle.getNodesByLinePrefixes(["id foobar", "link bl"])
+  const nodes3 = particle.getNodesByLinePrefixes(["id foobar", "ink"])
 
   // Assert
   equal(nodes[0].getLine(), "color orange")
@@ -1734,18 +1734,18 @@ testTree.getNodesByPrefixes = equal => {
   equal(nodes3.length, 0)
 }
 
-testTree.getIndex = equal => {
+testParticles.getIndex = equal => {
   // Arrange
-  const tree = new Particle("r1\n name bob\nr2\n name joe")
-  const child0 = tree.getNode("r1")
-  const child1 = tree.getNode("r2")
+  const particle = new Particle("r1\n name bob\nr2\n name joe")
+  const child0 = particle.getNode("r1")
+  const child1 = particle.getNode("r2")
 
   // Act/Assert
   equal(child0.getIndex(), 0, "Has correct index")
   equal(child1.getIndex(), 1, "Has correct index")
 }
 
-testTree.simpleTreeLanguage = equal => {
+testParticles.simpleParticleLanguage = equal => {
   // Arrange
   class MathProgramParser extends Particle {
     // Look! You created a top down parser!
@@ -1818,56 +1818,56 @@ testTree.simpleTreeLanguage = equal => {
   equal(program.getNodeByParser(SubstractionNodeParser) instanceof SubstractionNodeParser, true)
 }
 
-testTree.getFirstWordPath = equal => {
+testParticles.getFirstWordPath = equal => {
   // Arrange
-  const tree = new Particle(testStrings.every)
-  const parent = tree.getNode("domains test.test.com pages home settings")
-  const child = tree.getNode("domains test.test.com pages home settings data")
+  const particle = new Particle(testStrings.every)
+  const parent = particle.getNode("domains test.test.com pages home settings")
+  const child = particle.getNode("domains test.test.com pages home settings data")
   const simple = new Particle("foo bar")
 
   // Assert
   equal(child.getFirstWordPath(), "domains test.test.com pages home settings data")
   equal(child.parent, parent)
-  equal(child.root, tree)
+  equal(child.root, particle)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
   equal(child.getFirstWordPathRelativeTo(parent), "data")
 }
 
-testTree.getPathVector = equal => {
+testParticles.getPathVector = equal => {
   // Arrange
-  const tree = new Particle(testStrings.every)
+  const particle = new Particle(testStrings.every)
   const indexPath = [5, 0, 4, 0, 0]
   const namePath = "domains test.test.com pages home settings"
-  const parent = tree.getNode(namePath)
-  const child = tree.getNode("domains test.test.com pages home settings data")
+  const parent = particle.getNode(namePath)
+  const child = particle.getNode("domains test.test.com pages home settings data")
 
   // Assert
   equal(parent.getPathVector().join(" "), indexPath.join(" "))
   equal(child.getPathVector().join(" "), "5 0 4 0 0 0")
-  equal(tree.nodeAt(parent.getPathVector()), parent)
-  equal(tree.nodeAt(child.getPathVector()), child)
+  equal(particle.nodeAt(parent.getPathVector()), parent)
+  equal(particle.nodeAt(child.getPathVector()), child)
 
   // Act
-  const newNamePath = tree.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
+  const newNamePath = particle.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
 
   // Assert
   equal(newNamePath.join(" "), namePath)
 }
 
-testTree.getSlice = equal => {
+testParticles.getSlice = equal => {
   // Arrange
-  const tree = new Particle(`a
+  const particle = new Particle(`a
 b
 c
 d`)
   // Act/Assert
-  equal(tree.getSlice(3, 4).asString, "d")
+  equal(particle.getSlice(3, 4).asString, "d")
 }
 
-testTree.has = equal => {
+testParticles.has = equal => {
   // Arrange
-  const tree = new Particle(`hello world
+  const particle = new Particle(`hello world
 nested
 foo 
 deep
@@ -1875,33 +1875,33 @@ deep
   2`)
 
   // Assert
-  equal(tree.has("hello"), true)
-  equal(tree.has("world"), false)
-  equal(tree.has("foo"), true)
-  equal(tree.has("nested"), true)
-  equal(tree.has("deep test 2"), true)
-  equal(tree.has("deep test"), true)
-  equal(tree.has("deep"), true)
-  equal(tree.has("deep test 3"), false)
-  equal(tree.has("deep t 2"), false)
+  equal(particle.has("hello"), true)
+  equal(particle.has("world"), false)
+  equal(particle.has("foo"), true)
+  equal(particle.has("nested"), true)
+  equal(particle.has("deep test 2"), true)
+  equal(particle.has("deep test"), true)
+  equal(particle.has("deep"), true)
+  equal(particle.has("deep test 3"), false)
+  equal(particle.has("deep t 2"), false)
 }
 
-testTree.hasNode = equal => {
+testParticles.hasNode = equal => {
   // Arrange
-  const tree = new Particle(testStrings.every)
-  equal(tree.hasNode(`admin false`), true)
+  const particle = new Particle(testStrings.every)
+  equal(particle.hasNode(`admin false`), true)
   equal(
-    tree.hasNode(`stage
+    particle.hasNode(`stage
  name home
  domain test.test.com`),
     true
   )
-  equal(tree.hasNode(`name Plato`), false)
-  equal(tree.hasNode(`domain test.test.com`), false)
+  equal(particle.hasNode(`name Plato`), false)
+  equal(particle.hasNode(`domain test.test.com`), false)
 }
 
-testTree.getStackString = equal => {
-  const tree = new Particle(
+testParticles.getStackString = equal => {
+  const particle = new Particle(
     `Thing
  color
   blue
@@ -1909,16 +1909,16 @@ testTree.getStackString = equal => {
   )
   // Act/assert
   equal(
-    tree.getNode("Thing color green").getStackString(),
+    particle.getNode("Thing color green").getStackString(),
     `Thing
  color
   green`
   )
 }
 
-testTree.getGraph = equal => {
+testParticles.getGraph = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `Thing
  color
 Animal
@@ -1932,14 +1932,14 @@ Mammal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 4)
-  equal(tree.getNode("Thing").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 1)
-  equal(tree.getNode("Animal").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 2)
+  equal(particle.getNode("Monkey").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 4)
+  equal(particle.getNode("Thing").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 1)
+  equal(particle.getNode("Animal").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 2)
 }
 
-testTree.getGraphConventional = equal => {
+testParticles.getGraphConventional = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `Thing
  color
 Animal Thing
@@ -1950,14 +1950,14 @@ Mammal Animal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 4)
-  equal(tree.getNode("Thing").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 1)
-  equal(tree.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 2)
+  equal(particle.getNode("Monkey").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 4)
+  equal(particle.getNode("Thing").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 1)
+  equal(particle.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 2)
 }
 
-testTree.getGraphLoop = equal => {
+testParticles.getGraphLoop = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `Thing Animal
  color
 Animal Thing
@@ -1966,14 +1966,14 @@ Animal Thing
 
   // Act/Assert
   try {
-    tree.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1)
+    particle.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1)
     equal(true, false, "Expected an error")
   } catch (err) {
     equal(true, true)
   }
 }
 
-testTree.macroExpand = equal => {
+testParticles.macroExpand = equal => {
   // Arrange
   const test = `macro red SUBREDDIT
  >reddit SUBREDDIT
@@ -2003,7 +2003,7 @@ use red programmingLanguages`
   )
 }
 
-testTree.split = equal => {
+testParticles.split = equal => {
   // Arrange
   const test = `#file foobar.csv
 name,score
@@ -2015,62 +2015,62 @@ frank,321
 body {
  }`
   const test2 = test.split("\n").slice(1).join("\n") // Same without leading #file
-  const tree = new Particle(test)
-  const tree2 = new Particle(test2)
+  const particle = new Particle(test)
+  const particle2 = new Particle(test2)
 
   // Act
-  const splitTrees = tree.split(`#file`)
-  const splitTrees2 = tree2.split(`#file`)
+  const splitParticles = particle.split(`#file`)
+  const splitParticles2 = particle2.split(`#file`)
 
   // Assert
-  equal(splitTrees.length, 3)
-  equal(splitTrees2.length, 3)
+  equal(splitParticles.length, 3)
+  equal(splitParticles2.length, 3)
   equal(new Particle(`abc\n#find`).split(`#fi`).length, 1, "should not split on partial matches")
   equal(new Particle(`abc\n#find\n`).split(`#find`).length, 2, "should split on end of line")
-  equal(splitTrees[1].nodeAt(1).getWord(1), "hi")
+  equal(splitParticles[1].nodeAt(1).getWord(1), "hi")
 
   // Act/Assert
-  equal(splitTrees.join("\n"), test)
-  equal(splitTrees2.join("\n"), test2)
+  equal(splitParticles.join("\n"), test)
+  equal(splitParticles2.join("\n"), test2)
 
   // Arrange/Act/Assert
   Object.keys(testStrings).forEach(key => {
-    const tree = new Particle(testStrings[key])
-    const splitOn = tree.getFirstWords()[0] || "foo"
-    equal(tree.split(splitOn).join("\n"), tree.asString, `split join failed for ${key}`)
+    const particle = new Particle(testStrings[key])
+    const splitOn = particle.getFirstWords()[0] || "foo"
+    equal(particle.split(splitOn).join("\n"), particle.asString, `split join failed for ${key}`)
   })
 }
 
-testTree.shifts = equal => {
+testParticles.shifts = equal => {
   // Arrange
   const str = `reddit
 table
 chart`
-  const tree = new Particle(str)
+  const particle = new Particle(str)
 
   // Act/Assert
   // Test Noops:
-  equal(tree.shiftLeft() && tree.shiftRight() && tree.nodeAt(0).shiftLeft() && true, true)
+  equal(particle.shiftLeft() && particle.shiftRight() && particle.nodeAt(0).shiftLeft() && true, true)
 
-  equal(tree.length, 3)
-  equal(tree.nodeAt(1).shiftRight().parent.getLine(), "reddit")
-  equal(tree.length, 2)
+  equal(particle.length, 3)
+  equal(particle.nodeAt(1).shiftRight().parent.getLine(), "reddit")
+  equal(particle.length, 2)
 
   // Act/Assert
-  equal(tree.nodeAtLine(1).shiftLeft().parent.asString, str)
-  equal(tree.length, 3)
+  equal(particle.nodeAtLine(1).shiftLeft().parent.asString, str)
+  equal(particle.length, 3)
 
   // Arrange
   const str2 = `reddit
  table
  chart
  pie`
-  const tree2 = new Particle(str2)
+  const particle2 = new Particle(str2)
 
   // Act
-  tree2.nodeAtLine(2).shiftRight()
-  tree2.nodeAtLine(3).shiftRight()
-  equal(tree2.nodeAtLine(1).length, 2)
+  particle2.nodeAtLine(2).shiftRight()
+  particle2.nodeAtLine(3).shiftRight()
+  equal(particle2.nodeAtLine(1).length, 2)
 
   // Arrange/Act/Assert
   equal(
@@ -2103,9 +2103,9 @@ foo`
   equal(node.nodeAt(0).childrenToString(), expected)
 }
 
-testTree.expandChildren = equal => {
+testParticles.expandChildren = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `Thing
  color
  ab
@@ -2115,7 +2115,7 @@ Animal Thing
   )
   // Act/Assert
   equal(
-    tree._expandChildren(0, 1).asString,
+    particle._expandChildren(0, 1).asString,
     `Thing
  color
  ab
@@ -2126,7 +2126,7 @@ Animal Thing
   )
 
   // Arrange
-  const tree2 = new Particle(
+  const particle2 = new Particle(
     `Thing
  color
 Animal Thing
@@ -2138,7 +2138,7 @@ Mammal Animal
   )
   // Act/Assert
   equal(
-    tree2._expandChildren(0, 1).asString,
+    particle2._expandChildren(0, 1).asString,
     `Thing
  color
 Animal Thing
@@ -2166,22 +2166,22 @@ car non-existant`)
   }
 }
 
-testTree.expandedShouldAppendNonMaps = equal => {
+testParticles.expandedShouldAppendNonMaps = equal => {
   // todo: we need to work on extend so its more straightforward
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `constructors
  example
  example foobar`
   )
   // Act/Assert
-  equal(tree._expandChildren(0, 1).asString, tree.asString, "should have thrown")
+  equal(particle._expandChildren(0, 1).asString, particle.asString, "should have thrown")
 }
 
-testTree.getCustomIndex = equal => {
+testParticles.getCustomIndex = equal => {
   // todo: we need to work on extend so its more straightforward
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `coke
  id 123
  related 456
@@ -2190,18 +2190,18 @@ pepsi
  id 456`
   )
   // Act/Assert
-  equal(tree.getCustomIndex("id")["456"][0].get("type"), "soda", "custom indexes work")
+  equal(particle.getCustomIndex("id")["456"][0].get("type"), "soda", "custom indexes work")
   // AA
-  equal(tree.toFlatObject()["pepsi.type"], "soda", "to flat object works")
+  equal(particle.toFlatObject()["pepsi.type"], "soda", "to flat object works")
 }
 
-testTree.htmlDsl = equal => {
+testParticles.htmlDsl = equal => {
   // Arrange
   const html = new Particle("h1 hello world\nh1 hello world")
   var page = ""
 
   // Act
-  html.forEach((node: scrollNotationTypes.treeNode) => {
+  html.forEach((node: scrollNotationTypes.particle) => {
     const property = node.firstWord
     const value = node.content
     page += "<" + property + ">" + value + "</" + property + ">"
@@ -2211,68 +2211,68 @@ testTree.htmlDsl = equal => {
   equal(page, "<h1>hello world</h1><h1>hello world</h1>")
 }
 
-testTree.indexOf = equal => {
+testParticles.indexOf = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Assert
-  equal(tree.indexOf("hello"), 0)
-  equal(tree.indexOf("hello2"), -1)
+  equal(particle.indexOf("hello"), 0)
+  equal(particle.indexOf("hello2"), -1)
 
   // Act
-  tree.touchNode("color").setContent("")
+  particle.touchNode("color").setContent("")
 
   // Assert
-  equal(tree.indexOf("color"), 1)
+  equal(particle.indexOf("color"), 1)
 
   // Act
-  tree.appendLine("hello world")
+  particle.appendLine("hello world")
 
   // Assert
-  equal(tree.indexOf("hello"), 0)
-  equal(tree.indexOfLast("hello"), 2)
+  equal(particle.indexOf("hello"), 0)
+  equal(particle.indexOfLast("hello"), 2)
 }
 
-testTree.appendUniqueLine = equal => {
+testParticles.appendUniqueLine = equal => {
   // Arrange
-  const tree = new Particle(`city Brockton`)
+  const particle = new Particle(`city Brockton`)
   // Act
-  tree.appendUniqueLine("city Brockton")
-  tree.appendUniqueLine("country United States")
+  particle.appendUniqueLine("city Brockton")
+  particle.appendUniqueLine("country United States")
 
   // Assert
-  equal(tree.length, 2)
-  equal(tree.get("country"), "United States")
+  equal(particle.length, 2)
+  equal(particle.get("country"), "United States")
 }
 
-testTree.insert = equal => {
+testParticles.insert = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Act
-  tree.insertLine("hi mom", 0)
+  particle.insertLine("hi mom", 0)
 
   // Assert
-  equal(tree.indexOf("hi"), 0, "Expected hi at position 0")
+  equal(particle.indexOf("hi"), 0, "Expected hi at position 0")
 
   // Insert using an index longer than the current object
   // Act
-  tree.insertLine("test dad", 10)
+  particle.insertLine("test dad", 10)
 
   // Assert
-  equal(tree.nodeAt(2).content, "dad", "Expected insert at int greater than length to append")
-  equal(tree.length, 3)
+  equal(particle.nodeAt(2).content, "dad", "Expected insert at int greater than length to append")
+  equal(particle.length, 3)
 
   // Insert using a negative index
   // Act
-  tree.insertLine("test2 sister", -1)
+  particle.insertLine("test2 sister", -1)
 
   // Assert
-  equal(tree.nodeAt(2).content, "sister")
-  equal(tree.nodeAt(3).content, "dad")
+  equal(particle.nodeAt(2).content, "sister")
+  equal(particle.nodeAt(3).content, "dad")
 }
 
-testTree.last = equal => {
+testParticles.last = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
@@ -2284,21 +2284,21 @@ testTree.last = equal => {
   equal(value2.nodeAt(-1).asString, "hi mom")
 }
 
-testTree.lastProperty = equal => {
+testParticles.lastProperty = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
   equal(value.nodeAt(-1).firstWord, "hi")
 }
 
-testTree.lastValue = equal => {
+testParticles.lastValue = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
   equal(value.nodeAt(-1).content, "mom")
 }
 
-testTree.createFromArray = equal => {
+testParticles.createFromArray = equal => {
   // Arrange
   const a = new Particle([1, 2, 3])
   // Assert
@@ -2320,16 +2320,16 @@ testTree.createFromArray = equal => {
   equal(b.asString, "data\n 0\n  charge 1\n 1\n  charge 2")
 }
 
-testTree.createFromObject = equal => {
+testParticles.createFromObject = equal => {
   // Arrange
-  const tree = new Particle(testObjects.tsv)
+  const particle = new Particle(testObjects.tsv)
   const date = new Date()
   const time = date.getTime()
-  const treeWithDate = new Particle({ name: "John", date: date })
+  const particleWithDate = new Particle({ name: "John", date: date })
 
   // Assert
-  equal(tree.getNode("lowestScore").content, "-10")
-  equal(treeWithDate.getNode("date").content, time.toString())
+  equal(particle.getNode("lowestScore").content, "-10")
+  equal(particleWithDate.getNode("date").content, time.toString())
 
   // Test against object with circular references
   // Arrange
@@ -2339,18 +2339,18 @@ testTree.createFromObject = equal => {
   // Act
   // Create circular reference
   a.c = b
-  const tree2 = new Particle(a)
+  const particle2 = new Particle(a)
 
   // Assert
-  equal(tree2.getNode("c bar").content, "2", "expected 2")
-  equal(tree2.getNode("c ref"), undefined)
+  equal(particle2.getNode("c bar").content, "2", "expected 2")
+  equal(particle2.getNode("c ref"), undefined)
 
   // Arrange
-  const tree3 = new Particle()
-  tree3.touchNode("docs").setChildren(testObjects.json2tree)
+  const particle3 = new Particle()
+  particle3.touchNode("docs").setChildren(testObjects.json2particles)
 
   // Assert
-  equal(tree3.asString, testStrings.json2tree, "expected json2tree")
+  equal(particle3.asString, testStrings.json2particles, "expected json2particles")
 
   // Arrange
   const test4 = new Particle({ score: undefined })
@@ -2359,7 +2359,7 @@ testTree.createFromObject = equal => {
   equal(test4.asString, "score", "expected blank")
 }
 
-testTree.createFromTree = equal => {
+testParticles.createFromParticle = equal => {
   // Arrange
   const a = new Particle("foo\n bar bam")
   const b = new Particle(a)
@@ -2376,7 +2376,7 @@ testTree.createFromTree = equal => {
   equal(b.getNode("foo bar").content, "bam")
 }
 
-testTree.createFromString = equal => {
+testParticles.createFromString = equal => {
   // Arrange/Act
   const startsWithSpace = new Particle(" name john")
 
@@ -2453,26 +2453,26 @@ code <p></p>
   equal(testCase.asString.split("\n").length, 11, "All blank lines are preserved")
 }
 
-testTree.protoRegression = equal => {
+testParticles.protoRegression = equal => {
   // Arrange
   const a = `__proto__`
-  const tree = new Particle(a)
-  equal(tree.asString, a, "proto regression fixed")
+  const particle = new Particle(a)
+  equal(particle.asString, a, "proto regression fixed")
 
   // Arrange
   const b = `constructor`
-  const tree2 = new Particle(b)
-  equal(tree2.asString, b, "constructor regression fixed")
+  const particle2 = new Particle(b)
+  equal(particle2.asString, b, "constructor regression fixed")
 }
 
-testTree.createFromStringExtraTrees = equal => {
+testParticles.createFromStringExtraParticles = equal => {
   // Arrange
   const d = new Particle("one\ntwo\n  three\n    four\nfive six")
   // Assert
   equal(d.length, 3)
 }
 
-testTree.copyTo = equal => {
+testParticles.copyTo = equal => {
   // Arrange
   const value = new Particle(
     `chart
@@ -2505,20 +2505,20 @@ chart2
   equal(value.asString, expected2)
 }
 
-testTree.braid = equal => {
+testParticles.braid = equal => {
   // Arrange
-  const tree = new Particle(`score 1`)
-  const tree2 = new Particle(`keyword number`)
+  const particle = new Particle(`score 1`)
+  const particle2 = new Particle(`keyword number`)
 
   // Act/Assert
   equal(
-    tree.toBraid([tree2]).asString,
+    particle.toBraid([particle2]).asString,
     `score 1
 keyword number`
   )
-  equal(tree.toSideBySide([tree2]).asString, `score 1 keyword number`)
+  equal(particle.toSideBySide([particle2]).asString, `score 1 keyword number`)
   equal(
-    tree.toSideBySide([
+    particle.toSideBySide([
       `foo
 
 bar`
@@ -2529,9 +2529,9 @@ bar`
   )
 }
 
-testTree.copyToRegression = equal => {
+testParticles.copyToRegression = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `>something
  class SomeClass
  css
@@ -2546,7 +2546,7 @@ testTree.copyToRegression = equal => {
  @blue
  >div`
 
-  const migrateNode = (node: scrollNotationTypes.treeNode) => {
+  const migrateNode = (node: scrollNotationTypes.particle) => {
     if (!node.firstWord.startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").content
@@ -2555,13 +2555,13 @@ testTree.copyToRegression = equal => {
       if (css) {
         const nodes = css.getChildren()
         const toMove: any = []
-        nodes.forEach((propNode: scrollNotationTypes.treeNode) => {
+        nodes.forEach((propNode: scrollNotationTypes.particle) => {
           const name = propNode.firstWord.replace(":", " ")
           propNode.setFirstWord("@" + name)
           toMove.push(propNode)
         })
         toMove.reverse()
-        toMove.forEach((prop: scrollNotationTypes.treeNode) => prop.copyTo(node, 0))
+        toMove.forEach((prop: scrollNotationTypes.particle) => prop.copyTo(node, 0))
       }
       node.delete("class")
       node.delete("css")
@@ -2570,13 +2570,13 @@ testTree.copyToRegression = equal => {
   }
 
   // Act
-  tree.forEach(migrateNode)
+  particle.forEach(migrateNode)
 
   // Assert
-  equal(tree.asString, expected)
+  equal(particle.asString, expected)
 }
 
-testTree.insertWord = equal => {
+testParticles.insertWord = equal => {
   // Arrange
   const a = new Particle("? result chekThis 1 2").getNode("?")
   // Act
@@ -2585,7 +2585,7 @@ testTree.insertWord = equal => {
   equal(a.getLine(), "? result checkThis chekThis 1 2")
 }
 
-testTree.setWord = equal => {
+testParticles.setWord = equal => {
   // Arrange
   const a = new Particle("? result chekThis 1 2").getNode("?")
   // Act
@@ -2594,7 +2594,7 @@ testTree.setWord = equal => {
   equal(a.getLine(), "? result checkThis 1 2")
 }
 
-testTree.treeLanguageDependingOnParent = equal => {
+testParticles.particleLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnNode extends Particle {
     createParserCombinator() {
@@ -2617,7 +2617,7 @@ testTree.treeLanguageDependingOnParent = equal => {
   equal(program.length, 1)
 }
 
-testTree.multiline = equal => {
+testParticles.multiline = equal => {
   // Arrange
   const a = new Particle("my multiline\n string")
   // Assert
@@ -2674,7 +2674,7 @@ testTree.multiline = equal => {
 
   // Assert
   equal(twoNodes.length, 2)
-  equal(k.getNode("settings").length, 1, "Expected subtree to have 1 empty node")
+  equal(k.getNode("settings").length, 1, "Expected subparticle to have 1 empty node")
   equal(k.getNode("settings").contentWithChildren, twoNodes.asString, "Expected setContentWithChildren and getText to work with newlines")
   equal(k.asString, `time 123\nsettings title Untitled\n \nday 1`)
 
@@ -2689,7 +2689,7 @@ testTree.multiline = equal => {
   equal(someText.asString, "a const b = 1;\n const c = 2;")
 }
 
-testTree.order = equal => {
+testParticles.order = equal => {
   // Arrange
   const a = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10")
   const types = a.getFirstWords().join(" ")
@@ -2698,7 +2698,7 @@ testTree.order = equal => {
   equal(types, "john susy bob", "order is preserved")
 }
 
-testTree.parseNode = equal => {
+testParticles.parseNode = equal => {
   // Arrange
   class LeafNode extends Particle {}
   class SubNode extends Particle {
@@ -2709,7 +2709,7 @@ testTree.parseNode = equal => {
   class TestLanguageNode extends Particle {
     createParserCombinator() {
       return new Particle.ParserCombinator(TestLanguageNode, {}, [
-        { regex: /^tree/, parser: Particle },
+        { regex: /^particle/, parser: Particle },
         { regex: /^sub/, parser: SubNode }
       ])
     }
@@ -2720,18 +2720,18 @@ testTree.parseNode = equal => {
   const node = new iHateTypeScriptSometimes(
     `foo bar
  foo bar
-  tree bar
+  particle bar
 sub
  leaf`
   )
 
   // Assert
-  equal(node.getNode("foo foo tree") instanceof Particle, true)
+  equal(node.getNode("foo foo particle") instanceof Particle, true)
   equal(node.getNode("foo foo") instanceof TestLanguageNode, true)
   equal(node.getNode("sub leaf") instanceof LeafNode, true)
 }
 
-testTree.prependLine = equal => {
+testParticles.prependLine = equal => {
   // Arrange
   const a = new Particle("hello world")
   // Assert
@@ -2744,7 +2744,7 @@ testTree.prependLine = equal => {
   equal(result instanceof Particle, true)
 }
 
-testTree.getLocations = equal => {
+testParticles.getLocations = equal => {
   // Arrange/Act
   const a = new Particle(
     `hello
@@ -2772,12 +2772,12 @@ d
   )
 
   // Act/Assert
-  const result = reg.topDownArray.map((node: scrollNotationTypes.treeNode) => node.lineNumber).join(" ")
+  const result = reg.topDownArray.map((node: scrollNotationTypes.particle) => node.lineNumber).join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getNode("a").lineNumber, 1)
 }
 
-testTree.pushContentAndChildren = equal => {
+testParticles.pushContentAndChildren = equal => {
   // Arrange
   const a = new Particle()
 
@@ -2795,7 +2795,7 @@ testTree.pushContentAndChildren = equal => {
   equal(a.getNode("1") instanceof Particle, true, "1 is instance of Particle")
 }
 
-testTree.remap = equal => {
+testParticles.remap = equal => {
   // Arrange
   const test = `mark
  d 2
@@ -2821,16 +2821,16 @@ q quantity`
 
   // Act
   const remapped = new Particle(test)
-  remapped.forEach((node: scrollNotationTypes.treeNode) => node.remap(expandMapObj))
+  remapped.forEach((node: scrollNotationTypes.particle) => node.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.forEach((node: scrollNotationTypes.treeNode) => node.remap(contractMap))
+  expected.forEach((node: scrollNotationTypes.particle) => node.remap(contractMap))
 
   // Assert
   equal(test, expected.asString)
 }
 
-testTree.rename = equal => {
+testParticles.rename = equal => {
   // Arrange
   const a = new Particle("john\n age 5\nsusy\n age 6\ncandy bar\nx 123\ny 45\n")
   const originalLength = a.length
@@ -2879,7 +2879,7 @@ testTree.rename = equal => {
   equal(c.has("a"), false)
 }
 
-testTree.renameAll = equal => {
+testParticles.renameAll = equal => {
   // Arrange
   const a = new Particle("hello world\nhello world")
 
@@ -2891,19 +2891,19 @@ testTree.renameAll = equal => {
   equal(a.has("hello"), false)
 
   // Arrange
-  const b = new Particle(`foo.tree
+  const b = new Particle(`foo.particle
  age 23
-foo.tree2
+foo.particle2
  age 24`)
 
   // Act
-  b.getNode("foo.tree2").renameAll("age", "bage")
+  b.getNode("foo.particle2").renameAll("age", "bage")
 
   // Assert
-  equal(b.get("foo.tree2 bage"), "24")
+  equal(b.get("foo.particle2 bage"), "24")
 }
 
-testTree.reorder = equal => {
+testParticles.reorder = equal => {
   // Arrange
   const a = new Particle("hello world")
 
@@ -2927,7 +2927,7 @@ testTree.reorder = equal => {
   equal(a.getFirstWords().join(" "), "yo hello hola hi", "order correct")
 }
 
-testTree.next = equal => {
+testParticles.next = equal => {
   // Arrange
   const a = new Particle(
     `john
@@ -2951,139 +2951,139 @@ bob
   equal(c.previous.firstWord, "score")
 }
 
-testTree.reverse = equal => {
+testParticles.reverse = equal => {
   // Arrange
-  const tree = new Particle("hi mom\nhey sis\nhey dad")
+  const particle = new Particle("hi mom\nhey sis\nhey dad")
 
   // Assert
-  equal(tree.getNode("hey").content, "dad")
+  equal(particle.getNode("hey").content, "dad")
 
   // Act
-  tree.reverse()
+  particle.reverse()
 
   // Assert
-  equal(tree.asString, "hey dad\nhey sis\nhi mom")
-  equal(tree.getNode("hey").content, "sis")
+  equal(particle.asString, "hey dad\nhey sis\nhi mom")
+  equal(particle.getNode("hey").content, "sis")
 
   // Test reverse when using internal types
 
   // Arrange
-  const tree2 = Particle.fromCsv("name,age\nbill,20\nmike,40\ntim,30")
+  const particle2 = Particle.fromCsv("name,age\nbill,20\nmike,40\ntim,30")
 
   // Act
-  tree2.nodeAt(0).reverse()
+  particle2.nodeAt(0).reverse()
 
   // Assert
-  equal(tree2.nodeAt(0).nodeAt(0).firstWord, "age", "Expected reversed properties")
-  equal(tree2.nodeAt(1).nodeAt(0).firstWord, "name", "Expected unchanged properties")
+  equal(particle2.nodeAt(0).nodeAt(0).firstWord, "age", "Expected reversed properties")
+  equal(particle2.nodeAt(1).nodeAt(0).firstWord, "name", "Expected unchanged properties")
 }
 
-testTree.set = equal => {
+testParticles.set = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
 
   // Assert
-  equal(tree.getNode("hello").content, "world")
-  equal(tree.touchNode("hello").setContent("mom") instanceof Particle, true, "set should return instance so we can chain it")
-  equal(tree.getNode("hello").content, "mom")
-
-  // Act
-  tree.touchNode("boom").setContent("")
-  // Assert
-  equal(tree.getNode("boom").content, "", "empty string")
+  equal(particle.getNode("hello").content, "world")
+  equal(particle.touchNode("hello").setContent("mom") instanceof Particle, true, "set should return instance so we can chain it")
+  equal(particle.getNode("hello").content, "mom")
 
   // Act
-  tree.touchNode("head style color").setContent("blue")
+  particle.touchNode("boom").setContent("")
   // Assert
-  equal(tree.getNode("head style color").content, "blue", "set should have worked")
+  equal(particle.getNode("boom").content, "", "empty string")
+
+  // Act
+  particle.touchNode("head style color").setContent("blue")
+  // Assert
+  equal(particle.getNode("head style color").content, "blue", "set should have worked")
 
   // Test dupes
   // Arrange
-  tree.appendLine("hello bob")
+  particle.appendLine("hello bob")
 
   // Act
-  tree.touchNode("hello").setContent("tim")
+  particle.touchNode("hello").setContent("tim")
 
   // Assert
-  equal(tree.getNode("hello").content, "tim", "Expected set to change last occurrence of property.")
+  equal(particle.getNode("hello").content, "tim", "Expected set to change last occurrence of property.")
 
   // TEST INT SCENARIOS
   // Arrange
-  const tree2 = new Particle()
+  const particle2 = new Particle()
 
   // Act
-  tree2.touchNode("2").setContent("hi")
-  tree2.touchNode("3").setContent("3")
+  particle2.touchNode("2").setContent("hi")
+  particle2.touchNode("3").setContent("3")
   // Assert
-  equal(tree2.getNode("2").content, "hi")
-  equal(tree2.getNode("2").content, "hi")
-  equal(tree2.getNode("3").content, "3")
+  equal(particle2.getNode("2").content, "hi")
+  equal(particle2.getNode("2").content, "hi")
+  equal(particle2.getNode("3").content, "3")
 
   // TEST SPACEPATH SCENARIOS
   // Arrange
-  const tree3 = new Particle("style\n")
+  const particle3 = new Particle("style\n")
   // Act
-  tree3.touchNode("style color").setContent("red")
-  tree3.touchNode("style width").setContent("100")
+  particle3.touchNode("style color").setContent("red")
+  particle3.touchNode("style width").setContent("100")
 
   // Assert
-  equal(tree3.getNode("style color").content, "red")
-  equal(tree3.getNode("style width").content, "100")
+  equal(particle3.getNode("style color").content, "red")
+  equal(particle3.getNode("style width").content, "100")
 
   // TEST ORDERING
   // Arrange
-  const tree4 = new Particle("hello world")
+  const particle4 = new Particle("hello world")
   // Act
-  tree4.touchNode("hi").setContent("mom")
+  particle4.touchNode("hi").setContent("mom")
   // Assert
-  equal(tree4.getFirstWords().join(" "), "hello hi", "order correct")
+  equal(particle4.getFirstWords().join(" "), "hello hi", "order correct")
 
   // Act
-  tree4.insertLine("yo pal", 0)
+  particle4.insertLine("yo pal", 0)
   // Assert
-  equal(tree4.getFirstWords().join(" "), "yo hello hi", "order correct")
+  equal(particle4.getFirstWords().join(" "), "yo hello hi", "order correct")
 
   // Act
-  tree4.insertLine("hola pal", 2)
+  particle4.insertLine("hola pal", 2)
   // Assert
-  equal(tree4.getFirstWords().join(" "), "yo hello hola hi", "order correct")
+  equal(particle4.getFirstWords().join(" "), "yo hello hola hi", "order correct")
 
   // Arrange
-  const tree5 = new Particle()
+  const particle5 = new Particle()
   // Act
-  tree5.touchNode("hi").setContent("hello world")
-  tree5.touchNode("yo").setChildren(new Particle("hello world"))
+  particle5.touchNode("hi").setContent("hello world")
+  particle5.touchNode("yo").setChildren(new Particle("hello world"))
   // Assert
-  equal(tree5.getNode("hi").content === tree5.getNode("yo").content, false)
+  equal(particle5.getNode("hi").content === particle5.getNode("yo").content, false)
 
   // Arrange
-  const tree6 = new Particle()
+  const particle6 = new Particle()
 
   // Act
-  tree6.touchNode("meta x").setContent("123")
-  tree6.touchNode("meta y").setContent("1235")
-  tree6.touchNode("meta c").setContent("435")
-  tree6.touchNode("meta x").setContent("1235123")
+  particle6.touchNode("meta x").setContent("123")
+  particle6.touchNode("meta y").setContent("1235")
+  particle6.touchNode("meta c").setContent("435")
+  particle6.touchNode("meta x").setContent("1235123")
 
   // Assert
-  equal(tree6.getNode("meta c").content, "435")
+  equal(particle6.getNode("meta c").content, "435")
 
   // Arrange
-  const tree7 = new Particle("name John\nage\nfavoriteColors\n blue\n  blue1 1\n  blue2 2\n green\n red 1\n")
+  const particle7 = new Particle("name John\nage\nfavoriteColors\n blue\n  blue1 1\n  blue2 2\n green\n red 1\n")
 
   // Act
-  tree7.touchNode("favoriteColors blue").setContent("purple").asString
+  particle7.touchNode("favoriteColors blue").setContent("purple").asString
 
   // Assert
-  equal(tree7.getNode("favoriteColors blue").content, "purple")
+  equal(particle7.getNode("favoriteColors blue").content, "purple")
 
   // Act
-  tree7.touchNode(" blanks").setContent("test")
-  tree7.touchNode(" \nboom").setContent("test2")
+  particle7.touchNode(" blanks").setContent("test")
+  particle7.touchNode(" \nboom").setContent("test2")
 
   // Assert
-  equal(tree7.getNode(" blanks").content, "test", "Expected blank paths to be settable")
-  equal(tree7.getNode(" boom").content, "test2", "Expected newlines in path to be sanitized")
+  equal(particle7.getNode(" blanks").content, "test", "Expected blank paths to be settable")
+  equal(particle7.getNode(" boom").content, "test2", "Expected newlines in path to be sanitized")
 
   // Arrange/Act
   const boom = new Particle("")
@@ -3102,7 +3102,7 @@ testTree.set = equal => {
   equal(blank.asString, " ", "Expected blanks to work")
 }
 
-testTree.setFromArray = equal => {
+testParticles.setFromArray = equal => {
   // Arrange/Act
   const boom = new Particle([{ description: "some text with a \nnewline" }])
   const output = boom.asString
@@ -3111,16 +3111,16 @@ testTree.setFromArray = equal => {
   equal(new Particle(output).length, 1)
 }
 
-testTree.set = equal => {
+testParticles.set = equal => {
   // Arrange
-  const tree = new Particle(`title Foo`)
+  const particle = new Particle(`title Foo`)
 
   // Act
-  tree.set("body div h1", "Hello world")
+  particle.set("body div h1", "Hello world")
 
   // Assert
   equal(
-    tree.asString,
+    particle.asString,
     `title Foo
 body
  div
@@ -3128,12 +3128,12 @@ body
   )
 }
 
-testTree.setFromText = equal => {
+testParticles.setFromText = equal => {
   // Arrange
   const str = `john doe
  age 50`
-  const tree = new Particle(str)
-  const node = tree.getNode("john")
+  const particle = new Particle(str)
+  const node = particle.getNode("john")
 
   // Act
   node.setFromText(str)
@@ -3148,9 +3148,9 @@ testTree.setFromText = equal => {
   equal(node.asString, "john")
 }
 
-testTree.shift = equal => {
+testParticles.shift = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `john
  age 5
 susy
@@ -3162,14 +3162,14 @@ bob
   const empty = new Particle()
 
   // Act/Assert
-  equal(tree.length, 3, "length ok")
+  equal(particle.length, 3, "length ok")
   equal(
-    tree.shift().asString,
+    particle.shift().asString,
     `john
  age 5`,
     "expected correct string returned"
   )
-  equal(tree.length, 2)
+  equal(particle.length, 2)
   equal(empty.shift(), null)
 
   // Arrange
@@ -3183,58 +3183,58 @@ bob
   equal(one.asString, "first")
 }
 
-testTree.sort = equal => {
+testParticles.sort = equal => {
   // Arrange
-  const tree = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10")
+  const particle = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10")
   // Assert
-  equal(tree.getFirstWords().join(" "), "john susy bob")
+  equal(particle.getFirstWords().join(" "), "john susy bob")
   // Act
-  tree.sort((a: scrollNotationTypes.treeNode, b: scrollNotationTypes.treeNode) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
+  particle.sort((a: scrollNotationTypes.particle, b: scrollNotationTypes.particle) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
   // Assert
-  equal(tree.getFirstWords().join(" "), "bob john susy")
+  equal(particle.getFirstWords().join(" "), "bob john susy")
 }
 
-testTree.sortBy = equal => {
+testParticles.sortBy = equal => {
   // Arrange
-  const tree = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10\nsam\n age 21\nbrian\n age 6")
+  const particle = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10\nsam\n age 21\nbrian\n age 6")
   // Assert
-  equal(tree.getFirstWords().join(" "), "john susy bob sam brian")
+  equal(particle.getFirstWords().join(" "), "john susy bob sam brian")
 
   // Act
-  tree.sortBy(["age"])
+  particle.sortBy(["age"])
 
   // Assert
-  equal(tree.getFirstWords().join(" "), "bob sam john susy brian")
+  equal(particle.getFirstWords().join(" "), "bob sam john susy brian")
 
   // Sort by multiple properties
   // Arrange
-  const tree2 = new Particle(testStrings.sortByMultiple)
+  const particle2 = new Particle(testStrings.sortByMultiple)
 
   // Act
-  tree2.sortBy(["name", "date"])
+  particle2.sortBy(["name", "date"])
 
   // Assert
-  equal(tree2.getColumn("key").join(""), "cab")
+  equal(particle2.getColumn("key").join(""), "cab")
 
   // Act
-  tree2.sortBy(["name", "key"])
+  particle2.sortBy(["name", "key"])
 
   // Assert
-  equal(tree2.getColumn("key").join(""), "acb")
+  equal(particle2.getColumn("key").join(""), "acb")
 }
 
-testTree.firstWordSort = equal => {
+testParticles.firstWordSort = equal => {
   // Arrange
-  const tree = new Particle(`body
+  const particle = new Particle(`body
 footer
 div
 header
 div`)
   // Act
-  tree.firstWordSort("header body div footer".split(" "))
+  particle.firstWordSort("header body div footer".split(" "))
   // Assert
   equal(
-    tree.asString,
+    particle.asString,
     `header
 body
 div
@@ -3243,7 +3243,7 @@ footer`
   )
 }
 
-testTree.syntax = equal => {
+testParticles.syntax = equal => {
   // Arrange
   const test = `person
  name Breck
@@ -3289,7 +3289,7 @@ testTree.syntax = equal => {
   equal(b.toString(undefined, a), test)
 }
 
-testTree.toCsv = equal => {
+testParticles.toCsv = equal => {
   // Arrange
   const a = new Particle(testStrings.delimited)
   // Act/Assert
@@ -3301,7 +3301,7 @@ testTree.toCsv = equal => {
   equal(b.asCsv, `lines\n"1\n2\n3"`)
 }
 
-testTree.getOneHot = equal => {
+testParticles.getOneHot = equal => {
   // Arrange
   const a = Particle.fromCsv(Particle.iris)
   // Act
@@ -3313,7 +3313,7 @@ testTree.getOneHot = equal => {
   equal(col[9], "1")
 }
 
-testTree.deleteColumn = equal => {
+testParticles.deleteColumn = equal => {
   // Arrange
   const a = Particle.fromCsv(Particle.iris)
   // Assert
@@ -3326,7 +3326,7 @@ testTree.deleteColumn = equal => {
   equal(a.getColumnNames().length, 4)
 }
 
-testTree.toTable = equal => {
+testParticles.toTable = equal => {
   // Arrange
   const a = Particle.fromCsv("name,score,color\n" + testStrings.csvNoHeaders)
   // Act/Assert
@@ -3339,7 +3339,7 @@ testTree.toTable = equal => {
   equal(b.toFormattedTable(1, false), "n...\nj...\nf...", "Expected max width to be enforced")
 }
 
-testTree.nest = equal => {
+testParticles.nest = equal => {
   // Arrange/Act
   const testStr2 = `html
  head
@@ -3357,7 +3357,7 @@ testTree.nest = equal => {
   equal(new Particle(`${Particle.nest("foo bar", 2)}`).nodeAt([0, 0]).content, "foo bar")
 }
 
-testTree.toDataTable = equal => {
+testParticles.toDataTable = equal => {
   // Arrange
   const data = [
     ["name", "age", "score"],
@@ -3367,13 +3367,13 @@ testTree.toDataTable = equal => {
   ]
 
   // Act
-  const tree = Particle.fromDataTable(data)
+  const particle = Particle.fromDataTable(data)
 
   // Assert
-  equal(tree.getNode("2 age").content, "32")
+  equal(particle.getNode("2 age").content, "32")
 
   // Act
-  const dt = tree.toDataTable()
+  const dt = particle.toDataTable()
 
   // Assert
   equal(dt[2][2], 16)
@@ -3381,7 +3381,7 @@ testTree.toDataTable = equal => {
   equal(dt[3][0], "soda")
 }
 
-testTree.toObject = equal => {
+testParticles.toObject = equal => {
   // Arrange
   const a = new Particle("hello world")
   const b = new Particle("foo bar")
@@ -3396,18 +3396,18 @@ testTree.toObject = equal => {
   equal(a.toObject()["b"]["foo"], "bar")
 
   // Arrange
-  const objectWithTreesAndValues = `div
+  const objectWithParticlesAndValues = `div
  input checked
   type checkbox`
 
   // Act
-  const obj = new Particle(objectWithTreesAndValues).toObject()
+  const obj = new Particle(objectWithParticlesAndValues).toObject()
 
   // Assert
   equal(typeof obj.div.input, "string")
 }
 
-testTree.toSsv = equal => {
+testParticles.toSsv = equal => {
   // Arrange
   const a = new Particle(testStrings.delimited)
   // Assert
@@ -3416,7 +3416,7 @@ testTree.toSsv = equal => {
   equal(!!b.asSsv, true)
 }
 
-testTree.toMarkdownTable = equal => {
+testParticles.toMarkdownTable = equal => {
   // Arrange
   const test = `event abc
  title ABC 2017
@@ -3437,21 +3437,21 @@ event lala2018
 |-|-|-|-|-|
 |ABC 2017|09/18/2017 - 09/10/2017|Boston, MA|https://www.foobar.com/||
 |Lala 2018|11/02/2018 - 11/03/2018|San Fran|http://www.blah.com|foo|`
-  const tree = new Particle(test)
+  const particle = new Particle(test)
 
   // Act
-  const simple = tree.asMarkdownTable
-  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value: any, row: any, col: any) => (row ? value : Utils.ucfirst(value)))
+  const simple = particle.asMarkdownTable
+  const table = particle.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value: any, row: any, col: any) => (row ? value : Utils.ucfirst(value)))
 
   // Assert
   equal(table, expected, "markdown ok")
   equal(simple, simpleExpected, "markdown simple ok")
 }
 
-testTree.setContentWithChildrenRegression = equal => {
+testParticles.setContentWithChildrenRegression = equal => {
   // Arrange
-  const tree = new Particle("hello world")
-  const hello = tree.getNode("hello")
+  const particle = new Particle("hello world")
+  const hello = particle.getNode("hello")
   // Act
   hello.setContentWithChildren(
     `brave
@@ -3459,35 +3459,35 @@ testTree.setContentWithChildrenRegression = equal => {
   )
   hello.setContentWithChildren(`earth`)
   // Assert
-  equal(tree.asString, "hello earth")
+  equal(particle.asString, "hello earth")
 }
 
-testTree.toStringMethod = equal => {
+testParticles.toStringMethod = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
   // Assert
-  equal(tree.asString, "hello world", "Expected correct string.")
-  equal(tree.toStringWithLineNumbers(), "1 hello world")
+  equal(particle.asString, "hello world", "Expected correct string.")
+  equal(particle.toStringWithLineNumbers(), "1 hello world")
   // Act
-  tree.touchNode("foo").setContent("bar")
+  particle.touchNode("foo").setContent("bar")
   // Assert
-  equal(tree.asString, "hello world\nfoo bar")
+  equal(particle.asString, "hello world\nfoo bar")
 
   // Arrange
-  const tree2: any = new Particle("z-index 0")
+  const particle2: any = new Particle("z-index 0")
   // Act
-  tree2["z-index"] = 0
+  particle2["z-index"] = 0
   // Assert
-  equal(tree2.asString, "z-index 0")
+  equal(particle2.asString, "z-index 0")
 
   // Test empty values
   // Arrange
-  const tree3 = new Particle()
+  const particle3 = new Particle()
 
   // Act
-  tree3.touchNode("empty").setContent("")
+  particle3.touchNode("empty").setContent("")
   // Assert
-  equal(tree3.asString, "empty ")
+  equal(particle3.asString, "empty ")
 
   // Arrange
   const a = new Particle("john\n age 5")
@@ -3528,16 +3528,16 @@ testTree.toStringMethod = equal => {
 
   // Arrange
   const str = "view\n type bar"
-  const treeNode = new Particle(str).getNode("view")
+  const particle = new Particle(str).getNode("view")
   // Act/Assert
-  equal(treeNode.asString, str)
+  equal(particle.asString, str)
 }
 
-testTree.asHtml = equal => {
+testParticles.asHtml = equal => {
   // Arrange
-  const tree = new Particle("hello world")
+  const particle = new Particle("hello world")
   // Act
-  const str = tree.asHtml
+  const str = particle.asHtml
   // Assert
   equal(str.includes("<span"), true)
 
@@ -3548,23 +3548,23 @@ testTree.asHtml = equal => {
   equal(parent.asHtml.includes("5 0 4 0 0"), true)
 }
 
-testTree.toTsv = equal => {
+testParticles.toTsv = equal => {
   // Arrange
   const a = new Particle(testStrings.delimited)
   // Assert
   equal(a.asTsv, testStrings.tsv)
 }
 
-testTree.toXml = equal => {
+testParticles.toXml = equal => {
   // Arrange
   const a = new Particle(testStrings.toXml)
   // Assert
   equal(a.asXml, testStrings.toXmlPrettyResult)
 }
 
-testTree.windowsReturnChars = equal => {
+testParticles.windowsReturnChars = equal => {
   // Arrange
-  const tree = new Particle(
+  const particle = new Particle(
     `one
 \r
 \rtwo
@@ -3574,10 +3574,10 @@ testTree.windowsReturnChars = equal => {
   )
 
   // Assert
-  equal(tree.length, 6)
+  equal(particle.length, 6)
 }
 
-testTree.traverse = equal => {
+testParticles.traverse = equal => {
   // Arrange
   const traversal = new Particle(
     `0
@@ -3594,14 +3594,14 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal.topDownArray.map((node: scrollNotationTypes.treeNode) => node.getLine()).join(" ")
+  const preOrder = traversal.topDownArray.map((node: scrollNotationTypes.particle) => node.getLine()).join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
-    .map((node: scrollNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.particle) => node.getLine())
     .join(" ")
   const breadthfirst = traversal
     .getParentFirstArray()
-    .map((node: scrollNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.particle) => node.getLine())
     .join(" ")
 
   // Assert
@@ -3623,14 +3623,14 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: scrollNotationTypes.treeNode) => node.getLine()).join("")
+  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: scrollNotationTypes.particle) => node.getLine()).join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
-    .map((node: scrollNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.particle) => node.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
     .getChildrenFirstArray()
-    .map((node: scrollNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.particle) => node.getLine())
     .join("")
 
   // Assert
@@ -3639,17 +3639,17 @@ testTree.traverse = equal => {
   equal(wikipostorder, "acedbhigf")
 }
 
-testTree.toOutline = equal => {
+testParticles.toOutline = equal => {
   // AAA
   equal(typeof new Particle(testStrings.every).asOutline, "string")
 }
 
-testTree.fromJsonSubset = equal => {
+testParticles.fromJsonSubset = equal => {
   // AAA
-  equal(Particle.fromJsonSubset(JSON.stringify(testObjects.json2tree)).asString, new Particle(testStrings.json2tree).getNode("docs").childrenToString())
+  equal(Particle.fromJsonSubset(JSON.stringify(testObjects.json2particles)).asString, new Particle(testStrings.json2particles).getNode("docs").childrenToString())
 }
 
-testTree.getFiltered = equal => {
+testParticles.getFiltered = equal => {
   // AAA
   equal(
     new Particle(`a
@@ -3659,12 +3659,12 @@ b
  a
 b
  a
-c`).getFiltered((node: scrollNotationTypes.treeNode) => node.firstWord === "a").length,
+c`).getFiltered((node: scrollNotationTypes.particle) => node.firstWord === "a").length,
     3
   )
 }
 
-testTree.deleteDuplicates = equal => {
+testParticles.deleteDuplicates = equal => {
   // AAA
   equal(
     new Particle(`a
@@ -3679,7 +3679,7 @@ c`).deleteDuplicates().length,
   )
 }
 
-testTree.fromShape = equal => {
+testParticles.fromShape = equal => {
   // AAA
   equal(
     Particle.fromShape([2, 2]).asString,
@@ -3692,40 +3692,40 @@ testTree.fromShape = equal => {
   )
 }
 
-testTree.getFrom = equal => {
+testParticles.getFrom = equal => {
   // Arrange
-  const treeNode = new Particle(
+  const particle = new Particle(
     `name
  string title The book of
  string person Jai`
   )
   // Act/Assert
-  equal(treeNode.nodeAt(0).getFrom("string person"), "Jai")
+  equal(particle.nodeAt(0).getFrom("string person"), "Jai")
 }
 
-testTree.toOutline = equal => {
+testParticles.toOutline = equal => {
   // Arrange
-  const treeNode = new Particle(
+  const particle = new Particle(
     `hello
  world`
   )
 
   // Act/assert
   equal(
-    treeNode.asOutline,
+    particle.asOutline,
     `└hello
  └world
 `
   )
   equal(
-    treeNode.toMappedOutline((node: scrollNotationTypes.treeNode) => "o"),
+    particle.toMappedOutline((node: scrollNotationTypes.particle) => "o"),
     `└o
  └o
 `
   )
 }
 
-testTree.getLineOrChildrenModifiedTime = equal => {
+testParticles.getLineOrChildrenModifiedTime = equal => {
   // Arrange
   const a = new Particle(`text
  foo
@@ -3761,7 +3761,7 @@ some
   equal(b.getLineOrChildrenModifiedTime() > bTime, true, `time increased from ${bTime} to ${b.getLineOrChildrenModifiedTime()}`)
 }
 
-testTree.destroyLoop = equal => {
+testParticles.destroyLoop = equal => {
   // Arrange
   const a = new Particle(`a
  d
@@ -3770,7 +3770,7 @@ b
 c
  d`)
   // Act
-  a.forEach((child: scrollNotationTypes.treeNode) => {
+  a.forEach((child: scrollNotationTypes.particle) => {
     child.destroy()
   })
 
@@ -3778,7 +3778,7 @@ c
   equal(a.length, 0)
 }
 
-testTree.typeTests = equal => {
+testParticles.typeTests = equal => {
   // Arrange
   const a = new Particle("text")
   // Assert
@@ -3786,7 +3786,7 @@ testTree.typeTests = equal => {
   equal(a.lineCellTypes, "undefinedCellType") // todo: make this a constant
 }
 
-testTree.setTests = equal => {
+testParticles.setTests = equal => {
   let base = new Particle(`foo bar`).nodeAt(0)
   equal(base.getWordsAsSet().has("bar"), true)
   equal(base.getWordsAsSet().has("bar2"), false)
@@ -3794,14 +3794,14 @@ testTree.setTests = equal => {
   equal(base.appendWordIfMissing("bam").getWordsAsSet().has("bam"), true, "word should be appended")
 }
 
-testTree.getBiDirectionalMaps = equal => {
+testParticles.getBiDirectionalMaps = equal => {
   const csv = Particle.fromCsv(Particle.iris)
   const maps = csv.getBiDirectionalMaps("species", "sepal_length")
   equal(maps[0]["versicolor"][0], "5.6")
   equal(maps[1]["5.6"][0], "versicolor")
 }
 
-testTree.delimitedTests = equal => {
+testParticles.delimitedTests = equal => {
   let base = new Particle(`foo.csv`).nodeAt(0)
   equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n name,age\n Joe,100`)
 
@@ -3820,7 +3820,7 @@ testTree.delimitedTests = equal => {
   equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Joe,100`]).length, 2)
 }
 
-testTree.printLines = equal => {
+testParticles.printLines = equal => {
   // Arrange
   let lastLogMessage = ""
   const orig = console.log
@@ -3839,7 +3839,7 @@ testTree.printLines = equal => {
   console.log = orig
 }
 
-testTree.with = equal => {
+testParticles.with = equal => {
   // Arrange
   const dummy = new Particle(`0
  color red
@@ -3855,7 +3855,7 @@ testTree.with = equal => {
   equal(dummy.without("score").length, 2)
 }
 
-testTree.extendible = equal => {
+testParticles.extendible = equal => {
   // Arrange
   const a = new ExtendibleParticle(`a
  color red
@@ -3863,17 +3863,17 @@ b
  extends a`)
   // Assert
   equal(
-    a._getFamilyTree().asString,
+    a._getLineage().asString,
     `a
  b`
   )
 }
 
-testTree.toComparison = equal => {
+testParticles.toComparison = equal => {
   equal(new Particle(testStrings.webpage).toComparison(testStrings.webpage).asString.trim().length, 0, "should be equal")
 }
 
-testTree.isBlank = equal => {
+testParticles.isBlank = equal => {
   // Arrange
   const a = new Particle("text\n\ntest \ntest2  ")
   // Assert
@@ -3892,7 +3892,7 @@ testTree.isBlank = equal => {
   equal(a.deleteChildren().length, 0)
 }
 
-testTree.treeNodes = equal => {
+testParticles.particles = equal => {
   // Arrange
   const a = new Particle("text")
   const node = a.nodeAt(0)
@@ -3940,7 +3940,7 @@ testTree.treeNodes = equal => {
   equal(node.has("color"), false)
 }
 
-testTree.mTimeNotIncrementingRegressionTest = equal => {
+testParticles.mTimeNotIncrementingRegressionTest = equal => {
   // Arrange
   const node = new Particle("text").nodeAt(0)
   let lastMTime = node.getLineModifiedTime()
@@ -3956,7 +3956,7 @@ testTree.mTimeNotIncrementingRegressionTest = equal => {
   }
 }
 
-testTree.asyncUndoRedo = async equal => {
+testParticles.asyncUndoRedo = async equal => {
   // Arrange
   const node = new Particle("hello world")
 
@@ -3992,42 +3992,42 @@ testTree.asyncUndoRedo = async equal => {
   equal(node.get("hello"), "earth")
 }
 
-testTree.trim = equal => {
+testParticles.trim = equal => {
   // Arrange/Act/Assert
-  const tree = new Particle("\n\n\n")
-  equal(tree.length, 4)
-  equal(tree.trim().length, 0)
+  const particle = new Particle("\n\n\n")
+  equal(particle.length, 4)
+  equal(particle.trim().length, 0)
 
-  const tree2 = new Particle(testStrings.webpage)
-  equal(tree2.length, tree2.trim().length)
+  const particle2 = new Particle(testStrings.webpage)
+  equal(particle2.length, particle2.trim().length)
 }
 
-testTree.queryMethods = equal => {
+testParticles.queryMethods = equal => {
   // Arrange
-  const tree = <any>Particle.fromCsv(Particle.iris)
+  const particle = <any>Particle.fromCsv(Particle.iris)
 
   // Act/Assert
-  let result = tree.select(["sepal_width", "species"]).where("sepal_width", ">", 3.7)
+  let result = particle.select(["sepal_width", "species"]).where("sepal_width", ">", 3.7)
   equal(result.length, 1)
   equal(result.nodeAt(0).get("species"), "virginica")
 
   // Act/Assert
-  equal(tree.select(["sepal_width"]).length, 10)
-  equal(tree.where("sepal_width", "<", 3.7).length, 8)
-  equal(tree.where("sepal_width", ">=", 3.7).length, 2)
-  equal(tree.where("sepal_width", "<=", 3.7).length, 9)
-  equal(tree.where("sepal_width", "=", 3.7).length, 1)
-  equal(tree.where("sepal_width", "!=", 3.7).length, 9)
-  equal(tree.where("species", "=", "setosa").length, 3)
-  equal(tree.where("sepal_width", "in", [3.7, 3.8]).length, 2, "in test")
-  equal(tree.where("sepal_width", "notIn", [3.7, 3.8]).length, 8, "not in test")
-  equal(tree.where("species", "includes", "vers").length, 1)
-  equal(tree.where("species", "doesNotInclude", "vers").length, 9, "does not include")
-  equal(tree.where("species", "notEmpty").length, 10)
-  equal(tree.where("species", "empty").length, 0)
-  equal(tree.where("foobar", "empty").limit(10).length, 10)
-  equal(tree.where("foobar", "empty").limit(20).length, 10)
-  equal(tree.where("foobar", "empty").where("species", "includes", "vers").length, 1, "nesting works")
+  equal(particle.select(["sepal_width"]).length, 10)
+  equal(particle.where("sepal_width", "<", 3.7).length, 8)
+  equal(particle.where("sepal_width", ">=", 3.7).length, 2)
+  equal(particle.where("sepal_width", "<=", 3.7).length, 9)
+  equal(particle.where("sepal_width", "=", 3.7).length, 1)
+  equal(particle.where("sepal_width", "!=", 3.7).length, 9)
+  equal(particle.where("species", "=", "setosa").length, 3)
+  equal(particle.where("sepal_width", "in", [3.7, 3.8]).length, 2, "in test")
+  equal(particle.where("sepal_width", "notIn", [3.7, 3.8]).length, 8, "not in test")
+  equal(particle.where("species", "includes", "vers").length, 1)
+  equal(particle.where("species", "doesNotInclude", "vers").length, 9, "does not include")
+  equal(particle.where("species", "notEmpty").length, 10)
+  equal(particle.where("species", "empty").length, 0)
+  equal(particle.where("foobar", "empty").limit(10).length, 10)
+  equal(particle.where("foobar", "empty").limit(20).length, 10)
+  equal(particle.where("foobar", "empty").where("species", "includes", "vers").length, 1, "nesting works")
 
   equal(
     new Particle(`boston
@@ -4036,9 +4036,9 @@ testTree.queryMethods = equal => {
     1
   )
 
-  equal(tree.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").nodeAt(0).get("species"), "virginica", "last and first work")
+  equal(particle.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").nodeAt(0).get("species"), "virginica", "last and first work")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
-export { testTree }
+export { testParticles }

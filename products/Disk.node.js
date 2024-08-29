@@ -40,15 +40,15 @@ Disk.isDir = path => fs.statSync(path).isDirectory()
 Disk.getFileName = fileName => path.parse(fileName).base
 Disk.append = (path, content) => fs.appendFileSync(path, content, "utf8")
 Disk.appendAsync = (path, content, callback) => fs.appendFile(path, content, "utf8", callback)
-Disk.readCsvAsTree = path => Disk.getParticle().fromCsv(Disk.read(path))
-Disk.readSsvAsTree = path => Disk.getParticle().fromSsv(Disk.read(path))
-Disk.readTsvAsTree = path => Disk.getParticle().fromTsv(Disk.read(path))
+Disk.readCsvAsParticles = path => Disk.getParticle().fromCsv(Disk.read(path))
+Disk.readSsvAsParticles = path => Disk.getParticle().fromSsv(Disk.read(path))
+Disk.readTsvAsParticles = path => Disk.getParticle().fromTsv(Disk.read(path))
 Disk.insertIntoFile = (path, content, delimiter) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
-Disk.detectAndReadAsTree = path => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
+Disk.detectAndReadAsParticles = path => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
 Disk.getAllOf = (node, prop) => node.filter(node => node.getWord(0) === prop)
-Disk.getDelimitedChildrenAsTree = (node, delimiter = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
+Disk.getDelimitedChildrenAsParticles = (node, delimiter = undefined) => Disk.detectDelimiterAndReadAsParticles(node.childrenToString())
 Disk.sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-Disk.readTree = path => new (Disk.getParticle())(Disk.read(path))
+Disk.readParticles = path => new (Disk.getParticle())(Disk.read(path))
 Disk.sizeOf = path => fs.statSync(path).size
 Disk.stripHtml = text => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
 Disk.stripParentheticals = text => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
@@ -67,7 +67,7 @@ Disk.stickBetween = (content, dest, delimiter) => {
   return [parts[0], content, parts[2]].join(delimiter)
 }
 // todo: move to tree base class
-Disk.detectDelimiterAndReadAsTree = str => {
+Disk.detectDelimiterAndReadAsParticles = str => {
   const line1 = str.split("\n")[0]
   const Particle = Disk.getParticle()
   if (line1.includes("\t")) return Particle.fromTsv(str)
@@ -141,7 +141,7 @@ Disk.buildMapFrom = (tree, key, value) => {
   return map
 }
 Disk.csvToMap = (path, columnName) => {
-  const tree = Disk.readCsvAsTree(path)
+  const tree = Disk.readCsvAsParticles(path)
   const map = {}
   tree.forEach(child => {
     const key = child.get(columnName)

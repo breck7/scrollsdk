@@ -12,7 +12,7 @@ code
  paragraph
   Dumbdown is an alternative to Markdown.
  
- link https://notation.scroll.pub/ It is built on Scroll Notation
+ link https://notation.scroll.pub/ It is built on Particles Notation
  
  code
   alert(`The keyword for code blocks is "code"`)

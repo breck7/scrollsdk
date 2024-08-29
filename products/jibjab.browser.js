@@ -55,7 +55,7 @@ commentCell
 // Line Parsers
 jibberishParser
  root
- description A useless Language built for testing Scroll Notation code.
+ description A useless Language built for testing Particles Notation code.
  javascript
   execute() {
    return 42

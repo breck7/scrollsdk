@@ -49,7 +49,7 @@ operatorCell
 // Line Parsers
 numbersParser
  root
- description A useless Language for testing Scroll Notation features.
+ description A useless Language for testing Particles Notation features.
  inScope abstractArithmeticReducerParser commentParser hashBangParser
  catchAllParser errorParser
  javascript

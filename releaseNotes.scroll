@@ -668,7 +668,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 44.1.0 2019-11-05
 🎉 added stamp command to commandLineApp tool
-🎉 added produceProductFromInstructionParticles and buildBuilder to abstractBuilder
+🎉 added produceProductFromInstructionsParticles and buildBuilder to abstractBuilder
 🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly
 
 📦 44.0.3 2019-11-02

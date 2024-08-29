@@ -1,5 +1,3 @@
-const { Utils } = require("../products/Utils.js")
-const { Particle, ParticleWord, ExtendibleParticle, AbstractExtendibleParticle } = require("../products/Particle.js")
 // Compiled language parsers will include these files:
 const GlobalNamespaceAdditions = {
   Utils: "Utils.js",
@@ -2424,5 +2422,9 @@ class UnknownParsersProgram extends Particle {
   }
 }
 UnknownParsersProgram._childSuffix = "Child"
-
-module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedNode, UnknownParserError, UnknownParsersProgram }
+window.ParsersConstants = ParsersConstants
+window.PreludeCellTypeIds = PreludeCellTypeIds
+window.HandParsersProgram = HandParsersProgram
+window.ParserBackedNode = ParserBackedNode
+window.UnknownParserError = UnknownParserError
+window.UnknownParsersProgram = UnknownParsersProgram

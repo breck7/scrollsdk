@@ -66,7 +66,7 @@ Disk.stickBetween = (content, dest, delimiter) => {
   const parts = dest.split(delimiter)
   return [parts[0], content, parts[2]].join(delimiter)
 }
-// todo: move to tree base class
+// todo: move to particle base class
 Disk.detectDelimiterAndReadAsParticles = str => {
   const line1 = str.split("\n")[0]
   const Particle = Disk.getParticle()
@@ -133,17 +133,17 @@ Disk.downloadJson = async (url, destination) => {
   if (destination) Disk.writeJson(destination, result)
   return result
 }
-Disk.buildMapFrom = (tree, key, value) => {
+Disk.buildMapFrom = (particle, key, value) => {
   const map = {}
-  tree.forEach(child => {
+  particle.forEach(child => {
     map[child.get(key)] = child.get(value)
   })
   return map
 }
 Disk.csvToMap = (path, columnName) => {
-  const tree = Disk.readCsvAsParticles(path)
+  const particle = Disk.readCsvAsParticles(path)
   const map = {}
-  tree.forEach(child => {
+  particle.forEach(child => {
     const key = child.get(columnName)
     map[key] = child.toObject()
   })

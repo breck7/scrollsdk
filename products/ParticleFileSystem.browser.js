@@ -1,11 +1,3 @@
-const fs = require("fs")
-const path = require("path")
-const { Disk } = require("../products/Disk.node.js")
-const { Utils } = require("../products/Utils.js")
-const { Particle } = require("../products/Particle.js")
-const { HandParsersProgram } = require("../products/Parsers.js")
-const parsersParser = require("../products/parsers.nodejs.js")
-const { posix } = require("../products/Path.js")
 const PARSERS_EXTENSION = ".parsers"
 const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
 // A regex to check if a multiline string has a line that starts with "import ".
@@ -209,5 +201,4 @@ class ParticleFileSystem {
     return assembledFile
   }
 }
-
-module.exports = { ParticleFileSystem }
+window.ParticleFileSystem = ParticleFileSystem

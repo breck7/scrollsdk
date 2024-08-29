@@ -140,7 +140,7 @@ class Builder extends Particle {
     this._prettifyFile(outputFilePath)
   }
 
-  produceProductFromInstructionsParticle(productNode: any, projectRootPath: string) {
+  produceProductFromInstructionsParticles(productNode: any, projectRootPath: string) {
     const outputFileName = productNode.get("outputFileName")
     const inputFiles = productNode
       .getNode("combineTypeScriptFiles")
@@ -239,14 +239,14 @@ class Builder extends Particle {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName) return this.produceProductFromInstructionParticles(this._getProductParticles().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
+    if (outputFileName) return this.produceProductFromInstructionsParticles(this._getProductParticles().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
 
     console.log("Available options:\n" + this._getProductParticles().getColumn("outputFileName").join("\n"))
   }
 
   produceAll() {
     this._getProductParticles().forEach((node: any) => {
-      this.produceProductFromInstructionParticles(node, __dirname)
+      this.produceProductFromInstructionsParticles(node, __dirname)
     })
   }
 

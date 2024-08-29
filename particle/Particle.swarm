@@ -6,6 +6,6 @@ test swarm base
    hello world
  getChildren
   assertLengthIs 1
- nodeAt 0
+ particleAt 0
   content
    assertStringIs world

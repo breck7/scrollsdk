@@ -169,7 +169,7 @@ assertTypeIsParser
 abstractArrangeFlagParser
  cells keywordCell
 arrangeAsyncParser
- description Add this flag in the arrange node to test async methods.
+ description Add this flag in the arrange particle to test async methods.
  extends abstractArrangeFlagParser
  crux async
 arrangeRequireParser
@@ -179,13 +179,13 @@ arrangeRequireParser
  catchAllCellType anyCell
 arrangeStaticParser
  crux static
- description Add this to the arrange node to import class directly without initiating it for static method testing.
+ description Add this to the arrange particle to import class directly without initiating it for static method testing.
  extends abstractArrangeFlagParser
 abstractTestBlockParser
  catchAllCellType anyCell
  javascript
   getArrangeParser() {
-   return this.getNode("arrange") || this.parent.getArrangeParser()
+   return this.getParticle("arrange") || this.parent.getArrangeParser()
   }
   setEqualMethod(equal) {
    this._equal = equal
@@ -249,7 +249,7 @@ arrangeParser
    let requiredClass =
     this.get("require") ||
     this.root
-     .getNode("arrange")
+     .getParticle("arrange")
      .get("require")
    const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass
    const requiredFileNameOrClass = requiredClassParts[0]

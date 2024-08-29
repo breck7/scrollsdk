@@ -651,5 +651,4 @@ Utils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
   return range
 }
 Utils.MAX_INT = Math.pow(2, 32) - 1
-
-module.exports = { Utils }
+window.Utils = Utils

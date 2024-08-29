@@ -1,4 +1,14 @@
-// todo Add imports parsers, along with source maps, so we can correctly support parsers split across multiple files, and better enable parsers from compositions of reusable bits?
+{
+  class parsersParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
+        { regex: /^$/, parser: blankLineParser },
+        { regex: /^[a-zA-Z0-9_]+Cell$/, parser: cellTypeDefinitionParser },
+        { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
+      ])
+    }
+    static cachedHandParsersProgramRoot =
+      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support parsers split across multiple files, and better enable parsers from compositions of reusable bits?
 // todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 // todo Add enumOption root level type?
 // todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -14,7 +24,7 @@ javascriptSafeAlphaNumericIdentifierCell
 anyCell
 
 baseParsersCell
- description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error particles always report an error.
+ description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error nodes always report an error.
  // todo Remove?
  enum blobParser errorParser
  paint variable.parameter
@@ -39,9 +49,9 @@ cellTypeIdCell
 constantIdentifierCell
  examples someId myVar
  // todo Extend javascriptSafeAlphaNumericIdentifier
- regex [a-zA-Z]\w+
+ regex [a-zA-Z]\\w+
  paint constant.other
- description A word that can be assigned to the parser in the target language.
+ description A word that can be assigned to the node class in the target language.
 
 constructorFilePathCell
 
@@ -66,11 +76,11 @@ numericCell
  paint constant.numeric
 
 floatCell
- regex \-?[0-9]*\.?[0-9]*
+ regex \\-?[0-9]*\\.?[0-9]*
  paint constant.numeric
 
 intCell
- regex \-?[0-9]+
+ regex \\-?[0-9]+
  paint constant.numeric
 
 javascriptCodeCell
@@ -80,7 +90,7 @@ lowercaseCell
 
 parserIdCell
  examples commentParser addParser
- description This doubles as the class name in Javascript. If this begins with `abstract`, then the parser will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
+ description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
  paint variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes parserIdCell
@@ -103,7 +113,7 @@ scriptUrlCell
 
 semanticVersionCell
  examples 1.0.0 2.2.1
- regex [0-9]+\.[0-9]+\.[0-9]+
+ regex [0-9]+\\.[0-9]+\\.[0-9]+
  paint constant.numeric
 
 stringCell
@@ -155,7 +165,7 @@ abstractCompilerRuleParser
 
 closeChildrenParser
  extends abstractCompilerRuleParser
- description When compiling a parent particle to a string, this string is appended to the compiled and joined children. Default is blank.
+ description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
  cruxFromId
 
 indentCharacterParser
@@ -164,13 +174,13 @@ indentCharacterParser
  cruxFromId
 
 catchAllCellDelimiterParser
- description If a particle has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
+ description If a node has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
  extends abstractCompilerRuleParser
  cruxFromId
 
 openChildrenParser
  extends abstractCompilerRuleParser
- description When compiling a parent particle to a string, this string is prepended to the compiled and joined children. Default is blank.
+ description When compiling a parent node to a string, this string is prepended to the compiled and joined children. Default is blank.
  cruxFromId
 
 stringTemplateParser
@@ -179,7 +189,7 @@ stringTemplateParser
  cruxFromId
 
 joinChildrenWithParser
- description When compiling a parent particle to a string, child particles are compiled to strings and joined by this character. Default is a newline.
+ description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleParser
  cruxFromId
 
@@ -232,7 +242,7 @@ extensionsParser
  extends abstractParserRuleParser
  catchAllCellType fileExtensionCell
  description File extension for your dialect.
- // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root particle's parserId will be used as the default file extension.
+ // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's parserId will be used as the default file extension.
  cruxFromId
  tags deprecate
 
@@ -250,7 +260,7 @@ baseParserParser
 catchAllCellTypeParser
  cells propertyKeywordCell cellTypeIdCell
  description Use for lists.
- // Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the particle's line, parse these words as this type. Often used with `listDelimiterParser`.
+ // Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the node's line, parse these words as this type. Often used with \`listDelimiterParser\`.
  extends abstractParserRuleParser
  cruxFromId
  tags analyzePhase
@@ -265,7 +275,7 @@ cellParserParser
 
 catchAllParserParser
  description Attach this to unmatched lines.
- // If a parser is not found in the inScope list, instantiate this type of particle instead.
+ // If a parser is not found in the inScope list, instantiate this type of node instead.
  cells propertyKeywordCell parserIdCell
  extends abstractParserRuleParser
  cruxFromId
@@ -300,7 +310,7 @@ cellTypeDescriptionParser
  tags assemblePhase
 
 exampleParser
- // todo Should this just be a "string" constant on particles?
+ // todo Should this just be a "string" constant on nodes?
  description Set example for docs and tests.
  catchAllCellType exampleAnyCell
  catchAllParser catchAllExampleLineParser
@@ -340,14 +350,14 @@ javascriptParser
  javascript
   format() {
    if (this.isNodeJs()) {
-    const template = `class FOO{ ${this.childrenToString()}}`
+    const template = \`class FOO{ \${this.childrenToString()}}\`
     this.setChildren(
      require("prettier")
       .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
-      .replace(/class FOO \{\s+/, "")
-      .replace(/\s+\}\s+$/, "")
-      .replace(/\n\t/g, "\n") // drop one level of indent
-      .replace(/\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
+      .replace(/class FOO \\{\\s+/, "")
+      .replace(/\\s+\\}\\s+$/, "")
+      .replace(/\\n\\t/g, "\\n") // drop one level of indent
+      .replace(/\\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
     )
    }
    return this
@@ -355,7 +365,7 @@ javascriptParser
  cruxFromId
 
 abstractParseRuleParser
- // Each particle should have a pattern that it matches on unless it's a catch all particle.
+ // Each node should have a pattern that it matches on unless it's a catch all node.
  extends abstractParserRuleParser
  cruxFromId
 
@@ -403,7 +413,7 @@ uniqueLineParser
 
 uniqueFirstWordParser
  description Assert unique first words. For pattern parsers.
- // For catch all parsers or pattern particles, use this to indicate the 
+ // For catch all parsers or pattern nodes, use this to indicate the 
  extends abstractValidationRuleParser
  tags analyzePhase
 
@@ -417,7 +427,7 @@ listDelimiterParser
 
 contentKeyParser
  description Deprecated. For to/from JSON.
- // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the particle to an object and set a property with this key and the value set to the particle's content.
+ // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
@@ -425,7 +435,7 @@ contentKeyParser
 childrenKeyParser
  // todo: deprecate?
  description Deprecated. For to/from JSON.
- // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the particle to an object and set a property with this key and the value set to the particle's children.
+ // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the node to an object and set a property with this key and the value set to the node's children.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
@@ -556,4 +566,515 @@ extendsCellTypeParser
  // todo Add mixin support in addition to extends?
  cells propertyKeywordCell cellTypeIdCell
  tags assemblePhase
- single
+ single`)
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
+    }
+    static rootParser = parsersParser
+  }
+
+  class blankLineParser extends ParserBackedParticle {
+    get blankCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class abstractCompilerRuleParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get anyCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class closeChildrenParser extends abstractCompilerRuleParser {}
+
+  class indentCharacterParser extends abstractCompilerRuleParser {}
+
+  class catchAllCellDelimiterParser extends abstractCompilerRuleParser {}
+
+  class openChildrenParser extends abstractCompilerRuleParser {}
+
+  class stringTemplateParser extends abstractCompilerRuleParser {}
+
+  class joinChildrenWithParser extends abstractCompilerRuleParser {}
+
+  class abstractConstantParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class booleanParser extends abstractConstantParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get boolCell() {
+      return this.getWordsFrom(2)
+    }
+  }
+
+  class floatParser extends abstractConstantParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get floatCell() {
+      return this.getWordsFrom(2).map(val => parseFloat(val))
+    }
+  }
+
+  class intParser extends abstractConstantParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get intCell() {
+      return this.getWordsFrom(2).map(val => parseInt(val))
+    }
+  }
+
+  class stringParser extends abstractConstantParser {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+    }
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get stringCell() {
+      return this.getWordsFrom(2)
+    }
+  }
+
+  class abstractParserRuleParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class compilesToParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get fileExtensionCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class extensionsParser extends abstractParserRuleParser {
+    get fileExtensionCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class abstractNonTerminalParserRuleParser extends abstractParserRuleParser {}
+
+  class baseParserParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get baseParsersCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class catchAllCellTypeParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellParserParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellParserCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class catchAllParserParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get parserIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellsParser extends abstractParserRuleParser {
+    get cellTypeIdCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class compilerParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(
+        undefined,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          closeChildren: closeChildrenParser,
+          indentCharacter: indentCharacterParser,
+          catchAllCellDelimiter: catchAllCellDelimiterParser,
+          openChildren: openChildrenParser,
+          stringTemplate: stringTemplateParser,
+          joinChildrenWith: joinChildrenWithParser
+        }),
+        undefined
+      )
+    }
+  }
+
+  class parserDescriptionParser extends abstractParserRuleParser {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class cellTypeDescriptionParser extends ParserBackedParticle {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class exampleParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+    }
+    get exampleAnyCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class extendsParserParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get parserIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class popularityParser extends abstractParserRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get floatCell() {
+      return parseFloat(this.getWord(1))
+    }
+  }
+
+  class inScopeParser extends abstractParserRuleParser {
+    get parserIdCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class javascriptParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+    }
+    format() {
+      if (this.isNodeJs()) {
+        const template = `class FOO{ ${this.childrenToString()}}`
+        this.setChildren(
+          require("prettier")
+            .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
+            .replace(/class FOO \{\s+/, "")
+            .replace(/\s+\}\s+$/, "")
+            .replace(/\n\t/g, "\n") // drop one level of indent
+            .replace(/\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
+        )
+      }
+      return this
+    }
+  }
+
+  class abstractParseRuleParser extends abstractParserRuleParser {}
+
+  class cruxParser extends abstractParseRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get stringCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cruxFromIdParser extends abstractParseRuleParser {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class patternParser extends abstractParseRuleParser {
+    get regexCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class requiredParser extends abstractParserRuleParser {}
+
+  class abstractValidationRuleParser extends abstractParserRuleParser {
+    get boolCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class singleParser extends abstractValidationRuleParser {}
+
+  class uniqueLineParser extends abstractValidationRuleParser {}
+
+  class uniqueFirstWordParser extends abstractValidationRuleParser {}
+
+  class listDelimiterParser extends abstractParserRuleParser {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class contentKeyParser extends abstractParserRuleParser {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class childrenKeyParser extends abstractParserRuleParser {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class tagsParser extends abstractParserRuleParser {
+    get tagCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class catchAllErrorParser extends ParserBackedParticle {
+    getErrors() {
+      return this._getErrorParserErrors()
+    }
+  }
+
+  class catchAllExampleLineParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+    }
+    get exampleAnyCell() {
+      return this.getWord(0)
+    }
+    get exampleAnyCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class catchAllJavascriptCodeLineParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+    }
+    get javascriptCodeCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class catchAllMultilineStringConstantParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+    }
+    get stringCell() {
+      return this.getWord(0)
+    }
+    get stringCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class cellTypeDefinitionParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(
+        undefined,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          description: cellTypeDescriptionParser,
+          enumFromCellTypes: enumFromCellTypesParser,
+          enum: enumParser,
+          examples: examplesParser,
+          min: cellMinParser,
+          max: cellMaxParser,
+          paint: paintParser,
+          regex: regexParser,
+          reservedWords: reservedWordsParser,
+          "//": slashCommentParser,
+          extends: extendsCellTypeParser
+        }),
+        undefined
+      )
+    }
+    get cellTypeIdCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class enumFromCellTypesParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class enumParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get enumOptionCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class examplesParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get cellExampleCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class cellMinParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get numericCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellMaxParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get numericCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class paintParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get paintTypeCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class rootFlagParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class parserDefinitionParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(
+        catchAllErrorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          boolean: booleanParser,
+          float: floatParser,
+          int: intParser,
+          string: stringParser,
+          compilesTo: compilesToParser,
+          extensions: extensionsParser,
+          baseParser: baseParserParser,
+          catchAllCellType: catchAllCellTypeParser,
+          cellParser: cellParserParser,
+          catchAllParser: catchAllParserParser,
+          cells: cellsParser,
+          compiler: compilerParser,
+          description: parserDescriptionParser,
+          example: exampleParser,
+          extends: extendsParserParser,
+          popularity: popularityParser,
+          inScope: inScopeParser,
+          javascript: javascriptParser,
+          crux: cruxParser,
+          cruxFromId: cruxFromIdParser,
+          pattern: patternParser,
+          required: requiredParser,
+          single: singleParser,
+          uniqueLine: uniqueLineParser,
+          uniqueFirstWord: uniqueFirstWordParser,
+          listDelimiter: listDelimiterParser,
+          contentKey: contentKeyParser,
+          childrenKey: childrenKeyParser,
+          tags: tagsParser,
+          root: rootFlagParser,
+          "//": slashCommentParser
+        }),
+        [{ regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }]
+      )
+    }
+    get parserIdCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class regexParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get regexCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class reservedWordsParser extends ParserBackedParticle {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get reservedWordCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class commentLineParser extends ParserBackedParticle {
+    get commentCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class slashCommentParser extends ParserBackedParticle {
+    createParserCombinator() {
+      return new Particle.ParserCombinator(commentLineParser, undefined, undefined)
+    }
+    get commentCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class extendsCellTypeParser extends ParserBackedParticle {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  window.parsersParser = parsersParser
+}

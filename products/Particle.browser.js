@@ -1,10 +1,20 @@
+let _scrollsdkLatestTime = 0
+let _scrollsdkMinTimeIncrement = 0.000000000001
 class AbstractParticle {
   _getProcessTimeInMilliseconds() {
-    const hrtime = process.hrtime()
-    return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
+    // We add this loop to restore monotonically increasing .now():
+    // https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+    let time = performance.now()
+    while (time <= _scrollsdkLatestTime) {
+      if (time === time + _scrollsdkMinTimeIncrement)
+        // Some browsers have different return values for perf.now()
+        _scrollsdkMinTimeIncrement = 10 * _scrollsdkMinTimeIncrement
+      time += _scrollsdkMinTimeIncrement
+    }
+    _scrollsdkLatestTime = time
+    return time
   }
 }
-const { Utils } = require("../products/Utils.js")
 var FileFormat
 ;(function (FileFormat) {
   FileFormat["csv"] = "csv"
@@ -2624,5 +2634,8 @@ class ExtendibleParticle extends AbstractExtendibleParticle {
     return this.getWord(0)
   }
 }
-
-module.exports = { Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
+window.Particle = Particle
+window.ExtendibleParticle = ExtendibleParticle
+window.AbstractExtendibleParticle = AbstractExtendibleParticle
+window.ParticleEvents = ParticleEvents
+window.ParticleWord = ParticleWord

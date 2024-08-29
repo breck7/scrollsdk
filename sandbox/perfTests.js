@@ -17,10 +17,10 @@ thisShouldErrorError1
 to fillThis`
   const code = new Particle(programCode)
   let long = Particle.toString().repeat(20)
-  code.getNode("text").setChildren(long)
+  code.getParticle("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
-  code.getNode("to").setChildren(long.trim())
+  code.getParticle("to").setChildren(long.trim())
   return code
 }
 

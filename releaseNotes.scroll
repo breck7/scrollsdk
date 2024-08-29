@@ -1780,9 +1780,9 @@ code
 ⚠️ removed tree setText...do tree.touchNode().setTailWithChildren(text)
 ⚠️ removed tree setTree...do tree.touchNode().setChildren()
 ⚠️ removed tree setTail...do tree.touchNode().setTail()
-⚠️ removed tree getTail...do tree.getNode(path).getTail()
-⚠️ removed tree getTree...do tree.getNode(path).getTree()
-⚠️ removed tree getText...do tree.getNode(path).getText()
+⚠️ removed tree getTail...do tree.getParticle(path).getTail()
+⚠️ removed tree getTree...do tree.getParticle(path).getTree()
+⚠️ removed tree getText...do tree.getParticle(path).getText()
 ⚠️ node setTree is now node setChildren
 ⚠️ append now takes only 2 params, line and tree.
 ⚠️ appendLine is now just append

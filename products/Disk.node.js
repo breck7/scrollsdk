@@ -45,8 +45,8 @@ Disk.readSsvAsParticles = path => Disk.getParticle().fromSsv(Disk.read(path))
 Disk.readTsvAsParticles = path => Disk.getParticle().fromTsv(Disk.read(path))
 Disk.insertIntoFile = (path, content, delimiter) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
 Disk.detectAndReadAsParticles = path => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
-Disk.getAllOf = (node, prop) => node.filter(node => node.getWord(0) === prop)
-Disk.getDelimitedChildrenAsParticles = (node, delimiter = undefined) => Disk.detectDelimiterAndReadAsParticles(node.childrenToString())
+Disk.getAllOf = (particle, prop) => particle.filter(particle => particle.getWord(0) === prop)
+Disk.getDelimitedChildrenAsParticles = (particle, delimiter = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.childrenToString())
 Disk.sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 Disk.readParticles = path => new (Disk.getParticle())(Disk.read(path))
 Disk.sizeOf = path => fs.statSync(path).size
@@ -77,17 +77,17 @@ Disk.detectDelimiterAndReadAsParticles = str => {
   // todo: add more robust. align with choose delimiter
   return Particle.fromSsv(str)
 }
-Disk.deleteDuplicates = (node, prop1, prop2, reverse = false) => {
+Disk.deleteDuplicates = (particle, prop1, prop2, reverse = false) => {
   const map = {}
-  Disk.getAllOf(node, prop1).forEach(node => {
-    const val = node.get(prop2)
+  Disk.getAllOf(particle, prop1).forEach(particle => {
+    const val = particle.get(prop2)
     console.log(val)
     if (map[val] && reverse) {
       map[val].destroy()
-      map[val] = node
+      map[val] = particle
     } else if (map[val]) {
-      node.destroy()
-    } else map[val] = node
+      particle.destroy()
+    } else map[val] = particle
   })
 }
 // todo: remove.
@@ -102,9 +102,9 @@ Disk.appendUniqueLine = (path, line) => {
   const prefix = !file || file.endsWith("\n") ? "" : "\n"
   return Disk.append(path, prefix + line + "\n")
 }
-Disk.move = (node, newPosition) => {
-  node.parent.insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
-  node.destroy()
+Disk.move = (particle, newPosition) => {
+  particle.parent.insertLineAndChildren(particle.getLine(), particle.childrenToString(), newPosition)
+  particle.destroy()
 }
 Disk._getTextUrl = async url => {
   // todo: https://visionmedia.github.io/superagent/

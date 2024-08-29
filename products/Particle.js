@@ -2552,13 +2552,13 @@ class AbstractExtendibleParticle extends Particle {
     return hit ? hit.get(firstWordPath) : undefined
   }
   _getLineage() {
-    const particle = new Particle()
+    const newParticle = new Particle()
     this.forEach(particle => {
       const path = particle._getAncestorsArray().map(particle => particle.id)
       path.reverse()
-      particle.touchParticle(path.join(TN_EDGE_SYMBOL))
+      newParticle.touchParticle(path.join(TN_EDGE_SYMBOL))
     })
-    return particle
+    return newParticle
   }
   // todo: be more specific with the param
   _getChildrenByParserInExtended(parser) {

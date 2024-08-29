@@ -1231,11 +1231,11 @@ testParticles.getLine = equal => {
   const mtime = particle2.getLineModifiedTime() || 0
   // Assert
   equal(particle2.getLine(), "hello world")
-  equal(particle2.has("hello"), true)
+  equal(particle.has("hello"), true)
   // Act
   particle2.setLine("hi earth")
   // Assert
-  equal(particle2.asString, "hi earth")
+  equal(particle.asString, "hi earth")
   equal(particle2.getLineModifiedTime() > mtime, true)
   equal(particle.has("hello"), false)
 }

@@ -259,7 +259,7 @@ class ParserBackedNode extends Particle {
     const particle = new Particle(this.toCellTypeParticles())
     return new Particle(
       particle.topDownArray.map((node, lineNumber) => {
-        const sourceNode = this.nodeAtLine(lineNumber)
+        const sourceNode = this.particleAtLine(lineNumber)
         const errs = sourceNode.getErrors()
         const errorCount = errs.length
         const obj = {
@@ -302,7 +302,7 @@ class ParserBackedNode extends Particle {
     this._getAllAutoCompleteWords().forEach(hole => {
       hole.suggestions.forEach((suggestion, index) => {
         if (!particles[index + 1]) particles[index + 1] = filled.clone()
-        particles[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
+        particles[index + 1].particleAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
       })
     })
     return new Particle(particles)
@@ -316,7 +316,7 @@ class ParserBackedNode extends Particle {
     ).asTable
   }
   getAutocompleteResultsAt(lineIndex, charIndex) {
-    const lineNode = this.nodeAtLine(lineIndex) || this
+    const lineNode = this.particleAtLine(lineIndex) || this
     const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex)
     // todo: add more tests
     // todo: second param this.childrenToString()
@@ -2288,7 +2288,7 @@ class UnknownParsersProgram extends Particle {
       .filter(identity => identity)
       .map(word => HandParsersProgram.makeParserId(word))
     rootNode
-      .nodeAt(0)
+      .particleAt(0)
       .touchNode(ParsersConstants.inScope)
       .setWordsFrom(1, Array.from(new Set(rootNodeNames)))
     return rootNode
@@ -2316,7 +2316,7 @@ class UnknownParsersProgram extends Particle {
   _inferParserDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstWord)
-    const nodeDefNode = new Particle(parserId).nodeAt(0)
+    const nodeDefNode = new Particle(parserId).particleAt(0)
     const childParserIds = childFirstWords.map(word => HandParsersProgram.makeParserId(word))
     if (childParserIds.length) nodeDefNode.touchNode(ParsersConstants.inScope).setWordsFrom(1, childParserIds)
     const cellsForAllInstances = instances
@@ -2362,7 +2362,7 @@ class UnknownParsersProgram extends Particle {
   //    // note: right now we assume 1 global cellTypeMap and parserMap per parsers. But we may have scopes in the future?
   //    const rootNodeNames = this.getFirstWords().map(word => HandParsersProgram.makeParserId(word))
   //    rootNode
-  //      .nodeAt(0)
+  //      .particleAt(0)
   //      .touchNode(ParsersConstants.inScope)
   //      .setWordsFrom(1, Array.from(new Set(rootNodeNames)))
   //    return rootNode

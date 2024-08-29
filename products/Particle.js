@@ -173,7 +173,7 @@ class Particle extends AbstractParticle {
       yield* child.getTopDownArrayIterator()
     }
   }
-  nodeAtLine(lineNumber) {
+  particleAtLine(lineNumber) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return node
@@ -487,7 +487,7 @@ class Particle extends AbstractParticle {
     return (content ? content : "") + (this.length ? this.nodeBreakSymbol + this._childrenToString() : "")
   }
   getFirstNode() {
-    return this.nodeAt(0)
+    return this.particleAt(0)
   }
   getStack() {
     return this._getStack()
@@ -625,7 +625,7 @@ class Particle extends AbstractParticle {
         .toString()
         .split(nodeBreakSymbol)
         .forEach((line, index) => {
-          const node = clone.nodeAtLine(index)
+          const node = clone.particleAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
         })
     }
@@ -798,17 +798,17 @@ class Particle extends AbstractParticle {
   get length() {
     return this._getChildrenArray().length
   }
-  _nodeAt(index) {
+  _particleAt(index) {
     if (index < 0) index = this.length + index
     return this._getChildrenArray()[index]
   }
-  nodeAt(indexOrIndexArray) {
-    if (typeof indexOrIndexArray === "number") return this._nodeAt(indexOrIndexArray)
-    if (indexOrIndexArray.length === 1) return this._nodeAt(indexOrIndexArray[0])
+  particleAt(indexOrIndexArray) {
+    if (typeof indexOrIndexArray === "number") return this._particleAt(indexOrIndexArray)
+    if (indexOrIndexArray.length === 1) return this._particleAt(indexOrIndexArray[0])
     const first = indexOrIndexArray[0]
-    const node = this._nodeAt(first)
+    const node = this._particleAt(first)
     if (!node) return undefined
-    return node.nodeAt(indexOrIndexArray.slice(1))
+    return node.particleAt(indexOrIndexArray.slice(1))
   }
   // Flatten a particle into an object like {twitter:"pldb", "twitter.followers":123}.
   // Assumes you have a nested key/value list with no multiline strings.
@@ -1001,7 +1001,7 @@ class Particle extends AbstractParticle {
   pick(fields) {
     const newParticle = new Particle(this.toString()) // todo: why not clone?
     const map = Utils.arrayToMap(fields)
-    newParticle.nodeAt(0).forEach(node => {
+    newParticle.particleAt(0).forEach(node => {
       if (!map[node.getWord(0)]) node.destroy()
     })
     return newParticle
@@ -1028,7 +1028,7 @@ class Particle extends AbstractParticle {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) {
       const index = this.indexOfLast(firstWordPath)
-      return index === -1 ? undefined : this._nodeAt(index)
+      return index === -1 ? undefined : this._particleAt(index)
     }
     const parts = firstWordPath.split(edgeSymbol)
     const current = parts.shift()
@@ -1100,8 +1100,8 @@ class Particle extends AbstractParticle {
     let node = this
     while (path.length) {
       if (!node) return names
-      names.push(node.nodeAt(path[0]).firstWord)
-      node = node.nodeAt(path.shift())
+      names.push(node.particleAt(path[0]).firstWord)
+      node = node.particleAt(path.shift())
     }
     return names
   }
@@ -2151,7 +2151,7 @@ class Particle extends AbstractParticle {
     const parent = this.parent
     const index = this.getIndex()
     const newNodes = new Particle(text)
-    const firstNode = newNodes.nodeAt(0)
+    const firstNode = newNodes.particleAt(0)
     if (firstNode) {
       this.setLine(firstNode.getLine())
       if (firstNode.length) this.setChildren(firstNode.childrenToString())

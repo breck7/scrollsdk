@@ -12,7 +12,7 @@
     async executeSeries(parentDir) {
       const length = this.length
       for (let index = 0; index < length; index++) {
-        const node = this.nodeAt(index)
+        const node = this.particleAt(index)
         await node.execute(parentDir)
       }
       return parentDir
@@ -109,7 +109,7 @@ stampParser
   async executeSeries(parentDir) {
    const length = this.length
    for (let index = 0; index < length; index++) {
-    const node = this.nodeAt(index)
+    const node = this.particleAt(index)
     await node.execute(parentDir)
    }
    return parentDir

@@ -55,8 +55,8 @@ The ScrollSDK currently includes a number of libraries and apps to use (scripts 
 code
  // Currently still called Particle, but will be renamed ScrollNode in a future update.
  const {Particle} = require("scrollsdk/products/Particle.js")
- const tree = new Particle("hello world")
- console.log(tree.asString)
+ const particle = new Particle("hello world")
+ console.log(particle.asString)
 
 # Basic Scroll Notation Library + Parsers for the browser:
 code

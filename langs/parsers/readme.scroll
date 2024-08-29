@@ -49,7 +49,7 @@ thinColumns 2
 - Other protocols may be supported such as `https://` imports and perhaps something like `node_modules://`
 
 ## Dependent Types
-- The inScope parsers could change based upon current values of the tree. For example, you might have a tree language where if you set `type website` certain parsers would come into/out of scope.
+- The inScope parsers could change based upon current values of the particle. For example, you might have parsers where if you set `type website` certain parsers would come into/out of scope.
 - Scope Refactor. As part of the dependent type work the `inScope` implementation may undergo a refactor to allow for further future possibilities. For example, we may want to consider alternate approaches to `inScope` than the current inheritance system.
 
 ## Union Cell Types

@@ -52,9 +52,9 @@ swarmParser
    return this.getChildInstancesOfParserId("arrangeParser")[0]
   }
   async execute(filepath) {
-   const tree = new TestRacer(this.compileToRacer(filepath))
-   await tree.execute()
-   return tree.finish()
+   const particle = new TestRacer(this.compileToRacer(filepath))
+   await particle.execute()
+   return particle.finish()
   }
   compileToRacer(filepath) {
    const testBlocks = {}

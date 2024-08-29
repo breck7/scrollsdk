@@ -624,7 +624,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ PCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
 ⚠️ PCF: no longer exports WillowConstants
 ⚠️ PCF: getWillowProgram is now getWillowBrowser
-⚠️ PCF: isLoaded() is now checked before calling treeComponentDidUpdate and treeComponentDidMount
+⚠️ PCF: isLoaded() is now checked before calling particleComponentDidUpdate and particleComponentDidMount
 ⚠️ Stump: stumpCollapse is now collapse
 ⚠️ Stump: removed stumpNoOp. Empty lines are fine now.
 
@@ -861,7 +861,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
-🧹 added basic tests for trueBase and made sure treeComponent framework test getting run
+🧹 added basic tests for trueBase and made sure particleComponent framework test getting run
 🧹 moved repo from breck7/jtree to treenotation/jtree
 
 📦 35.1.0 2019-07-25

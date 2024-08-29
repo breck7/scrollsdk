@@ -199,11 +199,11 @@ htmlTagParser
   }
   // todo: should not be here
   getStumpNodeParticleComponent() {
-   return this._treeComponent || this.parent.getStumpNodeParticleComponent()
+   return this._particleComponent || this.parent.getStumpNodeParticleComponent()
   }
   // todo: should not be here
-  setStumpNodeParticleComponent(treeComponent) {
-   this._treeComponent = treeComponent
+  setStumpNodeParticleComponent(particleComponent) {
+   this._particleComponent = particleComponent
    return this
   }
   getStumpNodeCss(prop) {

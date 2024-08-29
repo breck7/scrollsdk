@@ -9,7 +9,7 @@ thinColumns 2
 
 *Scroll Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
 
-A _Scroll Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
+A _Scroll Notation_ program is a string, a particle, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 
 *Parsers* is a language built on top of Scroll Notation for building other languages. This tutorial walks you through building a very simple language in _Parsers_.
 

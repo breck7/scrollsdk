@@ -33,7 +33,7 @@ nodeProduct
 nodeProduct
  outputFileName ParticleFileSystem.js
  insertLastLine module.exports = {ParticleFileSystem}
- combineTypeScriptFiles treeFileSystem/ParticleFileSystem.ts
+ combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
 nodeProduct
  outputFileName Kitchen.node.js
  combineTypeScriptFiles products/scrollNotationTypes.ts kitchen/Kitchen.node.ts
@@ -62,7 +62,7 @@ browserProduct
  combineTypeScriptFiles utils/Utils.ts
 browserProduct
  outputFileName ParticleFileSystem.browser.js
- combineTypeScriptFiles treeFileSystem/ParticleFileSystem.ts
+ combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
 browserProduct
  outputFileName Particle.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes

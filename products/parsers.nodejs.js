@@ -3,9 +3,9 @@
   const { Utils } = require("./Utils.js")
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
-  const { ParserBackedNode } = require("./Parsers.js")
+  const { ParserBackedParticle } = require("./Parsers.js")
 
-  class parsersParser extends ParserBackedNode {
+  class parsersParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
@@ -579,13 +579,13 @@ extendsCellTypeParser
     static rootParser = parsersParser
   }
 
-  class blankLineParser extends ParserBackedNode {
+  class blankLineParser extends ParserBackedParticle {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class abstractCompilerRuleParser extends ParserBackedNode {
+  class abstractCompilerRuleParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -606,7 +606,7 @@ extendsCellTypeParser
 
   class joinChildrenWithParser extends abstractCompilerRuleParser {}
 
-  class abstractConstantParser extends ParserBackedNode {
+  class abstractConstantParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -663,7 +663,7 @@ extendsCellTypeParser
     }
   }
 
-  class abstractParserRuleParser extends ParserBackedNode {
+  class abstractParserRuleParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -751,7 +751,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellTypeDescriptionParser extends ParserBackedNode {
+  class cellTypeDescriptionParser extends ParserBackedParticle {
     get stringCell() {
       return this.getWordsFrom(0)
     }
@@ -871,13 +871,13 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllErrorParser extends ParserBackedNode {
+  class catchAllErrorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class catchAllExampleLineParser extends ParserBackedNode {
+  class catchAllExampleLineParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
@@ -889,7 +889,7 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllJavascriptCodeLineParser extends ParserBackedNode {
+  class catchAllJavascriptCodeLineParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
@@ -898,7 +898,7 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllMultilineStringConstantParser extends ParserBackedNode {
+  class catchAllMultilineStringConstantParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
@@ -910,7 +910,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellTypeDefinitionParser extends ParserBackedNode {
+  class cellTypeDefinitionParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
@@ -935,7 +935,7 @@ extendsCellTypeParser
     }
   }
 
-  class enumFromCellTypesParser extends ParserBackedNode {
+  class enumFromCellTypesParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -944,7 +944,7 @@ extendsCellTypeParser
     }
   }
 
-  class enumParser extends ParserBackedNode {
+  class enumParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -953,7 +953,7 @@ extendsCellTypeParser
     }
   }
 
-  class examplesParser extends ParserBackedNode {
+  class examplesParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -962,7 +962,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellMinParser extends ParserBackedNode {
+  class cellMinParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -971,7 +971,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellMaxParser extends ParserBackedNode {
+  class cellMaxParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -980,7 +980,7 @@ extendsCellTypeParser
     }
   }
 
-  class paintParser extends ParserBackedNode {
+  class paintParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -989,13 +989,13 @@ extendsCellTypeParser
     }
   }
 
-  class rootFlagParser extends ParserBackedNode {
+  class rootFlagParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class parserDefinitionParser extends ParserBackedNode {
+  class parserDefinitionParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(
         catchAllErrorParser,
@@ -1040,7 +1040,7 @@ extendsCellTypeParser
     }
   }
 
-  class regexParser extends ParserBackedNode {
+  class regexParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -1049,7 +1049,7 @@ extendsCellTypeParser
     }
   }
 
-  class reservedWordsParser extends ParserBackedNode {
+  class reservedWordsParser extends ParserBackedParticle {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -1058,13 +1058,13 @@ extendsCellTypeParser
     }
   }
 
-  class commentLineParser extends ParserBackedNode {
+  class commentLineParser extends ParserBackedParticle {
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class slashCommentParser extends ParserBackedNode {
+  class slashCommentParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(commentLineParser, undefined, undefined)
     }
@@ -1073,7 +1073,7 @@ extendsCellTypeParser
     }
   }
 
-  class extendsCellTypeParser extends ParserBackedNode {
+  class extendsCellTypeParser extends ParserBackedParticle {
     get propertyKeywordCell() {
       return this.getWord(0)
     }

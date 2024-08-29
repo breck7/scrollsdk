@@ -15,8 +15,8 @@ const TN_WORD_BREAK_SYMBOL = " "
 const TN_EDGE_SYMBOL = " "
 const TN_NODE_BREAK_SYMBOL = "\n"
 class AbstractParticleEvent {
-  constructor(targetNode) {
-    this.targetNode = targetNode
+  constructor(targetParticle) {
+    this.targetParticle = targetParticle
   }
 }
 class ChildAddedParticleEvent extends AbstractParticleEvent {}
@@ -77,14 +77,14 @@ class ParserCombinator {
     }
     return obj
   }
-  _getParser(line, contextNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL) {
-    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
+  _getParser(line, contextParticle, wordBreakSymbol = TN_WORD_BREAK_SYMBOL) {
+    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
-  _getCatchAllParser(contextNode) {
+  _getCatchAllParser(contextParticle) {
     if (this._catchAllParser) return this._catchAllParser
-    const parent = contextNode.parent
+    const parent = contextParticle.parent
     if (parent) return parent._getParser()._getCatchAllParser(parent)
-    return contextNode.constructor
+    return contextParticle.constructor
   }
   _getParserFromRegexTests(line) {
     if (!this._regexTests) return undefined
@@ -232,11 +232,11 @@ class Particle extends AbstractParticle {
     return relativeTo === this || !this.parent
   }
   get root() {
-    return this._getRootNode()
+    return this._getRootParticle()
   }
-  _getRootNode(relativeTo) {
+  _getRootParticle(relativeTo) {
     if (this.isRoot(relativeTo)) return this
-    return this.parent._getRootNode(relativeTo)
+    return this.parent._getRootParticle(relativeTo)
   }
   toString(indentCount = 0, language = this) {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
@@ -339,7 +339,7 @@ class Particle extends AbstractParticle {
   patch(two) {
     const copy = this.clone()
     two.forEach(node => {
-      const hit = copy.getNode(node.getWord(0))
+      const hit = copy.getParticle(node.getWord(0))
       if (hit) hit.destroy()
     })
     copy.concat(two)
@@ -384,7 +384,7 @@ class Particle extends AbstractParticle {
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
     return indentPosition + this.words.slice(0, wordIndex).join(this.wordBreakSymbol).length + this.wordBreakSymbol.length
   }
-  getNodeInScopeAtCharIndex(charIndex) {
+  getParticleInScopeAtCharIndex(charIndex) {
     if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
@@ -486,7 +486,7 @@ class Particle extends AbstractParticle {
     const content = this.content
     return (content ? content : "") + (this.length ? this.nodeBreakSymbol + this._childrenToString() : "")
   }
-  getFirstNode() {
+  getFirstParticle() {
     return this.particleAt(0)
   }
   getStack() {
@@ -547,7 +547,7 @@ class Particle extends AbstractParticle {
     return path
   }
   getIndex() {
-    return this.parent._indexOfNode(this)
+    return this.parent._indexOfParticle(this)
   }
   isTerminal() {
     return !this.length
@@ -574,10 +574,10 @@ class Particle extends AbstractParticle {
     const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.contentWithChildren : content
     return [this.firstWord, tupleValue]
   }
-  _indexOfNode(needleNode) {
+  _indexOfParticle(needleParticle) {
     let result = -1
     this.find((node, index) => {
-      if (node === needleNode) {
+      if (node === needleParticle) {
         result = index
         return true
       }
@@ -664,13 +664,13 @@ class Particle extends AbstractParticle {
   hasWord(index, word) {
     return this.getWord(index) === word
   }
-  getNodeByColumns(...columns) {
+  getParticleByColumns(...columns) {
     return this.topDownArray.find(node => node._hasColumns(columns))
   }
-  getNodeByColumn(index, name) {
+  getParticleByColumn(index, name) {
     return this.find(node => node.getWord(index) === name)
   }
-  _getNodesByColumn(index, name) {
+  _getParticlesByColumn(index, name) {
     return this.filter(node => node.getWord(index) === name)
   }
   // todo: preserve subclasses!
@@ -680,22 +680,22 @@ class Particle extends AbstractParticle {
     this.forEach(node => {
       const particle = result.appendLine(node.getLine())
       columnNames.forEach(name => {
-        const valueNode = node.getNode(name)
-        if (valueNode) particle.appendNode(valueNode)
+        const valueParticle = node.getParticle(name)
+        if (valueParticle) particle.appendParticle(valueParticle)
       })
     })
     return result
   }
   selectionToString() {
-    return this.getSelectedNodes()
+    return this.getSelectedParticles()
       .map(node => node.toString())
       .join("\n")
   }
-  getSelectedNodes() {
+  getSelectedParticles() {
     return this.topDownArray.filter(node => node.isSelected())
   }
   clearSelection() {
-    this.getSelectedNodes().forEach(node => node.unselectNode())
+    this.getSelectedParticles().forEach(node => node.unselectParticle())
   }
   // Note: this is for debugging select chains
   print(message = "") {
@@ -728,7 +728,7 @@ class Particle extends AbstractParticle {
     }
     const result = new Particle()
     this.filter(fn).forEach(node => {
-      result.appendNode(node)
+      result.appendParticle(node)
     })
     return result
   }
@@ -750,7 +750,7 @@ class Particle extends AbstractParticle {
     this.getChildren()
       .slice(offset, quantity + offset)
       .forEach(node => {
-        result.appendNode(node)
+        result.appendParticle(node)
       })
     return result
   }
@@ -874,7 +874,7 @@ class Particle extends AbstractParticle {
     return this._childrenToXml(0)
   }
   toDisk(path) {
-    if (!this.isNodeJs()) throw new Error("This method only works in Node.js")
+    if (!this.isNodeJs()) throw new Error("This method only works in Particle.js")
     const format = Particle._getFileFormat(path)
     const formats = {
       particles: particle => particle.toString(),
@@ -951,7 +951,7 @@ class Particle extends AbstractParticle {
   get asGridJson() {
     return JSON.stringify(this.asGrid, null, 2)
   }
-  findNodes(firstWordPath) {
+  findParticles(firstWordPath) {
     // todo: can easily speed this up
     const map = {}
     if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
@@ -980,15 +980,15 @@ class Particle extends AbstractParticle {
       })
     return clone
   }
-  getNode(firstWordPath) {
-    return this._getNodeByPath(firstWordPath)
+  getParticle(firstWordPath) {
+    return this._getParticleByPath(firstWordPath)
   }
   getFrom(prefix) {
     const hit = this.filter(node => node.getLine().startsWith(prefix))[0]
     if (hit) return hit.getLine().substr((prefix + this.wordBreakSymbol).length)
   }
   get(firstWordPath) {
-    const node = this._getNodeByPath(firstWordPath)
+    const node = this._getParticleByPath(firstWordPath)
     return node === undefined ? undefined : node.content
   }
   getOneOf(keys) {
@@ -1006,10 +1006,10 @@ class Particle extends AbstractParticle {
     })
     return newParticle
   }
-  getNodesByGlobPath(query) {
-    return this._getNodesByGlobPath(query)
+  getParticlesByGlobPath(query) {
+    return this._getParticlesByGlobPath(query)
   }
-  _getNodesByGlobPath(globPath) {
+  _getParticlesByGlobPath(globPath) {
     const edgeSymbol = this.edgeSymbol
     if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getChildren()
@@ -1018,13 +1018,13 @@ class Particle extends AbstractParticle {
     const parts = globPath.split(edgeSymbol)
     const current = parts.shift()
     const rest = parts.join(edgeSymbol)
-    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.firstWord === current)
+    const matchingParticles = current === "*" ? this.getChildren() : this.filter(child => child.firstWord === current)
     return [].concat.apply(
       [],
-      matchingNodes.map(node => node._getNodesByGlobPath(rest))
+      matchingParticles.map(node => node._getParticlesByGlobPath(rest))
     )
   }
-  _getNodeByPath(firstWordPath) {
+  _getParticleByPath(firstWordPath) {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) {
       const index = this.indexOfLast(firstWordPath)
@@ -1032,8 +1032,8 @@ class Particle extends AbstractParticle {
     }
     const parts = firstWordPath.split(edgeSymbol)
     const current = parts.shift()
-    const currentNode = this._getChildrenArray()[this._getIndex()[current]]
-    return currentNode ? currentNode._getNodeByPath(parts.join(edgeSymbol)) : undefined
+    const currentParticle = this._getChildrenArray()[this._getIndex()[current]]
+    return currentParticle ? currentParticle._getParticleByPath(parts.join(edgeSymbol)) : undefined
   }
   get next() {
     if (this.isRoot()) return this
@@ -1062,37 +1062,37 @@ class Particle extends AbstractParticle {
     })
     return Object.keys(obj)
   }
-  getAncestorNodesByInheritanceViaExtendsKeyword(key) {
-    const ancestorNodes = this._getAncestorNodes(
-      (node, id) => node._getNodesByColumn(0, id),
+  getAncestorParticlesByInheritanceViaExtendsKeyword(key) {
+    const ancestorParticles = this._getAncestorParticles(
+      (node, id) => node._getParticlesByColumn(0, id),
       node => node.get(key),
       this
     )
-    ancestorNodes.push(this)
-    return ancestorNodes
+    ancestorParticles.push(this)
+    return ancestorParticles
   }
   // Note: as you can probably tell by the name of this method, I don't recommend using this as it will likely be replaced by something better.
-  getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber, extendsColumnNumber) {
-    const ancestorNodes = this._getAncestorNodes(
-      (node, id) => node._getNodesByColumn(thisColumnNumber, id),
+  getAncestorParticlesByInheritanceViaColumnIndices(thisColumnNumber, extendsColumnNumber) {
+    const ancestorParticles = this._getAncestorParticles(
+      (node, id) => node._getParticlesByColumn(thisColumnNumber, id),
       node => node.getWord(extendsColumnNumber),
       this
     )
-    ancestorNodes.push(this)
-    return ancestorNodes
+    ancestorParticles.push(this)
+    return ancestorParticles
   }
-  _getAncestorNodes(getPotentialParentNodesByIdFn, getParentIdFn, cannotContainNode) {
+  _getAncestorParticles(getPotentialParentParticlesByIdFn, getParentIdFn, cannotContainParticle) {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
-    const potentialParentNodes = getPotentialParentNodesByIdFn(this.parent, parentId)
-    if (!potentialParentNodes.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
-    if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance paths. Multiple unique ids found for "${parentId}"`)
-    const parentNode = potentialParentNodes[0]
+    const potentialParentParticles = getPotentialParentParticlesByIdFn(this.parent, parentId)
+    if (!potentialParentParticles.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
+    if (potentialParentParticles.length > 1) throw new Error(`Invalid inheritance paths. Multiple unique ids found for "${parentId}"`)
+    const parentParticle = potentialParentParticles[0]
     // todo: detect loops
-    if (parentNode === cannotContainNode) throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`)
-    const ancestorNodes = parentNode._getAncestorNodes(getPotentialParentNodesByIdFn, getParentIdFn, cannotContainNode)
-    ancestorNodes.push(parentNode)
-    return ancestorNodes
+    if (parentParticle === cannotContainParticle) throw new Error(`Loop detected between '${this.getLine()}' and '${parentParticle.getLine()}'`)
+    const ancestorParticles = parentParticle._getAncestorParticles(getPotentialParentParticlesByIdFn, getParentIdFn, cannotContainParticle)
+    ancestorParticles.push(parentParticle)
+    return ancestorParticles
   }
   pathVectorToFirstWordPath(pathVector) {
     const path = pathVector.slice() // copy array
@@ -1165,8 +1165,8 @@ class Particle extends AbstractParticle {
     const header = columnNames.map((columnName, index) => cellFn(columnName, 0, index))
     const rows = this.map((node, rowNumber) =>
       columnNames.map((columnName, columnIndex) => {
-        const childNode = node.getNode(columnName)
-        const content = childNode ? childNode.contentWithChildren : ""
+        const childParticle = node.getParticle(columnName)
+        const content = childParticle ? childParticle.contentWithChildren : ""
         return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
@@ -1257,11 +1257,11 @@ class Particle extends AbstractParticle {
   // this.split("foo").join("\n") === this.toString()
   split(firstWord) {
     const constructor = this.constructor
-    const NodeBreakSymbol = this.nodeBreakSymbol
+    const ParticleBreakSymbol = this.nodeBreakSymbol
     const WordBreakSymbol = this.wordBreakSymbol
     // todo: cleanup. the escaping is wierd.
     return this.toString()
-      .split(new RegExp(`\\${NodeBreakSymbol}(?=${firstWord}(?:${WordBreakSymbol}|\\${NodeBreakSymbol}))`, "g"))
+      .split(new RegExp(`\\${ParticleBreakSymbol}(?=${firstWord}(?:${WordBreakSymbol}|\\${ParticleBreakSymbol}))`, "g"))
       .map(str => new constructor(str))
   }
   get asMarkdownTable() {
@@ -1375,23 +1375,23 @@ class Particle extends AbstractParticle {
   }
   _insertLineAndChildren(line, children, index = this.length) {
     const parser = this._getParser()._getParser(line, this)
-    const newNode = new parser(children, line, this)
+    const newParticle = new parser(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
-    this._getChildrenArray().splice(adjustedIndex, 0, newNode)
+    this._getChildrenArray().splice(adjustedIndex, 0, newParticle)
     if (this._index) this._makeIndex(adjustedIndex)
     this.clearQuickCache()
-    return newNode
+    return newParticle
   }
   _appendChildrenFromString(str) {
     const lines = str.split(this.nodeBreakSymbolRegex)
     const parentStack = []
     let currentIndentCount = -1
-    let lastNode = this
+    let lastParticle = this
     lines.forEach(line => {
       const indentCount = this._getIndentCount(line)
       if (indentCount > currentIndentCount) {
         currentIndentCount++
-        parentStack.push(lastNode)
+        parentStack.push(lastParticle)
       } else if (indentCount < currentIndentCount) {
         // pop things off stack
         while (indentCount < currentIndentCount) {
@@ -1402,8 +1402,8 @@ class Particle extends AbstractParticle {
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
       const parser = parent._getParser()._getParser(lineContent, parent)
-      lastNode = new parser(undefined, lineContent, parent)
-      parent._getChildrenArray().push(lastNode)
+      lastParticle = new parser(undefined, lineContent, parent)
+      parent._getChildrenArray().push(lastParticle)
     })
   }
   _getIndex() {
@@ -1424,7 +1424,7 @@ class Particle extends AbstractParticle {
     const parent = this.parent
     return parent instanceof parser ? parent : parent.getAncestorByParser(parser)
   }
-  getNodeByParser(parser) {
+  getParticleByParser(parser) {
     return this.find(child => child instanceof parser)
   }
   indexOfLast(firstWord) {
@@ -1478,11 +1478,11 @@ class Particle extends AbstractParticle {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) return this.hasFirstWord(firstWordPath)
     const parts = firstWordPath.split(edgeSymbol)
-    const next = this.getNode(parts.shift())
+    const next = this.getParticle(parts.shift())
     if (!next) return false
     return next.has(parts.join(edgeSymbol))
   }
-  hasNode(node) {
+  hasParticle(node) {
     const needle = node.toString()
     return this.getChildren().some(node => node.toString() === needle)
   }
@@ -1556,7 +1556,7 @@ class Particle extends AbstractParticle {
       const parentKey = node.getWord(1)
       const parentPath = paths[parentKey]
       paths[key] = parentPath ? [parentPath, key].join(" ") : key
-      result.touchNode(paths[key])
+      result.touchParticle(paths[key])
     })
     return result
   }
@@ -1606,7 +1606,7 @@ class Particle extends AbstractParticle {
   _getVirtualParentParticle() {
     return this._virtualParentParticle
   }
-  _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
+  _setVirtualAncestorParticlesByInheritanceViaColumnIndicesAndThenExpand(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
     const map = {}
     for (let node of nodes) {
       const nodeId = node.getWord(thisIdColumnNumber)
@@ -1617,12 +1617,12 @@ class Particle extends AbstractParticle {
         parentId: node.getWord(extendsIdColumnNumber)
       }
     }
-    // Add parent Nodes
+    // Add parent Particles
     Object.values(map).forEach(nodeInfo => {
       const parentId = nodeInfo.parentId
-      const parentNode = map[parentId]
-      if (parentId && !parentNode) throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
-      if (parentId) nodeInfo.node._setVirtualParentParticle(parentNode.node)
+      const parentParticle = map[parentId]
+      if (parentId && !parentParticle) throw new Error(`Particle "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
+      if (parentId) nodeInfo.node._setVirtualParentParticle(parentParticle.node)
     })
     nodes.forEach(node => node._expandFromVirtualParentParticle())
     return this
@@ -1630,12 +1630,12 @@ class Particle extends AbstractParticle {
   _expandFromVirtualParentParticle() {
     if (this._isVirtualExpanded) return this
     this._isExpanding = true
-    let parentNode = this._getVirtualParentParticle()
-    if (parentNode) {
-      if (parentNode._isExpanding) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
-      parentNode._expandFromVirtualParentParticle()
+    let parentParticle = this._getVirtualParentParticle()
+    if (parentParticle) {
+      if (parentParticle._isExpanding) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
+      parentParticle._expandFromVirtualParentParticle()
       const clone = this.clone()
-      this._setChildren(parentNode.childrenToString())
+      this._setChildren(parentParticle.childrenToString())
       this.extend(clone)
     }
     this._isExpanding = false
@@ -1643,7 +1643,7 @@ class Particle extends AbstractParticle {
   }
   // todo: solve issue related to whether extend should overwrite or append.
   _expandChildren(thisIdColumnNumber, extendsIdColumnNumber, childrenThatNeedExpanding = this.getChildren()) {
-    return this._setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber)
+    return this._setVirtualAncestorParticlesByInheritanceViaColumnIndicesAndThenExpand(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber)
   }
   // todo: add more testing.
   // todo: solve issue with where extend should overwrite or append
@@ -1652,43 +1652,43 @@ class Particle extends AbstractParticle {
   extend(nodeOrStr) {
     const node = nodeOrStr instanceof Particle ? nodeOrStr : new Particle(nodeOrStr)
     const usedFirstWords = new Set()
-    node.forEach(sourceNode => {
-      const firstWord = sourceNode.firstWord
-      let targetNode
+    node.forEach(sourceParticle => {
+      const firstWord = sourceParticle.firstWord
+      let targetParticle
       const isAnArrayNotMap = usedFirstWords.has(firstWord)
       if (!this.has(firstWord)) {
         usedFirstWords.add(firstWord)
-        this.appendLineAndChildren(sourceNode.getLine(), sourceNode.childrenToString())
+        this.appendLineAndChildren(sourceParticle.getLine(), sourceParticle.childrenToString())
         return true
       }
-      if (isAnArrayNotMap) targetNode = this.appendLine(sourceNode.getLine())
+      if (isAnArrayNotMap) targetParticle = this.appendLine(sourceParticle.getLine())
       else {
-        targetNode = this.touchNode(firstWord).setContent(sourceNode.content)
+        targetParticle = this.touchParticle(firstWord).setContent(sourceParticle.content)
         usedFirstWords.add(firstWord)
       }
-      if (sourceNode.length) targetNode.extend(sourceNode)
+      if (sourceParticle.length) targetParticle.extend(sourceParticle)
     })
     return this
   }
-  lastNode() {
+  lastParticle() {
     return this.getChildren()[this.length - 1]
   }
   expandLastFromTopMatter() {
     const clone = this.clone()
     const map = new Map()
-    const lastNode = clone.lastNode()
-    lastNode.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
-    lastNode.topDownArray.forEach(node => {
+    const lastParticle = clone.lastParticle()
+    lastParticle.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
+    lastParticle.topDownArray.forEach(node => {
       const replacement = map.get(node.getWord(0))
       if (!replacement) return
-      node.replaceNode(str => replacement.toString())
+      node.replaceParticle(str => replacement.toString())
     })
-    return lastNode
+    return lastParticle
   }
   macroExpand(macroDefinitionWord, macroUsageWord) {
     const clone = this.clone()
-    const defs = clone.findNodes(macroDefinitionWord)
-    const allUses = clone.findNodes(macroUsageWord)
+    const defs = clone.findParticles(macroDefinitionWord)
+    const allUses = clone.findParticles(macroUsageWord)
     const wordBreakSymbol = clone.wordBreakSymbol
     defs.forEach(def => {
       const macroName = def.getWord(1)
@@ -1703,7 +1703,7 @@ class Particle extends AbstractParticle {
         return newParticle
       }
       uses.forEach(node => {
-        node.replaceNode(replaceFn)
+        node.replaceParticle(replaceFn)
       })
       def.destroy()
     })
@@ -1795,10 +1795,10 @@ class Particle extends AbstractParticle {
     return this
   }
   destroy() {
-    this.parent._deleteNode(this)
+    this.parent._deleteParticle(this)
   }
   set(firstWordPath, text) {
-    return this.touchNode(firstWordPath).setContentWithChildren(text)
+    return this.touchParticle(firstWordPath).setContentWithChildren(text)
   }
   setFromText(text) {
     if (this.toString() === text) return this
@@ -1808,7 +1808,7 @@ class Particle extends AbstractParticle {
   }
   setPropertyIfMissing(prop, value) {
     if (this.has(prop)) return true
-    return this.touchNode(prop).setContent(value)
+    return this.touchParticle(prop).setContent(value)
   }
   setProperties(propMap) {
     const props = Object.keys(propMap)
@@ -1818,7 +1818,7 @@ class Particle extends AbstractParticle {
       const value = values[index]
       if (!value) return true
       if (this.get(prop) === value) return true
-      this.touchNode(prop).setContent(value)
+      this.touchParticle(prop).setContent(value)
     })
     return this
   }
@@ -1833,16 +1833,16 @@ class Particle extends AbstractParticle {
   appendLineAndChildren(line, children) {
     return this._insertLineAndChildren(line, children)
   }
-  getNodesByRegex(regex) {
+  getParticlesByRegex(regex) {
     const matches = []
     regex = regex instanceof RegExp ? [regex] : regex
-    this._getNodesByLineRegex(matches, regex)
+    this._getParticlesByLineRegex(matches, regex)
     return matches
   }
   // todo: remove?
-  getNodesByLinePrefixes(columns) {
+  getParticlesByLinePrefixes(columns) {
     const matches = []
-    this._getNodesByLineRegex(
+    this._getParticlesByLineRegex(
       matches,
       columns.map(str => new RegExp("^" + str))
     )
@@ -1851,12 +1851,12 @@ class Particle extends AbstractParticle {
   nodesThatStartWith(prefix) {
     return this.filter(node => node.getLine().startsWith(prefix))
   }
-  _getNodesByLineRegex(matches, regs) {
+  _getParticlesByLineRegex(matches, regs) {
     const rgs = regs.slice(0)
     const reg = rgs.shift()
     const candidates = this.filter(child => child.getLine().match(reg))
     if (!rgs.length) return candidates.forEach(cand => matches.push(cand))
-    candidates.forEach(cand => cand._getNodesByLineRegex(matches, rgs))
+    candidates.forEach(cand => cand._getParticlesByLineRegex(matches, rgs))
   }
   concat(node) {
     if (typeof node === "string") node = new Particle(node)
@@ -1866,12 +1866,12 @@ class Particle extends AbstractParticle {
     if (!indexesToDelete.length) return this
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
-    const deletedNodes = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
+    const deletedParticles = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
     this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
     return this
   }
-  _deleteNode(node) {
-    const index = this._indexOfNode(node)
+  _deleteParticle(node) {
+    const index = this._indexOfParticle(node)
     return index > -1 ? this._deleteByIndexes([index]) : 0
   }
   reverse() {
@@ -1914,25 +1914,25 @@ class Particle extends AbstractParticle {
     return this
   }
   renameAll(oldName, newName) {
-    this.findNodes(oldName).forEach(node => node.setFirstWord(newName))
+    this.findParticles(oldName).forEach(node => node.setFirstWord(newName))
     return this
   }
-  _deleteAllChildNodesWithFirstWord(firstWord) {
+  _deleteAllChildParticlesWithFirstWord(firstWord) {
     if (!this.has(firstWord)) return this
-    const allNodes = this._getChildrenArray()
+    const allParticles = this._getChildrenArray()
     const indexesToDelete = []
-    allNodes.forEach((node, index) => {
+    allParticles.forEach((node, index) => {
       if (node.firstWord === firstWord) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
   delete(path = "") {
     const edgeSymbol = this.edgeSymbol
-    if (!path.includes(edgeSymbol)) return this._deleteAllChildNodesWithFirstWord(path)
+    if (!path.includes(edgeSymbol)) return this._deleteAllChildParticlesWithFirstWord(path)
     const parts = path.split(edgeSymbol)
     const nextFirstWord = parts.pop()
-    const targetNode = this.getNode(parts.join(edgeSymbol))
-    return targetNode ? targetNode._deleteAllChildNodesWithFirstWord(nextFirstWord) : 0
+    const targetParticle = this.getParticle(parts.join(edgeSymbol))
+    return targetParticle ? targetParticle._deleteAllChildParticlesWithFirstWord(nextFirstWord) : 0
   }
   deleteColumn(firstWord = "") {
     this.forEach(node => node.delete(firstWord))
@@ -1943,17 +1943,17 @@ class Particle extends AbstractParticle {
     if (this.hasDuplicateFirstWords()) results.unshift(this)
     return results
   }
-  replaceNode(fn) {
+  replaceParticle(fn) {
     const parent = this.parent
     const index = this.getIndex()
-    const newNodes = new Particle(fn(this.toString()))
-    const returnedNodes = []
-    newNodes.forEach((child, childIndex) => {
-      const newNode = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
-      returnedNodes.push(newNode)
+    const newParticles = new Particle(fn(this.toString()))
+    const returnedParticles = []
+    newParticles.forEach((child, childIndex) => {
+      const newParticle = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
+      returnedParticles.push(newParticle)
     })
     this.destroy()
-    return returnedNodes
+    return returnedParticles
   }
   insertLineAndChildren(line, children, index) {
     return this._insertLineAndChildren(line, children, index)
@@ -2050,21 +2050,21 @@ class Particle extends AbstractParticle {
     })
     return this
   }
-  _touchNode(firstWordPathArray) {
-    let contextNode = this
+  _touchParticle(firstWordPathArray) {
+    let contextParticle = this
     firstWordPathArray.forEach(firstWord => {
-      contextNode = contextNode.getNode(firstWord) || contextNode.appendLine(firstWord)
+      contextParticle = contextParticle.getParticle(firstWord) || contextParticle.appendLine(firstWord)
     })
-    return contextNode
+    return contextParticle
   }
-  _touchNodeByString(str) {
+  _touchParticleByString(str) {
     str = str.replace(this.nodeBreakSymbolRegex, "") // todo: do we want to do this sanitization?
-    return this._touchNode(str.split(this.wordBreakSymbol))
+    return this._touchParticle(str.split(this.wordBreakSymbol))
   }
-  touchNode(str) {
-    return this._touchNodeByString(str)
+  touchParticle(str) {
+    return this._touchParticleByString(str)
   }
-  appendNode(node) {
+  appendParticle(node) {
     return this.appendLineAndChildren(node.getLine(), node.childrenToString())
   }
   hasLine(line) {
@@ -2073,11 +2073,11 @@ class Particle extends AbstractParticle {
   findLine(line) {
     return this.getChildren().find(node => node.getLine() === line)
   }
-  getNodesByLine(line) {
+  getParticlesByLine(line) {
     return this.filter(node => node.getLine() === line)
   }
   toggleLine(line) {
-    const lines = this.getNodesByLine(line)
+    const lines = this.getParticlesByLine(line)
     if (lines.length) {
       lines.map(line => line.destroy())
       return this
@@ -2143,22 +2143,22 @@ class Particle extends AbstractParticle {
     const grandParent = this._getGrandParent()
     if (!grandParent) return this
     const parentIndex = this.parent.getIndex()
-    const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
+    const newParticle = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
     this.destroy()
-    return newNode
+    return newParticle
   }
   pasteText(text) {
     const parent = this.parent
     const index = this.getIndex()
-    const newNodes = new Particle(text)
-    const firstNode = newNodes.particleAt(0)
-    if (firstNode) {
-      this.setLine(firstNode.getLine())
-      if (firstNode.length) this.setChildren(firstNode.childrenToString())
+    const newParticles = new Particle(text)
+    const firstParticle = newParticles.particleAt(0)
+    if (firstParticle) {
+      this.setLine(firstParticle.getLine())
+      if (firstParticle.length) this.setChildren(firstParticle.childrenToString())
     } else {
       this.setLine("")
     }
-    newNodes.forEach((child, childIndex) => {
+    newParticles.forEach((child, childIndex) => {
       if (!childIndex)
         // skip first
         return true
@@ -2182,9 +2182,9 @@ class Particle extends AbstractParticle {
   shiftRight() {
     const olderSibling = this._getClosestOlderSibling()
     if (!olderSibling) return this
-    const newNode = olderSibling.appendLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined)
+    const newParticle = olderSibling.appendLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined)
     this.destroy()
-    return newNode
+    return newParticle
   }
   shiftYoungerSibsRight() {
     const nodes = this.getYoungerSiblings()
@@ -2209,10 +2209,10 @@ class Particle extends AbstractParticle {
     })
     return this
   }
-  selectNode() {
+  selectParticle() {
     this._selected = true
   }
-  unselectNode() {
+  unselectParticle() {
     delete this._selected
   }
   isSelected() {
@@ -2291,7 +2291,7 @@ class Particle extends AbstractParticle {
     const newParticle = new Particle(undefined, line)
     if (particle.children)
       particle.children.forEach(child => {
-        newParticle.appendNode(this.serializedParticleToParticle(child))
+        newParticle.appendParticle(this.serializedParticleToParticle(child))
       })
     return newParticle
   }
@@ -2377,11 +2377,11 @@ class Particle extends AbstractParticle {
     return rows
   }
   static multiply(nodeA, nodeB) {
-    const productNode = nodeA.clone()
-    productNode.forEach((node, index) => {
+    const productParticle = nodeA.clone()
+    productParticle.forEach((node, index) => {
       node.setChildren(node.length ? this.multiply(node, nodeB) : nodeB.clone())
     })
-    return productNode
+    return productParticle
   }
   // Given an array return a particle
   static _rowsToParticle(rows, delimiter, hasHeaders) {
@@ -2428,9 +2428,9 @@ class Particle extends AbstractParticle {
     this._initializeXmlParser()
     const xml = this._xmlParser(str)
     try {
-      return this._particleFromXml(xml).getNode("children")
+      return this._particleFromXml(xml).getParticle("children")
     } catch (err) {
-      return this._particleFromXml(this._parseXml2(str)).getNode("children")
+      return this._particleFromXml(this._parseXml2(str)).getParticle("children")
     }
   }
   static _zipObject(keys, values) {
@@ -2438,15 +2438,15 @@ class Particle extends AbstractParticle {
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
-  static fromShape(shapeArr, rootNode = new Particle()) {
+  static fromShape(shapeArr, rootParticle = new Particle()) {
     const part = shapeArr.shift()
     if (part !== undefined) {
       for (let index = 0; index < part; index++) {
-        rootNode.appendLine(index.toString())
+        rootParticle.appendLine(index.toString())
       }
     }
-    if (shapeArr.length) rootNode.forEach(node => Particle.fromShape(shapeArr.slice(0), node))
-    return rootNode
+    if (shapeArr.length) rootParticle.forEach(node => Particle.fromShape(shapeArr.slice(0), node))
+    return rootParticle
   }
   static fromDataTable(table) {
     const header = table.shift()
@@ -2469,11 +2469,11 @@ class Particle extends AbstractParticle {
     }
     if (xml.data) children.pushContentAndChildren(xml.data)
     // Set content
-    if (xml.childNodes && xml.childNodes.length > 0) {
-      for (let index = 0; index < xml.childNodes.length; index++) {
-        const child = xml.childNodes[index]
+    if (xml.childParticles && xml.childParticles.length > 0) {
+      for (let index = 0; index < xml.childParticles.length; index++) {
+        const child = xml.childParticles[index]
         if (child.tagName && child.tagName.match(/parsererror/i)) throw new Error("Parse Error")
-        if (child.childNodes.length > 0 && child.tagName) children.appendLineAndChildren(child.tagName, this._particleFromXml(child))
+        if (child.childParticles.length > 0 && child.tagName) children.appendLineAndChildren(child.tagName, this._particleFromXml(child))
         else if (child.tagName) children.appendLine(child.tagName)
         else if (child.data) {
           const data = child.data.trim()
@@ -2481,7 +2481,7 @@ class Particle extends AbstractParticle {
         }
       }
     }
-    if (children.length > 0) result.touchNode("children").setChildren(children)
+    if (children.length > 0) result.touchParticle("children").setChildren(children)
     return result
   }
   static _getHeader(rows, hasHeaders) {
@@ -2504,9 +2504,9 @@ class Particle extends AbstractParticle {
     return headerRow
   }
   static nest(str, xValue) {
-    const NodeBreakSymbol = TN_NODE_BREAK_SYMBOL
+    const ParticleBreakSymbol = TN_NODE_BREAK_SYMBOL
     const WordBreakSymbol = TN_WORD_BREAK_SYMBOL
-    const indent = NodeBreakSymbol + WordBreakSymbol.repeat(xValue)
+    const indent = ParticleBreakSymbol + WordBreakSymbol.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
   static fromDisk(path) {
@@ -2548,7 +2548,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 Particle.getVersion = () => "83.1.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(firstWordPath) {
-    const hit = this._getNodeFromExtended(firstWordPath)
+    const hit = this._getParticleFromExtended(firstWordPath)
     return hit ? hit.get(firstWordPath) : undefined
   }
   _getLineage() {
@@ -2556,7 +2556,7 @@ class AbstractExtendibleParticle extends Particle {
     this.forEach(node => {
       const path = node._getAncestorsArray().map(node => node.id)
       path.reverse()
-      particle.touchNode(path.join(TN_EDGE_SYMBOL))
+      particle.touchParticle(path.join(TN_EDGE_SYMBOL))
     })
     return particle
   }
@@ -2568,15 +2568,15 @@ class AbstractExtendibleParticle extends Particle {
     return this._getAncestorsArray()[1]
   }
   _hasFromExtended(firstWordPath) {
-    return !!this._getNodeFromExtended(firstWordPath)
+    return !!this._getParticleFromExtended(firstWordPath)
   }
-  _getNodeFromExtended(firstWordPath) {
+  _getParticleFromExtended(firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
   }
   _getConcatBlockStringFromExtended(firstWordPath) {
     return this._getAncestorsArray()
       .filter(node => node.has(firstWordPath))
-      .map(node => node.getNode(firstWordPath).childrenToString())
+      .map(node => node.getParticle(firstWordPath).childrenToString())
       .reverse()
       .join("\n")
   }
@@ -2588,30 +2588,30 @@ class AbstractExtendibleParticle extends Particle {
     return this._cache_ancestorSet
   }
   // Note: the order is: [this, parent, grandParent, ...]
-  _getAncestorsArray(cannotContainNodes) {
-    this._initAncestorsArrayCache(cannotContainNodes)
+  _getAncestorsArray(cannotContainParticles) {
+    this._initAncestorsArrayCache(cannotContainParticles)
     return this._cache_ancestorsArray
   }
   get idThatThisExtends() {
     return this.get(ScrollNotationConstants.extends)
   }
-  _initAncestorsArrayCache(cannotContainNodes) {
+  _initAncestorsArrayCache(cannotContainParticles) {
     if (this._cache_ancestorsArray) return undefined
-    if (cannotContainNodes && cannotContainNodes.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
-    cannotContainNodes = cannotContainNodes || [this]
+    if (cannotContainParticles && cannotContainParticles.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
+    cannotContainParticles = cannotContainParticles || [this]
     let ancestors = [this]
     const extendedId = this.idThatThisExtends
     if (extendedId) {
-      const parentNode = this.idToNodeMap[extendedId]
-      if (!parentNode) throw new Error(`${extendedId} not found`)
-      ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes))
+      const parentParticle = this.idToParticleMap[extendedId]
+      if (!parentParticle) throw new Error(`${extendedId} not found`)
+      ancestors = ancestors.concat(parentParticle._getAncestorsArray(cannotContainParticles))
     }
     this._cache_ancestorsArray = ancestors
   }
 }
 class ExtendibleParticle extends AbstractExtendibleParticle {
-  get idToNodeMap() {
-    if (!this.isRoot()) return this.root.idToNodeMap
+  get idToParticleMap() {
+    if (!this.isRoot()) return this.root.idToParticleMap
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {

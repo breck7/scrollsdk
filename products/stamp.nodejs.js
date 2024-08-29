@@ -3,9 +3,9 @@
   const { Utils } = require("./Utils.js")
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
-  const { ParserBackedNode } = require("./Parsers.js")
+  const { ParserBackedParticle } = require("./Parsers.js")
 
-  class stampParser extends ParserBackedNode {
+  class stampParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
@@ -210,7 +210,7 @@ fileParser
    const fs = require("fs")
    const fullPath = this._getAbsolutePath(parentDir)
    this.root.log(\`Creating file \${fullPath}\`)
-   const data = this.getNode("data")
+   const data = this.getParticle("data")
    const content = data ? data.childrenToString() : ""
    fs.mkdirSync(require("path").dirname(fullPath), {recursive: true})
    fs.writeFileSync(fullPath, content, "utf8")
@@ -241,7 +241,7 @@ folderParser
     static rootParser = stampParser
   }
 
-  class hashbangParser extends ParserBackedNode {
+  class hashbangParser extends ParserBackedParticle {
     get commentCell() {
       return this.getWord(0)
     }
@@ -250,7 +250,7 @@ folderParser
     }
   }
 
-  class catchAllAnyLineParser extends ParserBackedNode {
+  class catchAllAnyLineParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
@@ -262,7 +262,7 @@ folderParser
     }
   }
 
-  class dataParser extends ParserBackedNode {
+  class dataParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
@@ -271,19 +271,19 @@ folderParser
     }
   }
 
-  class errorParser extends ParserBackedNode {
+  class errorParser extends ParserBackedParticle {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class executableParser extends ParserBackedNode {
+  class executableParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class fileParser extends ParserBackedNode {
+  class fileParser extends ParserBackedParticle {
     createParserCombinator() {
       return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
@@ -304,7 +304,7 @@ folderParser
       const fs = require("fs")
       const fullPath = this._getAbsolutePath(parentDir)
       this.root.log(`Creating file ${fullPath}`)
-      const data = this.getNode("data")
+      const data = this.getParticle("data")
       const content = data ? data.childrenToString() : ""
       fs.mkdirSync(require("path").dirname(fullPath), { recursive: true })
       fs.writeFileSync(fullPath, content, "utf8")
@@ -313,7 +313,7 @@ folderParser
     }
   }
 
-  class folderParser extends ParserBackedNode {
+  class folderParser extends ParserBackedParticle {
     get keywordCell() {
       return this.getWord(0)
     }

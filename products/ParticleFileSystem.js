@@ -179,7 +179,7 @@ class ParticleFileSystem {
       .join("\n")
       .trim()
     // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js nodes)
-    return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
+    return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
   }
   get parsers() {
     return Object.values(this._parserCache).map(parser => parser.parsersParser)

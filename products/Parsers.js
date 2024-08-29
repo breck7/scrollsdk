@@ -5,7 +5,7 @@ const GlobalNamespaceAdditions = {
   Utils: "Utils.js",
   Particle: "Particle.js",
   HandParsersProgram: "Parsers.js",
-  ParserBackedNode: "Parsers.js"
+  ParserBackedParticle: "Parsers.js"
 }
 var ParsersConstantsCompiler
 ;(function (ParsersConstantsCompiler) {
@@ -123,7 +123,7 @@ class TypedWord extends ParticleWord {
   }
 }
 // todo: can we merge these methods into base Particle and ditch this class?
-class ParserBackedNode extends Particle {
+class ParserBackedParticle extends Particle {
   get definition() {
     if (this._definition) return this._definition
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
@@ -142,17 +142,17 @@ class ParserBackedNode extends Particle {
     // StringMap<int> {firstWord: index}
     // When there are multiple tails with the same firstWord, _index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
-    return this._nodeIndex || this._makeNodeIndex()
+    return this._nodeIndex || this._makeParticleIndex()
   }
   _clearIndex() {
     delete this._nodeIndex
     return super._clearIndex()
   }
   _makeIndex(startAt = 0) {
-    if (this._nodeIndex) this._makeNodeIndex(startAt)
+    if (this._nodeIndex) this._makeParticleIndex(startAt)
     return super._makeIndex(startAt)
   }
-  _makeNodeIndex(startAt = 0) {
+  _makeParticleIndex(startAt = 0) {
     if (!this._nodeIndex || !startAt) this._nodeIndex = {}
     const nodes = this._getChildrenArray()
     const newIndex = this._nodeIndex
@@ -211,7 +211,7 @@ class ParserBackedNode extends Particle {
   getRunTimeEnumOptionsForValidation(cell) {
     return this.getRunTimeEnumOptions(cell)
   }
-  _sortNodesByInScopeOrder() {
+  _sortParticlesByInScopeOrder() {
     const parserOrder = this.definition._getMyInScopeParserIds()
     if (!parserOrder.length) return this
     const orderMap = {}
@@ -219,7 +219,7 @@ class ParserBackedNode extends Particle {
     this.sort(Utils.makeSortByFn(runtimeNode => orderMap[runtimeNode.definition.parserIdFromDefinition]))
     return this
   }
-  get requiredNodeErrors() {
+  get requiredParticleErrors() {
     const errors = []
     Object.values(this.definition.firstWordMapWithDefinitions).forEach(def => {
       if (def.isRequired() && !this.nodeIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
@@ -249,7 +249,7 @@ class ParserBackedNode extends Particle {
   findAllWordsWithCellType(cellTypeId) {
     return this.allTypedWords.filter(typedWord => typedWord.type === cellTypeId)
   }
-  findAllNodesWithParser(parserId) {
+  findAllParticlesWithParser(parserId) {
     return this.topDownArray.filter(node => node.definition.parserIdFromDefinition === parserId)
   }
   toCellTypeParticles() {
@@ -280,7 +280,7 @@ class ParserBackedNode extends Particle {
       new Set(
         this.getAllErrors()
           .filter(err => err instanceof UnknownParserError)
-          .map(err => err.getNode().firstWord)
+          .map(err => err.getParticle().firstWord)
       )
     )
   }
@@ -317,7 +317,7 @@ class ParserBackedNode extends Particle {
   }
   getAutocompleteResultsAt(lineIndex, charIndex) {
     const lineNode = this.particleAtLine(lineIndex) || this
-    const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex)
+    const nodeInScope = lineNode.getParticleInScopeAtCharIndex(charIndex)
     // todo: add more tests
     // todo: second param this.childrenToString()
     // todo: change to getAutocomplete definitions
@@ -347,7 +347,7 @@ class ParserBackedNode extends Particle {
   }
   format() {
     if (this.isRoot()) {
-      this._sortNodesByInScopeOrder()
+      this._sortParticlesByInScopeOrder()
       try {
         this._sortWithParentParsersUpTop()
       } catch (err) {
@@ -368,7 +368,7 @@ class ParserBackedNode extends Particle {
       usage.appendLine([def.parserIdFromDefinition, "line-id", "parser", requiredCellTypeIds.join(" ")].join(" "))
     })
     this.topDownArray.forEach((node, lineNumber) => {
-      const stats = usage.getNode(node.parserId)
+      const stats = usage.getParticle(node.parserId)
       stats.appendLine([filepath + "-" + lineNumber, node.words.join(" ")].join(" "))
     })
     return usage
@@ -443,8 +443,8 @@ class ParserBackedNode extends Particle {
     const def = this.definition
     if (def.isSingle) errors = errors.concat(this.singleParserUsedTwiceErrors) // todo: speedup. takes ~1s on pldb.
     if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors) // todo: speedup. takes ~1s on pldb.
-    const { requiredNodeErrors } = this // todo: speedup. takes ~1.5s on pldb.
-    if (requiredNodeErrors.length) errors = errors.concat(requiredNodeErrors)
+    const { requiredParticleErrors } = this // todo: speedup. takes ~1.5s on pldb.
+    if (requiredParticleErrors.length) errors = errors.concat(requiredParticleErrors)
     return errors
   }
   getErrors() {
@@ -589,7 +589,7 @@ ${indent}${closeChildrenString}`
     return cells
   }
 }
-class BlobParser extends ParserBackedNode {
+class BlobParser extends ParserBackedParticle {
   createParserCombinator() {
     return new Particle.ParserCombinator(BlobParser, {})
   }
@@ -598,9 +598,9 @@ class BlobParser extends ParserBackedNode {
   }
 }
 // todo: can we remove this? hard to extend.
-class UnknownParserNode extends ParserBackedNode {
+class UnknownParserParticle extends ParserBackedParticle {
   createParserCombinator() {
-    return new Particle.ParserCombinator(UnknownParserNode, {})
+    return new Particle.ParserCombinator(UnknownParserParticle, {})
   }
   getErrors() {
     return [new UnknownParserError(this)]
@@ -627,7 +627,7 @@ class AbstractParsersBackedCell {
   get cellTypeId() {
     return this._cellTypeId
   }
-  getNode() {
+  getParticle() {
     return this._node
   }
   get cellIndex() {
@@ -651,8 +651,8 @@ class AbstractParsersBackedCell {
   }
   getAutoCompleteWords(partialWord = "") {
     const cellDef = this.cellTypeDefinition
-    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getNode().root) : []
-    const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
+    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getParticle().root) : []
+    const runTimeOptions = this.getParticle().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
     if (partialWord) words = words.filter(word => word.includes(partialWord))
     return words.map(word => {
@@ -696,13 +696,13 @@ ${options.toString(1)}`
     return this._typeDef
   }
   _getErrorContext() {
-    return this.getNode().getLine().split(" ")[0] // todo: WordBreakSymbol
+    return this.getParticle().getLine().split(" ")[0] // todo: WordBreakSymbol
   }
   isValid() {
-    const runTimeOptions = this.getNode().getRunTimeEnumOptionsForValidation(this)
+    const runTimeOptions = this.getParticle().getRunTimeEnumOptionsForValidation(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this.cellTypeDefinition.isValid(word, this.getNode().root) && this._isValid()
+    return this.cellTypeDefinition.isValid(word, this.getParticle().root) && this._isValid()
   }
   getErrorIfAny() {
     const word = this.getWord()
@@ -871,13 +871,13 @@ class AbstractParticleError {
     return this.lineNumber - 1
   }
   get lineNumber() {
-    return this.getNode()._getLineNumber() // todo: handle sourcemaps
+    return this.getParticle()._getLineNumber() // todo: handle sourcemaps
   }
   isCursorOnWord(lineIndex, characterIndex) {
     return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex)
   }
   _doesCharacterIndexFallOnWord(characterIndex) {
-    return this.cellIndex === this.getNode().getWordIndexAtCharacterIndex(characterIndex)
+    return this.cellIndex === this.getParticle().getWordIndexAtCharacterIndex(characterIndex)
   }
   // convenience method. may be removed.
   isBlankLineError() {
@@ -888,7 +888,7 @@ class AbstractParticleError {
     return false
   }
   getIndent() {
-    return this.getNode().indentation
+    return this.getParticle().indentation
   }
   getCodeMirrorLineWidgetElement(onApplySuggestionCallBack = () => {}) {
     const suggestion = this.suggestionMessage
@@ -897,11 +897,11 @@ class AbstractParticleError {
     return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
   }
   get parserId() {
-    return this.getNode().definition.parserIdFromDefinition
+    return this.getParticle().definition.parserIdFromDefinition
   }
   _getCodeMirrorLineWidgetElementCellTypeHints() {
     const el = document.createElement("div")
-    el.appendChild(document.createTextNode(this.getIndent() + this.getNode().definition.lineHints))
+    el.appendChild(document.createTextNode(this.getIndent() + this.getParticle().definition.lineHints))
     el.className = "LintCellTypeHints"
     return el
   }
@@ -922,12 +922,12 @@ class AbstractParticleError {
     return el
   }
   getLine() {
-    return this.getNode().getLine()
+    return this.getParticle().getLine()
   }
   getExtension() {
-    return this.getNode().handParsersProgram.extensionName
+    return this.getParticle().handParsersProgram.extensionName
   }
-  getNode() {
+  getParticle() {
     return this._node
   }
   get errorTypeName() {
@@ -942,7 +942,7 @@ class AbstractParticleError {
       line: this.lineNumber,
       cell: this.cellIndex,
       suggestion: this.suggestionMessage,
-      path: this.getNode().getFirstWordPath(),
+      path: this.getParticle().getFirstWordPath(),
       message: this.message
     }
   }
@@ -962,7 +962,7 @@ class AbstractParticleError {
 }
 class AbstractCellError extends AbstractParticleError {
   constructor(cell) {
-    super(cell.getNode())
+    super(cell.getParticle())
     this._cell = cell
   }
   get cell() {
@@ -980,13 +980,13 @@ class AbstractCellError extends AbstractParticleError {
 }
 class UnknownParserError extends AbstractParticleError {
   get message() {
-    const node = this.getNode()
+    const node = this.getParticle()
     const parentNode = node.parent
     const options = parentNode._getParser().getFirstWordOptions()
     return super.message + ` Invalid parser "${node.firstWord}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
   }
   get wordSuggestion() {
-    const node = this.getNode()
+    const node = this.getParticle()
     const parentNode = node.parent
     return Utils.didYouMean(
       node.firstWord,
@@ -995,13 +995,13 @@ class UnknownParserError extends AbstractParticleError {
   }
   get suggestionMessage() {
     const suggestion = this.wordSuggestion
-    const node = this.getNode()
+    const node = this.getParticle()
     if (suggestion) return `Change "${node.firstWord}" to "${suggestion}"`
     return ""
   }
   applySuggestion() {
     const suggestion = this.wordSuggestion
-    if (suggestion) this.getNode().setWord(this.cellIndex, suggestion)
+    if (suggestion) this.getParticle().setWord(this.cellIndex, suggestion)
     return this
   }
 }
@@ -1017,7 +1017,7 @@ class ParserDefinedError extends AbstractParticleError {
 }
 class BlankLineError extends UnknownParserError {
   get message() {
-    return super.message + ` Line: "${this.getNode().getLine()}". Blank lines are errors.`
+    return super.message + ` Line: "${this.getParticle().getLine()}". Blank lines are errors.`
   }
   // convenience method
   isBlankLineError() {
@@ -1027,7 +1027,7 @@ class BlankLineError extends UnknownParserError {
     return `Delete line ${this.lineNumber}`
   }
   applySuggestion() {
-    this.getNode().destroy()
+    this.getParticle().destroy()
     return this
   }
 }
@@ -1042,24 +1042,24 @@ class MissingRequiredParserError extends AbstractParticleError {
 }
 class ParserUsedMultipleTimesError extends AbstractParticleError {
   get message() {
-    return super.message + ` Multiple "${this.getNode().firstWord}" found.`
+    return super.message + ` Multiple "${this.getParticle().firstWord}" found.`
   }
   get suggestionMessage() {
     return `Delete line ${this.lineNumber}`
   }
   applySuggestion() {
-    return this.getNode().destroy()
+    return this.getParticle().destroy()
   }
 }
 class LineAppearsMultipleTimesError extends AbstractParticleError {
   get message() {
-    return super.message + ` "${this.getNode().getLine()}" appears multiple times.`
+    return super.message + ` "${this.getParticle().getLine()}" appears multiple times.`
   }
   get suggestionMessage() {
     return `Delete line ${this.lineNumber}`
   }
   applySuggestion() {
-    return this.getNode().destroy()
+    return this.getParticle().destroy()
   }
 }
 class UnknownCellTypeError extends AbstractCellError {
@@ -1078,7 +1078,7 @@ class InvalidWordError extends AbstractCellError {
   }
   applySuggestion() {
     const suggestion = this.wordSuggestion
-    if (suggestion) this.getNode().setWord(this.cellIndex, suggestion)
+    if (suggestion) this.getParticle().setWord(this.cellIndex, suggestion)
     return this
   }
 }
@@ -1090,7 +1090,7 @@ class ExtraWordError extends AbstractCellError {
     return `Delete word "${this.cell.getWord()}" at cell ${this.cellIndex}`
   }
   applySuggestion() {
-    return this.getNode().deleteWordAt(this.cellIndex)
+    return this.getParticle().deleteWordAt(this.cellIndex)
   }
 }
 class MissingWordError extends AbstractCellError {
@@ -1141,7 +1141,7 @@ class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
     return this._getEnumFromCellTypes(programRootNode)[str] === true
   }
 }
-class ParsersEnumTestNode extends AbstractParsersWordTestParser {
+class ParsersEnumTestParticle extends AbstractParsersWordTestParser {
   isValid(str) {
     // enum c c++ java
     return !!this.getOptions()[str]
@@ -1157,7 +1157,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     types[ParsersConstants.regex] = ParsersRegexTestParser
     types[ParsersConstants.reservedWords] = ParsersReservedWordsTestParser
     types[ParsersConstants.enumFromCellTypes] = EnumFromCellTypesTestParser
-    types[ParsersConstants.enum] = ParsersEnumTestNode
+    types[ParsersConstants.enum] = ParsersEnumTestParticle
     types[ParsersConstants.paint] = Particle
     types[ParsersConstants.comment] = Particle
     types[ParsersConstants.examples] = Particle
@@ -1170,7 +1170,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
   get id() {
     return this.getWord(0)
   }
-  get idToNodeMap() {
+  get idToParticleMap() {
     return this.parent.cellTypeDefinitions
   }
   getGetter(wordIndex) {
@@ -1209,16 +1209,16 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     if (preludeKind) return preludeKind.defaultPaint
   }
   _getEnumOptions() {
-    const enumNode = this._getNodeFromExtended(ParsersConstants.enum)
+    const enumNode = this._getParticleFromExtended(ParsersConstants.enum)
     if (!enumNode) return undefined
     // we sort by longest first to capture longest match first. todo: add test
-    const options = Object.keys(enumNode.getNode(ParsersConstants.enum).getOptions())
+    const options = Object.keys(enumNode.getParticle(ParsersConstants.enum).getOptions())
     options.sort((a, b) => b.length - a.length)
     return options
   }
   _getEnumFromCellTypeOptions(program) {
-    const node = this._getNodeFromExtended(ParsersConstants.enumFromCellTypes)
-    return node ? Object.keys(node.getNode(ParsersConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
+    const node = this._getParticleFromExtended(ParsersConstants.enumFromCellTypes)
+    return node ? Object.keys(node.getParticle(ParsersConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
   }
   _getAutocompleteWordOptions(program) {
     return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || []
@@ -1464,11 +1464,11 @@ ${properties.join("\n")}
     return this.id.replace(HandParsersProgram.parserSuffixRegex, "")
   }
   get constantsObject() {
-    const obj = this._getUniqueConstantNodes()
+    const obj = this._getUniqueConstantParticles()
     Object.keys(obj).forEach(key => (obj[key] = obj[key].constantValue))
     return obj
   }
-  _getUniqueConstantNodes(extended = true) {
+  _getUniqueConstantParticles(extended = true) {
     const obj = {}
     const items = extended ? this._getChildrenByParserInExtended(AbstractParserConstantParser) : this.getChildrenByParser(AbstractParserConstantParser)
     items.reverse() // Last definition wins.
@@ -1506,11 +1506,11 @@ ${properties.join("\n")}
   }
   get customJavascriptMethods() {
     const hasJsCode = this.has(ParsersConstants.javascript)
-    return hasJsCode ? this.getNode(ParsersConstants.javascript).childrenToString() : ""
+    return hasJsCode ? this.getParticle(ParsersConstants.javascript).childrenToString() : ""
   }
   get firstWordMapWithDefinitions() {
-    if (!this._cache_firstWordToNodeDefMap) this._cache_firstWordToNodeDefMap = this._createParserInfo(this._getInScopeParserIds()).firstWordMap
-    return this._cache_firstWordToNodeDefMap
+    if (!this._cache_firstWordToParticleDefMap) this._cache_firstWordToParticleDefMap = this._createParserInfo(this._getInScopeParserIds()).firstWordMap
+    return this._cache_firstWordToParticleDefMap
   }
   // todo: remove
   get runTimeFirstWordsInScope() {
@@ -1534,7 +1534,7 @@ ${properties.join("\n")}
     const catchAllCellTypeId = this.get(ParsersConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(parsersProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
     // Constants
-    Object.values(this._getUniqueConstantNodes(false)).forEach(node => getters.push(node.getGetter()))
+    Object.values(this._getUniqueConstantParticles(false)).forEach(node => getters.push(node.getGetter()))
     return getters.join("\n")
   }
   _createParserInfo(parserIdsInScope) {
@@ -1569,7 +1569,7 @@ ${properties.join("\n")}
     return arr
   }
   _getMyInScopeParserIds(target = this) {
-    const parsersNode = target.getNode(ParsersConstants.inScope)
+    const parsersNode = target.getParticle(ParsersConstants.inScope)
     const scopedDefinitionIds = target.myScopedParserDefinitions.map(def => def.id)
     return parsersNode ? parsersNode.getWordsFrom(1).concat(scopedDefinitionIds) : scopedDefinitionIds
   }
@@ -1580,11 +1580,11 @@ ${properties.join("\n")}
     return parentDef ? ids.concat(parentDef._getInScopeParserIds()) : ids
   }
   get isSingle() {
-    const hit = this._getNodeFromExtended(ParsersConstants.single)
+    const hit = this._getParticleFromExtended(ParsersConstants.single)
     return hit && hit.get(ParsersConstants.single) !== "false"
   }
   get isUniqueLine() {
-    const hit = this._getNodeFromExtended(ParsersConstants.uniqueLine)
+    const hit = this._getParticleFromExtended(ParsersConstants.uniqueLine)
     return hit && hit.get(ParsersConstants.uniqueLine) !== "false"
   }
   isRequired() {
@@ -1602,7 +1602,7 @@ ${properties.join("\n")}
   isDefined(parserId) {
     return !!this.programParserDefinitionCache[parserId]
   }
-  get idToNodeMap() {
+  get idToParticleMap() {
     return this.programParserDefinitionCache
   }
   _amIRoot() {
@@ -1679,7 +1679,7 @@ ${properties.join("\n")}
   }
   _getExtendsClassName() {
     const extendedDef = this._getExtendedParent()
-    return extendedDef ? extendedDef.generatedClassName : "ParserBackedNode"
+    return extendedDef ? extendedDef.generatedClassName : "ParserBackedParticle"
   }
   _getCompilerObject() {
     let obj = {}
@@ -1847,7 +1847,7 @@ ${cells.toString(1)}`
     return defs
   }
   // todo: refactor
-  synthesizeNode(nodeCount = 1, indentCount = -1, parsersAlreadySynthesized = [], seed = Date.now()) {
+  synthesizeParticle(nodeCount = 1, indentCount = -1, parsersAlreadySynthesized = [], seed = Date.now()) {
     let inScopeParserIds = this._getInScopeParserIds()
     const catchAllParserId = this._getFromExtended(ParsersConstants.catchAllParser)
     if (catchAllParserId) inScopeParserIds.push(catchAllParserId)
@@ -1862,7 +1862,7 @@ ${cells.toString(1)}`
         .forEach(def => {
           const chain = parsersAlreadySynthesized // .slice(0)
           chain.push(def.id)
-          def.synthesizeNode(1, indentCount + 1, chain, seed).forEach(line => lines.push(line))
+          def.synthesizeParticle(1, indentCount + 1, chain, seed).forEach(line => lines.push(line))
         })
       nodeCount--
     }
@@ -1886,7 +1886,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
   createParserCombinator() {
     const map = {}
     map[ParsersConstants.comment] = Particle
-    return new Particle.ParserCombinator(UnknownParserNode, map, [
+    return new Particle.ParserCombinator(UnknownParserParticle, map, [
       { regex: HandParsersProgram.blankLineRegex, parser: Particle },
       { regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser },
       { regex: HandParsersProgram.cellTypeFullRegex, parser: cellTypeDefinitionParser }
@@ -2138,24 +2138,24 @@ ${testCode}`
   get validConcreteAndAbstractParserDefinitions() {
     return this.getChildrenByParser(parserDefinitionParser).filter(node => node._hasValidParserId())
   }
-  get lastRootParserDefinitionNode() {
+  get lastRootParserDefinitionParticle() {
     return this.findLast(def => def instanceof AbstractParserDefinitionParser && def.has(ParsersConstants.root) && def._hasValidParserId())
   }
-  _initRootParserDefinitionNode() {
-    if (this._cache_rootParserNode) return
-    if (!this._cache_rootParserNode) this._cache_rootParserNode = this.lastRootParserDefinitionNode
+  _initRootParserDefinitionParticle() {
+    if (this._cache_rootParserParticle) return
+    if (!this._cache_rootParserParticle) this._cache_rootParserParticle = this.lastRootParserDefinitionParticle
     // By default, have a very permissive basic root node.
     // todo: whats the best design pattern to use for this sort of thing?
-    if (!this._cache_rootParserNode) {
-      this._cache_rootParserNode = this.concat(`${ParsersConstants.DefaultRootParser}
+    if (!this._cache_rootParserParticle) {
+      this._cache_rootParserParticle = this.concat(`${ParsersConstants.DefaultRootParser}
  ${ParsersConstants.root}
  ${ParsersConstants.catchAllParser} ${ParsersConstants.BlobParser}`)[0]
       this._addDefaultCatchAllBlobParser()
     }
   }
   get rootParserDefinition() {
-    this._initRootParserDefinitionNode()
-    return this._cache_rootParserNode
+    this._initRootParserDefinitionParticle()
+    return this._cache_rootParserParticle
   }
   _addDefaultCatchAllBlobParser() {
     if (this._addedCatchAll) return
@@ -2180,7 +2180,7 @@ ${testCode}`
     return super._getMyInScopeParserIds(this.rootParserDefinition)
   }
   _getInScopeParserIds() {
-    const parsersNode = this.rootParserDefinition.getNode(ParsersConstants.inScope)
+    const parsersNode = this.rootParserDefinition.getParticle(ParsersConstants.inScope)
     return parsersNode ? parsersNode.getWordsFrom(1) : []
   }
   makeProgramParserDefinitionCache() {
@@ -2199,12 +2199,12 @@ ${testCode}`
     return this.rootParserDefinition.get(ParsersConstants.extensions) ? this.rootParserDefinition.get(ParsersConstants.extensions).split(" ").join(",") : this.extensionName
   }
   toNodeJsJavascript(scrollsdkProductsPath = "scrollsdk/products") {
-    return this._rootNodeDefToJavascriptClass(scrollsdkProductsPath, true).trim()
+    return this._rootParticleDefToJavascriptClass(scrollsdkProductsPath, true).trim()
   }
   toBrowserJavascript() {
-    return this._rootNodeDefToJavascriptClass("", false).trim()
+    return this._rootParticleDefToJavascriptClass("", false).trim()
   }
-  _rootNodeDefToJavascriptClass(scrollsdkProductsPath, forNodeJs = true) {
+  _rootParticleDefToJavascriptClass(scrollsdkProductsPath, forNodeJs = true) {
     const defs = this.validConcreteAndAbstractParserDefinitions
     // todo: throw if there is no root node defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
@@ -2425,4 +2425,4 @@ class UnknownParsersProgram extends Particle {
 }
 UnknownParsersProgram._childSuffix = "Child"
 
-module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedNode, UnknownParserError, UnknownParsersProgram }
+module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }

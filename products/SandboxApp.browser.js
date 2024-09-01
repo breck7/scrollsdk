@@ -15,7 +15,7 @@ class SandboxApp extends AbstractParticleComponentParser {
       "toJsonSubset",
       `{
  "name": "scrollsdk",
- "description": "Particles Notation parser, compiler-compiler, and virtual machine for Languages",
+ "description": "ParticleS parser, compiler-compiler, and virtual machine for Languages",
  "keywords": "scrollsdk"
 }`
     )
@@ -162,7 +162,7 @@ class headerComponent extends AbstractParticleComponentParser {
     id logo
     src ../images/helloWorld3D.svg
     title Scroll.pub
-  span Particles Notation Sandbox
+  span ParticleS Sandbox
  p
   a Parser Designer
    href ../designer/index.html
@@ -176,7 +176,7 @@ class headerComponent extends AbstractParticleComponentParser {
   a Debug
    clickCommand toggleParticleComponentFrameworkDebuggerCommand
   span  | Version ${Particle.getVersion()}
- p This is a simple console for exploring the base Particles Notation. In dev tools, you can access the parsed particle below as "window.particle"`
+ p This is a simple console for exploring the base ParticleS. In dev tools, you can access the parsed particle below as "window.particle"`
   }
 }
 class shareComponent extends AbstractParticleComponentParser {
@@ -211,7 +211,7 @@ class tableComponent extends AbstractParticleComponentParser {
     return `table
  tr
   td
-   div Particles Notation
+   div ParticleS
    textarea
     id particleConsole
     keyUpCommand updateFromParticlesConsoleCommand

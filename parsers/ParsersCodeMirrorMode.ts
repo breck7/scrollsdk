@@ -1,4 +1,4 @@
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
@@ -187,7 +187,7 @@ const tmToCm = {
   }
 }
 
-const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], style: scrollNotationTypes.stringMap = tmToCm): CmToken => {
+const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], style: particlesTypes.stringMap = tmToCm): CmToken => {
   const matchingBranch = style[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
@@ -197,7 +197,7 @@ interface particleCodeMirrorState {
 }
 
 class ParsersCodeMirrorMode {
-  constructor(name: string, getRootParserFn: () => scrollNotationTypes.ParticleProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getRootParserFn: () => particlesTypes.ParticleProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getRootParserFn = getRootParserFn
     this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
@@ -206,10 +206,10 @@ class ParsersCodeMirrorMode {
 
   private _name: string
   private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getRootParserFn: () => scrollNotationTypes.ParticleProgramParser
+  private _getRootParserFn: () => particlesTypes.ParticleProgramParser
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
-  private _cachedProgram: scrollNotationTypes.particleProgram
+  private _cachedProgram: particlesTypes.particleProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
@@ -222,7 +222,7 @@ class ParsersCodeMirrorMode {
     return this._cachedProgram
   }
 
-  private _getExcludedIntelliSenseTriggerKeys(): scrollNotationTypes.stringMap {
+  private _getExcludedIntelliSenseTriggerKeys(): particlesTypes.stringMap {
     return {
       "8": "backspace",
       "9": "tab",
@@ -359,7 +359,7 @@ class ParsersCodeMirrorMode {
     return style
   }
 
-  private _getCellStyle(lineIndex: scrollNotationTypes.int, cellIndex: scrollNotationTypes.int): string {
+  private _getCellStyle(lineIndex: particlesTypes.int, cellIndex: particlesTypes.int): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?

@@ -18,6 +18,9 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 85.0.0 2024-9-1
+🏥 renamed a few remaining uses of "ScrollNotation" to Particles.
+
 📦 84.0.0 2024-8-29
 ⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
 ⚠️ BREAKING: Scroll Notation is now ParticleS

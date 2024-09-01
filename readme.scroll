@@ -110,7 +110,7 @@ code
 ParticleS was originally called Tree Notation. Scroll Parsers was originally called Grammar.
 
 # Alternatives Considered
-This is the first Scroll library in existence, so there were no alternative implementations. Note and Space were predecessors to ParticleS. If a better alternative low level notation to ParticleS is possible, it has yet to be discovered.
+This is the first Scroll library in existence, so there were no alternative implementations. Note and Space were predecessors to ParticleS. If a better alternative low level syntax to ParticleS is possible, it has yet to be discovered.
 
 All that said, the important part of this repo is not the code but the design patterns. ParticleS is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use ParticleS!
 

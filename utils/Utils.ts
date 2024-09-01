@@ -1,4 +1,4 @@
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 class Timer {
   constructor() {
@@ -275,7 +275,7 @@ class Utils {
     return [context, final]
   }
 
-  static requireAbsOrRelative(filePath: scrollNotationTypes.filepath, contextFilePath: scrollNotationTypes.filepath) {
+  static requireAbsOrRelative(filePath: particlesTypes.filepath, contextFilePath: particlesTypes.filepath) {
     if (!filePath.startsWith(".")) return require(filePath)
     const path = require("path")
     const folder = this.getPathWithoutFileName(contextFilePath)
@@ -284,17 +284,17 @@ class Utils {
   }
 
   // Removes last ".*" from this string
-  static removeFileExtension(filename: scrollNotationTypes.filepath) {
+  static removeFileExtension(filename: particlesTypes.filepath) {
     return filename ? filename.replace(/\.[^\.]+$/, "") : ""
   }
 
-  static getFileName(path: scrollNotationTypes.filepath) {
+  static getFileName(path: particlesTypes.filepath) {
     const normalizedPath = path.replace(/\\/g, "/")
     const parts = normalizedPath.split("/")
     return parts.pop()
   }
 
-  static getPathWithoutFileName(path: scrollNotationTypes.filepath) {
+  static getPathWithoutFileName(path: particlesTypes.filepath) {
     const normalizedPath = path.replace(/\\/g, "/")
     const parts = normalizedPath.split("/")
     parts.pop()
@@ -309,7 +309,7 @@ class Utils {
     }
   }
 
-  static randomUniformInt = (min: scrollNotationTypes.int, max: scrollNotationTypes.int, seed = Date.now()) => {
+  static randomUniformInt = (min: particlesTypes.int, max: particlesTypes.int, seed = Date.now()) => {
     return Math.floor(Utils.randomUniformFloat(min, max, seed))
   }
 
@@ -379,7 +379,7 @@ class Utils {
     return index === -1 || index + 1 === values.length ? values[0] : values[index + 1]
   }
 
-  static getClassNameFromFilePath(filepath: scrollNotationTypes.filepath) {
+  static getClassNameFromFilePath(filepath: particlesTypes.filepath) {
     return this.removeFileExtension(this.getFileName(filepath))
   }
 
@@ -467,10 +467,10 @@ class Utils {
     return closestMatch
   }
 
-  private static MAX_INT: scrollNotationTypes.positiveInt = Math.pow(2, 32) - 1
+  private static MAX_INT: particlesTypes.positiveInt = Math.pow(2, 32) - 1
 
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
-  private static _getEditDistance(stringA: string, stringB: string, maxInt: scrollNotationTypes.positiveInt) {
+  private static _getEditDistance(stringA: string, stringB: string, maxInt: particlesTypes.positiveInt) {
     // Handle null or undefined max.
     maxInt = maxInt || maxInt === 0 ? maxInt : Utils.MAX_INT
 
@@ -562,14 +562,14 @@ class Utils {
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static appendCodeAndReturnValueOnWindow(code: scrollNotationTypes.javascriptCode, name: string): any {
+  static appendCodeAndReturnValueOnWindow(code: particlesTypes.javascriptCode, name: string): any {
     const script = document.createElement("script")
     script.innerHTML = code
     document.head.appendChild(script)
     return (<any>window)[name]
   }
 
-  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: scrollNotationTypes.stringMap) {
+  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: particlesTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
@@ -583,7 +583,7 @@ class Utils {
 
   static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
-    const index: scrollNotationTypes.stringMap = {}
+    const index: particlesTypes.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
       index[word]++
@@ -653,7 +653,7 @@ class Utils {
   }
 
   static arrayToMap(arr: Array<any>) {
-    const map: scrollNotationTypes.stringMap = {}
+    const map: particlesTypes.stringMap = {}
     arr.forEach(val => (map[val] = true))
     return map
   }
@@ -674,12 +674,12 @@ class Utils {
     return result
   }
 
-  static javascriptTableWithHeaderRowToObjects(dataTable: Array<any>): scrollNotationTypes.rawRowJavascriptObject[] {
+  static javascriptTableWithHeaderRowToObjects(dataTable: Array<any>): particlesTypes.rawRowJavascriptObject[] {
     dataTable = dataTable.slice()
     const header = dataTable.shift()
     return dataTable.map((row: any) => {
       const obj: any = {}
-      header.forEach((colName: string, index: scrollNotationTypes.int) => (obj[colName] = row[index]))
+      header.forEach((colName: string, index: particlesTypes.int) => (obj[colName] = row[index]))
       return obj
     })
   }
@@ -696,7 +696,7 @@ class Utils {
     return result
   }
 
-  static makeSortByFn(accessorOrAccessors: Function | Function[]): scrollNotationTypes.sortFn {
+  static makeSortByFn(accessorOrAccessors: Function | Function[]): particlesTypes.sortFn {
     const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA: Object, objectB: Object) => {
       const particleAFirst = -1
@@ -712,8 +712,8 @@ class Utils {
     }
   }
 
-  static _makeGraphSortFunctionFromGraph(idAccessor: scrollNotationTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
-    return (particleA: scrollNotationTypes.particle, particleB: scrollNotationTypes.particle) => {
+  static _makeGraphSortFunctionFromGraph(idAccessor: particlesTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
+    return (particleA: particlesTypes.particle, particleB: particlesTypes.particle) => {
       const particleAFirst = -1
       const particleBFirst = 1
 
@@ -742,8 +742,8 @@ class Utils {
     return str.split(needle).join("")
   }
 
-  static _makeGraphSortFunction(idAccessor: scrollNotationTypes.idAccessorFunction, extendsIdAccessor: scrollNotationTypes.idAccessorFunction) {
-    return (particleA: scrollNotationTypes.particle, particleB: scrollNotationTypes.particle) => {
+  static _makeGraphSortFunction(idAccessor: particlesTypes.idAccessorFunction, extendsIdAccessor: particlesTypes.idAccessorFunction) {
+    return (particleA: particlesTypes.particle, particleB: particlesTypes.particle) => {
       // -1 === a before b
       const particleAUniqueId = idAccessor(particleA)
       const particleAExtends = extendsIdAccessor(particleA)

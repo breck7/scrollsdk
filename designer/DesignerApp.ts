@@ -614,7 +614,7 @@ class headerComponent extends AbstractParticleComponentParser {
     title Notation.Scroll.pub
   span ${this._getTitle()}
  p
-  a ParticleS Sandbox
+  a Particles Sandbox
    href ../sandbox/index.html
   span  | 
   a Help

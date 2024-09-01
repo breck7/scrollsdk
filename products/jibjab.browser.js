@@ -55,7 +55,7 @@ commentCell
 // Line Parsers
 jibberishParser
  root
- description A useless Language built for testing ParticleS code.
+ description A useless Language built for testing Particles code.
  javascript
   execute() {
    return 42

@@ -23,7 +23,7 @@ thinColumns 4
 
 📦 84.0.0 2024-8-29
 ⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
-⚠️ BREAKING: Scroll Notation is now ParticleS
+⚠️ BREAKING: Scroll Notation is now Particles
 ⚠️ BREAKING: Nodes/Trees are now referred to universally as Particles.
 ⚠️ BREAKING: EVERYWHERE the word tree or node was used, now we use the word particle.
 
@@ -78,7 +78,7 @@ thinColumns 4
 📦 78.0.0 2024-5-30
 🎉 jtree is now called the Scroll SDK
 ⚠️ BREAKING: jtree => scrollsdk
-⚠️ BREAKING: Tree Notation is now called ParticleS
+⚠️ BREAKING: Tree Notation is now called Particles
 
 📦 77.1.1 2024-5-28
 🏥 attempt a Windows bug fix

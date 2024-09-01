@@ -2,7 +2,7 @@
 
 // todo: make isomorphic
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 const { Disk } = require("../products/Disk.node.js")
 const { TestRacer } = require("../products/TestRacer.js")
@@ -22,7 +22,7 @@ const jibberishParsersPath = path.join(jibberishRootDir, "jibberish.parsers")
 const jibberishParsersCode = Disk.read(jibberishParsersPath)
 const poopParsersPath = path.join(__dirname, "..", "langs", "poop", "poop.parsers")
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.emptyProgram = equal => {
   // Arrange/Act/Assert

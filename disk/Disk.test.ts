@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 const { Disk } = require("../products/Disk.node.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.exists = equal => {
   // Arrange/Act/Assert

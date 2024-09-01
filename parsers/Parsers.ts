@@ -1,16 +1,16 @@
 const { Utils } = require("../products/Utils.js")
 const { Particle, ParticleWord, ExtendibleParticle, AbstractExtendibleParticle } = require("../products/Particle.js")
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
   new (code?: string): ParserBackedParticle
 }
 
-declare type parserInfo = { firstWordMap: { [firstWord: string]: parserDefinitionParser }; regexTests: scrollNotationTypes.regexTestDef[] }
+declare type parserInfo = { firstWordMap: { [firstWord: string]: parserDefinitionParser }; regexTests: particlesTypes.regexTestDef[] }
 
 // Compiled language parsers will include these files:
-const GlobalNamespaceAdditions: scrollNotationTypes.stringMap = {
+const GlobalNamespaceAdditions: particlesTypes.stringMap = {
   Utils: "Utils.js",
   Particle: "Particle.js",
   HandParsersProgram: "Parsers.js",
@@ -18,8 +18,8 @@ const GlobalNamespaceAdditions: scrollNotationTypes.stringMap = {
 }
 
 interface SimplePredictionModel {
-  matrix: scrollNotationTypes.int[][]
-  idToIndex: { [id: string]: scrollNotationTypes.int }
+  matrix: particlesTypes.int[][]
+  idToIndex: { [id: string]: particlesTypes.int }
   indexToId: { [index: number]: string }
 }
 
@@ -164,7 +164,7 @@ abstract class ParserBackedParticle extends Particle {
     return this.definition.root
   }
 
-  getAutocompleteResults(partialWord: string, cellIndex: scrollNotationTypes.positiveInt) {
+  getAutocompleteResults(partialWord: string, cellIndex: particlesTypes.positiveInt) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
@@ -210,11 +210,11 @@ abstract class ParserBackedParticle extends Particle {
     return newIndex
   }
 
-  getChildInstancesOfParserId(parserId: scrollNotationTypes.parserId): ParserBackedParticle[] {
+  getChildInstancesOfParserId(parserId: particlesTypes.parserId): ParserBackedParticle[] {
     return this.particleIndex[parserId] || []
   }
 
-  doesExtend(parserId: scrollNotationTypes.parserId) {
+  doesExtend(parserId: particlesTypes.parserId) {
     return this.definition._doesExtend(parserId)
   }
 
@@ -245,7 +245,7 @@ abstract class ParserBackedParticle extends Particle {
       .filter(i => i)
   }
 
-  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: scrollNotationTypes.positiveInt) {
+  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: particlesTypes.positiveInt) {
     // todo: root should be [] correct?
     const cell = this.parsedCells[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
@@ -269,14 +269,14 @@ abstract class ParserBackedParticle extends Particle {
   private _sortParticlesByInScopeOrder() {
     const parserOrder = this.definition._getMyInScopeParserIds()
     if (!parserOrder.length) return this
-    const orderMap: scrollNotationTypes.stringMap = {}
+    const orderMap: particlesTypes.stringMap = {}
     parserOrder.forEach((word, index) => (orderMap[word] = index))
     this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
     return this
   }
 
   protected get requiredParticleErrors() {
-    const errors: scrollNotationTypes.ParticleError[] = []
+    const errors: particlesTypes.ParticleError[] = []
     Object.values(this.definition.firstWordMapWithDefinitions).forEach(def => {
       if (def.isRequired() && !this.particleIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
     })
@@ -306,11 +306,11 @@ abstract class ParserBackedParticle extends Particle {
     return words
   }
 
-  findAllWordsWithCellType(cellTypeId: scrollNotationTypes.cellTypeId) {
+  findAllWordsWithCellType(cellTypeId: particlesTypes.cellTypeId) {
     return this.allTypedWords.filter(typedWord => typedWord.type === cellTypeId)
   }
 
-  findAllParticlesWithParser(parserId: scrollNotationTypes.parserId) {
+  findAllParticlesWithParser(parserId: particlesTypes.parserId) {
     return this.topDownArray.filter((particle: ParserBackedParticle) => particle.definition.parserIdFromDefinition === parserId)
   }
 
@@ -383,7 +383,7 @@ abstract class ParserBackedParticle extends Particle {
     ).asTable
   }
 
-  getAutocompleteResultsAt(lineIndex: scrollNotationTypes.positiveInt, charIndex: scrollNotationTypes.positiveInt) {
+  getAutocompleteResultsAt(lineIndex: particlesTypes.positiveInt, charIndex: particlesTypes.positiveInt) {
     const lineParticle = this.particleAtLine(lineIndex) || this
     const particleInScope = <ParserBackedParticle>lineParticle.getParticleInScopeAtCharIndex(charIndex)
 
@@ -403,7 +403,7 @@ abstract class ParserBackedParticle extends Particle {
 
   private _sortWithParentParsersUpTop() {
     const lineage = new HandParsersProgram(this.toString()).parserLineage
-    const rank: scrollNotationTypes.stringMap = {}
+    const rank: particlesTypes.stringMap = {}
     lineage.topDownArray.forEach((particle, index) => {
       rank[particle.getWord(0)] = index
     })
@@ -466,7 +466,7 @@ abstract class ParserBackedParticle extends Particle {
     return this.topDownArray.map((child: ParserBackedParticle) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLine()).join("\n")
   }
 
-  getCellPaintAtPosition(lineIndex: number, wordIndex: number): scrollNotationTypes.paint | undefined {
+  getCellPaintAtPosition(lineIndex: number, wordIndex: number): particlesTypes.paint | undefined {
     this._initCellTypeCache()
     const typeParticle = this._cache_paintParticles.topDownArray[lineIndex - 1]
     return typeParticle ? typeParticle.getWord(wordIndex - 1) : undefined
@@ -489,7 +489,7 @@ abstract class ParserBackedParticle extends Particle {
     return this.isRoot() ? new Particle.ParserCombinator(BlobParser) : new Particle.ParserCombinator(this.parent._getParser()._getCatchAllParser(this.parent), {})
   }
 
-  get parserId(): scrollNotationTypes.parserId {
+  get parserId(): particlesTypes.parserId {
     return this.definition.parserIdFromDefinition
   }
 
@@ -505,7 +505,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   private get singleParserUsedTwiceErrors() {
-    const errors: scrollNotationTypes.ParticleError[] = []
+    const errors: particlesTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedParticle
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
 
@@ -517,7 +517,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   private get uniqueLineAppearsTwiceErrors() {
-    const errors: scrollNotationTypes.ParticleError[] = []
+    const errors: particlesTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedParticle
     const hits = parent.getChildInstancesOfParserId(this.definition.id)
 
@@ -533,7 +533,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get scopeErrors() {
-    let errors: scrollNotationTypes.ParticleError[] = []
+    let errors: particlesTypes.ParticleError[] = []
     const def = this.definition
     if (def.isSingle) errors = errors.concat(this.singleParserUsedTwiceErrors) // todo: speedup. takes ~1s on pldb.
     if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors) // todo: speedup. takes ~1s on pldb.
@@ -670,7 +670,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get typedMap() {
-    const obj: scrollNotationTypes.stringMap = {}
+    const obj: particlesTypes.stringMap = {}
     this.forEach((particle: ParserBackedParticle) => {
       if (!particle._shouldSerialize) return true
 
@@ -708,7 +708,7 @@ ${indent}${closeChildrenString}`
 
   // todo: remove
   get cells() {
-    const cells: scrollNotationTypes.stringMap = {}
+    const cells: particlesTypes.stringMap = {}
     this.parsedCells.forEach(cell => {
       const cellTypeId = cell.cellTypeId
       if (!cell.isCatchAll()) cells[cellTypeId] = cell.parsed
@@ -726,7 +726,7 @@ class BlobParser extends ParserBackedParticle {
     return new Particle.ParserCombinator(BlobParser, {})
   }
 
-  getErrors(): scrollNotationTypes.ParticleError[] {
+  getErrors(): particlesTypes.ParticleError[] {
     return []
   }
 }
@@ -737,7 +737,7 @@ class UnknownParserParticle extends ParserBackedParticle {
     return new Particle.ParserCombinator(UnknownParserParticle, {})
   }
 
-  getErrors(): scrollNotationTypes.ParticleError[] {
+  getErrors(): particlesTypes.ParticleError[] {
     return [new UnknownParserError(this)]
   }
 }
@@ -746,7 +746,7 @@ class UnknownParserParticle extends ParserBackedParticle {
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractParsersBackedCell<T> {
-  constructor(particle: ParserBackedParticle, index: scrollNotationTypes.int, typeDef: cellTypeDefinitionParser, cellTypeId: string, isCatchAll: boolean, parserDefinitionParser: AbstractParserDefinitionParser) {
+  constructor(particle: ParserBackedParticle, index: particlesTypes.int, typeDef: cellTypeDefinitionParser, cellTypeId: string, isCatchAll: boolean, parserDefinitionParser: AbstractParserDefinitionParser) {
     this._typeDef = typeDef
     this._particle = particle
     this._isCatchAll = isCatchAll
@@ -764,7 +764,7 @@ abstract class AbstractParsersBackedCell<T> {
   }
 
   private _particle: ParserBackedParticle
-  protected _index: scrollNotationTypes.int
+  protected _index: particlesTypes.int
   private _typeDef: cellTypeDefinitionParser
   private _isCatchAll: boolean
   private _cellTypeId: string
@@ -876,7 +876,7 @@ ${options.toString(1)}`
     return this.cellTypeDefinition.isValid(word, <ParserBackedParticle>this.getParticle().root) && this._isValid()
   }
 
-  getErrorIfAny(): scrollNotationTypes.ParticleError {
+  getErrorIfAny(): particlesTypes.ParticleError {
     const word = this.getWord()
     if (word !== undefined && this.isValid()) return undefined
 
@@ -1047,7 +1047,7 @@ class ParsersExtraWordCellTypeCell extends AbstractParsersBackedCell<string> {
     return this.getWord()
   }
 
-  getErrorIfAny(): scrollNotationTypes.ParticleError {
+  getErrorIfAny(): particlesTypes.ParticleError {
     return new ExtraWordError(this)
   }
 }
@@ -1070,30 +1070,30 @@ class ParsersUnknownCellTypeCell extends AbstractParsersBackedCell<string> {
     return this.getWord()
   }
 
-  getErrorIfAny(): scrollNotationTypes.ParticleError {
+  getErrorIfAny(): particlesTypes.ParticleError {
     return new UnknownCellTypeError(this)
   }
 }
 
-abstract class AbstractParticleError implements scrollNotationTypes.ParticleError {
+abstract class AbstractParticleError implements particlesTypes.ParticleError {
   constructor(particle: ParserBackedParticle) {
     this._particle = particle
   }
   private _particle: ParserBackedParticle // todo: would it ever be a Particle?
 
-  getLineIndex(): scrollNotationTypes.positiveInt {
+  getLineIndex(): particlesTypes.positiveInt {
     return this.lineNumber - 1
   }
 
-  get lineNumber(): scrollNotationTypes.positiveInt {
+  get lineNumber(): particlesTypes.positiveInt {
     return this.getParticle()._getLineNumber() // todo: handle sourcemaps
   }
 
-  isCursorOnWord(lineIndex: scrollNotationTypes.positiveInt, characterIndex: scrollNotationTypes.positiveInt) {
+  isCursorOnWord(lineIndex: particlesTypes.positiveInt, characterIndex: particlesTypes.positiveInt) {
     return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex)
   }
 
-  private _doesCharacterIndexFallOnWord(characterIndex: scrollNotationTypes.positiveInt) {
+  private _doesCharacterIndexFallOnWord(characterIndex: particlesTypes.positiveInt) {
     return this.cellIndex === this.getParticle().getWordIndexAtCharacterIndex(characterIndex)
   }
 
@@ -1287,12 +1287,12 @@ class BlankLineError extends UnknownParserError {
 }
 
 class MissingRequiredParserError extends AbstractParticleError {
-  constructor(particle: ParserBackedParticle, missingParserId: scrollNotationTypes.firstWord) {
+  constructor(particle: ParserBackedParticle, missingParserId: particlesTypes.firstWord) {
     super(particle)
     this._missingParserId = missingParserId
   }
 
-  private _missingParserId: scrollNotationTypes.parserId
+  private _missingParserId: particlesTypes.parserId
 
   get message(): string {
     return super.message + ` A "${this._missingParserId}" is required.`
@@ -1405,7 +1405,7 @@ class ParsersReservedWordsTestParser extends AbstractParsersWordTestParser {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
-  _getEnumFromCellTypes(programRootParticle: ParserBackedParticle): scrollNotationTypes.stringMap {
+  _getEnumFromCellTypes(programRootParticle: ParserBackedParticle): particlesTypes.stringMap {
     const cellTypeIds = this.getWordsFrom(1)
     const enumGroup = cellTypeIds.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
@@ -1413,8 +1413,8 @@ class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
     if ((<any>programRootParticle)._enumMaps[enumGroup]) return (<any>programRootParticle)._enumMaps[enumGroup]
 
     const wordIndex = 1
-    const map: scrollNotationTypes.stringMap = {}
-    const cellTypeMap: scrollNotationTypes.stringMap = {}
+    const map: particlesTypes.stringMap = {}
+    const cellTypeMap: particlesTypes.stringMap = {}
     cellTypeIds.forEach(typeId => (cellTypeMap[typeId] = true))
     programRootParticle.allTypedWords
       .filter((typedWord: TypedWord) => cellTypeMap[typedWord.type])
@@ -1432,7 +1432,7 @@ class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
 }
 
 class ParsersEnumTestParticle extends AbstractParsersWordTestParser {
-  private _map: scrollNotationTypes.stringMap
+  private _map: particlesTypes.stringMap
 
   isValid(str: string) {
     // enum c c++ java
@@ -1447,7 +1447,7 @@ class ParsersEnumTestParticle extends AbstractParsersWordTestParser {
 
 class cellTypeDefinitionParser extends AbstractExtendibleParticle {
   createParserCombinator() {
-    const types: scrollNotationTypes.stringMap = {}
+    const types: particlesTypes.stringMap = {}
     types[ParsersConstants.regex] = ParsersRegexTestParser
     types[ParsersConstants.reservedWords] = ParsersReservedWordsTestParser
     types[ParsersConstants.enumFromCellTypes] = EnumFromCellTypesTestParser
@@ -1547,7 +1547,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     return this._getAllTests().every(particle => (<AbstractParsersWordTestParser>particle).isValid(str, programRootParticle))
   }
 
-  get cellTypeId(): scrollNotationTypes.cellTypeId {
+  get cellTypeId(): particlesTypes.cellTypeId {
     return this.getWord(0)
   }
 
@@ -1559,7 +1559,7 @@ abstract class AbstractCellParser {
     this._definition = definition
   }
 
-  get catchAllCellTypeId(): scrollNotationTypes.cellTypeId | undefined {
+  get catchAllCellTypeId(): particlesTypes.cellTypeId | undefined {
     return this._definition._getFromExtended(ParsersConstants.catchAllCellType)
   }
 
@@ -1573,7 +1573,7 @@ abstract class AbstractCellParser {
   protected _definition: AbstractParserDefinitionParser
 
   private _requiredCellTypeIds: string[]
-  getRequiredCellTypeIds(): scrollNotationTypes.cellTypeId[] {
+  getRequiredCellTypeIds(): particlesTypes.cellTypeId[] {
     if (!this._requiredCellTypeIds) {
       const parameters = this._definition._getFromExtended(ParsersConstants.cells)
       this._requiredCellTypeIds = parameters ? parameters.split(" ") : []
@@ -1581,11 +1581,11 @@ abstract class AbstractCellParser {
     return this._requiredCellTypeIds
   }
 
-  protected _getCellTypeId(cellIndex: scrollNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: scrollNotationTypes.int) {
+  protected _getCellTypeId(cellIndex: particlesTypes.int, requiredCellTypeIds: string[], totalWordCount: particlesTypes.int) {
     return requiredCellTypeIds[cellIndex]
   }
 
-  protected _isCatchAllCell(cellIndex: scrollNotationTypes.int, numberOfRequiredCells: scrollNotationTypes.int, totalWordCount: scrollNotationTypes.int) {
+  protected _isCatchAllCell(cellIndex: particlesTypes.int, numberOfRequiredCells: particlesTypes.int, totalWordCount: particlesTypes.int) {
     return cellIndex >= numberOfRequiredCells
   }
 
@@ -1626,11 +1626,11 @@ abstract class AbstractCellParser {
 class PrefixCellParser extends AbstractCellParser {}
 
 class PostfixCellParser extends AbstractCellParser {
-  protected _isCatchAllCell(cellIndex: scrollNotationTypes.int, numberOfRequiredCells: scrollNotationTypes.int, totalWordCount: scrollNotationTypes.int) {
+  protected _isCatchAllCell(cellIndex: particlesTypes.int, numberOfRequiredCells: particlesTypes.int, totalWordCount: particlesTypes.int) {
     return cellIndex < totalWordCount - numberOfRequiredCells
   }
 
-  protected _getCellTypeId(cellIndex: scrollNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: scrollNotationTypes.int) {
+  protected _getCellTypeId(cellIndex: particlesTypes.int, requiredCellTypeIds: string[], totalWordCount: particlesTypes.int) {
     const catchAllWordCount = Math.max(totalWordCount - requiredCellTypeIds.length, 0)
     return requiredCellTypeIds[cellIndex - catchAllWordCount]
   }
@@ -1688,7 +1688,7 @@ class ParsersCompilerParser extends Particle {
       ParsersConstantsCompiler.openChildren,
       ParsersConstantsCompiler.closeChildren
     ]
-    const map: scrollNotationTypes.firstWordToParserMap = {}
+    const map: particlesTypes.firstWordToParserMap = {}
     types.forEach(type => {
       map[type] = Particle
     })
@@ -1697,7 +1697,7 @@ class ParsersCompilerParser extends Particle {
 }
 
 abstract class AbstractParserConstantParser extends Particle {
-  constructor(children?: scrollNotationTypes.children, line?: string, parent?: Particle) {
+  constructor(children?: particlesTypes.children, line?: string, parent?: Particle) {
     super(children, line, parent)
     parent[this.identifier] = this.constantValue
   }
@@ -1766,7 +1766,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.comment
     ]
 
-    const map: scrollNotationTypes.firstWordToParserMap = {}
+    const map: particlesTypes.firstWordToParserMap = {}
     types.forEach(type => {
       map[type] = Particle
     })
@@ -1836,7 +1836,7 @@ ${properties.join("\n")}
     return this._getChildrenByParserInExtended(ParsersExampleParser)
   }
 
-  get parserIdFromDefinition(): scrollNotationTypes.parserId {
+  get parserIdFromDefinition(): particlesTypes.parserId {
     return this.getWord(0)
   }
 
@@ -1870,7 +1870,7 @@ ${properties.join("\n")}
     return <HandParsersProgram>this.root
   }
 
-  protected get customJavascriptMethods(): scrollNotationTypes.javascriptCode {
+  protected get customJavascriptMethods(): particlesTypes.javascriptCode {
     const hasJsCode = this.has(ParsersConstants.javascript)
     return hasJsCode ? this.getParticle(ParsersConstants.javascript).childrenToString() : ""
   }
@@ -1883,7 +1883,7 @@ ${properties.join("\n")}
   }
 
   // todo: remove
-  get runTimeFirstWordsInScope(): scrollNotationTypes.parserId[] {
+  get runTimeFirstWordsInScope(): particlesTypes.parserId[] {
     return this._getParser().getFirstWordOptions()
   }
 
@@ -1913,7 +1913,7 @@ ${properties.join("\n")}
     return getters.join("\n")
   }
 
-  protected _createParserInfo(parserIdsInScope: scrollNotationTypes.parserId[]): parserInfo {
+  protected _createParserInfo(parserIdsInScope: particlesTypes.parserId[]): parserInfo {
     const result: parserInfo = {
       firstWordMap: {},
       regexTests: []
@@ -1948,13 +1948,13 @@ ${properties.join("\n")}
     return arr
   }
 
-  _getMyInScopeParserIds(target: AbstractParserDefinitionParser = this): scrollNotationTypes.parserId[] {
+  _getMyInScopeParserIds(target: AbstractParserDefinitionParser = this): particlesTypes.parserId[] {
     const parsersParticle = target.getParticle(ParsersConstants.inScope)
     const scopedDefinitionIds = target.myScopedParserDefinitions.map(def => def.id)
     return parsersParticle ? parsersParticle.getWordsFrom(1).concat(scopedDefinitionIds) : scopedDefinitionIds
   }
 
-  protected _getInScopeParserIds(): scrollNotationTypes.parserId[] {
+  protected _getInScopeParserIds(): particlesTypes.parserId[] {
     // todo: allow multiple of these if we allow mixins?
     const ids = this._getMyInScopeParserIds()
     const parentDef = this._getExtendedParent()
@@ -1975,7 +1975,7 @@ ${properties.join("\n")}
     return this._hasFromExtended(ParsersConstants.required)
   }
 
-  getParserDefinitionByParserId(parserId: scrollNotationTypes.parserId): AbstractParserDefinitionParser {
+  getParserDefinitionByParserId(parserId: particlesTypes.parserId): AbstractParserDefinitionParser {
     // todo: return catch all?
     const def = this.programParserDefinitionCache[parserId]
     if (def) return def
@@ -2013,13 +2013,13 @@ ${properties.join("\n")}
     return this._getFromExtended(ParsersConstants.baseParser) === ParsersConstants.blobParser
   }
 
-  private get errorMethodToJavascript(): scrollNotationTypes.javascriptCode {
+  private get errorMethodToJavascript(): particlesTypes.javascriptCode {
     if (this._isBlobParser()) return "getErrors() { return [] }" // Skips parsing child particles for perf gains.
     if (this._isErrorParser()) return "getErrors() { return this._getErrorParserErrors() }"
     return ""
   }
 
-  private get parserAsJavascript(): scrollNotationTypes.javascriptCode {
+  private get parserAsJavascript(): particlesTypes.javascriptCode {
     if (this._isBlobParser())
       // todo: do we need this?
       return "createParserCombinator() { return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())}"
@@ -2059,7 +2059,7 @@ ${properties.join("\n")}
     return <parserDefinitionParser[]>this.getChildrenByParser(parserDefinitionParser)
   }
 
-  private get catchAllParserToJavascript(): scrollNotationTypes.javascriptCode {
+  private get catchAllParserToJavascript(): particlesTypes.javascriptCode {
     if (this._isBlobParser()) return "this._getBlobParserCatchAllParser()"
     const parserId = this.get(ParsersConstants.catchAllParser)
     if (!parserId) return ""
@@ -2067,7 +2067,7 @@ ${properties.join("\n")}
     return particleDef.generatedClassName
   }
 
-  get asJavascriptClass(): scrollNotationTypes.javascriptCode {
+  get asJavascriptClass(): particlesTypes.javascriptCode {
     const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.cellGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
     const thisClassName = this.generatedClassName
 
@@ -2090,7 +2090,7 @@ ${properties.join("\n")}
     return extendedDef ? extendedDef.generatedClassName : "ParserBackedParticle"
   }
 
-  _getCompilerObject(): scrollNotationTypes.stringMap {
+  _getCompilerObject(): particlesTypes.stringMap {
     let obj: { [key: string]: string } = {}
     const items = this._getChildrenByParserInExtended(ParsersCompilerParser)
     items.reverse() // Last definition wins.
@@ -2156,15 +2156,15 @@ ${captures}
        pop: true`
   }
 
-  private _cache_parserInheritanceSet: Set<scrollNotationTypes.parserId>
-  private _cache_ancestorParserIdsArray: scrollNotationTypes.parserId[]
+  private _cache_parserInheritanceSet: Set<particlesTypes.parserId>
+  private _cache_ancestorParserIdsArray: particlesTypes.parserId[]
 
   _getParserInheritanceSet() {
     if (!this._cache_parserInheritanceSet) this._cache_parserInheritanceSet = new Set(this.ancestorParserIdsArray)
     return this._cache_parserInheritanceSet
   }
 
-  get ancestorParserIdsArray(): scrollNotationTypes.parserId[] {
+  get ancestorParserIdsArray(): particlesTypes.parserId[] {
     if (!this._cache_ancestorParserIdsArray) {
       this._cache_ancestorParserIdsArray = this._getAncestorsArray().map(def => (<AbstractParserDefinitionParser>def).parserIdFromDefinition)
       this._cache_ancestorParserIdsArray.reverse()
@@ -2198,7 +2198,7 @@ ${captures}
     return val ? parseFloat(val) : 0
   }
 
-  private _getExtendedParserId(): scrollNotationTypes.parserId {
+  private _getExtendedParserId(): particlesTypes.parserId {
     const ancestorIds = this.ancestorParserIdsArray
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
@@ -2330,7 +2330,7 @@ class parserDefinitionParser extends AbstractParserDefinitionParser {}
 // constructor for new language that takes files in that language to execute, compile, etc.
 class HandParsersProgram extends AbstractParserDefinitionParser {
   createParserCombinator() {
-    const map: scrollNotationTypes.stringMap = {}
+    const map: particlesTypes.stringMap = {}
     map[ParsersConstants.comment] = Particle
     return new Particle.ParserCombinator(UnknownParserParticle, map, [
       { regex: HandParsersProgram.blankLineRegex, parser: Particle },
@@ -2451,7 +2451,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return this
   }
 
-  private _requireInVmNodeJsRootParser(code: scrollNotationTypes.javascriptCode): any {
+  private _requireInVmNodeJsRootParser(code: particlesTypes.javascriptCode): any {
     const vm = require("vm")
     const path = require("path")
     // todo: cleanup up
@@ -2544,7 +2544,7 @@ paragraph This readme was auto-generated using the
   }
 
   toBundle() {
-    const files: scrollNotationTypes.stringMap = {}
+    const files: particlesTypes.stringMap = {}
     const rootParticleDef = this.rootParserDefinition
     const languageName = this.extensionName
     const example = rootParticleDef.examples[0]
@@ -2609,7 +2609,7 @@ ${testCode}`
     return types
   }
 
-  getCellTypeDefinitionById(cellTypeId: scrollNotationTypes.cellTypeId) {
+  getCellTypeDefinitionById(cellTypeId: particlesTypes.cellTypeId) {
     // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
     return this.cellTypeDefinitions[cellTypeId]
   }
@@ -2683,7 +2683,7 @@ ${testCode}`
     return super._getMyInScopeParserIds(this.rootParserDefinition)
   }
 
-  protected _getInScopeParserIds(): scrollNotationTypes.parserId[] {
+  protected _getInScopeParserIds(): particlesTypes.parserId[] {
     const parsersParticle = this.rootParserDefinition.getParticle(ParsersConstants.inScope)
     return parsersParticle ? parsersParticle.getWordsFrom(1) : []
   }
@@ -2711,15 +2711,15 @@ ${testCode}`
     return this.rootParserDefinition.get(ParsersConstants.extensions) ? this.rootParserDefinition.get(ParsersConstants.extensions).split(" ").join(",") : this.extensionName
   }
 
-  toNodeJsJavascript(scrollsdkProductsPath: scrollNotationTypes.requirePath = "scrollsdk/products"): scrollNotationTypes.javascriptCode {
+  toNodeJsJavascript(scrollsdkProductsPath: particlesTypes.requirePath = "scrollsdk/products"): particlesTypes.javascriptCode {
     return this._rootParticleDefToJavascriptClass(scrollsdkProductsPath, true).trim()
   }
 
-  toBrowserJavascript(): scrollNotationTypes.javascriptCode {
+  toBrowserJavascript(): particlesTypes.javascriptCode {
     return this._rootParticleDefToJavascriptClass("", false).trim()
   }
 
-  private _rootParticleDefToJavascriptClass(scrollsdkProductsPath: scrollNotationTypes.requirePath, forNodeJs = true): scrollNotationTypes.javascriptCode {
+  private _rootParticleDefToJavascriptClass(scrollsdkProductsPath: particlesTypes.requirePath, forNodeJs = true): particlesTypes.javascriptCode {
     const defs = this.validConcreteAndAbstractParserDefinitions
     // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
@@ -2784,7 +2784,7 @@ ${parserContexts}`
   }
 }
 
-const PreludeKinds: scrollNotationTypes.stringMap = {}
+const PreludeKinds: particlesTypes.stringMap = {}
 PreludeKinds[PreludeCellTypeIds.anyCell] = ParsersAnyCell
 PreludeKinds[PreludeCellTypeIds.keywordCell] = ParsersKeywordCell
 PreludeKinds[PreludeCellTypeIds.floatCell] = ParsersFloatCell
@@ -2823,7 +2823,7 @@ class UnknownParsersProgram extends Particle {
   }
 
   private _getKeywordMaps(clone: UnknownParsersProgram) {
-    const keywordsToChildKeywords: { [firstWord: string]: scrollNotationTypes.stringMap } = {}
+    const keywordsToChildKeywords: { [firstWord: string]: particlesTypes.stringMap } = {}
     const keywordsToParticleInstances: { [firstWord: string]: Particle[] } = {}
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstWord = particle.firstWord
@@ -2929,7 +2929,7 @@ class UnknownParsersProgram extends Particle {
     return program.format().toString()
   }
 
-  private _getBestCellType(firstWord: string, instanceCount: scrollNotationTypes.int, maxCellsOnLine: scrollNotationTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
+  private _getBestCellType(firstWord: string, instanceCount: particlesTypes.int, maxCellsOnLine: particlesTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const edgeSymbol = this.edgeSymbol
     const values = Array.from(asSet).filter(identity => identity)

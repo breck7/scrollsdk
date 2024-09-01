@@ -1,13 +1,13 @@
 #!/usr/bin/env ts-node
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 const { Particle, ExtendibleParticle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testStrings: scrollNotationTypes.stringMap = {}
+const testStrings: particlesTypes.stringMap = {}
 const testObjects: any = {}
 
 testStrings.webpage = `head
@@ -843,7 +843,7 @@ other`
   const particle6 = new Particle(blankTest)
 
   // Act
-  particle6.forEach((particle: scrollNotationTypes.particle) => {
+  particle6.forEach((particle: particlesTypes.particle) => {
     if (!particle.firstWord.startsWith("p")) return true
     particle.setContent("President")
     particle.delete("class")
@@ -901,10 +901,10 @@ testParticles.deleteRegression = equal => {
   const migrateFn = (str: string) => {
     const board = new Particle(str)
     const dataParticles = board.findParticles("data")
-    dataParticles.forEach((particle: scrollNotationTypes.particle) => {
+    dataParticles.forEach((particle: particlesTypes.particle) => {
       const rows = particle.findParticles("row")
       if (!rows.length) return
-      const mapped = rows.map((row: scrollNotationTypes.particle) => row.toObject())
+      const mapped = rows.map((row: particlesTypes.particle) => row.toObject())
       const csv = new Particle(mapped).asCsv
       particle.touchParticle("format").setContent("csv")
       particle.touchParticle("content").setContentWithChildren(csv)
@@ -962,7 +962,7 @@ testParticles.forEach = equal => {
   var result = ""
 
   // Act
-  value.forEach(function (particle: scrollNotationTypes.particle) {
+  value.forEach(function (particle: particlesTypes.particle) {
     const property = particle.firstWord
     const v = particle.content
     result += property.toUpperCase()
@@ -980,8 +980,8 @@ testParticles.forEach = equal => {
 
   // Act
   value2
-    .filter((particle: scrollNotationTypes.particle) => particle.firstWord !== "hello")
-    .forEach((particle: scrollNotationTypes.particle) => {
+    .filter((particle: particlesTypes.particle) => particle.firstWord !== "hello")
+    .forEach((particle: particlesTypes.particle) => {
       const property = particle.firstWord
       const value = particle.content
       count++
@@ -994,7 +994,7 @@ testParticles.forEach = equal => {
   var inc = 0
 
   // Act
-  particle.forEach((particle: scrollNotationTypes.particle, index: number) => {
+  particle.forEach((particle: particlesTypes.particle, index: number) => {
     inc = inc + index
   })
 
@@ -1005,7 +1005,7 @@ testParticles.forEach = equal => {
 testParticles.every = equal => {
   // Arrange/Act/Assert
   equal(
-    new Particle(`a 2\nb 2\nc 2`).every((particle: scrollNotationTypes.particle) => particle.getWord(1) === "2"),
+    new Particle(`a 2\nb 2\nc 2`).every((particle: particlesTypes.particle) => particle.getWord(1) === "2"),
     true
   )
 }
@@ -1504,7 +1504,7 @@ testParticles.getIndentation = equal => {
   equal(particle.getParticle("body div").indentation, " ")
   equal(particle.getParticle("body div content").indentation, "  ")
 
-  equal(testStrings.webpageTrimmed, particle.topDownArray.map((line: scrollNotationTypes.particle) => line.indentation + line.getLine()).join("\n"))
+  equal(testStrings.webpageTrimmed, particle.topDownArray.map((line: particlesTypes.particle) => line.indentation + line.getLine()).join("\n"))
 }
 
 testParticles.content = equal => {
@@ -1593,7 +1593,7 @@ testParticles.getParticles = equal => {
   // Act
   const result = value
     .findParticles("hello")
-    .map((particle: scrollNotationTypes.particle) => particle.content)
+    .map((particle: particlesTypes.particle) => particle.content)
     .join("")
 
   // Assert
@@ -1602,7 +1602,7 @@ testParticles.getParticles = equal => {
   equal(
     deep
       .findParticles("language line score")
-      .map((particle: scrollNotationTypes.particle) => particle.content)
+      .map((particle: particlesTypes.particle) => particle.content)
       .join(""),
     "212"
   )
@@ -2201,7 +2201,7 @@ testParticles.htmlDsl = equal => {
   var page = ""
 
   // Act
-  html.forEach((particle: scrollNotationTypes.particle) => {
+  html.forEach((particle: particlesTypes.particle) => {
     const property = particle.firstWord
     const value = particle.content
     page += "<" + property + ">" + value + "</" + property + ">"
@@ -2546,7 +2546,7 @@ testParticles.copyToRegression = equal => {
  @blue
  >div`
 
-  const migrateParticle = (particle: scrollNotationTypes.particle) => {
+  const migrateParticle = (particle: particlesTypes.particle) => {
     if (!particle.firstWord.startsWith(">")) return true
     if (particle.length) {
       const cla = particle.getParticle("class").content
@@ -2555,13 +2555,13 @@ testParticles.copyToRegression = equal => {
       if (css) {
         const particles = css.getChildren()
         const toMove: any = []
-        particles.forEach((propParticle: scrollNotationTypes.particle) => {
+        particles.forEach((propParticle: particlesTypes.particle) => {
           const name = propParticle.firstWord.replace(":", " ")
           propParticle.setFirstWord("@" + name)
           toMove.push(propParticle)
         })
         toMove.reverse()
-        toMove.forEach((prop: scrollNotationTypes.particle) => prop.copyTo(particle, 0))
+        toMove.forEach((prop: particlesTypes.particle) => prop.copyTo(particle, 0))
       }
       particle.delete("class")
       particle.delete("css")
@@ -2772,7 +2772,7 @@ d
   )
 
   // Act/Assert
-  const result = reg.topDownArray.map((particle: scrollNotationTypes.particle) => particle.lineNumber).join(" ")
+  const result = reg.topDownArray.map((particle: particlesTypes.particle) => particle.lineNumber).join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getParticle("a").lineNumber, 1)
 }
@@ -2821,10 +2821,10 @@ q quantity`
 
   // Act
   const remapped = new Particle(test)
-  remapped.forEach((particle: scrollNotationTypes.particle) => particle.remap(expandMapObj))
+  remapped.forEach((particle: particlesTypes.particle) => particle.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.forEach((particle: scrollNotationTypes.particle) => particle.remap(contractMap))
+  expected.forEach((particle: particlesTypes.particle) => particle.remap(contractMap))
 
   // Assert
   equal(test, expected.asString)
@@ -3189,7 +3189,7 @@ testParticles.sort = equal => {
   // Assert
   equal(particle.getFirstWords().join(" "), "john susy bob")
   // Act
-  particle.sort((a: scrollNotationTypes.particle, b: scrollNotationTypes.particle) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
+  particle.sort((a: particlesTypes.particle, b: particlesTypes.particle) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
   // Assert
   equal(particle.getFirstWords().join(" "), "bob john susy")
 }
@@ -3594,14 +3594,14 @@ testParticles.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal.topDownArray.map((particle: scrollNotationTypes.particle) => particle.getLine()).join(" ")
+  const preOrder = traversal.topDownArray.map((particle: particlesTypes.particle) => particle.getLine()).join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
-    .map((particle: scrollNotationTypes.particle) => particle.getLine())
+    .map((particle: particlesTypes.particle) => particle.getLine())
     .join(" ")
   const breadthfirst = traversal
     .getParentFirstArray()
-    .map((particle: scrollNotationTypes.particle) => particle.getLine())
+    .map((particle: particlesTypes.particle) => particle.getLine())
     .join(" ")
 
   // Assert
@@ -3623,14 +3623,14 @@ testParticles.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree.topDownArray.map((particle: scrollNotationTypes.particle) => particle.getLine()).join("")
+  const wikipreorder = wikipediaBinaryTree.topDownArray.map((particle: particlesTypes.particle) => particle.getLine()).join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
-    .map((particle: scrollNotationTypes.particle) => particle.getLine())
+    .map((particle: particlesTypes.particle) => particle.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
     .getChildrenFirstArray()
-    .map((particle: scrollNotationTypes.particle) => particle.getLine())
+    .map((particle: particlesTypes.particle) => particle.getLine())
     .join("")
 
   // Assert
@@ -3659,7 +3659,7 @@ b
  a
 b
  a
-c`).getFiltered((particle: scrollNotationTypes.particle) => particle.firstWord === "a").length,
+c`).getFiltered((particle: particlesTypes.particle) => particle.firstWord === "a").length,
     3
   )
 }
@@ -3718,7 +3718,7 @@ testParticles.toOutline = equal => {
 `
   )
   equal(
-    particle.toMappedOutline((particle: scrollNotationTypes.particle) => "o"),
+    particle.toMappedOutline((particle: particlesTypes.particle) => "o"),
     `└o
  └o
 `
@@ -3770,7 +3770,7 @@ b
 c
  d`)
   // Act
-  a.forEach((child: scrollNotationTypes.particle) => {
+  a.forEach((child: particlesTypes.particle) => {
     child.destroy()
   })
 

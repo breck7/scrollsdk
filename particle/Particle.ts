@@ -1,10 +1,10 @@
 import { AbstractParticle } from "./AbstractParticle.particle"
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 const { Utils } = require("../products/Utils.js")
 
-declare type int = scrollNotationTypes.int
-declare type word = scrollNotationTypes.word
+declare type int = particlesTypes.int
+declare type word = particlesTypes.word
 
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
@@ -67,16 +67,16 @@ enum WhereOperators {
   notEmpty = "notEmpty"
 }
 
-enum ScrollNotationConstants {
+enum ParticlesConstants {
   extends = "extends"
 }
 
 class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
-  private _catchAllParser: scrollNotationTypes.ParticleParser
+  private _catchAllParser: particlesTypes.ParticleParser
   private _firstWordMap: Map<string, Function>
-  private _regexTests: scrollNotationTypes.regexTest[]
-  constructor(catchAllParser: scrollNotationTypes.ParticleParser, firstWordMap: scrollNotationTypes.firstWordToParserMap = {}, regexTests: scrollNotationTypes.regexTest[] = undefined) {
+  private _regexTests: particlesTypes.regexTest[]
+  constructor(catchAllParser: particlesTypes.ParticleParser, firstWordMap: particlesTypes.firstWordToParserMap = {}, regexTests: particlesTypes.regexTest[] = undefined) {
     this._catchAllParser = catchAllParser
     this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
@@ -93,7 +93,7 @@ class ParserCombinator {
 
   // todo: remove
   _getFirstWordMapAsObject() {
-    let obj: scrollNotationTypes.firstWordToParserMap = {}
+    let obj: particlesTypes.firstWordToParserMap = {}
     const map = this._getFirstWordMap()
     for (let [key, val] of map.entries()) {
       obj[key] = val
@@ -101,11 +101,11 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextParticle: scrollNotationTypes.particle, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): scrollNotationTypes.ParticleParser {
+  _getParser(line: string, contextParticle: particlesTypes.particle, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
     return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
-  _getCatchAllParser(contextParticle: scrollNotationTypes.particle) {
+  _getCatchAllParser(contextParticle: particlesTypes.particle) {
     if (this._catchAllParser) return this._catchAllParser
 
     const parent = contextParticle.parent
@@ -115,7 +115,7 @@ class ParserCombinator {
     return contextParticle.constructor
   }
 
-  private _getParserFromRegexTests(line: string): scrollNotationTypes.ParticleParser {
+  private _getParserFromRegexTests(line: string): particlesTypes.ParticleParser {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
     if (hit) return hit.parser
@@ -129,7 +129,7 @@ class ParserCombinator {
 }
 
 class Particle extends AbstractParticle {
-  constructor(children?: scrollNotationTypes.children, line?: string, parent?: Particle) {
+  constructor(children?: particlesTypes.children, line?: string, parent?: Particle) {
     super()
     this._parent = parent
     this._setLine(line)
@@ -152,7 +152,7 @@ class Particle extends AbstractParticle {
     await Promise.all(this.map(particle => particle.loadRequirements(context)))
   }
 
-  getErrors(): scrollNotationTypes.ParticleError[] {
+  getErrors(): particlesTypes.ParticleError[] {
     return []
   }
 
@@ -229,7 +229,7 @@ class Particle extends AbstractParticle {
     }
   }
 
-  particleAtLine(lineNumber: scrollNotationTypes.positiveInt): Particle | undefined {
+  particleAtLine(lineNumber: particlesTypes.positiveInt): Particle | undefined {
     let index = 0
     for (let particle of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return particle
@@ -317,15 +317,15 @@ class Particle extends AbstractParticle {
     return this.toString()
   }
 
-  printLinesFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int) {
+  printLinesFrom(start: particlesTypes.int, quantity: particlesTypes.int) {
     return this._printLinesFrom(start, quantity, false)
   }
 
-  printLinesWithLineNumbersFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int) {
+  printLinesWithLineNumbersFrom(start: particlesTypes.int, quantity: particlesTypes.int) {
     return this._printLinesFrom(start, quantity, true)
   }
 
-  private _printLinesFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int, printLineNumbers: boolean) {
+  private _printLinesFrom(start: particlesTypes.int, quantity: particlesTypes.int, printLineNumbers: boolean) {
     // todo: use iterator for better perf?
     const end = start + quantity
     this.toString()
@@ -374,7 +374,7 @@ class Particle extends AbstractParticle {
     return this._getWords(0)
   }
 
-  doesExtend(parserId: scrollNotationTypes.parserId) {
+  doesExtend(parserId: particlesTypes.parserId) {
     return false
   }
 
@@ -473,7 +473,7 @@ class Particle extends AbstractParticle {
     return [oneToTwo, twoToOne]
   }
 
-  private _getWordIndexCharacterStartPosition(wordIndex: int): scrollNotationTypes.positiveInt {
+  private _getWordIndexCharacterStartPosition(wordIndex: int): particlesTypes.positiveInt {
     const xiLength = this.edgeSymbol.length
     const numIndents = this._getIndentLevel() - 1
     const indentPosition = xiLength * numIndents
@@ -481,7 +481,7 @@ class Particle extends AbstractParticle {
     return indentPosition + this.words.slice(0, wordIndex).join(this.wordBreakSymbol).length + this.wordBreakSymbol.length
   }
 
-  getParticleInScopeAtCharIndex(charIndex: scrollNotationTypes.positiveInt) {
+  getParticleInScopeAtCharIndex(charIndex: particlesTypes.positiveInt) {
     if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
@@ -511,7 +511,7 @@ class Particle extends AbstractParticle {
   }
 
   getAllWordBoundaryCoordinates() {
-    const coordinates: scrollNotationTypes.wordBoundary[] = []
+    const coordinates: particlesTypes.wordBoundary[] = []
     let lineIndex = 0
     for (let particle of this.getTopDownArrayIterator()) {
       ;(<Particle>particle).getWordBoundaryCharIndices().forEach((charIndex, wordIndex) => {
@@ -527,7 +527,7 @@ class Particle extends AbstractParticle {
     return coordinates
   }
 
-  getWordBoundaryCharIndices(): scrollNotationTypes.positiveInt[] {
+  getWordBoundaryCharIndices(): particlesTypes.positiveInt[] {
     let indentLevel = this._getIndentLevel()
     const wordBreakSymbolLength = this.wordBreakSymbol.length
     let elapsed = indentLevel
@@ -538,7 +538,7 @@ class Particle extends AbstractParticle {
     })
   }
 
-  getWordIndexAtCharacterIndex(charIndex: scrollNotationTypes.positiveInt): int {
+  getWordIndexAtCharacterIndex(charIndex: particlesTypes.positiveInt): int {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
     const numberOfIndents = this._getIndentLevel(undefined) - 1
@@ -558,11 +558,11 @@ class Particle extends AbstractParticle {
   }
 
   // Note: This currently does not return any errors resulting from "required" or "single"
-  getAllErrors(lineStartsAt = 1): scrollNotationTypes.ParticleError[] {
-    const errors: scrollNotationTypes.ParticleError[] = []
+  getAllErrors(lineStartsAt = 1): particlesTypes.ParticleError[] {
+    const errors: particlesTypes.ParticleError[] = []
     for (let particle of this.topDownArray) {
       particle._cachedLineNumber = lineStartsAt // todo: cleanup
-      const errs: scrollNotationTypes.ParticleError[] = particle.getErrors()
+      const errs: particlesTypes.ParticleError[] = particle.getErrors()
       errs.forEach(err => errors.push(err))
       // delete particle._cachedLineNumber
       lineStartsAt++
@@ -640,30 +640,30 @@ class Particle extends AbstractParticle {
   }
 
   // todo: return array? getPathArray?
-  protected _getFirstWordPath(relativeTo?: Particle): scrollNotationTypes.firstWordPath {
+  protected _getFirstWordPath(relativeTo?: Particle): particlesTypes.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
     else if (this.parent.isRoot(relativeTo)) return this.firstWord
 
     return this.parent._getFirstWordPath(relativeTo) + this.edgeSymbol + this.firstWord
   }
 
-  getFirstWordPathRelativeTo(relativeTo?: Particle): scrollNotationTypes.firstWordPath {
+  getFirstWordPathRelativeTo(relativeTo?: Particle): particlesTypes.firstWordPath {
     return this._getFirstWordPath(relativeTo)
   }
 
-  getFirstWordPath(): scrollNotationTypes.firstWordPath {
+  getFirstWordPath(): particlesTypes.firstWordPath {
     return this._getFirstWordPath()
   }
 
-  getPathVector(): scrollNotationTypes.pathVector {
+  getPathVector(): particlesTypes.pathVector {
     return this._getPathVector()
   }
 
-  getPathVectorRelativeTo(relativeTo?: Particle): scrollNotationTypes.pathVector {
+  getPathVectorRelativeTo(relativeTo?: Particle): particlesTypes.pathVector {
     return this._getPathVector(relativeTo)
   }
 
-  protected _getPathVector(relativeTo?: Particle): scrollNotationTypes.pathVector {
+  protected _getPathVector(relativeTo?: Particle): particlesTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.parent._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -682,12 +682,12 @@ class Particle extends AbstractParticle {
     return this.words.map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`).join(`<span class="zIncrement">${this.wordBreakSymbol}</span>`)
   }
 
-  protected _getXmlContent(indentCount: scrollNotationTypes.positiveInt) {
+  protected _getXmlContent(indentCount: particlesTypes.positiveInt) {
     if (this.content !== undefined) return this.contentWithChildren
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
-  protected _toXml(indentCount: scrollNotationTypes.positiveInt) {
+  protected _toXml(indentCount: particlesTypes.positiveInt) {
     const indent = " ".repeat(indentCount)
     const tag = this.firstWord
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
@@ -959,7 +959,7 @@ class Particle extends AbstractParticle {
     return this._getChildrenArray().slice(0)
   }
 
-  get length(): scrollNotationTypes.positiveInt {
+  get length(): particlesTypes.positiveInt {
     return this._getChildrenArray().length
   }
 
@@ -982,7 +982,7 @@ class Particle extends AbstractParticle {
   // Flatten a particle into an object like {twitter:"pldb", "twitter.followers":123}.
   // Assumes you have a nested key/value list with no multiline strings.
   toFlatObject(delimiter = ".") {
-    let newObject: scrollNotationTypes.stringMap = {}
+    let newObject: particlesTypes.stringMap = {}
     const { edgeSymbolRegex } = this
     this.forEach((child: Particle, index: number) => {
       newObject[child.getWord(0)] = child.content
@@ -996,7 +996,7 @@ class Particle extends AbstractParticle {
   }
 
   protected _toObject() {
-    const obj: scrollNotationTypes.stringMap = {}
+    const obj: particlesTypes.stringMap = {}
     this.forEach(particle => {
       const tuple = particle._toObjectTuple()
       obj[tuple[0]] = tuple[1]
@@ -1004,11 +1004,11 @@ class Particle extends AbstractParticle {
     return obj
   }
 
-  get asHtml(): scrollNotationTypes.htmlString {
+  get asHtml(): particlesTypes.htmlString {
     return this._childrenToHtml(0)
   }
 
-  protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): scrollNotationTypes.htmlString {
+  protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): particlesTypes.htmlString {
     const getLine = (cellIndex: number, word = "") =>
       `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
     let cells: string[] = []
@@ -1016,7 +1016,7 @@ class Particle extends AbstractParticle {
     return cells.join("")
   }
 
-  get asHtmlCube(): scrollNotationTypes.htmlString {
+  get asHtmlCube(): particlesTypes.htmlString {
     return this.map((plane, planeIndex) => plane.topDownArray.map((line: any, lineIndex: number) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex)).join("")).join("")
   }
 
@@ -1051,7 +1051,7 @@ class Particle extends AbstractParticle {
     return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
 
-  get asXml(): scrollNotationTypes.xmlString {
+  get asXml(): particlesTypes.xmlString {
     return this._childrenToXml(0)
   }
 
@@ -1118,11 +1118,11 @@ class Particle extends AbstractParticle {
     return this.map(particle => particle._toYamlAssociativeArrayElement(indentLevel))
   }
 
-  get asJsonSubset(): scrollNotationTypes.jsonSubset {
+  get asJsonSubset(): particlesTypes.jsonSubset {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  private _toObjectForSerialization(): scrollNotationTypes.SerializedParticle {
+  private _toObjectForSerialization(): particlesTypes.SerializedParticle {
     return this.length
       ? {
           cells: this.words,
@@ -1148,7 +1148,7 @@ class Particle extends AbstractParticle {
     return JSON.stringify(this.asGrid, null, 2)
   }
 
-  findParticles(firstWordPath: scrollNotationTypes.firstWordPath | scrollNotationTypes.firstWordPath[]): Particle[] {
+  findParticles(firstWordPath: particlesTypes.firstWordPath | particlesTypes.firstWordPath[]): Particle[] {
     // todo: can easily speed this up
     const map: any = {}
     if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
@@ -1159,7 +1159,7 @@ class Particle extends AbstractParticle {
     })
   }
 
-  evalTemplateString(str: scrollNotationTypes.templateString): string {
+  evalTemplateString(str: particlesTypes.templateString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
@@ -1172,7 +1172,7 @@ class Particle extends AbstractParticle {
     return this.map(particle => particle.get(path))
   }
 
-  getFiltered(fn: scrollNotationTypes.filterFn) {
+  getFiltered(fn: particlesTypes.filterFn) {
     const clone = this.clone()
     clone
       .filter((particle, index) => !fn(particle, index))
@@ -1182,7 +1182,7 @@ class Particle extends AbstractParticle {
     return clone
   }
 
-  getParticle(firstWordPath: scrollNotationTypes.firstWordPath) {
+  getParticle(firstWordPath: particlesTypes.firstWordPath) {
     return this._getParticleByPath(firstWordPath)
   }
 
@@ -1191,7 +1191,7 @@ class Particle extends AbstractParticle {
     if (hit) return hit.getLine().substr((prefix + this.wordBreakSymbol).length)
   }
 
-  get(firstWordPath: scrollNotationTypes.firstWordPath) {
+  get(firstWordPath: particlesTypes.firstWordPath) {
     const particle = this._getParticleByPath(firstWordPath)
     return particle === undefined ? undefined : particle.content
   }
@@ -1207,18 +1207,18 @@ class Particle extends AbstractParticle {
   pick(fields: string[]) {
     const newParticle = new Particle(this.toString()) // todo: why not clone?
     const map = Utils.arrayToMap(fields)
-    newParticle.particleAt(0).forEach((particle: scrollNotationTypes.particle) => {
+    newParticle.particleAt(0).forEach((particle: particlesTypes.particle) => {
       if (!map[particle.getWord(0)]) particle.destroy()
     })
 
     return newParticle
   }
 
-  getParticlesByGlobPath(query: scrollNotationTypes.globPath): Particle[] {
+  getParticlesByGlobPath(query: particlesTypes.globPath): Particle[] {
     return this._getParticlesByGlobPath(query)
   }
 
-  private _getParticlesByGlobPath(globPath: scrollNotationTypes.globPath): Particle[] {
+  private _getParticlesByGlobPath(globPath: particlesTypes.globPath): Particle[] {
     const edgeSymbol = this.edgeSymbol
     if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getChildren()
@@ -1236,7 +1236,7 @@ class Particle extends AbstractParticle {
     )
   }
 
-  protected _getParticleByPath(firstWordPath: scrollNotationTypes.firstWordPath): Particle {
+  protected _getParticleByPath(firstWordPath: particlesTypes.firstWordPath): Particle {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) {
       const index = this.indexOfLast(firstWordPath)
@@ -1270,7 +1270,7 @@ class Particle extends AbstractParticle {
   protected _getUnionNames() {
     if (!this.length) return []
 
-    const obj: scrollNotationTypes.stringMap = {}
+    const obj: particlesTypes.stringMap = {}
     this.forEach((particle: Particle) => {
       if (!particle.length) return undefined
       particle.forEach(particle => {
@@ -1320,7 +1320,7 @@ class Particle extends AbstractParticle {
     return ancestorParticles
   }
 
-  pathVectorToFirstWordPath(pathVector: scrollNotationTypes.pathVector): word[] {
+  pathVectorToFirstWordPath(pathVector: particlesTypes.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
     let particle: Particle = this
@@ -1362,7 +1362,7 @@ class Particle extends AbstractParticle {
     return types
   }
 
-  toDataTable(header = this._getUnionNames()): scrollNotationTypes.dataTable {
+  toDataTable(header = this._getUnionNames()): particlesTypes.dataTable {
     const types = this._getTypes(header)
     const parsers: { [parseName: string]: (str: string) => any } = {
       string: str => str,
@@ -1375,7 +1375,7 @@ class Particle extends AbstractParticle {
     return arrays.rows
   }
 
-  toDelimited(delimiter: scrollNotationTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
+  toDelimited(delimiter: particlesTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
     return this._toDelimited(delimiter, header, escapeSpecialChars ? cellFn : str => str)
@@ -1409,7 +1409,7 @@ class Particle extends AbstractParticle {
     }
   }
 
-  _toDelimited(delimiter: scrollNotationTypes.delimiter, header: string[], cellFn: cellFn) {
+  _toDelimited(delimiter: particlesTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -1439,7 +1439,7 @@ class Particle extends AbstractParticle {
       })
     })
 
-    const cellFn = (cellText: string, row: scrollNotationTypes.positiveInt, col: scrollNotationTypes.positiveInt) => {
+    const cellFn = (cellText: string, row: particlesTypes.positiveInt, col: particlesTypes.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
@@ -1460,13 +1460,13 @@ class Particle extends AbstractParticle {
     return this._toOutline(particle => particle.getLine())
   }
 
-  toMappedOutline(particleFn: scrollNotationTypes.particleToStringFn): string {
+  toMappedOutline(particleFn: particlesTypes.particleToStringFn): string {
     return this._toOutline(particleFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  protected _toOutline(particleFn: scrollNotationTypes.particleToStringFn) {
-    const growBranch = (outlineParticle: any, last: boolean, lastStates: any[], particleFn: scrollNotationTypes.particleToStringFn, callback: any) => {
+  protected _toOutline(particleFn: particlesTypes.particleToStringFn) {
+    const growBranch = (outlineParticle: any, last: boolean, lastStates: any[], particleFn: particlesTypes.particleToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const particle: Particle = outlineParticle.particle
 
@@ -1507,7 +1507,7 @@ class Particle extends AbstractParticle {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstWord: scrollNotationTypes.word): Particle[] {
+  split(firstWord: particlesTypes.word): Particle[] {
     const constructor = <any>this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const WordBreakSymbol = this.wordBreakSymbol
@@ -1522,7 +1522,7 @@ class Particle extends AbstractParticle {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn: scrollNotationTypes.formatFunction): string {
+  toMarkdownTableAdvanced(columns: word[], formatFn: particlesTypes.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1619,7 +1619,7 @@ class Particle extends AbstractParticle {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstWord: scrollNotationTypes.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstWord: particlesTypes.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
@@ -1647,7 +1647,7 @@ class Particle extends AbstractParticle {
     this._insertLineAndChildren(line, children)
   }
 
-  protected _insertLineAndChildren(line: string, children?: scrollNotationTypes.children, index = this.length) {
+  protected _insertLineAndChildren(line: string, children?: particlesTypes.children, index = this.length) {
     const parser: any = this._getParser()._getParser(line, this)
     const newParticle = new parser(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -1728,7 +1728,7 @@ class Particle extends AbstractParticle {
   }
 
   // todo: rename this. it is a particular type of object.
-  toObject(): scrollNotationTypes.stringMap {
+  toObject(): particlesTypes.stringMap {
     return this._toObject()
   }
 
@@ -1749,7 +1749,7 @@ class Particle extends AbstractParticle {
     return newIndex
   }
 
-  protected _childrenToXml(indentCount: scrollNotationTypes.positiveInt) {
+  protected _childrenToXml(indentCount: particlesTypes.positiveInt) {
     return this.map(particle => particle._toXml(indentCount)).join("")
   }
 
@@ -1770,7 +1770,7 @@ class Particle extends AbstractParticle {
     return this._hasFirstWord(firstWord)
   }
 
-  has(firstWordPath: scrollNotationTypes.firstWordPath): boolean {
+  has(firstWordPath: particlesTypes.firstWordPath): boolean {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) return this.hasFirstWord(firstWordPath)
 
@@ -1793,19 +1793,19 @@ class Particle extends AbstractParticle {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: scrollNotationTypes.filterFn = item => item) {
+  filter(fn: particlesTypes.filterFn = item => item) {
     return this.getChildren().filter(fn)
   }
 
-  find(fn: scrollNotationTypes.filterFn) {
+  find(fn: particlesTypes.filterFn) {
     return this.getChildren().find(fn)
   }
 
-  findLast(fn: scrollNotationTypes.filterFn) {
+  findLast(fn: particlesTypes.filterFn) {
     return this.getChildren().reverse().find(fn)
   }
 
-  every(fn: scrollNotationTypes.everyFn) {
+  every(fn: particlesTypes.everyFn) {
     let index = 0
     for (let particle of this.getTopDownArrayIterator()) {
       if (!fn(particle, index)) return false
@@ -1814,7 +1814,7 @@ class Particle extends AbstractParticle {
     return true
   }
 
-  forEach(fn: scrollNotationTypes.forEachFn) {
+  forEach(fn: particlesTypes.forEachFn) {
     this.getChildren().forEach(fn)
     return this
   }
@@ -1826,7 +1826,7 @@ class Particle extends AbstractParticle {
     })
   }
 
-  _quickCache: scrollNotationTypes.stringMap
+  _quickCache: particlesTypes.stringMap
   get quickCache() {
     if (!this._quickCache) this._quickCache = {}
     return this._quickCache
@@ -1862,7 +1862,7 @@ class Particle extends AbstractParticle {
 
   // todo: make 0 and 1 a param
   getInheritanceParticles() {
-    const paths: scrollNotationTypes.stringMap = {}
+    const paths: particlesTypes.stringMap = {}
     const result = new Particle()
     this.forEach(particle => {
       const key = particle.getWord(0)
@@ -1957,7 +1957,7 @@ class Particle extends AbstractParticle {
   }
 
   private _setVirtualAncestorParticlesByInheritanceViaColumnIndicesAndThenExpand(particles: Particle[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
-    const map: { [particleId: string]: scrollNotationTypes.inheritanceInfo } = {}
+    const map: { [particleId: string]: particlesTypes.inheritanceInfo } = {}
     for (let particle of particles) {
       const particleId = particle.getWord(thisIdColumnNumber)
       if (map[particleId]) throw new Error(`Tried to define a particle with id "${particleId}" but one is already defined.`)
@@ -2074,7 +2074,7 @@ class Particle extends AbstractParticle {
     return clone
   }
 
-  setChildren(children: scrollNotationTypes.children) {
+  setChildren(children: particlesTypes.children) {
     return this._setChildren(children)
   }
 
@@ -2179,7 +2179,7 @@ class Particle extends AbstractParticle {
     ;(this.parent as Particle)._deleteParticle(this)
   }
 
-  set(firstWordPath: scrollNotationTypes.firstWordPath, text: string) {
+  set(firstWordPath: particlesTypes.firstWordPath, text: string) {
     return this.touchParticle(firstWordPath).setContentWithChildren(text)
   }
 
@@ -2195,7 +2195,7 @@ class Particle extends AbstractParticle {
     return this.touchParticle(prop).setContent(value)
   }
 
-  setProperties(propMap: scrollNotationTypes.stringMap) {
+  setProperties(propMap: particlesTypes.stringMap) {
     const props = Object.keys(propMap)
     const values = Object.values(propMap)
     // todo: is there a built in particle method to do this?
@@ -2218,7 +2218,7 @@ class Particle extends AbstractParticle {
     return this.findLine(line)
   }
 
-  appendLineAndChildren(line: string, children: scrollNotationTypes.children) {
+  appendLineAndChildren(line: string, children: particlesTypes.children) {
     return this._insertLineAndChildren(line, children)
   }
 
@@ -2282,7 +2282,7 @@ class Particle extends AbstractParticle {
     return particle.copyTo(new (<any>this.constructor)(), 0)
   }
 
-  sort(fn: scrollNotationTypes.sortFn) {
+  sort(fn: particlesTypes.sortFn) {
     this._getChildrenArray().sort(fn)
     this._clearIndex()
     return this
@@ -2293,7 +2293,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  protected _rename(oldFirstWord: scrollNotationTypes.word, newFirstWord: scrollNotationTypes.word) {
+  protected _rename(oldFirstWord: particlesTypes.word, newFirstWord: particlesTypes.word) {
     const index = this.indexOf(oldFirstWord)
 
     if (index === -1) return this
@@ -2306,7 +2306,7 @@ class Particle extends AbstractParticle {
   }
 
   // Does not recurse.
-  remap(map: scrollNotationTypes.stringMap) {
+  remap(map: particlesTypes.stringMap) {
     this.forEach(particle => {
       const firstWord = particle.firstWord
       if (map[firstWord] !== undefined) particle.setFirstWord(map[firstWord])
@@ -2334,7 +2334,7 @@ class Particle extends AbstractParticle {
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(path: scrollNotationTypes.firstWordPath = "") {
+  delete(path: particlesTypes.firstWordPath = "") {
     const edgeSymbol = this.edgeSymbol
     if (!path.includes(edgeSymbol)) return this._deleteAllChildParticlesWithFirstWord(path)
 
@@ -2369,7 +2369,7 @@ class Particle extends AbstractParticle {
     return returnedParticles
   }
 
-  insertLineAndChildren(line: string, children: scrollNotationTypes.children, index: int) {
+  insertLineAndChildren(line: string, children: particlesTypes.children, index: int) {
     return this._insertLineAndChildren(line, children, index)
   }
 
@@ -2381,7 +2381,7 @@ class Particle extends AbstractParticle {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?: scrollNotationTypes.line, children?: scrollNotationTypes.children) {
+  pushContentAndChildren(content?: particlesTypes.line, children?: particlesTypes.children) {
     let index = this.length
 
     while (this.has(index.toString())) {
@@ -2400,11 +2400,11 @@ class Particle extends AbstractParticle {
 
   // todo: add "globalReplace" method? Which runs a global regex or string replace on the Particle as a string?
 
-  firstWordSort(firstWordOrder: scrollNotationTypes.word[]): this {
+  firstWordSort(firstWordOrder: particlesTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
   }
 
-  deleteWordAt(wordIndex: scrollNotationTypes.positiveInt): this {
+  deleteWordAt(wordIndex: particlesTypes.positiveInt): this {
     const words = this.words
     words.splice(wordIndex, 1)
     return this.setWords(words)
@@ -2454,22 +2454,22 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  setWords(words: scrollNotationTypes.word[]): this {
+  setWords(words: particlesTypes.word[]): this {
     return this.setLine(words.join(this.wordBreakSymbol))
   }
 
-  setWordsFrom(index: scrollNotationTypes.positiveInt, words: scrollNotationTypes.word[]): this {
+  setWordsFrom(index: particlesTypes.positiveInt, words: particlesTypes.word[]): this {
     this.setWords(this.words.slice(0, index).concat(words))
     return this
   }
 
-  appendWord(word: scrollNotationTypes.word): this {
+  appendWord(word: particlesTypes.word): this {
     const words = this.words
     words.push(word)
     return this.setWords(words)
   }
 
-  _firstWordSort(firstWordOrder: scrollNotationTypes.word[], secondarySortFn?: scrollNotationTypes.sortFn): this {
+  _firstWordSort(firstWordOrder: particlesTypes.word[], secondarySortFn?: particlesTypes.sortFn): this {
     const particleAFirst = -1
     const particleBFirst = 1
     const map: { [firstWord: string]: int } = {}
@@ -2486,7 +2486,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  protected _touchParticle(firstWordPathArray: scrollNotationTypes.word[]) {
+  protected _touchParticle(firstWordPathArray: particlesTypes.word[]) {
     let contextParticle = this
     firstWordPathArray.forEach(firstWord => {
       contextParticle = contextParticle.getParticle(firstWord) || contextParticle.appendLine(firstWord)
@@ -2499,7 +2499,7 @@ class Particle extends AbstractParticle {
     return this._touchParticle(str.split(this.wordBreakSymbol))
   }
 
-  touchParticle(str: scrollNotationTypes.firstWordPath) {
+  touchParticle(str: particlesTypes.firstWordPath) {
     return this._touchParticleByString(str)
   }
 
@@ -2507,19 +2507,19 @@ class Particle extends AbstractParticle {
     return this.appendLineAndChildren(particle.getLine(), particle.childrenToString())
   }
 
-  hasLine(line: scrollNotationTypes.line) {
+  hasLine(line: particlesTypes.line) {
     return this.getChildren().some(particle => particle.getLine() === line)
   }
 
-  findLine(line: scrollNotationTypes.line) {
+  findLine(line: particlesTypes.line) {
     return this.getChildren().find(particle => particle.getLine() === line)
   }
 
-  getParticlesByLine(line: scrollNotationTypes.line) {
+  getParticlesByLine(line: particlesTypes.line) {
     return this.filter(particle => particle.getLine() === line)
   }
 
-  toggleLine(line: scrollNotationTypes.line): Particle {
+  toggleLine(line: particlesTypes.line): Particle {
     const lines = this.getParticlesByLine(line)
     if (lines.length) {
       lines.map(line => line.destroy())
@@ -2627,7 +2627,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  templateToString(obj: scrollNotationTypes.stringMap): string {
+  templateToString(obj: particlesTypes.stringMap): string {
     // todo: compile/cache for perf?
     const particle = this.clone()
     particle.topDownArray.forEach(particle => {
@@ -2656,7 +2656,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  sortBy(nameOrNames: scrollNotationTypes.word[]) {
+  sortBy(nameOrNames: particlesTypes.word[]) {
     const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
     const length = names.length
@@ -2773,11 +2773,11 @@ class Particle extends AbstractParticle {
   }
 
   // todo: jeez i think we can come up with a better name than "JsonSubset"
-  static fromJsonSubset(str: scrollNotationTypes.jsonSubset) {
+  static fromJsonSubset(str: particlesTypes.jsonSubset) {
     return new Particle(JSON.parse(str))
   }
 
-  static serializedParticleToParticle(particle: scrollNotationTypes.SerializedParticle) {
+  static serializedParticleToParticle(particle: particlesTypes.SerializedParticle) {
     const language = new Particle()
     const cellDelimiter = language.wordBreakSymbol
     const particleDelimiter = language.particleBreakSymbol
@@ -2790,7 +2790,7 @@ class Particle extends AbstractParticle {
     return newParticle
   }
 
-  static fromJson(str: scrollNotationTypes.serializedParticle) {
+  static fromJson(str: particlesTypes.serializedParticle) {
     return this.serializedParticleToParticle(JSON.parse(str))
   }
 
@@ -2911,7 +2911,7 @@ class Particle extends AbstractParticle {
         }
       }
 
-      const obj: scrollNotationTypes.stringMap = {}
+      const obj: particlesTypes.stringMap = {}
       row.forEach((cellValue, index) => {
         obj[names[index]] = cellValue
       })
@@ -2951,7 +2951,7 @@ class Particle extends AbstractParticle {
   }
 
   static _zipObject(keys: string[], values: any) {
-    const obj: scrollNotationTypes.stringMap = {}
+    const obj: particlesTypes.stringMap = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
@@ -2968,7 +2968,7 @@ class Particle extends AbstractParticle {
     return rootParticle
   }
 
-  static fromDataTable(table: scrollNotationTypes.dataTable) {
+  static fromDataTable(table: particlesTypes.dataTable) {
     const header = table.shift()
     return new Particle(table.map(row => this._zipObject(header, row)))
   }
@@ -3042,7 +3042,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "84.0.0"
+  static getVersion = () => "85.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)
@@ -3072,7 +3072,7 @@ class Particle extends AbstractParticle {
 }
 
 abstract class AbstractExtendibleParticle extends Particle {
-  _getFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
+  _getFromExtended(firstWordPath: particlesTypes.firstWordPath) {
     const hit = this._getParticleFromExtended(firstWordPath)
     return hit ? hit.get(firstWordPath) : undefined
   }
@@ -3096,15 +3096,15 @@ abstract class AbstractExtendibleParticle extends Particle {
     return this._getAncestorsArray()[1]
   }
 
-  _hasFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
+  _hasFromExtended(firstWordPath: particlesTypes.firstWordPath) {
     return !!this._getParticleFromExtended(firstWordPath)
   }
 
-  _getParticleFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
+  _getParticleFromExtended(firstWordPath: particlesTypes.firstWordPath) {
     return this._getAncestorsArray().find(particle => particle.has(firstWordPath))
   }
 
-  _getConcatBlockStringFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
+  _getConcatBlockStringFromExtended(firstWordPath: particlesTypes.firstWordPath) {
     return this._getAncestorsArray()
       .filter(particle => particle.has(firstWordPath))
       .map(particle => particle.getParticle(firstWordPath).childrenToString())
@@ -3112,7 +3112,7 @@ abstract class AbstractExtendibleParticle extends Particle {
       .join("\n")
   }
 
-  _doesExtend(parserId: scrollNotationTypes.parserId) {
+  _doesExtend(parserId: particlesTypes.parserId) {
     return this._getAncestorSet().has(parserId)
   }
 
@@ -3123,7 +3123,7 @@ abstract class AbstractExtendibleParticle extends Particle {
 
   abstract get id(): string
 
-  private _cache_ancestorSet: Set<scrollNotationTypes.parserId>
+  private _cache_ancestorSet: Set<particlesTypes.parserId>
   private _cache_ancestorsArray: AbstractExtendibleParticle[]
 
   // Note: the order is: [this, parent, grandParent, ...]
@@ -3133,7 +3133,7 @@ abstract class AbstractExtendibleParticle extends Particle {
   }
 
   private get idThatThisExtends() {
-    return this.get(ScrollNotationConstants.extends)
+    return this.get(ParticlesConstants.extends)
   }
 
   abstract get idToParticleMap(): { [id: string]: AbstractExtendibleParticle }

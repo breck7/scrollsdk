@@ -3,9 +3,9 @@
 const { ParticleFileSystem } = require("../products/ParticleFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.disk = equal => {
   const tfs = new ParticleFileSystem()

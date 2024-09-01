@@ -1,11 +1,11 @@
 #!/usr/bin/env ts-node
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.runSwimTests = equal => {
   // Arrange/Act/Assert

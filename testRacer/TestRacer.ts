@@ -1,11 +1,11 @@
 const { Utils } = require("../products/Utils.js")
 const { Particle } = require("../products/Particle.js")
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 // todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html
 // todo: be able to compile to TAP 13?
 
-declare type fileTestParticles = { [fileName: string]: scrollNotationTypes.testParticles }
+declare type fileTestParticles = { [fileName: string]: particlesTypes.testParticles }
 
 class TestRacerTestBlock {
   constructor(testFile: TestRacerFile, testName: string, fn: Function) {
@@ -78,7 +78,7 @@ class TestRacerTestBlock {
 }
 
 class TestRacerFile {
-  constructor(runner: TestRacer, testParticles: scrollNotationTypes.testParticles, fileName: string) {
+  constructor(runner: TestRacer, testParticles: particlesTypes.testParticles, fileName: string) {
     this._runner = runner
     this._testParticles = {}
     this._fileName = fileName
@@ -159,7 +159,7 @@ class TestRacerFile {
     return fileStats
   }
 
-  private _emitStartFileMessage(blockCount: scrollNotationTypes.int) {
+  private _emitStartFileMessage(blockCount: particlesTypes.int) {
     this._emitMessage(`start file ${blockCount} test blocks in file ${this._fileName}`)
   }
 
@@ -285,7 +285,7 @@ ${new Particle(this._sessionFilesFailed).forEach(row => row.forEach((line: any) 
     )
   }
 
-  static async testSingleFile(fileName: string, testParticles: scrollNotationTypes.testParticles) {
+  static async testSingleFile(fileName: string, testParticles: particlesTypes.testParticles) {
     const obj: any = {}
     obj[fileName] = testParticles
     const session = new TestRacer(obj)

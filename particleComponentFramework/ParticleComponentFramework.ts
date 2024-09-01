@@ -1,6 +1,6 @@
 //onsave scrollsdk build produce ParticleComponentFramework.browser.js
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
 const { Particle } = require("../products/Particle.js")
 const { Utils } = require("../products/Utils.js")
@@ -10,7 +10,7 @@ const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
-const BrowserEvents: scrollNotationTypes.stringMap = {}
+const BrowserEvents: particlesTypes.stringMap = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"
 BrowserEvents.mouseover = "mouseover"
@@ -34,7 +34,7 @@ BrowserEvents.dragenter = "dragenter"
 BrowserEvents.dragleave = "dragleave"
 BrowserEvents.ready = "ready"
 
-const WillowConstants: scrollNotationTypes.stringMap = {}
+const WillowConstants: particlesTypes.stringMap = {}
 // todo: cleanup
 WillowConstants.clickCommand = "clickCommand"
 WillowConstants.shiftClickCommand = "shiftClickCommand"
@@ -271,7 +271,7 @@ class WillowStore {
   constructor() {
     this._values = {}
   }
-  private _values: scrollNotationTypes.stringMap
+  private _values: particlesTypes.stringMap
 
   get(key: string) {
     return this._values[key]
@@ -297,7 +297,7 @@ class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
-  private prototype: scrollNotationTypes.stringMap
+  private prototype: particlesTypes.stringMap
   bind() {}
 }
 
@@ -473,7 +473,7 @@ class AbstractWillowBrowser extends stumpParser {
     return this
   }
 
-  async httpGetUrlFromCache(url: string, queryStringMap: scrollNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url: string, queryStringMap: particlesTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -485,7 +485,7 @@ class AbstractWillowBrowser extends stumpParser {
   }
 
   async httpGetUrlFromProxyCache(url: string) {
-    const queryStringMap: scrollNotationTypes.queryStringMap = {}
+    const queryStringMap: particlesTypes.queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getParticleByBase/withBase/type/word or something?
     const particles = this.topDownArray
-    const titleParticle = particles.find((particle: scrollNotationTypes.particle) => particle.firstWord === WillowConstants.titleTag)
+    const titleParticle = particles.find((particle: particlesTypes.particle) => particle.firstWord === WillowConstants.titleTag)
     return titleParticle ? titleParticle.content : ""
   }
 
   setWindowTitle(value: string) {
     const particles = this.topDownArray
-    const headParticle = particles.find((particle: scrollNotationTypes.particle) => particle.firstWord === WillowConstants.tags.head)
+    const headParticle = particles.find((particle: particlesTypes.particle) => particle.firstWord === WillowConstants.tags.head)
     headParticle.touchParticle(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1177,8 +1177,8 @@ declare class abstractHtmlTag extends ParserBackedParticle {
 }
 
 abstract class AbstractParticleComponentParser extends ParserBackedParticle {
-  private _commandsBuffer: scrollNotationTypes.particle[]
-  private _messageBuffer: scrollNotationTypes.particle
+  private _commandsBuffer: particlesTypes.particle[]
+  private _messageBuffer: particlesTypes.particle
   private _htmlStumpParticle: abstractHtmlTag
   private _cssStumpParticle: abstractHtmlTag
   private _lastRenderedTime: number

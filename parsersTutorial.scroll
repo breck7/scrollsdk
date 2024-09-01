@@ -7,7 +7,7 @@ thinColumns 2
 
 # Key Concepts
 
-*ParticleS* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
+*Particle Syntax (Particles)* is a syntax for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
 
 A _ParticleS_ program is a string, a particle, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 

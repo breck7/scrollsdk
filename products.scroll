@@ -1,15 +1,15 @@
 nodeProduct
  outputFileName ParticleComponentFramework.node.js
- combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
+ combineTypeScriptFiles products/particlesTypes.ts particleComponentFramework/ParticleComponentFramework.ts
  insertLastLine module.exports = { AbstractParticleComponentParser, WillowBrowser, AbstractGithubTriangleComponent, ParticleComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName Particle.js
  insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
- combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
+ combineTypeScriptFiles products/particlesTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
 nodeProduct
  outputFileName Parsers.js
  insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
- combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+ combineTypeScriptFiles products/particlesTypes.ts parsers/Parsers.ts
 nodeProduct
  outputFileName TestRacer.js
  insertLastLine module.exports = {TestRacer}
@@ -17,11 +17,11 @@ nodeProduct
 nodeProduct
  outputFileName ParsersCodeMirrorMode.js
  insertLastLine module.exports = {ParsersCodeMirrorMode}
- combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+ combineTypeScriptFiles products/particlesTypes.ts parsers/ParsersCodeMirrorMode.ts
 nodeProduct
  outputFileName ParsersCompiler.js
  insertLastLine module.exports = {ParsersCompiler}
- combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCompiler.ts
+ combineTypeScriptFiles products/particlesTypes.ts parsers/ParsersCompiler.ts
 nodeProduct
  outputFileName Disk.node.js
  insertLastLine module.exports = {Disk}
@@ -36,7 +36,7 @@ nodeProduct
  combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
 nodeProduct
  outputFileName Kitchen.node.js
- combineTypeScriptFiles products/scrollNotationTypes.ts kitchen/Kitchen.node.ts
+ combineTypeScriptFiles products/particlesTypes.ts kitchen/Kitchen.node.ts
  insertLastLine module.exports = {Kitchen}
 nodeProduct
  outputFileName TypeScriptRewriter.js
@@ -47,16 +47,16 @@ browserProduct
  combineTypeScriptFiles particleComponentFramework/sweepercraft/SweeperCraft.ts
 browserProduct
  outputFileName ParticleComponentFramework.browser.js
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts particleComponentFramework/ParticleComponentFramework.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts particleComponentFramework/ParticleComponentFramework.ts
 browserProduct
  outputFileName Particle.test.browser.js
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts particle/Particle.test.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts particle/Particle.test.ts
 browserProduct
  outputFileName Parsers.ts.browser.js
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts parsers/Parsers.ts
 browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
@@ -65,17 +65,17 @@ browserProduct
  combineTypeScriptFiles particleFileSystem/ParticleFileSystem.ts
 browserProduct
  outputFileName Particle.browser.js
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts particle/AbstractParticle.browser.ts particle/Particle.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts particle/AbstractParticle.browser.ts particle/Particle.ts
 browserProduct
  outputFileName TestRacer.browser.js
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts testRacer/TestRacer.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts testRacer/TestRacer.ts
 browserProduct
  outputFileName ParsersCodeMirrorMode.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
- removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+ removeAll window.particlesTypes = particlesTypes
+ combineTypeScriptFiles products/particlesTypes.ts parsers/ParsersCodeMirrorMode.ts
 browserProduct
  outputFileName DesignerApp.browser.js
  combineTypeScriptFiles designer/DesignerApp.ts

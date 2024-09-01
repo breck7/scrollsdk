@@ -21,7 +21,7 @@ class SandboxApp extends AbstractParticleComponentParser {
       "toJsonSubset",
       `{
  "name": "scrollsdk",
- "description": "ParticleS parser, compiler-compiler, and virtual machine for Languages",
+ "description": "Particles parser, compiler-compiler, and virtual machine for Languages",
  "keywords": "scrollsdk"
 }`
     )
@@ -190,7 +190,7 @@ class headerComponent extends AbstractParticleComponentParser {
     id logo
     src ../images/helloWorld3D.svg
     title Scroll.pub
-  span ParticleS Sandbox
+  span Particles Sandbox
  p
   a Parser Designer
    href ../designer/index.html

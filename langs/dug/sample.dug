@@ -4,7 +4,7 @@ object
  version
   string 30.0.0
  description
-  string Simplify your code with ParticleS. This scrollsdk package includes a ParticleS parser, compiler-compiler, and virtual machine for Languages, as well as sample languages, implemented in TypeScript.
+  string Simplify your code with Particles. This scrollsdk package includes a Particles parser, compiler-compiler, and virtual machine for Languages, as well as sample languages, implemented in TypeScript.
  prettier
   object
    useTabs

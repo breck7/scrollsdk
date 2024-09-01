@@ -43,7 +43,7 @@ operatorCell
 // Line Parsers
 numbersParser
  root
- description A useless Language for testing ParticleS features.
+ description A useless Language for testing Particles features.
  inScope abstractArithmeticReducerParser commentParser hashBangParser
  catchAllParser errorParser
  javascript

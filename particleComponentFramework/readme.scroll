@@ -1,14 +1,14 @@
 title ParticleComponentFramework
 
-ParticleComponentFramework is a *research* web framework for building reactive web apps using entirely ParticleS.
+ParticleComponentFramework is a *research* web framework for building reactive web apps using entirely Particles.
 
 # The Vision
 ParticleComponentFramework is a step toward a world where web app development and debugging is much simpler! Every app can be dumped to a string and you can see all the state in the app in that string. See for yourself in the SweeperCraft app--just press "d" to dump the app to a string.
  https://sdk.scroll.pub/particleComponentFramework/sweepercraft/ SweeperCraft app
 
-With ParticleComponentFramework, you build your components in Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use ParticleScript (coming soon). You define your components in those and then you create a high level Language specifically for your app to stitch those components together.
+With ParticleComponentFramework, you build your components in Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use Particlescript (coming soon). You define your components in those and then you create a high level Language specifically for your app to stitch those components together.
 
-In the future as ParticleS and Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom. We think this will greatly simplify and improve the reliability of web apps.
+In the future as Particles and Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom. We think this will greatly simplify and improve the reliability of web apps.
 
 Today, your ParticleComponentFramework apps are compiled to Javascript and HTML and then run on Virtual Machines like v8/Chromium, which will further compile your code to assembly/machine code and then send that to microprocessors which then compile it to microcode before final execution on hardware. In the long run if people build Particle Machines your code could be run directly as is on those.
 
@@ -21,7 +21,7 @@ The github repo contains a demonstration game called "SweeperCraft" that let's y
 
 This framework also powers:
 
-- ParticleS Sandbox
+- Particles Sandbox
  https://github.com/breck7/scrollsdk/tree/main/sandbox
 - Parser Designer
  https://github.com/breck7/scrollsdk/tree/main/designer
@@ -66,13 +66,13 @@ code
 
 # FAQ
 ? Why build another web framework?
-No one has built a web framework that allows you to build web apps using only one single syntax, ParticleS. This is an experiment.
+No one has built a web framework that allows you to build web apps using only one single syntax, Particles. This is an experiment.
 
 ? I see the Hakon and Stump but then I see mostly TypeScript/Javascript, so how is this different?
-An upcoming release will contain most of the TypeScript/Javascript converted to ParticleScript. The design of ParticleScript is still in heavy flux.
+An upcoming release will contain most of the TypeScript/Javascript converted to Particlescript. The design of Particlescript is still in heavy flux.
 
 ? How can I help?
-We are trying to combine ParticleS with the best ideas from the current leading web frameworks like React, Svelte , and Vue. We are not web framework experts and would LOVE if any experts on frameworks like those could give us some code reviews and point out any obvious bad patterns that we could fix.
+We are trying to combine Particles with the best ideas from the current leading web frameworks like React, Svelte , and Vue. We are not web framework experts and would LOVE if any experts on frameworks like those could give us some code reviews and point out any obvious bad patterns that we could fix.
  https://reactjs.org/ React
  https://svelte.dev/ Svelte
  https://vuejs.org/ Vue

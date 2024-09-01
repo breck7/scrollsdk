@@ -1,5 +1,5 @@
 #! /usr/bin/env node /usr/local/bin/scrollsdk
-test swarmParticleSample
+test swarmParticlesample
  arrange
   require ../../products/Parsers.js HandParsersProgram
   constructWithParagraph

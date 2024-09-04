@@ -27,6 +27,22 @@ testParticles.inMemory = equal => {
   equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
 }
 
+testParticles.quickImports = equal => {
+  // Arrange/Act/Assert
+  const files = {
+    "/hello.scroll": "world",
+    "/main": "hello.scroll\nnested/test.scroll",
+    "/nested/test.scroll": "ciao",
+    "/nested/a": "test.scroll",
+    "/nested/deep/relative": "../../hello.scroll\n../test.scroll"
+  }
+  const tfs = new ParticleFileSystem(files)
+  equal(tfs.dirname("/"), "/")
+  equal(tfs.assembleFile("/nested/a").afterImportPass, "ciao")
+  equal(tfs.assembleFile("/main").afterImportPass, "world\nciao")
+  equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
+}
+
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 
 export { testParticles }

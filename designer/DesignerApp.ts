@@ -542,6 +542,7 @@ class tableComponent extends AbstractParticleComponentParser {
     clickCommand synthesizeProgramCommand
    textarea
     id parsersConsole
+    placeholder Parsers code goes here...
   td
    span Your Program
    input
@@ -563,6 +564,7 @@ class tableComponent extends AbstractParticleComponentParser {
     clickCommand visualizeCommand
    textarea
     id codeConsole
+    placeholder Scroll code goes here...
  tr
   td
    div Parser Errors

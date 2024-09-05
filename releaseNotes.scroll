@@ -18,6 +18,10 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 85.2.0 2024-9-5
+🎉 Placeholder support in codemirror
+🎉 More concise readme generation
+
 📦 85.1.0 2024-9-4
 🎉 Add underlying support for quickImports in Scroll/Parsers.
 

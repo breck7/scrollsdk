@@ -707,7 +707,7 @@ testParticles.bundler = equal => {
   const bundle = jibberishParsersProgram.toBundle()
 
   // Assert
-  equal(bundle["readme.md"].includes("Installing"), true)
+  equal(bundle["readme.md"].includes("stats"), true)
 }
 
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)

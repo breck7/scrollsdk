@@ -521,12 +521,12 @@ class headerComponent extends AbstractParticleComponentParser {
     return `div
  h1
   a
-   href https://notation.scroll.pub
+   href https://particles.scroll.pub
    style text-decoration: none;
    img
     id logo
     src ../images/helloWorld3D.svg
-    title Notation.Scroll.pub
+    title particles.scroll.pub
   span ${this._getTitle()}
  p
   a Particles Sandbox

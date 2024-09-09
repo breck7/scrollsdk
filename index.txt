@@ -20,7 +20,7 @@ Docs
 - SDK Release Notes
  /releaseNotes.html SDK Release Notes
 - Particles Homepage
- https://notation.scroll.pub Particles Homepage
+ https://particles.scroll.pub Particles Homepage
 - Particles FAQ
  https://faq.scroll.pub Particles FAQ
 - WWS Subreddit

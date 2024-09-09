@@ -6,7 +6,7 @@ paragraph
 paragraph
  Blank lines get turned into <br>
 
-link https://notation.scroll.pub/ It is built on Particles
+link https://particles.scroll.pub/ It is built on Particles
 
 code
  alert(`The keyword for code blocks is "code"`)

@@ -3,9 +3,9 @@
 const { ParticleFileSystem } = require("../products/ParticleFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.disk = equal => {
   const tfs = new ParticleFileSystem()
@@ -23,6 +23,22 @@ testParticles.inMemory = equal => {
   }
   const tfs = new ParticleFileSystem(files)
   equal(tfs.dirname("/"), "/")
+  equal(tfs.assembleFile("/main").afterImportPass, "world\nciao")
+  equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
+}
+
+testParticles.quickImports = equal => {
+  // Arrange/Act/Assert
+  const files = {
+    "/hello.scroll": "world",
+    "/main": "hello.scroll\nnested/test.scroll",
+    "/nested/test.scroll": "ciao",
+    "/nested/a": "test.scroll",
+    "/nested/deep/relative": "../../hello.scroll\n../test.scroll"
+  }
+  const tfs = new ParticleFileSystem(files)
+  equal(tfs.dirname("/"), "/")
+  equal(tfs.assembleFile("/nested/a").afterImportPass, "ciao")
   equal(tfs.assembleFile("/main").afterImportPass, "world\nciao")
   equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
 }

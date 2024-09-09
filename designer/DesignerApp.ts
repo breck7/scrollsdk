@@ -542,6 +542,7 @@ class tableComponent extends AbstractParticleComponentParser {
     clickCommand synthesizeProgramCommand
    textarea
     id parsersConsole
+    placeholder Parsers code goes here...
   td
    span Your Program
    input
@@ -563,6 +564,7 @@ class tableComponent extends AbstractParticleComponentParser {
     clickCommand visualizeCommand
    textarea
     id codeConsole
+    placeholder Scroll code goes here...
  tr
   td
    div Parser Errors
@@ -614,7 +616,7 @@ class headerComponent extends AbstractParticleComponentParser {
     title Notation.Scroll.pub
   span ${this._getTitle()}
  p
-  a Particles Notation Sandbox
+  a Particles Sandbox
    href ../sandbox/index.html
   span  | 
   a Help
@@ -633,7 +635,7 @@ class headerComponent extends AbstractParticleComponentParser {
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building languages on top of Particles Notation. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
+  p This is a simple web IDE for designing and building languages on top of ParticleS. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
   p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }

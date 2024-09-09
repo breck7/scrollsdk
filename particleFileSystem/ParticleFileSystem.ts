@@ -1,7 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { Particle } = require("../products/Particle.js")
@@ -12,7 +12,7 @@ const { posix } = require("../products/Path.js")
 const PARSERS_EXTENSION = ".parsers"
 
 interface OpenedFile {
-  absolutePath: scrollNotationTypes.filepath
+  absolutePath: particlesTypes.filepath
   content: string
   stats: any // https://nodejs.org/api/fs.html#class-fsstats
 }
@@ -21,7 +21,7 @@ interface AssembledFile {
   afterImportPass: string // codeWithoutImportsNorParserDefinitions
   importFilePaths: string[]
   isImportOnly: boolean
-  parser?: scrollNotationTypes.particle
+  parser?: particlesTypes.particle
   filepathsWithParserDefinitions: string[]
 }
 
@@ -36,13 +36,13 @@ interface Storage {
 }
 
 const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
-// A regex to check if a multiline string has a line that starts with "import ".
-const importRegex = /^import /gm
+// A regex to check if a multiline string has an import line.
+const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
 
 class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
-  _read(absolutePath: scrollNotationTypes.filepath) {
+  _read(absolutePath: particlesTypes.filepath) {
     const { fileCache } = this
     if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
     return fileCache[absolutePath]
@@ -78,23 +78,23 @@ class DiskWriter implements Storage {
 }
 
 class MemoryWriter implements Storage {
-  constructor(inMemoryFiles: scrollNotationTypes.diskMap) {
+  constructor(inMemoryFiles: particlesTypes.diskMap) {
     this.inMemoryFiles = inMemoryFiles
   }
 
-  inMemoryFiles: scrollNotationTypes.diskMap
+  inMemoryFiles: particlesTypes.diskMap
 
-  read(absolutePath: scrollNotationTypes.filepath) {
+  read(absolutePath: particlesTypes.filepath) {
     const value = this.inMemoryFiles[absolutePath]
     if (value === undefined) throw new Error(`File '${absolutePath}' not found.`)
     return value
   }
 
-  write(absolutePath: scrollNotationTypes.filepath, content: string) {
+  write(absolutePath: particlesTypes.filepath, content: string) {
     this.inMemoryFiles[absolutePath] = content
   }
 
-  list(absolutePath: scrollNotationTypes.filepath) {
+  list(absolutePath: particlesTypes.filepath) {
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
 
@@ -116,20 +116,20 @@ class MemoryWriter implements Storage {
 }
 
 class ParticleFileSystem implements Storage {
-  constructor(inMemoryFiles: scrollNotationTypes.diskMap) {
+  constructor(inMemoryFiles: particlesTypes.diskMap) {
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
   }
 
-  read(absolutePath: scrollNotationTypes.filepath) {
+  read(absolutePath: particlesTypes.filepath) {
     return this._storage.read(absolutePath)
   }
 
-  write(absolutePath: scrollNotationTypes.filepath, content: string) {
+  write(absolutePath: particlesTypes.filepath, content: string) {
     return this._storage.write(absolutePath, content)
   }
 
-  list(absolutePath: scrollNotationTypes.filepath) {
+  list(absolutePath: particlesTypes.filepath) {
     return this._storage.list(absolutePath)
   }
 
@@ -178,7 +178,7 @@ class ParticleFileSystem implements Storage {
     if (stripParsers)
       code = code
         .split("\n")
-        .filter(line => line.startsWith("import "))
+        .filter(line => importRegex.test(line))
         .join("\n")
 
     const filepathsWithParserDefinitions = []
@@ -225,7 +225,7 @@ class ParticleFileSystem implements Storage {
     return _expandedImportCache[absoluteFilePath]
   }
 
-  private _doesFileHaveParsersDefinitions(absoluteFilePath: scrollNotationTypes.filepath) {
+  private _doesFileHaveParsersDefinitions(absoluteFilePath: particlesTypes.filepath) {
     if (!absoluteFilePath) return false
     const { _parsersExpandersCache } = this
     if (_parsersExpandersCache[absoluteFilePath] === undefined) _parsersExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
@@ -242,8 +242,8 @@ class ParticleFileSystem implements Storage {
         if (filePath.endsWith(PARSERS_EXTENSION)) return content
         // Strip scroll content
         return new Particle(content)
-          .filter((particle: scrollNotationTypes.particle) => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(cellDefinitionRegex))
-          .map((particle: scrollNotationTypes.particle) => particle.asString)
+          .filter((particle: particlesTypes.particle) => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(cellDefinitionRegex))
+          .map((particle: particlesTypes.particle) => particle.asString)
           .join("\n")
       })
       .join("\n")

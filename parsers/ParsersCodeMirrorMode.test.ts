@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 // Note: this is not isomorphic. We should probably just rewrite and use new version of CodeMirror
 const path = require("path")
 const stamp = require("../products/stamp.nodejs.js")
@@ -15,7 +15,7 @@ const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js"
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.parsers")
 const irisParsers = Disk.read(irisPath)
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 class MockStream {
   constructor(str: string) {

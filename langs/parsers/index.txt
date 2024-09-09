@@ -23,7 +23,7 @@ The Parsers code can generate a parser that parses statements like `+ 1 2 5 10` 
 
 What is a longer description?
 =============================
-Parsers is a language built on Particles Notation for building other languages built on Particles Notation. The parsers not only allow parsing of those languages but also can include code written in a host language (such as Javascript) for compiling and/or runtime interpreting of these languages.
+Parsers is a language built on Particles for building other languages built on Particles. The parsers not only allow parsing of those languages but also can include code written in a host language (such as Javascript) for compiling and/or runtime interpreting of these languages.
 
 Can I try it online?
 ====================
@@ -101,4 +101,4 @@ Here's a list of the notable changes in Parsers:
  - Removed `todo` comments. Use `// todo` instead
  - Removed `tooling` keyword. Use `// tooling` instead
 
-Built with Scroll v124.1.0
+Built with Scroll v130.3.1

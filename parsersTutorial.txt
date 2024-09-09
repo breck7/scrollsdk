@@ -4,11 +4,11 @@ Scroll Parsers Tutorial
 Key Concepts
 ============
 
-*Particles Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
+*Particle Syntax (Particles)* is a syntax for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
 
-A _Particles Notation_ program is a string, a particle, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
+A _Particles_ program is a string, a particle, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 
-*Parsers* is a language built on top of Particles Notation for building other languages. This tutorial walks you through building a very simple language in _Parsers_.
+*Parsers* is a language built on top of Particles for building other languages. This tutorial walks you through building a very simple language in _Parsers_.
 
 _Parsers_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Parsers program. A language is simple a combination of _Parsers_.
 
@@ -95,7 +95,7 @@ friend
 
 Step 10
 =======
-[] A second minor concept in Parsers are cell types. A Particles Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
+[] A second minor concept in Parsers are cell types. A Particles document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
 nameCell
  paint string
 ...
@@ -133,4 +133,4 @@ Step 14
 =======
 That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.
 
-Built with Scroll v124.1.0
+Built with Scroll v130.3.1

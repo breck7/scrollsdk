@@ -2,12 +2,12 @@
 
 // todo: make isomorphic
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 const { Utils } = require("../products/Utils.js")
 const { Particle } = require("../products/Particle.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 testParticles.version = equal => {
   // Arrange/Act/Assert

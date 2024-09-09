@@ -18,9 +18,19 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 85.2.0 2024-9-5
+🎉 Placeholder support in codemirror
+🎉 More concise readme generation
+
+📦 85.1.0 2024-9-4
+🎉 Add underlying support for quickImports in Scroll/Parsers.
+
+📦 85.0.0 2024-9-1
+🏥 renamed a few remaining uses of "ScrollNotation" to Particles.
+
 📦 84.0.0 2024-8-29
 ⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
-⚠️ BREAKING: Scroll Notation is now Particles Notation
+⚠️ BREAKING: Scroll Notation is now Particles
 ⚠️ BREAKING: Nodes/Trees are now referred to universally as Particles.
 ⚠️ BREAKING: EVERYWHERE the word tree or node was used, now we use the word particle.
 
@@ -75,7 +85,7 @@ thinColumns 4
 📦 78.0.0 2024-5-30
 🎉 jtree is now called the Scroll SDK
 ⚠️ BREAKING: jtree => scrollsdk
-⚠️ BREAKING: Tree Notation is now called Particles Notation
+⚠️ BREAKING: Tree Notation is now called Particles
 
 📦 77.1.1 2024-5-28
 🏥 attempt a Windows bug fix

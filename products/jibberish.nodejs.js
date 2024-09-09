@@ -55,7 +55,7 @@ opSymbolCell
 // Line Parsers
 jibberishParser
  root
- description A useless Language built for testing Particles Notation code.
+ description A useless Language built for testing Particles code.
  javascript
   execute() {
    return 42

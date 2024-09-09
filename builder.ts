@@ -13,10 +13,10 @@ const { execSync } = require("child_process")
 const express = require("express")
 const prettierConfig = require("./package.json").prettier
 
-import { scrollNotationTypes } from "./products/scrollNotationTypes"
+import { particlesTypes } from "./products/particlesTypes"
 
 // todo: remove?
-const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", parsers: "tooling ", gram: "tooling " }
+const registeredExtensions: particlesTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", parsers: "tooling ", gram: "tooling " }
 
 class Builder extends Particle {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
@@ -36,7 +36,7 @@ class Builder extends Particle {
     return result.outputText
   }
 
-  private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: scrollNotationTypes.typeScriptFilePath[]) {
+  private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: particlesTypes.typeScriptFilePath[]) {
     // todo: prettify
     return typeScriptScriptsInOrder
       .map(src => Disk.read(src))
@@ -51,11 +51,11 @@ class Builder extends Particle {
       .join("\n")
   }
 
-  private _prettifyFile(path: scrollNotationTypes.filepath) {
+  private _prettifyFile(path: particlesTypes.filepath) {
     Disk.write(path, require("prettier").format(Disk.read(path), prettierConfig))
   }
 
-  private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: scrollNotationTypes.typeScriptFilePath[]) {
+  private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: particlesTypes.typeScriptFilePath[]) {
     return typeScriptScriptsInOrder
       .map(src => Disk.read(src))
       .map(content => new TypeScriptRewriter(content).removeRequires().removeImports().removeTsGeneratedCrap().removeHashBang().removeNodeJsOnlyLines().changeDefaultExportsToWindowExports().removeExports().getString())
@@ -66,7 +66,7 @@ class Builder extends Particle {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
 
-  protected _startServer(port: scrollNotationTypes.portNumber, folder: string) {
+  protected _startServer(port: particlesTypes.portNumber, folder: string) {
     const app = express()
     app.listen(port, () => {
       console.log(`Running builder. cmd+dblclick: http://localhost:${port}/`)
@@ -122,7 +122,7 @@ class Builder extends Particle {
     const projectFolders = [folder] // todo
 
     this._fsWatchers = projectFolders.map(folder =>
-      fs.watch(folder, { recursive: true }, (event: any, filename: scrollNotationTypes.fileName) => {
+      fs.watch(folder, { recursive: true }, (event: any, filename: particlesTypes.fileName) => {
         this._onFileChanged(folder + filename)
       })
     )
@@ -133,7 +133,7 @@ class Builder extends Particle {
     return path.join(__dirname, "products", outputFileName)
   }
 
-  async _produceBrowserProductFromTypeScript(files: scrollNotationTypes.absoluteFilePath[] = [], outputFileName: scrollNotationTypes.fileName, transformFn: (code: scrollNotationTypes.javascriptCode) => string) {
+  async _produceBrowserProductFromTypeScript(files: particlesTypes.absoluteFilePath[] = [], outputFileName: particlesTypes.fileName, transformFn: (code: particlesTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
     await this._buildTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath, true)
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
@@ -158,11 +158,11 @@ class Builder extends Particle {
     if (productParticle.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
   }
 
-  _getBundleFilePath(outputFileName: scrollNotationTypes.fileName) {
+  _getBundleFilePath(outputFileName: particlesTypes.fileName) {
     return this._getProductFolder() + `${outputFileName.replace(".js", ".ts")}`
   }
 
-  async _produceNodeProductFromTypeScript(files: scrollNotationTypes.absoluteFilePath[], outputFileName: scrollNotationTypes.fileName, transformFn: (code: scrollNotationTypes.javascriptCode) => string) {
+  async _produceNodeProductFromTypeScript(files: particlesTypes.absoluteFilePath[], outputFileName: particlesTypes.fileName, transformFn: (code: particlesTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {
@@ -176,7 +176,7 @@ class Builder extends Particle {
     return outputFilePath
   }
 
-  protected _updatePackageJson(packagePath: scrollNotationTypes.filepath, newVersion: scrollNotationTypes.semanticVersion) {
+  protected _updatePackageJson(packagePath: particlesTypes.filepath, newVersion: particlesTypes.semanticVersion) {
     const packageJson = Disk.readJson(packagePath)
     packageJson.version = newVersion
     Disk.writeJson(packagePath, packageJson)
@@ -187,7 +187,7 @@ class Builder extends Particle {
     this._buildTsc(Disk.read(__filename), path.join(__dirname, "builder.js"))
   }
 
-  makeParsersFileTestParticles(parsersPath: scrollNotationTypes.parsersFilePath) {
+  makeParsersFileTestParticles(parsersPath: particlesTypes.parsersFilePath) {
     // todo: can we ditch these dual tests at some point? ideally Parsers should be bootstrapped correct?
     const testParticles: any = {}
     const checkParsersFile = (equal: Function, program: any) => {
@@ -276,7 +276,7 @@ class Builder extends Particle {
     return path.join(__dirname, "products")
   }
 
-  updateVersion(newVersion: scrollNotationTypes.semanticVersion) {
+  updateVersion(newVersion: particlesTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
 
     const codePath = __dirname + "/particle/Particle.ts"
@@ -291,7 +291,7 @@ class Builder extends Particle {
     this._startServer(9999, __dirname + "/")
   }
 
-  _makeTestParticlesForFolder(dir: scrollNotationTypes.absoluteFolderPath) {
+  _makeTestParticlesForFolder(dir: particlesTypes.absoluteFolderPath) {
     const allTestFiles: string[] = Disk.recursiveReaddirSyncSimple(dir)
     const swarm = require("./products/swarm.nodejs.js")
 

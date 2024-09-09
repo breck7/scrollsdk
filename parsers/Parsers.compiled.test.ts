@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { scrollNotationTypes } from "../products/scrollNotationTypes"
+import { particlesTypes } from "../products/particlesTypes"
 const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
@@ -8,7 +8,7 @@ const { Particle } = require("../products/Particle.js")
 const { HandParsersProgram, UnknownParsersProgram } = require("../products/Parsers.js")
 const { ParsersCompiler } = require("../products/ParsersCompiler.js")
 
-const testParticles: scrollNotationTypes.testParticles = {}
+const testParticles: particlesTypes.testParticles = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 // todo: setup: make vms dir. cleanup? delete parsers file when done?

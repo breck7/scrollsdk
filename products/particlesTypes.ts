@@ -1,4 +1,4 @@
-namespace scrollNotationTypes {
+namespace particlesTypes {
   export interface point {
     x: int
     y: int
@@ -122,4 +122,4 @@ namespace scrollNotationTypes {
   export declare type firstWordToParserMap = { [firstWord: string]: ParticleParser }
 }
 
-export { scrollNotationTypes }
+export { particlesTypes }

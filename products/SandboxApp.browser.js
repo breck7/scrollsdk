@@ -176,7 +176,7 @@ class headerComponent extends AbstractParticleComponentParser {
   a Debug
    clickCommand toggleParticleComponentFrameworkDebuggerCommand
   span  | Version ${Particle.getVersion()}
- p This is a simple console for exploring the base ParticleS. In dev tools, you can access the parsed particle below as "window.particle"`
+ p This is a simple console for exploring Particle. In dev tools, you can access the parsed particle below as "window.particle"`
   }
 }
 class shareComponent extends AbstractParticleComponentParser {
@@ -211,7 +211,7 @@ class tableComponent extends AbstractParticleComponentParser {
     return `table
  tr
   td
-   div ParticleS
+   div Particles
    textarea
     id particleConsole
     keyUpCommand updateFromParticlesConsoleCommand

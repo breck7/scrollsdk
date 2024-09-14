@@ -59,7 +59,7 @@ testParticles.compileAll = equal => {
       // todo: should we have an example particle for all langs?
       const exampleProgram = parsersCode.getParticle("parsers example")
       if (exampleProgram) {
-        const testProgram = new rootClass(exampleProgram.childrenToString())
+        const testProgram = new rootClass(exampleProgram.subparticlesToString())
         // todo: should we then execute it? compile it?
 
         // Assert

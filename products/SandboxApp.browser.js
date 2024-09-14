@@ -35,7 +35,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     const particleCode = localStorage.getItem("particle")
     if (!particleCode) return ""
     const particle = new Particle()
-    particle.appendLineAndChildren("particle", particleCode)
+    particle.appendLineAndSubparticles("particle", particleCode)
     return "#" + encodeURIComponent(particle.toString())
   }
   particleFromDeepLink() {
@@ -66,7 +66,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     const particleConsoleEl = this.willowBrowser.getElementById("particleConsole")
     // Init vars
     const deepLink = this.particleFromDeepLink()
-    if (deepLink) particleConsoleEl.value = deepLink.childrenToString()
+    if (deepLink) particleConsoleEl.value = deepLink.subparticlesToString()
     else if (localStorage.getItem("particle")) particleConsoleEl.value = localStorage.getItem("particle")
     // Trigger start
     this.updateFromParticlesConsoleCommand()

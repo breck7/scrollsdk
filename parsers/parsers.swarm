@@ -24,7 +24,7 @@ test parsersSample
     tags test
     compiler
      stringTemplate to {wordCell}
-     closeChildren end
+     closeSubparticles end
  runTimeFirstWordsInScope
   assertLengthIs 1
  getParserDefinitionByParserId toParser

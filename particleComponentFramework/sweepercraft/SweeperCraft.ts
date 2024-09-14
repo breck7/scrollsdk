@@ -749,7 +749,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         boardParticle.unmountAndDestroy() // todo: cleanup
         boardParticle = this.getParticle("headerComponent").appendSibling("boardComponent")
       }
-      boardParticle.setChildren(this._mainGame.getGameAsParticles())
+      boardParticle.setSubparticles(this._mainGame.getGameAsParticles())
     }
 
     this._syncAndRender()

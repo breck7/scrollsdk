@@ -41,7 +41,7 @@ namespace particlesTypes {
 
   export interface SerializedParticle {
     cells?: string[]
-    children?: SerializedParticle[]
+    subparticles?: SerializedParticle[]
   }
   export declare type serializedParticle = string
 
@@ -109,7 +109,7 @@ namespace particlesTypes {
 
   export declare type javascriptClassPath = string // "scrollsdk.Foo.Bar"
 
-  export declare type children = string | Object | particle | any // todo: specify better.
+  export declare type subparticles = string | Object | particle | any // todo: specify better.
 
   export declare type ParticleParser = Function // A constructor extending ParticleParser
   export declare type ParticleProgramParser = Function // A constructor extending AbstractRuntimeParticle

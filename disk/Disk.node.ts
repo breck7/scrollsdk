@@ -47,7 +47,7 @@ class Disk {
   static insertIntoFile = (path: particlesTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsParticles = (path: particlesTypes.filepath) => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
   static getAllOf = (particle: particlesTypes.particle, prop: string) => particle.filter((particle: particlesTypes.particle) => particle.getWord(0) === prop)
-  static getDelimitedChildrenAsParticles = (particle: particlesTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.childrenToString())
+  static getDelimitedParticlesAsParticles = (particle: particlesTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.subparticlesToString())
   static sleep = (ms: particlesTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
   static readParticles = (path: particlesTypes.filepath) => new (Disk.getParticle())(Disk.read(path))
   static sizeOf = (path: particlesTypes.filepath) => fs.statSync(path).size
@@ -104,7 +104,7 @@ class Disk {
     return Disk.append(path, prefix + line + "\n")
   }
   static move = (particle: particlesTypes.particle, newPosition: particlesTypes.int) => {
-    particle.parent.insertLineAndChildren(particle.getLine(), particle.childrenToString(), newPosition)
+    particle.parent.insertLineAndSubparticles(particle.getLine(), particle.subparticlesToString(), newPosition)
     particle.destroy()
   }
   static _getTextUrl = async (url: particlesTypes.url) => {
@@ -136,17 +136,17 @@ class Disk {
   }
   static buildMapFrom = (particle: particlesTypes.particle, key: string, value: string) => {
     const map: particlesTypes.stringMap = {}
-    particle.forEach((child: particlesTypes.particle) => {
-      map[child.get(key)] = child.get(value)
+    particle.forEach((subparticle: particlesTypes.particle) => {
+      map[subparticle.get(key)] = subparticle.get(value)
     })
     return map
   }
   static csvToMap = (path: string, columnName: string) => {
     const particle = Disk.readCsvAsParticles(path)
     const map: particlesTypes.stringMap = {}
-    particle.forEach((child: particlesTypes.particle) => {
-      const key = child.get(columnName)
-      map[key] = child.toObject()
+    particle.forEach((subparticle: particlesTypes.particle) => {
+      const key = subparticle.get(columnName)
+      map[key] = subparticle.toObject()
     })
     return map
   }

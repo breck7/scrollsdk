@@ -132,14 +132,14 @@ testStrings.toXmlPrettyResult = `<html>
 `
 testStrings.fromXmlParticles = `html
  class main
- children
+ subparticles
   head
   body
    style color: red;
-   children
+   subparticles
     div
      class main
-     children
+     subparticles
       0 Hello world`
 testStrings.fromXml = `<html class="main">
   <head></head>
@@ -392,7 +392,7 @@ testParticles.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
   const iHateTypeScriptSometimes = TestParticles
   equal(new iHateTypeScriptSometimes(test).particleAt(0).length, 2)
   const rootParticle = new iHateTypeScriptSometimes()
-  const particle = rootParticle.appendLineAndChildren("", new iHateTypeScriptSometimes())
+  const particle = rootParticle.appendLineAndSubparticles("", new iHateTypeScriptSometimes())
   particle.appendLine("")
   particle.appendLine("")
   const newParticle = new iHateTypeScriptSometimes(rootParticle.asString)
@@ -595,7 +595,7 @@ testParticles.clone = equal => {
   // Assert
   equal(d.getParticle("test").content, "boom")
   // Act
-  a.touchParticle("foobar").setChildren(new Particle("123 456"))
+  a.touchParticle("foobar").setSubparticles(new Particle("123 456"))
   // Assert
   equal(c.getParticle("foobar 123").content, "456", "expected 456")
   // Arrange
@@ -756,7 +756,7 @@ testParticles.deleteRegression = equal => {
       const mapped = rows.map(row => row.toObject())
       const csv = new Particle(mapped).asCsv
       particle.touchParticle("format").setContent("csv")
-      particle.touchParticle("content").setContentWithChildren(csv)
+      particle.touchParticle("content").setContentWithSubparticles(csv)
       particle.delete("row")
     })
     return board.asString
@@ -1070,7 +1070,7 @@ testParticles.fromCsv = equal => {
   // Act
   testCase.getParticle("1").delete("name")
   // Assert
-  equal(testCase.getParticle("0").childrenToString(), "name joe\nage 21", "property change should not affect other objects")
+  equal(testCase.getParticle("0").subparticlesToString(), "name joe\nage 21", "property change should not affect other objects")
   equal(testCase.getParticle("1 name"), undefined, "property should be gone")
 }
 testParticles.fromCsvNoHeaders = equal => {
@@ -1439,11 +1439,11 @@ testParticles.getParticlesByPrefixes = equal => {
 testParticles.getIndex = equal => {
   // Arrange
   const particle = new Particle("r1\n name bob\nr2\n name joe")
-  const child0 = particle.getParticle("r1")
-  const child1 = particle.getParticle("r2")
+  const subparticle0 = particle.getParticle("r1")
+  const subparticle1 = particle.getParticle("r2")
   // Act/Assert
-  equal(child0.getIndex(), 0, "Has correct index")
-  equal(child1.getIndex(), 1, "Has correct index")
+  equal(subparticle0.getIndex(), 0, "Has correct index")
+  equal(subparticle1.getIndex(), 1, "Has correct index")
 }
 testParticles.simpleParticleLanguage = equal => {
   // Arrange
@@ -1453,7 +1453,7 @@ testParticles.simpleParticleLanguage = equal => {
       return new Particle.ParserCombinator(undefined, { "+": AdditionParticleParser, "-": SubstractionParticleParser })
     }
     execute() {
-      return this.map(child => child.execute())
+      return this.map(subparticle => subparticle.execute())
     }
   }
   class SubstractionParticleParser extends Particle {}
@@ -1497,28 +1497,28 @@ testParticles.simpleParticleLanguage = equal => {
   )
   // Edit the program and assure parsing is correct
   // Assert
-  equal(program.getChildrenByParser(AdditionParticleParser).length, 3)
-  equal(program.getChildrenByParser(SubstractionParticleParser).length, 0)
+  equal(program.getSubparticlesByParser(AdditionParticleParser).length, 3)
+  equal(program.getSubparticlesByParser(SubstractionParticleParser).length, 0)
   // Act
   program.particleAt(0).replaceParticle(str => str.replace("+", "-"))
   // Assert
-  equal(program.getChildrenByParser(AdditionParticleParser).length, 2)
-  equal(program.getChildrenByParser(SubstractionParticleParser).length, 1)
+  equal(program.getSubparticlesByParser(AdditionParticleParser).length, 2)
+  equal(program.getSubparticlesByParser(SubstractionParticleParser).length, 1)
   equal(program.getParticleByParser(SubstractionParticleParser) instanceof SubstractionParticleParser, true)
 }
 testParticles.getFirstWordPath = equal => {
   // Arrange
   const particle = new Particle(testStrings.every)
   const parent = particle.getParticle("domains test.test.com pages home settings")
-  const child = particle.getParticle("domains test.test.com pages home settings data")
+  const subparticle = particle.getParticle("domains test.test.com pages home settings data")
   const simple = new Particle("foo bar")
   // Assert
-  equal(child.getFirstWordPath(), "domains test.test.com pages home settings data")
-  equal(child.parent, parent)
-  equal(child.root, particle)
-  equal(child.getStack().length, 6)
+  equal(subparticle.getFirstWordPath(), "domains test.test.com pages home settings data")
+  equal(subparticle.parent, parent)
+  equal(subparticle.root, particle)
+  equal(subparticle.getStack().length, 6)
   equal(simple.getParticle("foo").getStack().length, 1)
-  equal(child.getFirstWordPathRelativeTo(parent), "data")
+  equal(subparticle.getFirstWordPathRelativeTo(parent), "data")
 }
 testParticles.getPathVector = equal => {
   // Arrange
@@ -1526,12 +1526,12 @@ testParticles.getPathVector = equal => {
   const indexPath = [5, 0, 4, 0, 0]
   const namePath = "domains test.test.com pages home settings"
   const parent = particle.getParticle(namePath)
-  const child = particle.getParticle("domains test.test.com pages home settings data")
+  const subparticle = particle.getParticle("domains test.test.com pages home settings data")
   // Assert
   equal(parent.getPathVector().join(" "), indexPath.join(" "))
-  equal(child.getPathVector().join(" "), "5 0 4 0 0 0")
+  equal(subparticle.getPathVector().join(" "), "5 0 4 0 0 0")
   equal(particle.particleAt(parent.getPathVector()), parent)
-  equal(particle.particleAt(child.getPathVector()), child)
+  equal(particle.particleAt(subparticle.getPathVector()), subparticle)
   // Act
   const newNamePath = particle.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
   // Assert
@@ -1749,9 +1749,9 @@ foo`)
   const expected = `foobar
  test
 foo`
-  equal(particle9.particleAt(0).childrenToString(), expected)
+  equal(particle9.particleAt(0).subparticlesToString(), expected)
 }
-testParticles.expandChildren = equal => {
+testParticles.expandSubparticles = equal => {
   // Arrange
   const particle = new Particle(`Thing
  color
@@ -1761,7 +1761,7 @@ Animal Thing
  ab overridden`)
   // Act/Assert
   equal(
-    particle._expandChildren(0, 1).asString,
+    particle._expandSubparticles(0, 1).asString,
     `Thing
  color
  ab
@@ -1781,7 +1781,7 @@ Mammal Animal
  milk`)
   // Act/Assert
   equal(
-    particle2._expandChildren(0, 1).asString,
+    particle2._expandSubparticles(0, 1).asString,
     `Thing
  color
 Animal Thing
@@ -1801,7 +1801,7 @@ Mammal Animal
 bar foo
 car non-existant`)
   try {
-    badMap._expandChildren(0, 1)
+    badMap._expandSubparticles(0, 1)
     equal(true, false, "expanding with missing id should throw")
   } catch (err) {
     equal(err.toString().includes("non-existant"), true, "expanding with missing id throws")
@@ -1814,7 +1814,7 @@ testParticles.expandedShouldAppendNonMaps = equal => {
  example
  example foobar`)
   // Act/Assert
-  equal(particle._expandChildren(0, 1).asString, particle.asString, "should have thrown")
+  equal(particle._expandSubparticles(0, 1).asString, particle.asString, "should have thrown")
 }
 testParticles.getCustomIndex = equal => {
   // todo: we need to work on extend so its more straightforward
@@ -1952,7 +1952,7 @@ testParticles.createFromObject = equal => {
   equal(particle2.getParticle("c ref"), undefined)
   // Arrange
   const particle3 = new Particle()
-  particle3.touchParticle("docs").setChildren(testObjects.json2particles)
+  particle3.touchParticle("docs").setSubparticles(testObjects.json2particles)
   // Assert
   equal(particle3.asString, testStrings.json2particles, "expected json2particles")
   // Arrange
@@ -1981,20 +1981,20 @@ testParticles.createFromString = equal => {
   // Arrange
   const a = new Particle("text \n this is a string\n and more")
   // Assert
-  equal(a.getParticle("text").contentWithChildren, "\nthis is a string\nand more", "Basic")
+  equal(a.getParticle("text").contentWithSubparticles, "\nthis is a string\nand more", "Basic")
   // Arrange
   const b = new Particle("a\n text \n  this is a string\n  and more")
   // Assert
-  equal(b.getParticle("a text").contentWithChildren, "\nthis is a string\nand more")
+  equal(b.getParticle("a text").contentWithSubparticles, "\nthis is a string\nand more")
   equal(b.asString, "a\n text \n  this is a string\n  and more")
   // Arrange
   const string = `first_name John
 last_name Doe
-children
+subparticles
  1
   first_name Joe
   last_name Doe
-  children
+  subparticles
    1
     first_name Joe Jr.
     last_name Doe
@@ -2014,7 +2014,7 @@ code <p></p>
 `
   const c = new Particle(string)
   // Assert
-  equal(c.getParticle("children 1 children 1 age").content, "12")
+  equal(c.getParticle("subparticles 1 subparticles 1 age").content, "12")
   equal(c.asString.length, string.length)
   equal(c.asString, string)
   // Arrange
@@ -2066,10 +2066,10 @@ chart2
  chart2
   title 2
  title Hello`
-  const particle0 = value.getChildren()[0]
+  const particle0 = value.getSubparticles()[0]
   // Act
-  const particle = value.getChildren()[1].copyTo(particle0, particle0.length)
-  value.getChildren()[1].destroy()
+  const particle = value.getSubparticles()[1].copyTo(particle0, particle0.length)
+  value.getSubparticles()[1].destroy()
   // Assert
   equal(value.asString, expected)
   // Act
@@ -2121,7 +2121,7 @@ testParticles.copyToRegression = equal => {
       if (cla) particle.setContent(cla)
       const css = particle.getParticle("css")
       if (css) {
-        const particles = css.getChildren()
+        const particles = css.getSubparticles()
         const toMove = []
         particles.forEach(propParticle => {
           const name = propParticle.firstWord.replace(":", " ")
@@ -2181,58 +2181,58 @@ testParticles.multiline = equal => {
   // Arrange
   const a = new Particle("my multiline\n string")
   // Assert
-  equal(a.getParticle("my").contentWithChildren, "multiline\nstring")
+  equal(a.getParticle("my").contentWithSubparticles, "multiline\nstring")
   // Arrange
   const a2 = new Particle("my \n \n multiline\n string")
   // Assert
-  equal(a2.getParticle("my").contentWithChildren, "\n\nmultiline\nstring")
+  equal(a2.getParticle("my").contentWithSubparticles, "\n\nmultiline\nstring")
   // Arrange
   const b = new Particle("brave new\n world")
   // Assert
-  equal(b.getParticle("brave").contentWithChildren, "new\nworld", "ml value correct")
+  equal(b.getParticle("brave").contentWithSubparticles, "new\nworld", "ml value correct")
   equal(b.asString, "brave new\n world", "multiline does not begin with nl")
   // Arrange
   const c = new Particle("brave \n new\n world")
   // Assert
-  equal(c.getParticle("brave").contentWithChildren, "\nnew\nworld", "ml begin with nl value correct")
+  equal(c.getParticle("brave").contentWithSubparticles, "\nnew\nworld", "ml begin with nl value correct")
   equal(c.asString, "brave \n new\n world", "multiline begins with nl")
   // Arrange
   const d = new Particle("brave \n \n new\n world")
   // Assert
-  equal(d.getParticle("brave").contentWithChildren, "\n\nnew\nworld", "ml begin with 2 nl value correct")
+  equal(d.getParticle("brave").contentWithSubparticles, "\n\nnew\nworld", "ml begin with 2 nl value correct")
   equal(d.asString, "brave \n \n new\n world", "multiline begins with 2 nl")
   // Arrange
   const e = new Particle("brave new\n world\n ")
   // Assert
-  equal(e.getParticle("brave").contentWithChildren, "new\nworld\n", "ml value end with nl correct")
+  equal(e.getParticle("brave").contentWithSubparticles, "new\nworld\n", "ml value end with nl correct")
   equal(e.asString, "brave new\n world\n ", "multiline ends with a nl")
   // Arrange
   const f = new Particle("brave new\n world\n \n ")
   // Assert
-  equal(f.getParticle("brave").contentWithChildren, "new\nworld\n\n", "ml value end with 2 nl correct")
+  equal(f.getParticle("brave").contentWithSubparticles, "new\nworld\n\n", "ml value end with 2 nl correct")
   equal(f.asString, "brave new\n world\n \n ", "multiline ends with 2 nl")
   // Arrange
   const g = new Particle()
-  g.touchParticle("brave").setContentWithChildren("\nnew\nworld\n\n")
+  g.touchParticle("brave").setContentWithSubparticles("\nnew\nworld\n\n")
   // Assert
-  equal(g.getParticle("brave").contentWithChildren, "\nnew\nworld\n\n", "set ml works")
+  equal(g.getParticle("brave").contentWithSubparticles, "\nnew\nworld\n\n", "set ml works")
   equal(g.asString, "brave \n new\n world\n \n ", "set ml works")
   // Arrange/Act
   const twoParticles = new Particle("title Untitled\n")
   const k = new Particle()
   k.touchParticle("time").setContent("123")
-  k.touchParticle("settings").setContentWithChildren(twoParticles.asString)
+  k.touchParticle("settings").setContentWithSubparticles(twoParticles.asString)
   k.touchParticle("day").setContent("1")
   // Assert
   equal(twoParticles.length, 2)
   equal(k.getParticle("settings").length, 1, "Expected subparticle to have 1 empty particle")
-  equal(k.getParticle("settings").contentWithChildren, twoParticles.asString, "Expected setContentWithChildren and getText to work with newlines")
+  equal(k.getParticle("settings").contentWithSubparticles, twoParticles.asString, "Expected setContentWithSubparticles and getText to work with newlines")
   equal(k.asString, `time 123\nsettings title Untitled\n \nday 1`)
   // Arrange
   const someText = new Particle("a")
   const someParticle = someText.getParticle("a")
   // Act
-  someParticle.setContentWithChildren("const b = 1;\nconst c = 2;")
+  someParticle.setContentWithSubparticles("const b = 1;\nconst c = 2;")
   // Assert
   equal(someText.asString, "a const b = 1;\n const c = 2;")
 }
@@ -2246,16 +2246,16 @@ testParticles.order = equal => {
 testParticles.parseParticle = equal => {
   // Arrange
   class LeafParticle extends Particle {}
-  class SubParticle extends Particle {
+  class SubclassParticle extends Particle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(SubParticle, {}, [{ regex: /^leaf/, parser: LeafParticle }])
+      return new Particle.ParserCombinator(SubclassParticle, {}, [{ regex: /^leaf/, parser: LeafParticle }])
     }
   }
   class TestLanguageParticle extends Particle {
     createParserCombinator() {
       return new Particle.ParserCombinator(TestLanguageParticle, {}, [
         { regex: /^particle/, parser: Particle },
-        { regex: /^sub/, parser: SubParticle }
+        { regex: /^sub/, parser: SubclassParticle }
       ])
     }
   }
@@ -2307,16 +2307,16 @@ d
   equal(result, "1 2 3 4 5")
   equal(reg.getParticle("a").lineNumber, 1)
 }
-testParticles.pushContentAndChildren = equal => {
+testParticles.pushContentAndSubparticles = equal => {
   // Arrange
   const a = new Particle()
   // Act
-  const result = a.pushContentAndChildren("hello world")
+  const result = a.pushContentAndSubparticles("hello world")
   // Assert
   equal(a.getParticle("0").content, "hello world")
   equal(result instanceof Particle, true)
   // Act
-  a.pushContentAndChildren(undefined, new Particle())
+  a.pushContentAndSubparticles(undefined, new Particle())
   // Assert
   equal(a.getParticle("1") instanceof Particle, true, "1 is instance of Particle")
 }
@@ -2518,7 +2518,7 @@ testParticles.set = equal => {
   const particle5 = new Particle()
   // Act
   particle5.touchParticle("hi").setContent("hello world")
-  particle5.touchParticle("yo").setChildren(new Particle("hello world"))
+  particle5.touchParticle("yo").setSubparticles(new Particle("hello world"))
   // Assert
   equal(particle5.getParticle("hi").content === particle5.getParticle("yo").content, false)
   // Arrange
@@ -2789,7 +2789,7 @@ testParticles.toObject = equal => {
   equal(typeof a.toObject(), "object")
   equal(a.toObject()["hello"], "world")
   // Act
-  a.touchParticle("b").setChildren(b)
+  a.touchParticle("b").setSubparticles(b)
   // Assert
   equal(a.toObject()["b"]["foo"], "bar")
   // Arrange
@@ -2838,14 +2838,14 @@ event lala2018
   equal(table, expected, "markdown ok")
   equal(simple, simpleExpected, "markdown simple ok")
 }
-testParticles.setContentWithChildrenRegression = equal => {
+testParticles.setContentWithSubparticlesRegression = equal => {
   // Arrange
   const particle = new Particle("hello world")
   const hello = particle.getParticle("hello")
   // Act
-  hello.setContentWithChildren(`brave
+  hello.setContentWithSubparticles(`brave
  new world`)
-  hello.setContentWithChildren(`earth`)
+  hello.setContentWithSubparticles(`earth`)
   // Assert
   equal(particle.asString, "hello earth")
 }
@@ -2881,7 +2881,7 @@ testParticles.toStringMethod = equal => {
   // Act/Assert
   equal(!!r.asString, true)
   // Act
-  a.touchParticle("multiline").setContentWithChildren("hello\nworld")
+  a.touchParticle("multiline").setContentWithSubparticles("hello\nworld")
   // Assert
   equal(a.asString, "john\n age 5\nmultiline hello\n world")
   // Act
@@ -2894,7 +2894,7 @@ testParticles.toStringMethod = equal => {
   equal(b.asString, "a\n text \n  this is a multline string\n  and more")
   // Test setting an instance as a value in another instance
   // Act
-  a.touchParticle("even_more").setChildren(b)
+  a.touchParticle("even_more").setSubparticles(b)
   // Assert
   equal(a.asString, "john\n age 5\nmultiline hello\n world\nother foobar\neven_more\n a\n  text \n   this is a multline string\n   and more")
   // Arrange
@@ -2958,7 +2958,7 @@ testParticles.traverse = equal => {
   // Act
   const preOrder = traversal.topDownArray.map(particle => particle.getLine()).join(" ")
   const postOrder = traversal
-    .getChildrenFirstArray()
+    .getSubparticlesFirstArray()
     .map(particle => particle.getLine())
     .join(" ")
   const breadthfirst = traversal
@@ -2986,7 +2986,7 @@ testParticles.traverse = equal => {
     .map(particle => particle.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
-    .getChildrenFirstArray()
+    .getSubparticlesFirstArray()
     .map(particle => particle.getLine())
     .join("")
   // Assert
@@ -3000,7 +3000,7 @@ testParticles.toOutline = equal => {
 }
 testParticles.fromJsonSubset = equal => {
   // AAA
-  equal(Particle.fromJsonSubset(JSON.stringify(testObjects.json2particles)).asString, new Particle(testStrings.json2particles).getParticle("docs").childrenToString())
+  equal(Particle.fromJsonSubset(JSON.stringify(testObjects.json2particles)).asString, new Particle(testStrings.json2particles).getParticle("docs").subparticlesToString())
 }
 testParticles.getFiltered = equal => {
   // AAA
@@ -3068,33 +3068,33 @@ testParticles.toOutline = equal => {
 `
   )
 }
-testParticles.getLineOrChildrenModifiedTime = equal => {
+testParticles.getLineOrSubparticlesModifiedTime = equal => {
   // Arrange
   const a = new Particle(`text
  foo
   bar
 some
  other`)
-  const mtime = a.getLineOrChildrenModifiedTime()
-  const fooTime = a.getParticle("text foo").getLineOrChildrenModifiedTime()
+  const mtime = a.getLineOrSubparticlesModifiedTime()
+  const fooTime = a.getParticle("text foo").getLineOrSubparticlesModifiedTime()
   // Act
   a.delete("some other")
   // Assert
-  const newTime = a.getLineOrChildrenModifiedTime()
+  const newTime = a.getLineOrSubparticlesModifiedTime()
   equal(newTime > mtime, true, `newtime is greater than mtime ${newTime} ${mtime}`)
-  equal(a.getParticle("text foo").getLineOrChildrenModifiedTime() === fooTime, true, "times are equal")
+  equal(a.getParticle("text foo").getLineOrSubparticlesModifiedTime() === fooTime, true, "times are equal")
   // Act
   a.getParticle("text foo").setContent("wham")
   // Assert
-  equal(a.getParticle("text foo").getLineOrChildrenModifiedTime() > fooTime, true, "mod child updates")
+  equal(a.getParticle("text foo").getLineOrSubparticlesModifiedTime() > fooTime, true, "mod subparticle updates")
   // Arrange
   const b = new Particle(`foo`)
   b.appendLine("bar")
-  const bTime = b.getLineOrChildrenModifiedTime()
+  const bTime = b.getLineOrSubparticlesModifiedTime()
   // Act
   b.getParticle("foo").destroy()
   // Assert
-  equal(b.getLineOrChildrenModifiedTime() > bTime, true, `time increased from ${bTime} to ${b.getLineOrChildrenModifiedTime()}`)
+  equal(b.getLineOrSubparticlesModifiedTime() > bTime, true, `time increased from ${bTime} to ${b.getLineOrSubparticlesModifiedTime()}`)
 }
 testParticles.destroyLoop = equal => {
   // Arrange
@@ -3105,8 +3105,8 @@ b
 c
  d`)
   // Act
-  a.forEach(child => {
-    child.destroy()
+  a.forEach(subparticle => {
+    subparticle.destroy()
   })
   // Assert
   equal(a.length, 0)
@@ -3135,14 +3135,14 @@ testParticles.delimitedTests = equal => {
   let base = new Particle(`foo.csv`).particleAt(0)
   equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n name,age\n Joe,100`)
   base = new Particle(`foo.csv`).particleAt(0)
-  equal(base.setChildrenAsDelimited(`person\n name Joe\n age 100`).asString, `foo.csv\n name,age\n Joe,100`)
+  equal(base.setSubparticlesAsDelimited(`person\n name Joe\n age 100`).asString, `foo.csv\n name,age\n Joe,100`)
   let template = `foo.csv\n person\n  name Joe\n  age 100`
   base = new Particle(template).particleAt(0)
-  equal(base.convertChildrenToDelimited().asString, `foo.csv\n name,age\n Joe,100`, "convert children to delimited works")
+  equal(base.convertSubparticlesToDelimited().asString, `foo.csv\n name,age\n Joe,100`, "convert subparticles to delimited works")
   base = new Particle(template).particleAt(0)
-  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Frank,100`]).length, 3)
+  equal(base.convertSubparticlesToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Frank,100`]).length, 3)
   base = new Particle(template).particleAt(0)
-  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Joe,100`]).length, 2)
+  equal(base.convertSubparticlesToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Joe,100`]).length, 2)
 }
 testParticles.printLines = equal => {
   // Arrange
@@ -3207,7 +3207,7 @@ testParticles.isBlank = equal => {
   equal(a.getParticle("test2").isBlankLine(), false)
   equal(a.getParticle("test2").isEmpty(), false)
   // Act/Assert
-  equal(a.deleteChildren().length, 0)
+  equal(a.deleteSubparticles().length, 0)
 }
 testParticles.particles = equal => {
   // Arrange
@@ -3226,11 +3226,11 @@ testParticles.particles = equal => {
   equal(particle.content, "hello world")
   equal(a.asString, "text hello world")
   // Act
-  particle.setChildren("color blue")
-  particle.setChildren("color blue")
+  particle.setSubparticles("color blue")
+  particle.setSubparticles("color blue")
   // Assert
   equal(particle.isTerminal(), false)
-  equal(particle.childrenToString(), "color blue")
+  equal(particle.subparticlesToString(), "color blue")
   equal(a.asString, "text hello world\n color blue")
   equal(a.has("text"), true)
   // Act
@@ -3242,7 +3242,7 @@ testParticles.particles = equal => {
   equal(a.has("text"), false)
   equal(particle.has("color"), true)
   // Act
-  particle.setChildren("")
+  particle.setSubparticles("")
   // Assert
   equal(!!particle.asString, true)
   equal(particle.has("color"), false)

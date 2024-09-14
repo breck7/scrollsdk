@@ -81,8 +81,8 @@ paragraphParser
  extends abstractTopLevelParser
  crux paragraph
  compiler
-  openChildren <p>
-  closeChildren </p>
+  openSubparticles <p>
+  closeSubparticles </p>
   stringTemplate 
 paragraphContentParser
  inScope paragraphContentParser
@@ -95,7 +95,7 @@ codeParser
  extends abstractTopLevelParser
  javascript
   compile() {
-   return \`<code>\${this.indentation + this.childrenToString()}</code>\`
+   return \`<code>\${this.indentation + this.subparticlesToString()}</code>\`
   }
  crux code
 listParser
@@ -103,8 +103,8 @@ listParser
  extends abstractTopLevelParser
  compiler
   stringTemplate 
-  openChildren <ul>
-  closeChildren </ul>
+  openSubparticles <ul>
+  closeSubparticles </ul>
  crux list
 blankLineParser
  description Blank lines compile to nothing in the HTML.
@@ -205,7 +205,7 @@ quickParagraphParser
       return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     compile() {
-      return `<code>${this.indentation + this.childrenToString()}</code>`
+      return `<code>${this.indentation + this.subparticlesToString()}</code>`
     }
   }
 

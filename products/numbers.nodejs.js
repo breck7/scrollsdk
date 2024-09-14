@@ -22,7 +22,7 @@
       )
     }
     execute() {
-      return this.map(child => child.execute())
+      return this.map(subparticle => subparticle.execute())
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 floatCell
@@ -54,11 +54,11 @@ numbersParser
  catchAllParser errorParser
  javascript
   execute() {
-   return this.map(child => child.execute())
+   return this.map(subparticle => subparticle.execute())
   }
 
 abstractArithmeticReducerParser
- description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
+ description First reduces any subparticle lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   execute() {
    return this.numbersCell.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersCell[0])

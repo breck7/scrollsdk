@@ -199,7 +199,7 @@ class AbstractWillowShadow {
   getShadowCss(property) {
     return ""
   }
-  insertHtmlParticle(childParticle, index) {}
+  insertHtmlParticle(subparticle, index) {}
   get element() {
     return {}
   }
@@ -1097,7 +1097,7 @@ class AbstractParticleComponentParser extends ParserBackedParticle {
     // note: we have 1 parameter, and are going to do type inference first.
     // Todo: add actions that can be taken from a message?
     // todo: add tests
-    this.getMessageBuffer().appendLineAndChildren("message", message)
+    this.getMessageBuffer().appendLineAndSubparticles("message", message)
   }
   addStumpErrorMessageToLog(errorMessage) {
     // todo: cleanup!
@@ -1115,7 +1115,7 @@ class AbstractParticleComponentParser extends ParserBackedParticle {
       !this.isMounted() // todo: why do we need this check?
     )
       return undefined
-    this._getChildParticleComponents().forEach(child => child.unmount())
+    this._getChildParticleComponents().forEach(subparticle => subparticle.unmount())
     this.particleComponentWillUnmount()
     this._removeCss()
     this._removeHtml()
@@ -1150,13 +1150,13 @@ class AbstractParticleComponentParser extends ParserBackedParticle {
   }
   async particleComponentDidUpdate() {}
   _getChildParticleComponents() {
-    return this.getChildrenByParser(AbstractParticleComponentParser)
+    return this.getSubparticlesByParser(AbstractParticleComponentParser)
   }
-  _hasChildrenParticleComponents() {
+  _hasSubparticlesParticleComponents() {
     return this._getChildParticleComponents().length > 0
   }
   // todo: this is hacky. we do it so we can just mount all tiles to wall.
-  getStumpParticleForChildren() {
+  getStumpParticleForSubparticles() {
     return this.getStumpParticle()
   }
   _getLastRenderedTime() {
@@ -1180,7 +1180,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
     // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
     // okay. i see why we might do that for non tile particleComponents. but for Tile particleComponents, seems like we arent nesting, so why not?
     // for now
-    if (this._hasChildrenParticleComponents()) return { shouldUpdate: false, reason: "did not update because is a parent" }
+    if (this._hasSubparticlesParticleComponents()) return { shouldUpdate: false, reason: "did not update because is a parent" }
     this._updateHtml()
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return reasonForUpdatingOrNot
@@ -1251,10 +1251,10 @@ ${new stumpParser(this.toStumpCode()).compile()}
     return []
   }
   _getParticleComponentsThatNeedRendering(arr) {
-    this._getChildParticleComponents().forEach(child => {
-      const reasonForUpdatingOrNot = child.getWhetherToUpdateAndReason()
-      if (!child.isMounted() || reasonForUpdatingOrNot.shouldUpdate) arr.push({ child: child, childUpdateBecause: reasonForUpdatingOrNot })
-      child._getParticleComponentsThatNeedRendering(arr)
+    this._getChildParticleComponents().forEach(subparticle => {
+      const reasonForUpdatingOrNot = subparticle.getWhetherToUpdateAndReason()
+      if (!subparticle.isMounted() || reasonForUpdatingOrNot.shouldUpdate) arr.push({ subparticle: subparticle, subparticleUpdateBecause: reasonForUpdatingOrNot })
+      subparticle._getParticleComponentsThatNeedRendering(arr)
     })
   }
   toStumpLoadingCode() {
@@ -1319,9 +1319,9 @@ ${new stumpParser(this.toStumpCode()).compile()}
     }
     if (isUpdateOp) particleComponentUpdateReport = this._updateAndGetUpdateReport()
     else this._mount(stumpParticle, index)
-    const stumpParticleForChildren = this.getStumpParticleForChildren()
+    const stumpParticleForSubparticles = this.getStumpParticleForSubparticles()
     // Todo: insert delayed rendering?
-    const childResults = this._getChildParticleComponents().map((child, index) => child.renderAndGetRenderReport(stumpParticleForChildren, index))
+    const subparticleResults = this._getChildParticleComponents().map((subparticle, index) => subparticle.renderAndGetRenderReport(stumpParticleForSubparticles, index))
     if (isUpdateOp) {
       if (particleComponentUpdateReport.shouldUpdate) {
         try {
@@ -1338,7 +1338,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
       }
     }
     let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${particleComponentUpdateReport.shouldUpdate} ${particleComponentUpdateReport.reason}`
-    childResults.forEach(child => (str += "\n" + child.toString(1)))
+    subparticleResults.forEach(subparticle => (str += "\n" + subparticle.toString(1)))
     return new Particle(str)
   }
 }

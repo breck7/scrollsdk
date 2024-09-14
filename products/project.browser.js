@@ -61,10 +61,10 @@ ${missing.join("\n")}
       const fs = require("fs")
       const files = new Particle(arrayOfScriptPaths.join("\n"))
       const requiredFileList = new Particle()
-      files.forEach(child => {
-        const line = child.getLine()
+      files.forEach(subparticle => {
+        const line = subparticle.getLine()
         const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
-        requiredFileList.appendLineAndChildren(`file ${line}`, requiredFiles.length ? requiredFiles.join("\n") : undefined)
+        requiredFileList.appendLineAndSubparticles(`file ${line}`, requiredFiles.length ? requiredFiles.join("\n") : undefined)
       })
       return requiredFileList.toString()
     }
@@ -140,10 +140,10 @@ projectParser
    const fs = require("fs")
    const files = new Particle(arrayOfScriptPaths.join("\\n"))
    const requiredFileList = new Particle()
-   files.forEach(child => {
-    const line = child.getLine()
+   files.forEach(subparticle => {
+    const line = subparticle.getLine()
     const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
-    requiredFileList.appendLineAndChildren(\`file \${line}\`, requiredFiles.length ? requiredFiles.join("\\n") : undefined)
+    requiredFileList.appendLineAndSubparticles(\`file \${line}\`, requiredFiles.length ? requiredFiles.join("\\n") : undefined)
    })
    return requiredFileList.toString()
   }
@@ -171,13 +171,13 @@ fileParser
    return this.filepathCell.join(" ")
   }
   _getDependencies() {
-   return this.getChildren()
-    .map(child => {
-     const firstWord = child.firstWord
-     const childFilePath = child.filepathCell.join(" ")
+   return this.getSubparticles()
+    .map(subparticle => {
+     const firstWord = subparticle.firstWord
+     const subparticleFilePath = subparticle.filepathCell.join(" ")
      if (firstWord === "external") return ""
-     if (firstWord === "absolute") return childFilePath
-     const link = childFilePath
+     if (firstWord === "absolute") return subparticleFilePath
+     const link = subparticleFilePath
      const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
      return resolvedPath
@@ -230,13 +230,13 @@ fileParser
       return this.filepathCell.join(" ")
     }
     _getDependencies() {
-      return this.getChildren()
-        .map(child => {
-          const firstWord = child.firstWord
-          const childFilePath = child.filepathCell.join(" ")
+      return this.getSubparticles()
+        .map(subparticle => {
+          const firstWord = subparticle.firstWord
+          const subparticleFilePath = subparticle.filepathCell.join(" ")
           if (firstWord === "external") return ""
-          if (firstWord === "absolute") return childFilePath
-          const link = childFilePath
+          if (firstWord === "absolute") return subparticleFilePath
+          const link = subparticleFilePath
           const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
           const resolvedPath = require("path").resolve(folderPath + "/" + link)
           return resolvedPath

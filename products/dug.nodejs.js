@@ -70,17 +70,17 @@ objectParser
  extends abstractValueParser
  compiler
   stringTemplate  
-  joinChildrenWith , 
-  openChildren {
-  closeChildren }
+  joinSubparticlesWith , 
+  openSubparticles {
+  closeSubparticles }
 arrayParser
  extends abstractValueParser
  inScope abstractValueParser
  compiler
   stringTemplate  
-  joinChildrenWith , 
-  openChildren [
-  closeChildren ]
+  joinSubparticlesWith , 
+  openSubparticles [
+  closeSubparticles ]
 memberParser
  inScope abstractValueParser
  compiler

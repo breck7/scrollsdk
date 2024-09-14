@@ -120,8 +120,8 @@ abstractNonTerminalParser
  cells keywordCell
 abstractJsblockParser
  compiler
-  openChildren  {
-  closeChildren }
+  openSubparticles  {
+  closeSubparticles }
  extends abstractNonTerminalParser
 blockParser
  description block of code

@@ -72,18 +72,18 @@ testParticles.trainAndPredict = equal => {
   const hakonParser = parsersProgram.compileAndReturnRootParser()
   const testBlankProgram = new hakonParser()
   const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.childrenToString())
+  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.subparticlesToString())
   const model = parsersProgram.trainModel(examples)
 
   // Assert
-  const predictions = handParsersProgram.predictChildren(model, testBlankProgram)
+  const predictions = handParsersProgram.predictSubparticles(model, testBlankProgram)
   equal(predictions[0].id, "selectorParser")
 
   // Act
   const bodyParticle = testBlankProgram.appendLine("body")
 
   // Assert
-  const predictions2 = handParsersProgram.predictChildren(model, bodyParticle)
+  const predictions2 = handParsersProgram.predictSubparticles(model, bodyParticle)
   equal(predictions2[0].id, "propertyParser")
 
   // Act

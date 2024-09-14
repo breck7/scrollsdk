@@ -11,9 +11,9 @@ testParticles.runSwimTests = equal => {
   // Arrange/Act/Assert
   const tests = Particle.fromDisk(__dirname + "/Particle.swim")
   tests.forEach((test: any) => {
-    const arrange = test.getParticle("arrange").childrenToString() // Note: used in the eval below
-    const expected = test.getParticle("assert").childrenToString()
-    const code = test.getParticle("act").childrenToString()
+    const arrange = test.getParticle("arrange").subparticlesToString() // Note: used in the eval below
+    const expected = test.getParticle("assert").subparticlesToString()
+    const code = test.getParticle("act").subparticlesToString()
     equal(eval(code), expected, test.getLine())
   })
 }

@@ -8,7 +8,7 @@
       )
     }
     getArrangeParser() {
-      return this.getChildInstancesOfParserId("arrangeParser")[0]
+      return this.getSubparticleInstancesOfParserId("arrangeParser")[0]
     }
     async execute(filepath) {
       const particle = new TestRacer(this.compileToRacer(filepath))
@@ -17,7 +17,7 @@
     }
     compileToRacer(filepath) {
       const testBlocks = {}
-      this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
+      this.getSubparticleInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
         const prefix = testParser.racerPrefix || ""
         testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
       })
@@ -76,7 +76,7 @@ swarmParser
  catchAllParser errorParser
  javascript
   getArrangeParser() {
-   return this.getChildInstancesOfParserId("arrangeParser")[0]
+   return this.getSubparticleInstancesOfParserId("arrangeParser")[0]
   }
   async execute(filepath) {
    const particle = new TestRacer(this.compileToRacer(filepath))
@@ -85,7 +85,7 @@ swarmParser
   }
   compileToRacer(filepath) {
    const testBlocks = {}
-   this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
+   this.getSubparticleInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
     const prefix = testParser.racerPrefix || ""
     testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
    })
@@ -137,10 +137,10 @@ assertParagraphIsParser
  catchAllParser paragraphLineParser
  javascript
   getExpected() {
-   return this.childrenToString()
+   return this.subparticlesToString()
   }
   getSyncExpected() {
-   return this.childrenToString()
+   return this.subparticlesToString()
   }
  extends abstractAssertionParser
 assertLengthIsParser
@@ -267,8 +267,8 @@ arrangeParser
   }
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
-   const constructorArgParser = this.getChildInstancesOfParserId("constructWithParagraphParser")[0]
-   const param = constructorArgParser ? constructorArgParser.childrenToString() : undefined
+   const constructorArgParser = this.getSubparticleInstancesOfParserId("constructWithParagraphParser")[0]
+   const param = constructorArgParser ? constructorArgParser.subparticlesToString() : undefined
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
   _getRequiredClass(programFilepath) {
@@ -311,8 +311,8 @@ actParser
    return this.getTestBlock().getEqualFn()
   }
   _getActArgs() {
-   const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
-   if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
+   const paragraphActParsers = this.getSubparticleInstancesOfParserId("withParagraphParser")
+   if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.subparticlesToString())
    return this.getWordsFrom(1)
   }
   _act(arrangedInstance) {
@@ -406,10 +406,10 @@ todoParser
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     getExpected() {
-      return this.childrenToString()
+      return this.subparticlesToString()
     }
     getSyncExpected() {
-      return this.childrenToString()
+      return this.subparticlesToString()
     }
   }
 
@@ -578,8 +578,8 @@ todoParser
     }
     arrange(programFilepath) {
       const requiredClass = this._getRequiredClass(programFilepath)
-      const constructorArgParser = this.getChildInstancesOfParserId("constructWithParagraphParser")[0]
-      const param = constructorArgParser ? constructorArgParser.childrenToString() : undefined
+      const constructorArgParser = this.getSubparticleInstancesOfParserId("constructWithParagraphParser")[0]
+      const param = constructorArgParser ? constructorArgParser.subparticlesToString() : undefined
       return this.has("static") ? requiredClass : new requiredClass(param)
     }
     _getRequiredClass(programFilepath) {
@@ -638,8 +638,8 @@ todoParser
       return this.getTestBlock().getEqualFn()
     }
     _getActArgs() {
-      const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
-      if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
+      const paragraphActParsers = this.getSubparticleInstancesOfParserId("withParagraphParser")
+      if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.subparticlesToString())
       return this.getWordsFrom(1)
     }
     _act(arrangedInstance) {

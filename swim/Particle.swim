@@ -58,7 +58,7 @@ aSetTest
   message
    hello world
  act
-  new Particle(arrange).setChildren("aloha world").childrenToString()
+  new Particle(arrange).setSubparticles("aloha world").subparticlesToString()
  assert
   aloha world
 aReverseTest

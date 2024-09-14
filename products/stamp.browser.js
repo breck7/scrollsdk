@@ -195,7 +195,7 @@ fileParser
  javascript
   compileToBash(parentDir) {
    const filePath = this._getAbsolutePath(parentDir)
-   return \`touch \${filePath}\\necho -e "\${this.childrenToString()}" >> \${filePath}\`
+   return \`touch \${filePath}\\necho -e "\${this.subparticlesToString()}" >> \${filePath}\`
   }
   _getAbsolutePath(parentDir = process.cwd()) {
    return parentDir + "/" + this.cells.filepathCell
@@ -205,7 +205,7 @@ fileParser
    const fullPath = this._getAbsolutePath(parentDir)
    this.root.log(\`Creating file \${fullPath}\`)
    const data = this.getParticle("data")
-   const content = data ? data.childrenToString() : ""
+   const content = data ? data.subparticlesToString() : ""
    fs.mkdirSync(require("path").dirname(fullPath), {recursive: true})
    fs.writeFileSync(fullPath, content, "utf8")
    const isExecutable = this.has("executable") // todo: allow for all file permissions?
@@ -289,7 +289,7 @@ folderParser
     }
     compileToBash(parentDir) {
       const filePath = this._getAbsolutePath(parentDir)
-      return `touch ${filePath}\necho -e "${this.childrenToString()}" >> ${filePath}`
+      return `touch ${filePath}\necho -e "${this.subparticlesToString()}" >> ${filePath}`
     }
     _getAbsolutePath(parentDir = process.cwd()) {
       return parentDir + "/" + this.cells.filepathCell
@@ -299,7 +299,7 @@ folderParser
       const fullPath = this._getAbsolutePath(parentDir)
       this.root.log(`Creating file ${fullPath}`)
       const data = this.getParticle("data")
-      const content = data ? data.childrenToString() : ""
+      const content = data ? data.subparticlesToString() : ""
       fs.mkdirSync(require("path").dirname(fullPath), { recursive: true })
       fs.writeFileSync(fullPath, content, "utf8")
       const isExecutable = this.has("executable") // todo: allow for all file permissions?

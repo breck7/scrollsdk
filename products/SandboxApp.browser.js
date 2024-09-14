@@ -35,7 +35,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     const particleCode = localStorage.getItem("particle")
     if (!particleCode) return ""
     const particle = new Particle()
-    particle.appendLineAndChildren("particle", particleCode)
+    particle.appendLineAndSubparticles("particle", particleCode)
     return "#" + encodeURIComponent(particle.toString())
   }
   particleFromDeepLink() {
@@ -66,7 +66,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     const particleConsoleEl = this.willowBrowser.getElementById("particleConsole")
     // Init vars
     const deepLink = this.particleFromDeepLink()
-    if (deepLink) particleConsoleEl.value = deepLink.childrenToString()
+    if (deepLink) particleConsoleEl.value = deepLink.subparticlesToString()
     else if (localStorage.getItem("particle")) particleConsoleEl.value = localStorage.getItem("particle")
     // Trigger start
     this.updateFromParticlesConsoleCommand()
@@ -176,7 +176,7 @@ class headerComponent extends AbstractParticleComponentParser {
   a Debug
    clickCommand toggleParticleComponentFrameworkDebuggerCommand
   span  | Version ${Particle.getVersion()}
- p This is a simple console for exploring the base ParticleS. In dev tools, you can access the parsed particle below as "window.particle"`
+ p This is a simple console for exploring Particle. In dev tools, you can access the parsed particle below as "window.particle"`
   }
 }
 class shareComponent extends AbstractParticleComponentParser {
@@ -211,7 +211,7 @@ class tableComponent extends AbstractParticleComponentParser {
     return `table
  tr
   td
-   div ParticleS
+   div Particles
    textarea
     id particleConsole
     keyUpCommand updateFromParticlesConsoleCommand

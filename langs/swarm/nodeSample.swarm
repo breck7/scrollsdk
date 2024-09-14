@@ -26,7 +26,7 @@ test swarmParticlesample
     tags test
     compiler
      stringTemplate to {wordCell}
-     closeChildren end
+     closeSubparticles end
  getAllErrors
   assertLengthIs 0
  runTimeFirstWordsInScope

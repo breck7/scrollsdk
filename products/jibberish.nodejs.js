@@ -111,7 +111,7 @@ toParser
  cells topLevelPropertyCell wordCell
  compiler
   stringTemplate to {word}
-  closeChildren end
+  closeSubparticles end
  extends blockParser
  crux to
 fooParser

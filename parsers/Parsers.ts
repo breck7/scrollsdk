@@ -27,9 +27,9 @@ enum ParsersConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
   catchAllCellDelimiter = "catchAllCellDelimiter",
-  openChildren = "openChildren",
-  joinChildrenWith = "joinChildrenWith",
-  closeChildren = "closeChildren"
+  openSubparticles = "openSubparticles",
+  joinSubparticlesWith = "joinSubparticlesWith",
+  closeSubparticles = "closeSubparticles"
 }
 
 enum ParsersConstantsMisc {
@@ -105,7 +105,7 @@ enum ParsersConstants {
   cells = "cells",
   listDelimiter = "listDelimiter",
   contentKey = "contentKey",
-  childrenKey = "childrenKey",
+  subparticlesKey = "subparticlesKey",
   uniqueFirstWord = "uniqueFirstWord",
   catchAllCellType = "catchAllCellType",
   cellParser = "cellParser",
@@ -195,7 +195,7 @@ abstract class ParserBackedParticle extends Particle {
 
   protected _makeParticleIndex(startAt = 0) {
     if (!this._particleIndex || !startAt) this._particleIndex = {}
-    const particles = this._getChildrenArray() as ParserBackedParticle[]
+    const particles = this._getSubparticlesArray() as ParserBackedParticle[]
     const newIndex = this._particleIndex
     const length = particles.length
 
@@ -210,7 +210,7 @@ abstract class ParserBackedParticle extends Particle {
     return newIndex
   }
 
-  getChildInstancesOfParserId(parserId: particlesTypes.parserId): ParserBackedParticle[] {
+  getSubparticleInstancesOfParserId(parserId: particlesTypes.parserId): ParserBackedParticle[] {
     return this.particleIndex[parserId] || []
   }
 
@@ -315,7 +315,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   toCellTypeParticles() {
-    return this.topDownArray.map(child => child.indentation + child.lineCellTypes).join("\n")
+    return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.lineCellTypes).join("\n")
   }
 
   getParseTable(maxColumnWidth = 40) {
@@ -388,7 +388,7 @@ abstract class ParserBackedParticle extends Particle {
     const particleInScope = <ParserBackedParticle>lineParticle.getParticleInScopeAtCharIndex(charIndex)
 
     // todo: add more tests
-    // todo: second param this.childrenToString()
+    // todo: second param this.subparticlesToString()
     // todo: change to getAutocomplete definitions
 
     const wordIndex = lineParticle.getWordIndexAtCharacterIndex(charIndex)
@@ -427,7 +427,7 @@ abstract class ParserBackedParticle extends Particle {
         console.log(`Warning: ${err}`)
       }
     }
-    this.topDownArray.forEach(child => child.format())
+    this.topDownArray.forEach(subparticle => subparticle.format())
     return this
   }
 
@@ -447,23 +447,23 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   toPaintParticles() {
-    return this.topDownArray.map((child: ParserBackedParticle) => child.indentation + child.getLinePaints()).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.indentation + subparticle.getLinePaints()).join("\n")
   }
 
   toDefinitionLineNumberParticles() {
-    return this.topDownArray.map((child: ParserBackedParticle) => child.definition.lineNumber + " " + child.indentation + child.cellDefinitionLineNumbers.join(" ")).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.definition.lineNumber + " " + subparticle.indentation + subparticle.cellDefinitionLineNumbers.join(" ")).join("\n")
   }
 
   get asCellTypeParticlesWithParserIds() {
-    return this.topDownArray.map((child: ParserBackedParticle) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.lineCellTypes).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.lineCellTypes).join("\n")
   }
 
   toPreludeCellTypeParticlesWithParserIds() {
-    return this.topDownArray.map((child: ParserBackedParticle) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLineCellPreludeTypes()).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLineCellPreludeTypes()).join("\n")
   }
 
   get asParticlesWithParsers() {
-    return this.topDownArray.map((child: ParserBackedParticle) => child.constructor.name + this.wordBreakSymbol + child.indentation + child.getLine()).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLine()).join("\n")
   }
 
   getCellPaintAtPosition(lineIndex: number, wordIndex: number): particlesTypes.paint | undefined {
@@ -477,7 +477,7 @@ abstract class ParserBackedParticle extends Particle {
   private _cache_typeParticles: Particle
 
   protected _initCellTypeCache(): void {
-    const particleMTime = this.getLineOrChildrenModifiedTime()
+    const particleMTime = this.getLineOrSubparticlesModifiedTime()
     if (this._cache_programCellTypeStringMTime === particleMTime) return undefined
 
     this._cache_typeParticles = new Particle(this.toCellTypeParticles())
@@ -507,7 +507,7 @@ abstract class ParserBackedParticle extends Particle {
   private get singleParserUsedTwiceErrors() {
     const errors: particlesTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedParticle
-    const hits = parent.getChildInstancesOfParserId(this.definition.id)
+    const hits = parent.getSubparticleInstancesOfParserId(this.definition.id)
 
     if (hits.length > 1)
       hits.forEach((particle, index) => {
@@ -519,7 +519,7 @@ abstract class ParserBackedParticle extends Particle {
   private get uniqueLineAppearsTwiceErrors() {
     const errors: particlesTypes.ParticleError[] = []
     const parent = this.parent as ParserBackedParticle
-    const hits = parent.getChildInstancesOfParserId(this.definition.id)
+    const hits = parent.getSubparticleInstancesOfParserId(this.definition.id)
 
     if (hits.length > 1) {
       const set = new Set()
@@ -605,11 +605,11 @@ abstract class ParserBackedParticle extends Particle {
     return this.definition._getFromExtended(ParsersConstants.contentKey)
   }
 
-  protected get childrenKey() {
-    return this.definition._getFromExtended(ParsersConstants.childrenKey)
+  protected get subparticlesKey() {
+    return this.definition._getFromExtended(ParsersConstants.subparticlesKey)
   }
 
-  protected get childrenAreTextBlob() {
+  protected get subparticlesAreTextBlob() {
     return this.definition._isBlobParser()
   }
 
@@ -633,13 +633,13 @@ abstract class ParserBackedParticle extends Particle {
 
   get typedTuple() {
     const key = this.firstWord
-    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
+    if (this.subparticlesAreTextBlob) return [key, this.subparticlesToString()]
 
-    const { typedContent, contentKey, childrenKey } = this
+    const { typedContent, contentKey, subparticlesKey } = this
 
-    if (contentKey || childrenKey) {
+    if (contentKey || subparticlesKey) {
       let obj: any = {}
-      if (childrenKey) obj[childrenKey] = this.childrenToString()
+      if (subparticlesKey) obj[subparticlesKey] = this.subparticlesToString()
       else obj = this.typedMap
 
       if (contentKey) {
@@ -648,18 +648,18 @@ abstract class ParserBackedParticle extends Particle {
       return [key, obj]
     }
 
-    const hasChildren = this.length > 0
+    const hasSubparticles = this.length > 0
 
-    const hasChildrenNoContent = typedContent === undefined && hasChildren
-    const shouldReturnValueAsObject = hasChildrenNoContent
+    const hasSubparticlesNoContent = typedContent === undefined && hasSubparticles
+    const shouldReturnValueAsObject = hasSubparticlesNoContent
     if (shouldReturnValueAsObject) return [key, this.typedMap]
 
-    const hasChildrenAndContent = typedContent !== undefined && hasChildren
-    const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
+    const hasSubparticlesAndContent = typedContent !== undefined && hasSubparticles
+    const shouldReturnValueAsContentPlusSubparticles = hasSubparticlesAndContent
 
     // If the particle has a content and a subparticle return it as a string, as
     // Javascript object values can't be both a leaf and a particle.
-    if (shouldReturnValueAsContentPlusChildren) return [key, this.contentWithChildren]
+    if (shouldReturnValueAsContentPlusSubparticles) return [key, this.contentWithSubparticles]
 
     return [key, typedContent]
   }
@@ -695,15 +695,15 @@ abstract class ParserBackedParticle extends Particle {
     if (def.isTerminalParser()) return indent + compiledLine
 
     const compiler = def._getCompilerObject()
-    const openChildrenString = compiler[ParsersConstantsCompiler.openChildren] || ""
-    const closeChildrenString = compiler[ParsersConstantsCompiler.closeChildren] || ""
-    const childJoinCharacter = compiler[ParsersConstantsCompiler.joinChildrenWith] || "\n"
+    const openSubparticlesString = compiler[ParsersConstantsCompiler.openSubparticles] || ""
+    const closeSubparticlesString = compiler[ParsersConstantsCompiler.closeSubparticles] || ""
+    const subparticleJoinCharacter = compiler[ParsersConstantsCompiler.joinSubparticlesWith] || "\n"
 
-    const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter)
+    const compiledSubparticles = this.map(subparticle => subparticle.compile()).join(subparticleJoinCharacter)
 
-    return `${indent + compiledLine}${openChildrenString}
-${compiledChildren}
-${indent}${closeChildrenString}`
+    return `${indent + compiledLine}${openSubparticlesString}
+${compiledSubparticles}
+${indent}${closeSubparticlesString}`
   }
 
   // todo: remove
@@ -1540,7 +1540,7 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
   }
 
   private _getAllTests() {
-    return this._getChildrenByParserInExtended(AbstractParsersWordTestParser)
+    return this._getSubparticlesByParserInExtended(AbstractParsersWordTestParser)
   }
 
   isValid(str: string, programRootParticle: ParserBackedParticle) {
@@ -1684,9 +1684,9 @@ class ParsersCompilerParser extends Particle {
       ParsersConstantsCompiler.stringTemplate,
       ParsersConstantsCompiler.indentCharacter,
       ParsersConstantsCompiler.catchAllCellDelimiter,
-      ParsersConstantsCompiler.joinChildrenWith,
-      ParsersConstantsCompiler.openChildren,
-      ParsersConstantsCompiler.closeChildren
+      ParsersConstantsCompiler.joinSubparticlesWith,
+      ParsersConstantsCompiler.openSubparticles,
+      ParsersConstantsCompiler.closeSubparticles
     ]
     const map: particlesTypes.firstWordToParserMap = {}
     types.forEach(type => {
@@ -1697,8 +1697,8 @@ class ParsersCompilerParser extends Particle {
 }
 
 abstract class AbstractParserConstantParser extends Particle {
-  constructor(children?: particlesTypes.children, line?: string, parent?: Particle) {
-    super(children, line, parent)
+  constructor(subparticles?: particlesTypes.subparticles, line?: string, parent?: Particle) {
+    super(subparticles, line, parent)
     parent[this.identifier] = this.constantValue
   }
 
@@ -1727,7 +1727,7 @@ class ParsersParserConstantString extends AbstractParserConstantParser {
   }
 
   get constantValue() {
-    return this.length ? this.childrenToString() : this.getWordsFrom(2).join(" ")
+    return this.length ? this.subparticlesToString() : this.getWordsFrom(2).join(" ")
   }
 }
 class ParsersParserConstantFloat extends AbstractParserConstantParser {}
@@ -1751,7 +1751,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.cruxFromId,
       ParsersConstants.listDelimiter,
       ParsersConstants.contentKey,
-      ParsersConstants.childrenKey,
+      ParsersConstants.subparticlesKey,
       ParsersConstants.uniqueFirstWord,
       ParsersConstants.uniqueLine,
       ParsersConstants.pattern,
@@ -1780,7 +1780,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
   }
 
   toTypeScriptInterface(used = new Set<string>()) {
-    let childrenInterfaces: string[] = []
+    let subparticlesInterfaces: string[] = []
     let properties: string[] = []
     const inScope = this.firstWordMapWithDefinitions
     const thisId = this.id
@@ -1794,7 +1794,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       const escapedKey = key.match(/\?/) ? `"${key}"` : key
       const description = def.description
       if (Object.keys(map).length && !used.has(id)) {
-        childrenInterfaces.push(def.toTypeScriptInterface(used))
+        subparticlesInterfaces.push(def.toTypeScriptInterface(used))
         properties.push(` ${escapedKey}${optionalTag}: ${id}`)
       } else properties.push(` ${escapedKey}${optionalTag}: any${description ? " // " + description : ""}`)
     })
@@ -1803,7 +1803,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
     const description = this.description
 
     const myInterface = ""
-    return `${childrenInterfaces.join("\n")}
+    return `${subparticlesInterfaces.join("\n")}
 ${description ? "// " + description : ""}
 interface ${thisId} {
 ${properties.join("\n")}
@@ -1826,14 +1826,14 @@ ${properties.join("\n")}
 
   _getUniqueConstantParticles(extended = true) {
     const obj: { [key: string]: AbstractParserConstantParser } = {}
-    const items = extended ? this._getChildrenByParserInExtended(AbstractParserConstantParser) : this.getChildrenByParser(AbstractParserConstantParser)
+    const items = extended ? this._getSubparticlesByParserInExtended(AbstractParserConstantParser) : this.getSubparticlesByParser(AbstractParserConstantParser)
     items.reverse() // Last definition wins.
     items.forEach((particle: AbstractParserConstantParser) => (obj[particle.identifier] = particle))
     return obj
   }
 
   get examples(): ParsersExampleParser[] {
-    return this._getChildrenByParserInExtended(ParsersExampleParser)
+    return this._getSubparticlesByParserInExtended(ParsersExampleParser)
   }
 
   get parserIdFromDefinition(): particlesTypes.parserId {
@@ -1872,7 +1872,7 @@ ${properties.join("\n")}
 
   protected get customJavascriptMethods(): particlesTypes.javascriptCode {
     const hasJsCode = this.has(ParsersConstants.javascript)
-    return hasJsCode ? this.getParticle(ParsersConstants.javascript).childrenToString() : ""
+    return hasJsCode ? this.getParticle(ParsersConstants.javascript).subparticlesToString() : ""
   }
 
   private _cache_firstWordToParticleDefMap: { [firstWord: string]: parserDefinitionParser }
@@ -2014,7 +2014,7 @@ ${properties.join("\n")}
   }
 
   private get errorMethodToJavascript(): particlesTypes.javascriptCode {
-    if (this._isBlobParser()) return "getErrors() { return [] }" // Skips parsing child particles for perf gains.
+    if (this._isBlobParser()) return "getErrors() { return [] }" // Skips parsing subparticles for perf gains.
     if (this._isErrorParser()) return "getErrors() { return this._getErrorParserErrors() }"
     return ""
   }
@@ -2056,7 +2056,7 @@ ${properties.join("\n")}
   }
 
   private get myScopedParserDefinitions() {
-    return <parserDefinitionParser[]>this.getChildrenByParser(parserDefinitionParser)
+    return <parserDefinitionParser[]>this.getSubparticlesByParser(parserDefinitionParser)
   }
 
   private get catchAllParserToJavascript(): particlesTypes.javascriptCode {
@@ -2092,7 +2092,7 @@ ${properties.join("\n")}
 
   _getCompilerObject(): particlesTypes.stringMap {
     let obj: { [key: string]: string } = {}
-    const items = this._getChildrenByParserInExtended(ParsersCompilerParser)
+    const items = this._getSubparticlesByParserInExtended(ParsersCompilerParser)
     items.reverse() // Last definition wins.
     items.forEach((particle: ParsersCompilerParser) => {
       obj = Object.assign(obj, particle.toObject()) // todo: what about multiline strings?
@@ -2179,11 +2179,11 @@ ${captures}
   }
 
   get hasParserDefinitions() {
-    return !!this.getChildrenByParser(parserDefinitionParser).length
+    return !!this.getSubparticlesByParser(parserDefinitionParser).length
   }
 
   makeProgramParserDefinitionCache() {
-    const scopedParsers = this.getChildrenByParser(parserDefinitionParser)
+    const scopedParsers = this.getSubparticlesByParser(parserDefinitionParser)
     const cache = Object.assign({}, this.parent.programParserDefinitionCache) // todo. We don't really need this. we should just lookup the parent if no local hits.
     scopedParsers.forEach(parserDefinitionParser => (cache[(<parserDefinitionParser>parserDefinitionParser).parserIdFromDefinition] = parserDefinitionParser))
     return cache
@@ -2248,7 +2248,7 @@ ${cells.toString(1)}`
   private _collectAllDefinitions(defs: parserDefinitionParser[], collection: parserDefinitionParser[] = []) {
     defs.forEach((def: parserDefinitionParser) => {
       collection.push(def)
-      def._collectAllDefinitions(def.getChildrenByParser(parserDefinitionParser), collection)
+      def._collectAllDefinitions(def.getSubparticlesByParser(parserDefinitionParser), collection)
     })
     return collection
   }
@@ -2426,15 +2426,15 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return predictions
   }
 
-  predictChildren(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return this._mapPredictions(this._predictChildren(model, particle), model)
+  predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
+    return this._mapPredictions(this._predictSubparticles(model, particle), model)
   }
 
   predictParents(model: SimplePredictionModel, particle: ParserBackedParticle) {
     return this._mapPredictions(this._predictParents(model, particle), model)
   }
 
-  private _predictChildren(model: SimplePredictionModel, particle: ParserBackedParticle) {
+  private _predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
     return model.matrix[particle.isRoot() ? 0 : model.idToIndex[particle.definition.id]]
   }
 
@@ -2478,7 +2478,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
       def.examples.forEach(example => {
         const id = def.id + example.content
         testBlocks[id] = (equal: Function) => {
-          const exampleProgram = new rootParser(example.childrenToString())
+          const exampleProgram = new rootParser(example.subparticlesToString())
           const errors = exampleProgram.getAllErrors(example._getLineNumber() + 1)
           equal(errors.join("\n"), expectedErrorMessage, `Expected no errors in ${id}`)
         }
@@ -2507,7 +2507,7 @@ list
     const rootParticleDef = this.rootParserDefinition
     const languageName = this.extensionName
     const example = rootParticleDef.examples[0]
-    const sampleCode = example ? example.childrenToString() : ""
+    const sampleCode = example ? example.subparticlesToString() : ""
 
     files[ParsersBundleFiles.package] = JSON.stringify(
       {
@@ -2563,7 +2563,7 @@ ${testCode}`
     if (this._cache_cellTypes) return this._cache_cellTypes
     const types: { [typeName: string]: cellTypeDefinitionParser } = {}
     // todo: add built in word types?
-    this.getChildrenByParser(cellTypeDefinitionParser).forEach(type => (types[(<cellTypeDefinitionParser>type).cellTypeId] = type))
+    this.getSubparticlesByParser(cellTypeDefinitionParser).forEach(type => (types[(<cellTypeDefinitionParser>type).cellTypeId] = type))
     this._cache_cellTypes = types
     return types
   }
@@ -2584,7 +2584,7 @@ ${testCode}`
   }
 
   get validConcreteAndAbstractParserDefinitions() {
-    return <parserDefinitionParser[]>this.getChildrenByParser(parserDefinitionParser).filter((particle: parserDefinitionParser) => particle._hasValidParserId())
+    return <parserDefinitionParser[]>this.getSubparticlesByParser(parserDefinitionParser).filter((particle: parserDefinitionParser) => particle._hasValidParserId())
   }
 
   private _cache_rootParserParticle: parserDefinitionParser
@@ -2649,7 +2649,7 @@ ${testCode}`
 
   makeProgramParserDefinitionCache() {
     const cache = {}
-    this.getChildrenByParser(parserDefinitionParser).forEach(parserDefinitionParser => (cache[(<parserDefinitionParser>parserDefinitionParser).parserIdFromDefinition] = parserDefinitionParser))
+    this.getSubparticlesByParser(parserDefinitionParser).forEach(parserDefinitionParser => (cache[(<parserDefinitionParser>parserDefinitionParser).parserIdFromDefinition] = parserDefinitionParser))
     return cache
   }
 
@@ -2770,14 +2770,14 @@ class UnknownParsersProgram extends Particle {
     return rootParticle
   }
 
-  private static _childSuffix = "Child"
+  private static _subparticleSuffix = "Subparticle"
 
   private _renameIntegerKeywords(clone: UnknownParsersProgram) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstWordIsAnInteger = !!particle.firstWord.match(/^\d+$/)
       const parentFirstWord = particle.parent.firstWord
-      if (firstWordIsAnInteger && parentFirstWord) particle.setFirstWord(HandParsersProgram.makeParserId(parentFirstWord + UnknownParsersProgram._childSuffix))
+      if (firstWordIsAnInteger && parentFirstWord) particle.setFirstWord(HandParsersProgram.makeParserId(parentFirstWord + UnknownParsersProgram._subparticleSuffix))
     }
   }
 
@@ -2789,17 +2789,17 @@ class UnknownParsersProgram extends Particle {
       if (!keywordsToChildKeywords[firstWord]) keywordsToChildKeywords[firstWord] = {}
       if (!keywordsToParticleInstances[firstWord]) keywordsToParticleInstances[firstWord] = []
       keywordsToParticleInstances[firstWord].push(particle)
-      particle.forEach((child: Particle) => (keywordsToChildKeywords[firstWord][child.firstWord] = true))
+      particle.forEach((subparticle: Particle) => (keywordsToChildKeywords[firstWord][subparticle.firstWord] = true))
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
   }
 
-  private _inferParserDef(firstWord: string, globalCellTypeMap: Map<string, string>, childFirstWords: string[], instances: Particle[]) {
+  private _inferParserDef(firstWord: string, globalCellTypeMap: Map<string, string>, subparticleFirstWords: string[], instances: Particle[]) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstWord)
     const particleDefParticle = <Particle>new Particle(parserId).particleAt(0)
-    const childParserIds = childFirstWords.map(word => HandParsersProgram.makeParserId(word))
-    if (childParserIds.length) particleDefParticle.touchParticle(ParsersConstants.inScope).setWordsFrom(1, childParserIds)
+    const subparticleParserIds = subparticleFirstWords.map(word => HandParsersProgram.makeParserId(word))
+    if (subparticleParserIds.length) particleDefParticle.touchParticle(ParsersConstants.inScope).setWordsFrom(1, subparticleParserIds)
 
     const cellsForAllInstances = instances
       .map(line => line.content)
@@ -2829,7 +2829,7 @@ class UnknownParsersProgram extends Particle {
       }
     }
 
-    const needsCruxProperty = !firstWord.endsWith(UnknownParsersProgram._childSuffix + ParsersConstants.parserSuffix) // todo: cleanup
+    const needsCruxProperty = !firstWord.endsWith(UnknownParsersProgram._subparticleSuffix + ParsersConstants.parserSuffix) // todo: cleanup
     if (needsCruxProperty) particleDefParticle.set(ParsersConstants.crux, firstWord)
 
     if (catchAllCellType) particleDefParticle.set(ParsersConstants.catchAllCellType, catchAllCellType)

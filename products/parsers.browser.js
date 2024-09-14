@@ -24,7 +24,7 @@ javascriptSafeAlphaNumericIdentifierCell
 anyCell
 
 baseParsersCell
- description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error particles always report an error.
+ description There are a few classes of special parsers. BlobParsers don't have their subparticles parsed. Error particles always report an error.
  // todo Remove?
  enum blobParser errorParser
  paint variable.parameter
@@ -163,14 +163,14 @@ abstractCompilerRuleParser
  catchAllCellType anyCell
  cells propertyKeywordCell
 
-closeChildrenParser
+closeSubparticlesParser
  extends abstractCompilerRuleParser
- description When compiling a parent particle to a string, this string is appended to the compiled and joined children. Default is blank.
+ description When compiling a parent particle to a string, this string is appended to the compiled and joined subparticles. Default is blank.
  cruxFromId
 
 indentCharacterParser
  extends abstractCompilerRuleParser
- description You can change the indent character for compiled children. Default is a space.
+ description You can change the indent character for compiled subparticles. Default is a space.
  cruxFromId
 
 catchAllCellDelimiterParser
@@ -178,9 +178,9 @@ catchAllCellDelimiterParser
  extends abstractCompilerRuleParser
  cruxFromId
 
-openChildrenParser
+openSubparticlesParser
  extends abstractCompilerRuleParser
- description When compiling a parent particle to a string, this string is prepended to the compiled and joined children. Default is blank.
+ description When compiling a parent particle to a string, this string is prepended to the compiled and joined subparticles. Default is blank.
  cruxFromId
 
 stringTemplateParser
@@ -188,8 +188,8 @@ stringTemplateParser
  description This template string is used to compile this line, and accepts strings of the format: const var = {someCellId}
  cruxFromId
 
-joinChildrenWithParser
- description When compiling a parent particle to a string, child particles are compiled to strings and joined by this character. Default is a newline.
+joinSubparticlesWithParser
+ description When compiling a parent particle to a string, subparticles are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleParser
  cruxFromId
 
@@ -289,9 +289,9 @@ cellsParser
  tags analyzePhase
 
 compilerParser
- // todo Remove this and its children?
+ // todo Remove this and its subparticles?
  description For simple compilers.
- inScope stringTemplateParser catchAllCellDelimiterParser openChildrenParser closeChildrenParser indentCharacterParser joinChildrenWithParser
+ inScope stringTemplateParser catchAllCellDelimiterParser openSubparticlesParser closeSubparticlesParser indentCharacterParser joinSubparticlesWithParser
  extends abstractParserRuleParser
  cruxFromId
  tags experimental
@@ -350,8 +350,8 @@ javascriptParser
  javascript
   format() {
    if (this.isNodeJs()) {
-    const template = \`class FOO{ \${this.childrenToString()}}\`
-    this.setChildren(
+    const template = \`class FOO{ \${this.subparticlesToString()}}\`
+    this.setSubparticles(
      require("prettier")
       .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
       .replace(/class FOO \\{\\s+/, "")
@@ -432,10 +432,10 @@ contentKeyParser
  cruxFromId
  catchAllCellType stringCell
  tags deprecate
-childrenKeyParser
+subparticlesKeyParser
  // todo: deprecate?
  description Deprecated. For to/from JSON.
- // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the particle to an object and set a property with this key and the value set to the particle's children.
+ // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the particle to an object and set a property with this key and the value set to the particle's subparticles.
  extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
@@ -588,17 +588,17 @@ extendsCellTypeParser
     }
   }
 
-  class closeChildrenParser extends abstractCompilerRuleParser {}
+  class closeSubparticlesParser extends abstractCompilerRuleParser {}
 
   class indentCharacterParser extends abstractCompilerRuleParser {}
 
   class catchAllCellDelimiterParser extends abstractCompilerRuleParser {}
 
-  class openChildrenParser extends abstractCompilerRuleParser {}
+  class openSubparticlesParser extends abstractCompilerRuleParser {}
 
   class stringTemplateParser extends abstractCompilerRuleParser {}
 
-  class joinChildrenWithParser extends abstractCompilerRuleParser {}
+  class joinSubparticlesWithParser extends abstractCompilerRuleParser {}
 
   class abstractConstantParser extends ParserBackedParticle {
     get propertyKeywordCell() {
@@ -727,12 +727,12 @@ extendsCellTypeParser
       return new Particle.ParserCombinator(
         undefined,
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          closeChildren: closeChildrenParser,
+          closeSubparticles: closeSubparticlesParser,
           indentCharacter: indentCharacterParser,
           catchAllCellDelimiter: catchAllCellDelimiterParser,
-          openChildren: openChildrenParser,
+          openSubparticles: openSubparticlesParser,
           stringTemplate: stringTemplateParser,
-          joinChildrenWith: joinChildrenWithParser
+          joinSubparticlesWith: joinSubparticlesWithParser
         }),
         undefined
       )
@@ -790,8 +790,8 @@ extendsCellTypeParser
     }
     format() {
       if (this.isNodeJs()) {
-        const template = `class FOO{ ${this.childrenToString()}}`
-        this.setChildren(
+        const template = `class FOO{ ${this.subparticlesToString()}}`
+        this.setSubparticles(
           require("prettier")
             .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
             .replace(/class FOO \{\s+/, "")
@@ -853,7 +853,7 @@ extendsCellTypeParser
     }
   }
 
-  class childrenKeyParser extends abstractParserRuleParser {
+  class subparticlesKeyParser extends abstractParserRuleParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
@@ -1021,7 +1021,7 @@ extendsCellTypeParser
           uniqueFirstWord: uniqueFirstWordParser,
           listDelimiter: listDelimiterParser,
           contentKey: contentKeyParser,
-          childrenKey: childrenKeyParser,
+          subparticlesKey: subparticlesKeyParser,
           tags: tagsParser,
           root: rootFlagParser,
           "//": slashCommentParser

@@ -65,7 +65,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     const parsers = await willowBrowser.httpGetUrl(url)
     const parsersProgram = new HandParsersProgram(parsers.text)
     const rootParticleDef = parsersProgram.rootParserDefinition
-    let sample = rootParticleDef.getParticle("example").childrenToString()
+    let sample = rootParticleDef.getParticle("example").subparticlesToString()
     if (programUrl) {
       sample = await willowBrowser.httpGetUrl(programUrl)
       sample = sample.text
@@ -132,7 +132,7 @@ class DesignerApp extends AbstractParticleComponentParser {
       const sampleCode = deepLink.getParticle("sample")
       if (parsersCode && sampleCode) {
         console.log("Loading custom from deep link....")
-        this._setParsersAndCode(parsersCode.childrenToString(), sampleCode.childrenToString())
+        this._setParsersAndCode(parsersCode.subparticlesToString(), sampleCode.subparticlesToString())
         return true
       }
     }
@@ -229,8 +229,8 @@ class DesignerApp extends AbstractParticleComponentParser {
   }
   toShareLink() {
     const particle = new Particle()
-    particle.appendLineAndChildren("parsers", this.getParsersCode())
-    particle.appendLineAndChildren("sample", this.getCodeValue())
+    particle.appendLineAndSubparticles("parsers", this.getParsersCode())
+    particle.appendLineAndSubparticles("sample", this.getCodeValue())
     return "#" + encodeURIComponent(particle.asString)
   }
   _onCodeKeyUp() {

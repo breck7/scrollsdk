@@ -4,7 +4,7 @@ test swarm base
   require ../products/Particle.js Particle
   constructWithParagraph
    hello world
- getChildren
+ getSubparticles
   assertLengthIs 1
  particleAt 0
   content

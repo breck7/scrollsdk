@@ -27,10 +27,10 @@ descriptionParser
  catchAllCellType anyCell
  cells keywordCell
 editsParser
- inScope editsChildParser
+ inScope editsSubparticleParser
  crux edits
  cells keywordCell
-editsChildParser
+editsSubparticleParser
  inScope dataParser
  cells keywordCell
 dataParser

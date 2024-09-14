@@ -7,6 +7,23 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+86.0.0 2024-9-14
+================
+🎉 Switched from "children" to the term "subparticles"
+⚠️ BREAKING: Generally rename children > subparticles, child => subparticle
+⚠️ BREAKING: childrenToString > subparticlesToString
+⚠️ BREAKING: appendLineAndChildren > appendLineAndSubparticles
+⚠️ BREAKING: getChildrenByParser > getSubparticlesByParser
+⚠️ BREAKING: setContentWithChildren > setContentWithSubparticles
+⚠️ BREAKING: setChildren > setSubparticles
+⚠️ BREAKING: getChildren > getSubparticles
+⚠️ BREAKING: getDelimitedChildrenAsParticles > getDelimitedSubparticlesAsParticles
+⚠️ BREAKING: insertLineAndChildren > insertLineAndSubparticles
+⚠️ BREAKING: predictChildren > predictSubparticles
+⚠️ BREAKING: contentWithChildren > contentWithSubparticles
+⚠️ BREAKING: getLineOrChildrenModifiedTime > getLineOrSubparticlesModifiedTime
+⚠️ BREAKING: getChildInstancesOfParserId > getSubparticleInstancesOfParserId
+
 85.2.0 2024-9-5
 ===============
 🎉 Placeholder support in codemirror
@@ -179,7 +196,7 @@ This is a major release with significant name breaks. All logic is the same but 
   - createParser > createParserCombinator
   - getAncestorByNodeConstructor
   - Particle.Parser > Particle.ParserCombinator
-  - getChildInstancesOfNodeTypeId > getChildInstancesOfParserId
+  - getChildInstancesOfNodeTypeId > getSubparticleInstancesOfParserId
   - findAllNodesWithNodeType > findAllNodesWithParser
  - ParsersCompiler:
   - compileParsersFileAtPathAndReturnRootConstructor > compileParsersFileAtPathAndReturnRootParser
@@ -1017,7 +1034,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 36.0.0 2019-07-30
 =================
 🎉 added TrueBase and "base" command to CLI
-🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
+🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setSubparticlesAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
@@ -1374,7 +1391,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 🎉 compile and execute button in grammar sandbox
 🎉 basic browser module constructor loading in grammar sandbox
 🏥 better reset functionality in grammar sandbox
-⚠️ getChildrenByNodeType is now getChildrenByNodeConstructor
+⚠️ getSubparticlesByNodeType is now getSubparticlesByNodeConstructor
 ⚠️ extend now throws if attempting to extend with a non-map. Better solution to come.
 ⚠️ removed combine.js script
 ⚠️ ParsersProgram.predictGrammarFile is now new UnknownParsersProgram(input).getPredictedGrammarFile()
@@ -1547,7 +1564,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 
 15.3.0 2019-03-01
 =================
-🎉 for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map ...
+🎉 for convenience added map, forEach, filter, find and slice methods aliasing getSubparticles().map ...
 🎉 sortByColumns method
 🎉 predictGrammarFile method
 🎉 getInvalidKeywords method
@@ -1591,7 +1608,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 
 15.0.2 2019-02-07
 =================
-🏥 setChildren wasn't clearing cache
+🏥 setSubparticles wasn't clearing cache
 🏥 findNodes wasn't recursing
 
 15.0.1 2019-01-02
@@ -1613,7 +1630,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 14.6.0 2018-09-23
 =================
 🏥 Fix for browsers removing monotonically increasing perf.now
-🎉 getChildren() now returns a copy of array enabling in loop deletes
+🎉 getSubparticles() now returns a copy of array enabling in loop deletes
 
 14.5.1 2017-11-24
 =================
@@ -1696,7 +1713,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 =================
 🎉 appendLine method
 🎉 insertLine method
-⚠️ append is now appendLineAndChildren
+⚠️ append is now appendLineAndSubparticles
 ⚠️ insert is now insertLineAndChildren
 ⚠️ prepend is now prependLine and takes only 1 param
 ⚠️ copyTo now requires second arg
@@ -2026,7 +2043,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 
 3.7.2 2017-6-15
 ===============
-🏥 setChildren regression fix
+🏥 setSubparticles regression fix
 
 3.7.1 2017-6-15
 ===============
@@ -2048,7 +2065,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 
 3.5.3 2017-6-14
 ===============
-🎉 Added getChildrenByNodeType method
+🎉 Added getSubparticlesByNodeType method
 🎉 Expose a simple ExecutableParticle class
 🏥 Fixed bug when initiating from an ETN
 
@@ -2091,7 +2108,7 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 3.1.0 2017-6-1
 ==============
 ⚠️ removed every() method
-🎉 Added getTopDownArray (preorder), getChildrenFirstArray (postorder), getParentFirstArray(breadth first) methods
+🎉 Added getTopDownArray (preorder), getSubparticlesFirstArray (postorder), getParentFirstArray(breadth first) methods
 
 3.0.1 2017-5-30
 ===============
@@ -2100,19 +2117,19 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 3.0.0 2017-5-30
 ===============
 ⚠️ merged all subclasses into one Particle class.
-⚠️ getNodes is now getChildren
+⚠️ getNodes is now getSubparticles
 ⚠️ setName > setHead, setValue > setTail, getName > getHead, getValue > getTail
 ⚠️ getNames > getHeads, getValues > getTails, setValue > setTail
 ⚠️ removed seed methods
 ⚠️ removed findTrees and findValues methods
 ⚠️ removed tree next and prev methods
 ⚠️ removed tree setText...do tree.touchNode().setTailWithChildren(text)
-⚠️ removed tree setTree...do tree.touchNode().setChildren()
+⚠️ removed tree setTree...do tree.touchNode().setSubparticles()
 ⚠️ removed tree setTail...do tree.touchNode().setTail()
 ⚠️ removed tree getTail...do tree.getParticle(path).getTail()
 ⚠️ removed tree getTree...do tree.getParticle(path).getTree()
 ⚠️ removed tree getText...do tree.getParticle(path).getText()
-⚠️ node setTree is now node setChildren
+⚠️ node setTree is now node setSubparticles
 ⚠️ append now takes only 2 params, line and tree.
 ⚠️ appendLine is now just append
 ⚠️ getAncestorTrees is now getAncestorNodes
@@ -2229,4 +2246,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v130.3.1
+Built with Scroll v131.0.0

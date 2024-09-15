@@ -1,51 +1,51 @@
-keywordCell
-anyCell
-intCell
-boolCell
-floatCell
+keywordAtom
+anyAtom
+intAtom
+boolAtom
+floatAtom
 foobarParser
  root
  inScope fileParser
 fileParser
  inScope sizeParser digitsParser openParser tempParser descriptionParser editsParser accountParser
  crux file
- cells keywordCell anyCell
+ atoms keywordAtom anyAtom
 sizeParser
  crux size
- cells keywordCell intCell
+ atoms keywordAtom intAtom
 digitsParser
  crux digits
- cells keywordCell intCell intCell
+ atoms keywordAtom intAtom intAtom
 openParser
  crux open
- cells keywordCell boolCell
+ atoms keywordAtom boolAtom
 tempParser
  crux temp
- cells keywordCell floatCell
+ atoms keywordAtom floatAtom
 descriptionParser
  crux description
- catchAllCellType anyCell
- cells keywordCell
+ catchAllAtomType anyAtom
+ atoms keywordAtom
 editsParser
  inScope editsSubparticleParser
  crux edits
- cells keywordCell
+ atoms keywordAtom
 editsSubparticleParser
  inScope dataParser
- cells keywordCell
+ atoms keywordAtom
 dataParser
  crux data
- cells keywordCell anyCell
+ atoms keywordAtom anyAtom
 accountParser
  inScope balanceParser transactionsParser sourceParser
  crux account
- cells keywordCell
+ atoms keywordAtom
 balanceParser
  crux balance
- cells keywordCell floatCell
+ atoms keywordAtom floatAtom
 transactionsParser
  crux transactions
- cells keywordCell intCell
+ atoms keywordAtom intAtom
 sourceParser
  crux source
- cells keywordCell boolCell anyCell intCell
+ atoms keywordAtom boolAtom anyAtom intAtom

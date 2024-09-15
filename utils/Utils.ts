@@ -418,7 +418,7 @@ class Utils {
     return clone.join(", ") + ` and ${len - limit} more`
   }
 
-  // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
+  // todo: refactor so instead of str input takes an array of atoms(strings) and scans each indepndently.
   static _chooseDelimiter(str: string) {
     const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))
     if (!del) throw new Error("Could not find a delimiter")
@@ -569,11 +569,11 @@ class Utils {
     return (<any>window)[name]
   }
 
-  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: particlesTypes.stringMap) {
+  static formatStr(str: string, catchAllAtomDelimiter = " ", parameterMap: particlesTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
-      return Array.isArray(val) ? val.join(catchAllCellDelimiter) : val
+      return Array.isArray(val) ? val.join(catchAllAtomDelimiter) : val
     })
   }
 

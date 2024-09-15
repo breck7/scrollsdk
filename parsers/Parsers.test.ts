@@ -196,7 +196,7 @@ testParticles.iris = equal => {
   const programWithBugs = makeIrisProgram(`6.1 3 4.9  virginica`)
 
   // Act/Assert
-  equal(programWithBugs.toCellTypeParticles(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
+  equal(programWithBugs.toAtomTypeParticles(), `sepalLengthAtom sepalWidthAtom petalLengthAtom petalWidthAtom speciesAtom`)
 }
 
 testParticles.jibberishErrors = equal => {
@@ -250,7 +250,7 @@ testParticles.makeError = equal => {
   equal(error.lineNumber, 1)
 }
 
-testParticles.cellTypeParticles = equal => {
+testParticles.atomTypeParticles = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
@@ -259,22 +259,22 @@ testParticles.cellTypeParticles = equal => {
 
   // Assert
   equal(
-    someJibberishProgram.toCellTypeParticles(),
-    `topLevelPropertyCell
-opSymbolCell intCell intCell intCell`,
+    someJibberishProgram.toAtomTypeParticles(),
+    `topLevelPropertyAtom
+opSymbolAtom intAtom intAtom intAtom`,
     "word types should match"
   )
-  equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
+  equal(someJibberishProgram.findAllWordsWithAtomType("intAtom").length, 3)
 
   // Act
-  const parsers = someJibberishProgram.asCellTypeParticlesWithParserIds
+  const parsers = someJibberishProgram.asAtomTypeParticlesWithParserIds
   const particlesWithParsers = someJibberishProgram.asParticlesWithParsers
 
   // Assert
   equal(
     parsers,
-    `fooParser topLevelPropertyCell
-plusParser opSymbolCell intCell intCell intCell`,
+    `fooParser topLevelPropertyAtom
+plusParser opSymbolAtom intAtom intAtom intAtom`,
     "parsers word types should match"
   )
   equal(
@@ -287,7 +287,7 @@ plusParser + 2 3 2`,
 
 testParticles.preludeTypes = equal => {
   // Act/Assert
-  equal(makeNumbersProgram(`+ 2`).particleAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
+  equal(makeNumbersProgram(`+ 2`).particleAt(0).getLineAtomPreludeTypes(), `anyAtom floatAtom`)
 }
 
 testParticles.exponentialNotation = equal => {
@@ -329,8 +329,8 @@ h1Parser
  extends abstractHtmlParser
 abstractHtmlParser
  extends abstractTopLevelParser
-intCell`
-  const sortedCode = `intCell
+intAtom`
+  const sortedCode = `intAtom
 someLangParser
  root
  inScope abstractTopLevelParser
@@ -349,12 +349,12 @@ testParticles.cokeRegression = equal => {
   const lang = `cokeParser
  root
  inScope cokesParser
-intCell
+intAtom
  paint constant.numeric.integer
-anyCell
+anyAtom
 cokesParser
- cells anyCell
- catchAllCellType intCell`
+ atoms anyAtom
+ catchAllAtomType intAtom`
   const code = `
 cokes 22 11`
 
@@ -437,15 +437,15 @@ testParticles.extraWord = equal => {
   // Act/Assert
   equal(program.getAllErrors().length, 1)
   equal(
-    program.toCellTypeParticles(),
-    `parserIdCell
- propertyKeywordCell extraWordCell`
+    program.toAtomTypeParticles(),
+    `parserIdAtom
+ propertyKeywordAtom extraWordAtom`
   )
 }
 
 testParticles.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeParsersProgram(`fooCell
+  const program = makeParsersProgram(`fooAtom
  paint comme`)
 
   // Act/Assert
@@ -458,10 +458,10 @@ testParticles.autocompleteAdvanced = equal => {
  root
  catchAllParser anyParser
  inScope faveNumberParser
-integerCell
+integerAtom
 anyParser
 faveNumberParser
- cells in`)
+ atoms in`)
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
@@ -554,7 +554,7 @@ div
 //   const path = parsersParsersPath
 //   const anyProgram = makeProgram(
 //     readFileSync(path, "utf8"),
-//     `cellType word
+//     `atomType word
 // parser baseParser`,
 //     path
 //   )
@@ -571,8 +571,8 @@ testParticles.minimumParsers = equal => {
  root
  catchAllParser anyParser
 anyParser
- catchAllCellType anyCell
-anyCell`
+ catchAllAtomType anyAtom
+anyAtom`
   ).compileAndReturnRootParser()
   const program = new rootParser()
   const handParsersProgram = program.handParsersProgram
@@ -597,7 +597,7 @@ testParticles.rootCatchAllParser = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.toCellTypeParticles(), "extraWordCell", "one word")
+  equal(program.toAtomTypeParticles(), "extraWordAtom", "one word")
 
   // Arrange
   const abcLangWithErrors = new HandParsersProgram(`abcParser
@@ -627,12 +627,12 @@ testParticles.parsersWithLoop = equal => {
  catchAllParser particleAParser
 particleAParser
  extends particleCParser
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
 particleBParser
  extends particleAParser
 particleCParser
  extends particleBParser
-anyCell`
+anyAtom`
     ).compileAndReturnRootParser()
 
     new rootParser("particleA")
@@ -664,7 +664,7 @@ testParticles.updateParserIds = equal => {
   // Arrange/Act
   const anyProgram = makeParsersProgram(`someLangParser
  root
-foobarCell
+foobarAtom
  regex test`)
 
   // Assert
@@ -675,7 +675,7 @@ foobarCell
     anyProgram.toString(),
     `someLangParser
  root
-foobarCell
+foobarAtom
  regexString test`
   )
 }
@@ -720,14 +720,14 @@ const badParsersProgram = new HandParsersProgram(
  inScope addParser
 addParser
  crux +
- catchAllCellType intCell
- cells keywordCell
+ catchAllAtomType intAtom
+ atoms keywordAtom
  example This is a bad example.
   + 1 B
-keywordCell
-intCell`
+keywordAtom
+intAtom`
 )
-Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
+Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 atom 2. "B" does not fit in atomType "intAtom".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 

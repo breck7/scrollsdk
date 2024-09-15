@@ -19,11 +19,11 @@ code
   benefit Isomorphic to a single table
   downsides
  staticParsers
-  description A parser where the parser and cellTypes cannot be changed or defined at runtime
+  description A parser where the parser and atomTypes cannot be changed or defined at runtime
   example
    print hello world
  dynamicParsers
-  description A parser where new parser and/or cellTypes can be defined at runtime
+  description A parser where new parser and/or atomTypes can be defined at runtime
   example
    name score
    string int
@@ -50,7 +50,7 @@ code
   example
    person
     phone
-     cell 123-1234
+     mobile 123-1234
  multiAnchorParsers
   description A parser where root level nodes (for instance) can be parsed/compiled/executed completely independently
  singleAnchorParsers

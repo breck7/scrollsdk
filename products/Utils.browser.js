@@ -304,7 +304,7 @@ class Utils {
     if (len <= limit) return clone.join(", ") + ` and ${last}`
     return clone.join(", ") + ` and ${len - limit} more`
   }
-  // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
+  // todo: refactor so instead of str input takes an array of atoms(strings) and scans each indepndently.
   static _chooseDelimiter(str) {
     const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))
     if (!del) throw new Error("Could not find a delimiter")
@@ -428,11 +428,11 @@ class Utils {
     document.head.appendChild(script)
     return window[name]
   }
-  static formatStr(str, catchAllCellDelimiter = " ", parameterMap) {
+  static formatStr(str, catchAllAtomDelimiter = " ", parameterMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
-      return Array.isArray(val) ? val.join(catchAllCellDelimiter) : val
+      return Array.isArray(val) ? val.join(catchAllAtomDelimiter) : val
     })
   }
   static stripHtml(text) {

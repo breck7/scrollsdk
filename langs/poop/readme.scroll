@@ -17,7 +17,7 @@ code
 
 ## Quick facts about poop
 - poop has 9 node types.
-- poop has 3 cell types
+- poop has 3 atom types
 - The source code for poop is 60 lines long.
 
 ## Node Types
@@ -32,10 +32,10 @@ code
   memoryNode
  dayNode
 
-## Cell Types
-- dateIntCell
-- timeIntCell
-- anyCell
+## Atom Types
+- dateIntAtom
+- timeIntAtom
+- anyAtom
 
 This readme was auto-generated using the ScrollSDK
  https://github.com/breck7/scrollsdk ScrollSDK

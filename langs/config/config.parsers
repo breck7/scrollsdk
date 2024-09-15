@@ -1,9 +1,9 @@
-// Cell Parsers
-anyCell
-valueCell
+// Atom Parsers
+anyAtom
+valueAtom
  paint string
  description Any character is valid in a value.
-keywordCell
+keywordAtom
  description Allows any character except a space.
  paint keyword
 
@@ -14,5 +14,5 @@ configParser
  catchAllParser pairParser
 pairParser
  description Holds a key/value pair
- catchAllCellType valueCell
- cells keywordCell
+ catchAllAtomType valueAtom
+ atoms keywordAtom

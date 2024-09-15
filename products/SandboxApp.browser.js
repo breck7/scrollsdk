@@ -1,5 +1,5 @@
 //onsave scrollsdk build produce SandboxApp.browser.js
-// Todo: add inputs at the top to change the edge, particle, and cell delimiters.
+// Todo: add inputs at the top to change the edge, particle, and atom delimiters.
 class SandboxApp extends AbstractParticleComponentParser {
   createParserCombinator() {
     return new Particle.ParserCombinator(undefined, {
@@ -110,11 +110,11 @@ a
 .htmlCubeSpan
  --topIncrement 1px
  --leftIncrement 1px
- --cellWidth 100px
+ --atomWidth 100px
  --rowHeight 30px
  position absolute
  box-sizing border-box
- width var(--cellWidth)
+ width var(--atomWidth)
  height var(--rowHeight)
  overflow hidden
  text-overflow hidden

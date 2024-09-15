@@ -119,14 +119,14 @@ testParticles.numbers = equal => {
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert
-    equal(firstParticle.numbersCell.length, 2, "cell getters work")
-    equal(firstParticle.numbersCell[0], 2, "typings work")
+    equal(firstParticle.numbersAtom.length, 2, "atom getters work")
+    equal(firstParticle.numbersAtom[0], 2, "typings work")
     equal(program.execute().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstParticle.definition.lineHints, "+: operatorCell numbersCell...", "line hints work")
-    equal(program.toCellTypeParticles(), runtimeProgram.toCellTypeParticles(), "cell types worked")
+    equal(firstParticle.definition.lineHints, "+: operatorAtom numbersAtom...", "line hints work")
+    equal(program.toAtomTypeParticles(), runtimeProgram.toAtomTypeParticles(), "atom types worked")
 
     // Arrange/Act/Assert
     equal(new numbers(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")

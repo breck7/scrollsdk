@@ -6,7 +6,7 @@ const { Utils } = require("../products/Utils.js")
 declare type int = particlesTypes.int
 declare type word = particlesTypes.word
 
-declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
+declare type atomFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
 
 enum FileFormat {
@@ -37,16 +37,16 @@ class LineChangedParticleEvent extends AbstractParticleEvent {}
 
 class ParticleWord {
   private _particle: Particle
-  private _cellIndex: number
-  constructor(particle: Particle, cellIndex: number) {
+  private _atomIndex: number
+  constructor(particle: Particle, atomIndex: number) {
     this._particle = particle
-    this._cellIndex = cellIndex
+    this._atomIndex = atomIndex
   }
   replace(newWord: string) {
-    this._particle.setWord(this._cellIndex, newWord)
+    this._particle.setWord(this._atomIndex, newWord)
   }
   get word() {
-    return this._particle.getWord(this._cellIndex)
+    return this._particle.getWord(this._atomIndex)
   }
 }
 
@@ -156,9 +156,9 @@ class Particle extends AbstractParticle {
     return []
   }
 
-  get lineCellTypes() {
+  get lineAtomTypes() {
     // todo: make this any a constant
-    return "undefinedCellType ".repeat(this.words.length).trim()
+    return "undefinedAtomType ".repeat(this.words.length).trim()
   }
 
   isNodeJs() {
@@ -861,20 +861,20 @@ class Particle extends AbstractParticle {
     let parser: Function
     if (valueType === "number") parser = parseFloat
     const fn = (particle: Particle) => {
-      const cell = particle.get(columnName)
-      const typedCell = parser ? parser(cell) : cell
-      if (operator === WhereOperators.equal) return fixedValue === typedCell
-      else if (operator === WhereOperators.notEqual) return fixedValue !== typedCell
-      else if (operator === WhereOperators.includes) return typedCell !== undefined && typedCell.includes(fixedValue)
-      else if (operator === WhereOperators.doesNotInclude) return typedCell === undefined || !typedCell.includes(fixedValue)
-      else if (operator === WhereOperators.greaterThan) return typedCell > fixedValue
-      else if (operator === WhereOperators.lessThan) return typedCell < fixedValue
-      else if (operator === WhereOperators.greaterThanOrEqual) return typedCell >= fixedValue
-      else if (operator === WhereOperators.lessThanOrEqual) return typedCell <= fixedValue
+      const atom = particle.get(columnName)
+      const typedAtom = parser ? parser(atom) : atom
+      if (operator === WhereOperators.equal) return fixedValue === typedAtom
+      else if (operator === WhereOperators.notEqual) return fixedValue !== typedAtom
+      else if (operator === WhereOperators.includes) return typedAtom !== undefined && typedAtom.includes(fixedValue)
+      else if (operator === WhereOperators.doesNotInclude) return typedAtom === undefined || !typedAtom.includes(fixedValue)
+      else if (operator === WhereOperators.greaterThan) return typedAtom > fixedValue
+      else if (operator === WhereOperators.lessThan) return typedAtom < fixedValue
+      else if (operator === WhereOperators.greaterThanOrEqual) return typedAtom >= fixedValue
+      else if (operator === WhereOperators.lessThanOrEqual) return typedAtom <= fixedValue
       else if (operator === WhereOperators.empty) return !particle.has(columnName)
-      else if (operator === WhereOperators.notEmpty) return particle.has(columnName) || (cell !== "" && cell !== undefined)
-      else if (operator === WhereOperators.in && isArray) return (<Array<string | number>>fixedValue).includes(typedCell)
-      else if (operator === WhereOperators.notIn && isArray) return !(<Array<string | number>>fixedValue).includes(typedCell)
+      else if (operator === WhereOperators.notEmpty) return particle.has(columnName) || (atom !== "" && atom !== undefined)
+      else if (operator === WhereOperators.in && isArray) return (<Array<string | number>>fixedValue).includes(typedAtom)
+      else if (operator === WhereOperators.notIn && isArray) return !(<Array<string | number>>fixedValue).includes(typedAtom)
     }
     const result = new Particle()
     this.filter(fn).forEach(particle => {
@@ -1009,11 +1009,11 @@ class Particle extends AbstractParticle {
   }
 
   protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): particlesTypes.htmlString {
-    const getLine = (cellIndex: number, word = "") =>
-      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
-    let cells: string[] = []
-    this.words.forEach((word, index) => (word ? cells.push(getLine(index + indents, word)) : ""))
-    return cells.join("")
+    const getLine = (atomIndex: number, word = "") =>
+      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--atomWidth) * ${atomIndex});">${word}</span>`
+    let atoms: string[] = []
+    this.words.forEach((word, index) => (word ? atoms.push(getLine(index + indents, word)) : ""))
+    return atoms.join("")
   }
 
   get asHtmlCube(): particlesTypes.htmlString {
@@ -1125,11 +1125,11 @@ class Particle extends AbstractParticle {
   private _toObjectForSerialization(): particlesTypes.SerializedParticle {
     return this.length
       ? {
-          cells: this.words,
+          atoms: this.words,
           subparticles: this.map(subparticle => subparticle._toObjectForSerialization())
         }
       : {
-          cells: this.words
+          atoms: this.words
         }
   }
 
@@ -1369,16 +1369,16 @@ class Particle extends AbstractParticle {
       float: parseFloat,
       int: parseInt
     }
-    const cellFn: cellFn = (cellValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue)
-    const arrays = this._toArrays(header, cellFn)
+    const atomFn: atomFn = (atomValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](atomValue) : atomValue)
+    const arrays = this._toArrays(header, atomFn)
     arrays.rows.unshift(arrays.header)
     return arrays.rows
   }
 
   toDelimited(delimiter: particlesTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
-    const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
-    return this._toDelimited(delimiter, header, escapeSpecialChars ? cellFn : str => str)
+    const atomFn: atomFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
+    return this._toDelimited(delimiter, header, escapeSpecialChars ? atomFn : str => str)
   }
 
   protected _getMatrix(columns: string[]) {
@@ -1393,14 +1393,14 @@ class Particle extends AbstractParticle {
     return matrix
   }
 
-  protected _toArrays(columnNames: string[], cellFn: cellFn) {
+  protected _toArrays(columnNames: string[], atomFn: atomFn) {
     const skipHeaderRow = 1
-    const header = columnNames.map((columnName, index) => cellFn(columnName, 0, index))
+    const header = columnNames.map((columnName, index) => atomFn(columnName, 0, index))
     const rows = this.map((particle, rowNumber) =>
       columnNames.map((columnName, columnIndex) => {
         const subparticleParticle = particle.getParticle(columnName)
         const content = subparticleParticle ? subparticleParticle.contentWithSubparticles : ""
-        return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
+        return atomFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
     return {
@@ -1409,8 +1409,8 @@ class Particle extends AbstractParticle {
     }
   }
 
-  _toDelimited(delimiter: particlesTypes.delimiter, header: string[], cellFn: cellFn) {
-    const data = this._toArrays(header, cellFn)
+  _toDelimited(delimiter: particlesTypes.delimiter, header: string[], atomFn: atomFn) {
+    const data = this._toArrays(header, atomFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
 
@@ -1432,24 +1432,24 @@ class Particle extends AbstractParticle {
     this.forEach(particle => {
       if (!particle.length) return true
       header.forEach((col, index) => {
-        const cellValue = particle.get(col)
-        if (!cellValue) return true
-        const length = cellValue.toString().length
+        const atomValue = particle.get(col)
+        if (!atomValue) return true
+        const length = atomValue.toString().length
         if (length > widths[index]) widths[index] = length > maxCharactersPerColumn ? maxCharactersPerColumn : length
       })
     })
 
-    const cellFn = (cellText: string, row: particlesTypes.positiveInt, col: particlesTypes.positiveInt) => {
+    const atomFn = (atomText: string, row: particlesTypes.positiveInt, col: particlesTypes.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
-      const cellValue = cellText.toString().replace(/\n/g, "\\n")
-      const cellLength = cellValue.length
-      if (cellLength > width) return cellValue.substr(0, width) + "..."
+      const atomValue = atomText.toString().replace(/\n/g, "\\n")
+      const atomLength = atomValue.length
+      if (atomLength > width) return atomValue.substr(0, width) + "..."
 
-      const padding = " ".repeat(width - cellLength)
-      return alignRight ? padding + cellValue : cellValue + padding
+      const padding = " ".repeat(width - atomLength)
+      return alignRight ? padding + atomValue : atomValue + padding
     }
-    return this._toDelimited(" ", header, cellFn)
+    return this._toDelimited(" ", header, atomFn)
   }
 
   get asSsv(): string {
@@ -2779,9 +2779,9 @@ class Particle extends AbstractParticle {
 
   static serializedParticleToParticle(particle: particlesTypes.SerializedParticle) {
     const language = new Particle()
-    const cellDelimiter = language.wordBreakSymbol
+    const atomDelimiter = language.wordBreakSymbol
     const particleDelimiter = language.particleBreakSymbol
-    const line = particle.cells ? particle.cells.join(cellDelimiter) : undefined
+    const line = particle.atoms ? particle.atoms.join(atomDelimiter) : undefined
     const newParticle = new Particle(undefined, line)
     if (particle.subparticles)
       particle.subparticles.forEach(subparticle => {
@@ -2797,9 +2797,9 @@ class Particle extends AbstractParticle {
   static fromGridJson(str: string) {
     const lines = JSON.parse(str)
     const language = new Particle()
-    const cellDelimiter = language.wordBreakSymbol
+    const atomDelimiter = language.wordBreakSymbol
     const particleDelimiter = language.particleBreakSymbol
-    return new Particle(lines.map((line: any) => line.join(cellDelimiter)).join(particleDelimiter))
+    return new Particle(lines.map((line: any) => line.join(atomDelimiter)).join(particleDelimiter))
   }
 
   static fromSsv(str: string) {
@@ -2830,7 +2830,7 @@ class Particle extends AbstractParticle {
     const rows: string[][] = [[]]
     const newLine = "\n"
     const length = str.length
-    let currentCell = ""
+    let currentAtom = ""
     let inQuote = str.substr(0, 1) === quoteChar
     let currentPosition = inQuote ? 1 : 0
     let nextChar
@@ -2846,35 +2846,35 @@ class Particle extends AbstractParticle {
       isNextCharAQuote = nextChar === quoteChar
 
       if (inQuote) {
-        if (char !== quoteChar) currentCell += char
+        if (char !== quoteChar) currentAtom += char
         else if (isNextCharAQuote) {
           // Both the current and next char are ", so the " is escaped
-          currentCell += nextChar
+          currentAtom += nextChar
           currentPosition++ // Jump 2
         } else {
           // If the current char is a " and the next char is not, it's the end of the quotes
           inQuote = false
-          if (isLastChar) rows[currentRow].push(currentCell)
+          if (isLastChar) rows[currentRow].push(currentAtom)
         }
       } else {
         if (char === delimiter) {
-          rows[currentRow].push(currentCell)
-          currentCell = ""
+          rows[currentRow].push(currentAtom)
+          currentAtom = ""
           if (isNextCharAQuote) {
             inQuote = true
             currentPosition++ // Jump 2
           }
         } else if (char === newLine) {
-          rows[currentRow].push(currentCell)
-          currentCell = ""
+          rows[currentRow].push(currentAtom)
+          currentAtom = ""
           currentRow++
           if (nextChar) rows[currentRow] = []
           if (isNextCharAQuote) {
             inQuote = true
             currentPosition++ // Jump 2
           }
-        } else if (isLastChar) rows[currentRow].push(currentCell + char)
-        else currentCell += char
+        } else if (isLastChar) rows[currentRow].push(currentAtom + char)
+        else currentAtom += char
       }
       currentPosition++
     }
@@ -2912,8 +2912,8 @@ class Particle extends AbstractParticle {
       }
 
       const obj: particlesTypes.stringMap = {}
-      row.forEach((cellValue, index) => {
-        obj[names[index]] = cellValue
+      row.forEach((atomValue, index) => {
+        obj[names[index]] = atomValue
       })
 
       particle.pushContentAndSubparticles(undefined, obj)

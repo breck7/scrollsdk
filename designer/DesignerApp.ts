@@ -114,24 +114,24 @@ class DesignerApp extends AbstractParticleComponentParser {
   private _toIceTray(program: any) {
     const columns = program.programWidth
 
-    const cellTypes = new Particle(program.asCellTypeParticlesWithParserIds)
-    const rootCellTypes = new Particle(program.toPreludeCellTypeParticlesWithParserIds())
+    const atomTypes = new Particle(program.asAtomTypeParticlesWithParserIds)
+    const rootAtomTypes = new Particle(program.toPreludeAtomTypeParticlesWithParserIds())
 
-    const table = program.programAsCells
+    const table = program.programAsAtoms
       .map((line: any, lineIndex: number) => {
-        const parser = cellTypes.particleAt(lineIndex).getWord(0)
-        let cells = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
-        for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
-          const cell = line[cellIndex]
-          if (!cell) cells += `<td>&nbsp;</td>`
+        const parser = atomTypes.particleAt(lineIndex).getWord(0)
+        let atoms = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
+        for (let atomIndex = 0; atomIndex < columns; atomIndex++) {
+          const atom = line[atomIndex]
+          if (!atom) atoms += `<td>&nbsp;</td>`
           else {
-            const cellType = cellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
-            const rootCellType = rootCellTypes.particleAt(lineIndex).getWord(cellIndex + 1)
-            const cellTypeDivs = [cellType, rootCellType] // todo: add full ancestry
-            cells += `<td><span class="cellTypeSpan">${cellTypeDivs.join(" ")}</span>${cell.getWord()}</td>`
+            const atomType = atomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
+            const rootAtomType = rootAtomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
+            const atomTypeDivs = [atomType, rootAtomType] // todo: add full ancestry
+            atoms += `<td><span class="atomTypeSpan">${atomTypeDivs.join(" ")}</span>${atom.getWord()}</td>`
           }
         }
-        return `<tr>${cells}</tr>`
+        return `<tr>${atoms}</tr>`
       })
       .join("\n")
     return `<table class="iceCubes">${table}</table>`
@@ -384,7 +384,7 @@ td
   box-shadow rgba(1,1,1,.1) 1px 1px 1px
   position relative
   padding 10px 3px 2px 2px
-  .cellTypeSpan
+  .atomTypeSpan
    position absolute
    white-space nowrap
    left 0
@@ -400,7 +400,7 @@ td
    td
     .iceTrayParser
      color rgba(1,1,1,.5)
-    .cellTypeSpan
+    .atomTypeSpan
      color rgba(1,1,1,.5)
 code
  white-space pre
@@ -409,11 +409,11 @@ pre
 .htmlCubeSpan
  --topIncrement 1px
  --leftIncrement 1px
- --cellWidth 100px
+ --atomWidth 100px
  --rowHeight 30px
  position absolute
  box-sizing border-box
- width var(--cellWidth)
+ width var(--atomWidth)
  height var(--rowHeight)
  overflow hidden
  text-overflow hidden
@@ -433,11 +433,11 @@ a
  cursor pointer
  color rgba(1, 47, 52, 1)
  text-decoration underline
-.LintError,.LintErrorWithSuggestion,.LintCellTypeHints
+.LintError,.LintErrorWithSuggestion,.LintAtomTypeHints
  white-space pre
  color red
  background #e5e5e5
-.LintCellTypeHints
+.LintAtomTypeHints
  color black
 .LintErrorWithSuggestion
  cursor pointer`
@@ -635,7 +635,7 @@ class headerComponent extends AbstractParticleComponentParser {
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building languages on top of ParticleS. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
+  p This is a simple web IDE for designing and building languages on top of Particles. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, atom checking, suggested corrections, and more.
   p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }

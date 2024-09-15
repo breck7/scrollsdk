@@ -18,26 +18,26 @@
     execute() {
       return this.map(subparticle => subparticle.execute())
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
-floatCell
-commentCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+floatAtom
+commentAtom
  paint comment
-keywordCell
-hashBangKeywordCell
- extends keywordCell
+keywordAtom
+hashBangKeywordAtom
+ extends keywordAtom
  paint comment
-commentKeywordCell
- extends keywordCell
+commentKeywordAtom
+ extends keywordAtom
  paint comment
  enum comment
-errorCell
+errorAtom
  paint invalid
-numberCell
+numberAtom
  paint constant.numeric
- extends floatCell
-numbersCell
- extends numberCell
-operatorCell
+ extends floatAtom
+numbersAtom
+ extends numberAtom
+operatorAtom
  paint keyword.operator.arithmetic
 
 // Line Parsers
@@ -55,11 +55,11 @@ abstractArithmeticReducerParser
  description First reduces any subparticle lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   execute() {
-   return this.numbersCell.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersCell[0])
+   return this.numbersAtom.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersAtom[0])
   }
  inScope abstractArithmeticReducerParser commentParser
- cells operatorCell
- catchAllCellType numbersCell
+ atoms operatorAtom
+ catchAllAtomType numbersAtom
 
 modParser
  crux %
@@ -84,22 +84,22 @@ divideParser
 
 commentParser
  description This is a line comment.
- catchAllCellType commentCell
+ catchAllAtomType commentAtom
  catchAllParser commentContentParser
- cells commentKeywordCell
+ atoms commentKeywordAtom
 commentContentParser
- catchAllCellType commentCell
+ catchAllAtomType commentAtom
  catchAllParser commentContentParser
 
 hashBangParser
  crux #!
- cells hashBangKeywordCell
- catchAllCellType commentCell
+ atoms hashBangKeywordAtom
+ catchAllAtomType commentAtom
 
 errorParser
- catchAllCellType errorCell
+ catchAllAtomType errorAtom
  baseParser errorParser
- cells errorCell`)
+ atoms errorAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -114,14 +114,14 @@ errorParser
         undefined
       )
     }
-    get operatorCell() {
+    get operatorAtom() {
       return this.getWord(0)
     }
-    get numbersCell() {
+    get numbersAtom() {
       return this.getWordsFrom(1).map(val => parseFloat(val))
     }
     execute() {
-      return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
+      return this.numbersAtom.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersAtom[0])
     }
   }
 
@@ -159,10 +159,10 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
-    get commentKeywordCell() {
+    get commentKeywordAtom() {
       return this.getWord(0)
     }
-    get commentCell() {
+    get commentAtom() {
       return this.getWordsFrom(1)
     }
   }
@@ -171,16 +171,16 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
-    get commentCell() {
+    get commentAtom() {
       return this.getWordsFrom(0)
     }
   }
 
   class hashBangParser extends ParserBackedParticle {
-    get hashBangKeywordCell() {
+    get hashBangKeywordAtom() {
       return this.getWord(0)
     }
-    get commentCell() {
+    get commentAtom() {
       return this.getWordsFrom(1)
     }
   }
@@ -189,10 +189,10 @@ errorParser
     getErrors() {
       return this._getErrorParserErrors()
     }
-    get errorCell() {
+    get errorAtom() {
       return this.getWord(0)
     }
-    get errorCell() {
+    get errorAtom() {
       return this.getWordsFrom(1)
     }
   }

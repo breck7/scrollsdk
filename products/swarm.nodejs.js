@@ -35,41 +35,41 @@
 // todo Make run in browser
 // todo Add print or tracer type of intermediate element. debugger?
 
-// Cell parsers
-anyCell
+// Atom parsers
+anyAtom
  paint string
  examples lorem ipsum
-assertionKeywordCell
+assertionKeywordAtom
  paint keyword.operator
- extends keywordCell
-commandCell
- extends keywordCell
+ extends keywordAtom
+commandAtom
+ extends keywordAtom
  paint variable.function
  examples someCommand
-extraCell
+extraAtom
  paint invalid
-filepathCell
+filepathAtom
  examples foobar.foo someFile.foo
  paint string
-keywordCell
-hashBangKeywordCell
- extends keywordCell
+keywordAtom
+hashBangKeywordAtom
+ extends keywordAtom
  paint comment
  enum #!
-hashBangCell
+hashBangAtom
  paint comment
-intCell
+intAtom
  regex \\-?[0-9]+
  paint constant.numeric.integer
-parameterKeywordCell
- extends keywordCell
+parameterKeywordAtom
+ extends keywordAtom
  paint variable.parameter
-todoCell
+todoAtom
  paint comment
-todoKeywordCell
- extends keywordCell
+todoKeywordAtom
+ extends keywordAtom
  paint comment
-typeOfOptionCell
+typeOfOptionAtom
  description The 6 possible results for Javascript's typeof.
  paint constant.language
  enum object boolean function number string undefined
@@ -103,7 +103,7 @@ abstractAssertionParser
  javascript
   async execute(arrangedInstance) {
    //todo: refactor. there is clearly a difference between sync and async that we are not
-   // documenting. seems like async and sync have different cellTypes. the former requires
+   // documenting. seems like async and sync have different atomTypes. the former requires
    // a method to get the result.
    const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
    const subject = finalParts[0]
@@ -136,7 +136,7 @@ abstractAssertionParser
   getSyncExpected() {
    return this.content
   }
- cells assertionKeywordCell
+ atoms assertionKeywordAtom
 assertParagraphIsParser
  crux assertParagraphIs
  description When your expected value is a multiline string.
@@ -152,7 +152,7 @@ assertParagraphIsParser
 assertLengthIsParser
  crux assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
- cells assertionKeywordCell intCell
+ atoms assertionKeywordAtom intAtom
  javascript
   parseActual(actual) {
    return actual.length
@@ -161,7 +161,7 @@ assertLengthIsParser
 assertStringExcludesParser
  crux assertStringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  javascript
   getAssertionResult(actualAsString, expected, message) {
    const result = !actualAsString.includes(expected)
@@ -176,7 +176,7 @@ assertStringExcludesParser
  extends abstractAssertionParser
 assertStringIncludesParser
  crux assertStringIncludes
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  description Converts the input to string and see if the string contains the provided string
  javascript
   getAssertionResult(actualAsString, expected, message) {
@@ -188,19 +188,19 @@ assertStringIncludesParser
 assertStringIsParser
  crux assertStringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  extends abstractAssertionParser
 assertTypeIsParser
  crux assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
- cells assertionKeywordCell typeOfOptionCell
+ atoms assertionKeywordAtom typeOfOptionAtom
  javascript
   parseActual(actual) {
    return typeof actual
   }
  extends abstractAssertionParser
 abstractArrangeFlagParser
- cells keywordCell
+ atoms keywordAtom
 arrangeAsyncParser
  description Add this flag in the arrange particle to test async methods.
  extends abstractArrangeFlagParser
@@ -208,14 +208,14 @@ arrangeAsyncParser
 arrangeRequireParser
  description Pass in the filename to require for nodejs tests.
  crux require
- cells keywordCell filepathCell
- catchAllCellType anyCell
+ atoms keywordAtom filepathAtom
+ catchAllAtomType anyAtom
 arrangeStaticParser
  crux static
  description Add this to the arrange particle to import class directly without initiating it for static method testing.
  extends abstractArrangeFlagParser
 abstractTestBlockParser
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  javascript
   getArrangeParser() {
    return this.getParticle("arrange") || this.parent.getArrangeParser()
@@ -245,7 +245,7 @@ abstractTestBlockParser
   }
  inScope arrangeParser
  catchAllParser actParser
- cells keywordCell
+ atoms keywordAtom
 testParser
  description Basic test block.
  extends abstractTestBlockParser
@@ -263,8 +263,8 @@ skipTestParser
 hashbangParser
  crux #!
  description Standard bash hashbang line.
- cells hashBangKeywordCell hashBangCell
- catchAllCellType hashBangCell
+ atoms hashBangKeywordAtom hashBangAtom
+ catchAllAtomType hashBangAtom
 arrangeParser
  crux arrange
  javascript
@@ -300,13 +300,13 @@ arrangeParser
   }
   executeSync() {}
  inScope arrangeAsyncParser arrangeRequireParser arrangeStaticParser constructWithParagraphParser todoParser
- cells keywordCell
+ atoms keywordAtom
 withParagraphParser
  description Pass in a multiline string as a command arg.
  javascript
   executeSync() {}
  catchAllParser paragraphLineParser
- cells parameterKeywordCell
+ atoms parameterKeywordAtom
  crux withParagraph
 actParser
  javascript
@@ -337,29 +337,29 @@ actParser
    return this.map(child => child.executeSync(newTestSubject))
   }
  description Input is an object, and calls some method with an optional array of string args.
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  catchAllParser actParser
  inScope withParagraphParser abstractAssertionParser
- cells commandCell
+ atoms commandAtom
 constructWithParagraphParser
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllParser paragraphLineParser
- cells keywordCell
+ atoms keywordAtom
  crux constructWithParagraph
 errorParser
  baseParser errorParser
 paragraphLineParser
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  catchAllParser paragraphLineParser
- cells anyCell
+ atoms anyAtom
 todoParser
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoCell
+ catchAllAtomType todoAtom
  catchAllParser todoParser
  crux todo
- cells todoKeywordCell`)
+ atoms todoKeywordAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -367,12 +367,12 @@ todoParser
   }
 
   class abstractAssertionParser extends ParserBackedParticle {
-    get assertionKeywordCell() {
+    get assertionKeywordAtom() {
       return this.getWord(0)
     }
     async execute(arrangedInstance) {
       //todo: refactor. there is clearly a difference between sync and async that we are not
-      // documenting. seems like async and sync have different cellTypes. the former requires
+      // documenting. seems like async and sync have different atomTypes. the former requires
       // a method to get the result.
       const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
       const subject = finalParts[0]
@@ -420,10 +420,10 @@ todoParser
   }
 
   class assertLengthIsParser extends abstractAssertionParser {
-    get assertionKeywordCell() {
+    get assertionKeywordAtom() {
       return this.getWord(0)
     }
-    get intCell() {
+    get intAtom() {
       return parseInt(this.getWord(1))
     }
     parseActual(actual) {
@@ -432,7 +432,7 @@ todoParser
   }
 
   class assertStringExcludesParser extends abstractAssertionParser {
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(0)
     }
     getAssertionResult(actualAsString, expected, message) {
@@ -448,7 +448,7 @@ todoParser
   }
 
   class assertStringIncludesParser extends abstractAssertionParser {
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(0)
     }
     getAssertionResult(actualAsString, expected, message) {
@@ -459,16 +459,16 @@ todoParser
   }
 
   class assertStringIsParser extends abstractAssertionParser {
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(0)
     }
   }
 
   class assertTypeIsParser extends abstractAssertionParser {
-    get assertionKeywordCell() {
+    get assertionKeywordAtom() {
       return this.getWord(0)
     }
-    get typeOfOptionCell() {
+    get typeOfOptionAtom() {
       return this.getWord(1)
     }
     parseActual(actual) {
@@ -477,7 +477,7 @@ todoParser
   }
 
   class abstractArrangeFlagParser extends ParserBackedParticle {
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
   }
@@ -485,13 +485,13 @@ todoParser
   class arrangeAsyncParser extends abstractArrangeFlagParser {}
 
   class arrangeRequireParser extends ParserBackedParticle {
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
-    get filepathCell() {
+    get filepathAtom() {
       return this.getWord(1)
     }
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(2)
     }
   }
@@ -502,10 +502,10 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
     }
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(1)
     }
     getArrangeParser() {
@@ -551,13 +551,13 @@ todoParser
   }
 
   class hashbangParser extends ParserBackedParticle {
-    get hashBangKeywordCell() {
+    get hashBangKeywordAtom() {
       return this.getWord(0)
     }
-    get hashBangCell() {
+    get hashBangAtom() {
       return this.getWord(1)
     }
-    get hashBangCell() {
+    get hashBangAtom() {
       return this.getWordsFrom(2)
     }
   }
@@ -576,7 +576,7 @@ todoParser
         undefined
       )
     }
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
     isAsync() {
@@ -609,7 +609,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
-    get parameterKeywordCell() {
+    get parameterKeywordAtom() {
       return this.getWord(0)
     }
     executeSync() {}
@@ -631,10 +631,10 @@ todoParser
         undefined
       )
     }
-    get commandCell() {
+    get commandAtom() {
       return this.getWord(0)
     }
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(1)
     }
     getTestBlock() {
@@ -669,7 +669,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
     executeSync() {}
@@ -685,10 +685,10 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
-    get anyCell() {
+    get anyAtom() {
       return this.getWord(0)
     }
-    get anyCell() {
+    get anyAtom() {
       return this.getWordsFrom(1)
     }
   }
@@ -697,10 +697,10 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(todoParser, undefined, undefined)
     }
-    get todoKeywordCell() {
+    get todoKeywordAtom() {
       return this.getWord(0)
     }
-    get todoCell() {
+    get todoAtom() {
       return this.getWordsFrom(1)
     }
   }

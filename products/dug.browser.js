@@ -14,16 +14,16 @@
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 // todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 
-// Cell Parsers
-anyCell
-keywordCell
+// Atom Parsers
+anyAtom
+keywordAtom
  paint keyword
-stringCell
+stringAtom
  paint string
-booleanCell
+booleanAtom
  enum true false
  paint constant.numeric
-numberCell
+numberAtom
  paint constant.numeric
 
 // Line Parsers
@@ -38,7 +38,7 @@ dugParser
    return JSON.stringify(JSON.parse(res), null, 2)
   }
 abstractValueParser
- cells keywordCell
+ atoms keywordAtom
  cruxFromId
 nullParser
  compiler
@@ -46,19 +46,19 @@ nullParser
  extends abstractValueParser
 numberParser
  extends abstractValueParser
- cells keywordCell numberCell
+ atoms keywordAtom numberAtom
  compiler
-  stringTemplate {numberCell}
+  stringTemplate {numberAtom}
 stringParser
- catchAllCellType stringCell
+ catchAllAtomType stringAtom
  compiler
-  stringTemplate "{stringCell}"
+  stringTemplate "{stringAtom}"
  extends abstractValueParser
 booleanParser
  extends abstractValueParser
- cells keywordCell booleanCell
+ atoms keywordAtom booleanAtom
  compiler
-  stringTemplate {booleanCell}
+  stringTemplate {booleanAtom}
 objectParser
  catchAllParser memberParser
  extends abstractValueParser
@@ -78,8 +78,8 @@ arrayParser
 memberParser
  inScope abstractValueParser
  compiler
-  stringTemplate "{stringCell}" :
- cells stringCell
+  stringTemplate "{stringAtom}" :
+ atoms stringAtom
 errorParser
  baseParser errorParser`)
     get handParsersProgram() {
@@ -89,7 +89,7 @@ errorParser
   }
 
   class abstractValueParser extends ParserBackedParticle {
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
   }
@@ -97,25 +97,25 @@ errorParser
   class nullParser extends abstractValueParser {}
 
   class numberParser extends abstractValueParser {
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
-    get numberCell() {
+    get numberAtom() {
       return parseFloat(this.getWord(1))
     }
   }
 
   class stringParser extends abstractValueParser {
-    get stringCell() {
+    get stringAtom() {
       return this.getWordsFrom(0)
     }
   }
 
   class booleanParser extends abstractValueParser {
-    get keywordCell() {
+    get keywordAtom() {
       return this.getWord(0)
     }
-    get booleanCell() {
+    get booleanAtom() {
       return this.getWord(1)
     }
   }
@@ -144,7 +144,7 @@ errorParser
         undefined
       )
     }
-    get stringCell() {
+    get stringAtom() {
       return this.getWord(0)
     }
   }

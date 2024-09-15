@@ -298,40 +298,40 @@ class ParsersCodeMirrorMode {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === WordBreakSymbol && state.cellIndex) {
-          // If we are missing a cell.
-          // TODO: this is broken for a blank 1st cell. We need to track WordBreakSymbol level.
-          state.cellIndex++
+        if (peek === WordBreakSymbol && state.atomIndex) {
+          // If we are missing a atom.
+          // TODO: this is broken for a blank 1st atom. We need to track WordBreakSymbol level.
+          state.atomIndex++
         }
         return "bracket"
       }
       if (peek === WordBreakSymbol) {
-        state.cellIndex++
-        return this._getCellStyle(lineNumber, state.cellIndex)
+        state.atomIndex++
+        return this._getAtomStyle(lineNumber, state.atomIndex)
       }
       nextCharacter = stream.next()
     }
-    state.cellIndex++
-    const style = this._getCellStyle(lineNumber, state.cellIndex)
+    state.atomIndex++
+    const style = this._getAtomStyle(lineNumber, state.atomIndex)
     this._incrementLine(state)
     return style
   }
-  _getCellStyle(lineIndex, cellIndex) {
+  _getAtomStyle(lineIndex, atomIndex) {
     const program = this._getParsedProgram()
     // todo: if the current word is an error, don't show red?
-    if (!program.getCellPaintAtPosition) console.log(program)
-    const paint = program.getCellPaintAtPosition(lineIndex, cellIndex)
+    if (!program.getAtomPaintAtPosition) console.log(program)
+    const paint = program.getAtomPaintAtPosition(lineIndex, atomIndex)
     const style = paint ? textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined
     return style || "noPaintDefinedInParsers"
   }
   // todo: remove.
   startState() {
     return {
-      cellIndex: 0
+      atomIndex: 0
     }
   }
   _incrementLine(state) {
-    state.cellIndex = 0
+    state.atomIndex = 0
   }
 }
 window.ParsersCodeMirrorMode = ParsersCodeMirrorMode

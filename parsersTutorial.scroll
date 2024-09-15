@@ -94,18 +94,18 @@ psuedoCode
  ...
 
 ## Step 10
-[] A second minor concept in Parsers are cell types. A Particles document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
+[] A second minor concept in Parsers are atom types. A Particles document has lines and atoms. Whereas Parsers parse the lines, AtomTypes are responsible for individual words on a line. Atom Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the AtomTypes at the top of our parsers file.
 psuedoCode
- nameCell
+ nameAtom
   paint string
  ...
 
 ## Step 11
-[] Now let's make `nameParser` accept a "catch all" Cell Type of the `nameCell`.
+[] Now let's make `nameParser` accept a "catch all" Atom Type of the `nameAtom`.
 psuedoCode
  ...
  nameParser
-  catchAllCellType nameCell
+  catchAllAtomType nameAtom
 
 ## Step 12
 [] Now the following is a valid program in your language:

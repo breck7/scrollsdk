@@ -1,10 +1,10 @@
-// Cell Parsers
-anyCell
-filepathCell
+// Atom Parsers
+anyAtom
+filepathAtom
  paint string
-termCell
+termAtom
  paint variable.parameter
-fileConstantCell
+fileConstantAtom
  paint keyword.control
 
 // Line Parsers
@@ -80,8 +80,8 @@ projectParser
  inScope fileParser
  catchAllParser errorParser
 abstractTermParser
- catchAllCellType filepathCell
- cells termCell
+ catchAllAtomType filepathAtom
+ atoms termAtom
 absoluteParser
  extends abstractTermParser
  crux absolute
@@ -94,17 +94,17 @@ relativeParser
 errorParser
  baseParser errorParser
 fileParser
- catchAllCellType filepathCell
+ catchAllAtomType filepathAtom
  inScope externalParser absoluteParser relativeParser
  javascript
   getFilePath() {
-   return this.filepathCell.join(" ")
+   return this.filepathAtom.join(" ")
   }
   _getDependencies() {
    return this.getSubparticles()
     .map(subparticle => {
      const firstWord = subparticle.firstWord
-     const subparticleFilePath = subparticle.filepathCell.join(" ")
+     const subparticleFilePath = subparticle.filepathAtom.join(" ")
      if (firstWord === "external") return ""
      if (firstWord === "absolute") return subparticleFilePath
      const link = subparticleFilePath
@@ -117,5 +117,5 @@ fileParser
   getMissingDependencies(includedMap) {
    return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
- cells fileConstantCell
+ atoms fileConstantAtom
  crux file

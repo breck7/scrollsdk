@@ -1,19 +1,19 @@
-// Cell Parsers
-anyCell
-columnNameEnumCell
-columnNameCell
-errorCell
+// Atom Parsers
+anyAtom
+columnNameEnumAtom
+columnNameAtom
+errorAtom
  paint invalid
-intCell
+intAtom
  paint constant.numeric
-onoffCell
+onoffAtom
  enum on off
-wordCell
-topLevelPropertyCell
+wordAtom
+topLevelPropertyAtom
  paint constant.language
-opSymbolCell
+opSymbolAtom
  paint keyword.operator.arithmetic
-commentCell
+commentAtom
  paint comment
 
 // Line Parsers
@@ -33,13 +33,13 @@ jibjabParser
  extends jibberishParser
 abstractBaseClassParser
 extendsAbstractParser
- cells topLevelPropertyCell intCell
+ atoms topLevelPropertyAtom intAtom
  extends abstractBaseClassParser
  crux extendsAbstract
 abstractTopLevelParser
- cells topLevelPropertyCell
+ atoms topLevelPropertyAtom
 abstractColorPropertiesParser
- cells topLevelPropertyCell intCell
+ atoms topLevelPropertyAtom intAtom
  extends abstractTopLevelParser
 hueParser
  extends abstractColorPropertiesParser
@@ -64,8 +64,8 @@ plusParser
  extends addParser
  example Adding two numbers:
   + 1 2
- catchAllCellType intCell
- cells opSymbolCell
+ catchAllAtomType intAtom
+ atoms opSymbolAtom
 blockParser
  inScope abstractTopLevelParser scoreBlockParser
  extends abstractTopLevelParser
@@ -76,7 +76,7 @@ scoreBlockParser
  inScope scoresParser
  crux scoreBlock
 toParser
- cells topLevelPropertyCell wordCell
+ atoms topLevelPropertyAtom wordAtom
  compiler
   stringTemplate to {word}
   closeSubparticles end
@@ -87,16 +87,16 @@ fooParser
  crux foo
 xColumnNameParser
  description The name of the column to use for the x axis
- cells topLevelPropertyCell columnNameEnumCell
+ atoms topLevelPropertyAtom columnNameEnumAtom
  tags doNotSynthesize
  javascript
-  getRunTimeEnumOptions(cell) {
-   return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+  getRunTimeEnumOptions(atom) {
+   return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
   }
  extends abstractTopLevelParser
  crux xColumnName
 lightbulbStateParser
- cells topLevelPropertyCell onoffCell
+ atoms topLevelPropertyAtom onoffAtom
  extends abstractTopLevelParser
  crux lightbulbState
 nestedParser
@@ -104,7 +104,7 @@ nestedParser
  crux nested
 particleWithConstsParser
  string greeting hello world
- string singleCell hello
+ string singleAtom hello
  string thisHasQuotes "'`
  string longText
   hello
@@ -124,28 +124,28 @@ someCodeParser
  extends abstractTopLevelParser
  crux someCode
 typeParser
- cells topLevelPropertyCell wordCell
+ atoms topLevelPropertyAtom wordAtom
  single
  extends abstractTopLevelParser
  crux type
 commentParser
  extends abstractTopLevelParser
- catchAllCellType commentCell
+ catchAllAtomType commentAtom
  catchAllParser commentParser
  crux comment
 contentParser
  baseParser blobParser
  crux content
 errorParser
- catchAllCellType errorCell
+ catchAllAtomType errorAtom
  baseParser errorParser
- cells errorCell
+ atoms errorAtom
 lineOfCodeParser
- catchAllCellType wordCell
+ catchAllAtomType wordAtom
 textParser
  baseParser blobParser
  crux text
 scoresParser
- catchAllCellType intCell
- cells topLevelPropertyCell
+ catchAllAtomType intAtom
+ atoms topLevelPropertyAtom
  crux scores

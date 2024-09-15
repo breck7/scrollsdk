@@ -133,30 +133,30 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
-anyCell
-keywordCell
-emptyCell
-extraCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+anyAtom
+keywordAtom
+emptyAtom
+extraAtom
  paint invalid
-anyHtmlContentCell
+anyHtmlContentAtom
  paint string
-attributeValueCell
+attributeValueAtom
  paint constant.language
-componentTagNameCell
+componentTagNameAtom
  paint variable.function
- extends keywordCell
-htmlTagNameCell
+ extends keywordAtom
+htmlTagNameAtom
  paint variable.function
- extends keywordCell
+ extends keywordAtom
  enum a abbr address area article aside b base bdi bdo blockquote body br button canvas caption code col colgroup datalist dd del details dfn dialog div dl dt em embed fieldset figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rb rp rt rtc ruby s samp script section select small source span strong styleTag sub summary sup table tbody td template textarea tfoot th thead time titleTag tr track u ul var video wbr
-htmlAttributeNameCell
+htmlAttributeNameAtom
  paint entity.name.type
- extends keywordCell
+ extends keywordAtom
  enum accept accept-charset accesskey action align alt async autocomplete autofocus autoplay bgcolor border charset checked class color cols colspan content contenteditable controls coords datetime default defer dir dirname disabled download draggable dropzone enctype for formaction headers height hidden high href hreflang http-equiv id ismap kind lang list loop low max maxlength media method min multiple muted name novalidate onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel open optimum pattern placeholder poster preload property readonly rel required reversed rows rowspan sandbox scope selected shape size sizes spellcheck src srcdoc srclang srcset start step style tabindex target title translate type usemap value width wrap
-bernKeywordCell
+bernKeywordAtom
  enum bern
- extends keywordCell
+ extends keywordAtom
 
 // Line parsers
 stumpParser
@@ -178,7 +178,7 @@ stumpParser
 blankLineParser
  pattern ^$
  tags doNotSynthesize
- cells emptyCell
+ atoms emptyAtom
  javascript
   _toHtml() {
    return ""
@@ -186,8 +186,8 @@ blankLineParser
   getTextContent() {return ""}
 htmlTagParser
  inScope bernParser htmlTagParser htmlAttributeParser blankLineParser
- catchAllCellType anyHtmlContentCell
- cells htmlTagNameCell
+ catchAllAtomType anyHtmlContentAtom
+ atoms htmlTagNameAtom
  javascript
   isHtmlTagParser = true
   getTag() {
@@ -359,7 +359,7 @@ errorParser
 componentDefinitionParser
  extends htmlTagParser
  pattern ^[a-zA-Z0-9_]+Component
- cells componentTagNameCell
+ atoms componentTagNameAtom
  javascript
   getTag() {
    return "div"
@@ -376,19 +376,19 @@ htmlAttributeParser
  boolean isAttributeParser true
  boolean isTileAttribute true
  catchAllParser errorParser
- catchAllCellType attributeValueCell
- cells htmlAttributeNameCell
-stumpExtendedAttributeNameCell
- extends htmlAttributeNameCell
+ catchAllAtomType attributeValueAtom
+ atoms htmlAttributeNameAtom
+stumpExtendedAttributeNameAtom
+ extends htmlAttributeNameAtom
  enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand keyUpCommand lineClickCommand lineShiftClickCommand shiftClickCommand
 stumpExtendedAttributeParser
  description Parser types not present in HTML but included in stump.
  extends htmlAttributeParser
- cells stumpExtendedAttributeNameCell
+ atoms stumpExtendedAttributeNameAtom
 lineOfHtmlContentParser
  boolean isTileAttribute true
  catchAllParser lineOfHtmlContentParser
- catchAllCellType anyHtmlContentCell
+ catchAllAtomType anyHtmlContentAtom
  javascript
   getTextContent() {return this.getLine()}
 bernParser
@@ -401,7 +401,7 @@ bernParser
    return this.subparticlesToString()
   }
   getTextContent() {return ""}
- cells bernKeywordCell`)
+ atoms bernKeywordAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -409,7 +409,7 @@ bernParser
   }
 
   class blankLineParser extends ParserBackedParticle {
-    get emptyCell() {
+    get emptyAtom() {
       return this.getWord(0)
     }
     _toHtml() {
@@ -716,10 +716,10 @@ bernParser
         ]
       )
     }
-    get htmlTagNameCell() {
+    get htmlTagNameAtom() {
       return this.getWord(0)
     }
-    get anyHtmlContentCell() {
+    get anyHtmlContentAtom() {
       return this.getWordsFrom(1)
     }
     isHtmlTagParser = true
@@ -886,7 +886,7 @@ bernParser
   }
 
   class componentDefinitionParser extends htmlTagParser {
-    get componentTagNameCell() {
+    get componentTagNameAtom() {
       return this.getWord(0)
     }
     getTag() {
@@ -898,10 +898,10 @@ bernParser
     createParserCombinator() {
       return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
-    get htmlAttributeNameCell() {
+    get htmlAttributeNameAtom() {
       return this.getWord(0)
     }
-    get attributeValueCell() {
+    get attributeValueAtom() {
       return this.getWordsFrom(1)
     }
     get isTileAttribute() {
@@ -922,7 +922,7 @@ bernParser
   }
 
   class stumpExtendedAttributeParser extends htmlAttributeParser {
-    get stumpExtendedAttributeNameCell() {
+    get stumpExtendedAttributeNameAtom() {
       return this.getWord(0)
     }
   }
@@ -931,7 +931,7 @@ bernParser
     createParserCombinator() {
       return new Particle.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
-    get anyHtmlContentCell() {
+    get anyHtmlContentAtom() {
       return this.getWordsFrom(0)
     }
     get isTileAttribute() {
@@ -946,7 +946,7 @@ bernParser
     createParserCombinator() {
       return new Particle.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
-    get bernKeywordCell() {
+    get bernKeywordAtom() {
       return this.getWord(0)
     }
     get isTileAttribute() {

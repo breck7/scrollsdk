@@ -76,7 +76,7 @@ thinColumns 4
 🎉 Parsers: added `getRunTimeEnumOptionsForValidation`
 
 📦 80.4.0 2024-8-02
-🎉 Parsers: add support for exponential notation to numberCells.
+🎉 Parsers: add support for exponential notation to numberAtoms.
 
 📦 80.3.0 2024-7-29
 🎉 added `makeError` method to ParserBackedNode
@@ -94,7 +94,7 @@ thinColumns 4
 ⚠️ BREAKING: the `Grammar` language is now called `Parsers`. This is a massive change but a simple Grammar/Parsers and grammar/parsers find/replace should update any affected code.
 
 📦 79.0.0 2024-6-18
-🎉 ParticleFileSystem now supports cell parsers
+🎉 ParticleFileSystem now supports atom parsers
 ⚠️ BREAKING: ParticleFileSystem now expects parsers to use the `.parsers` file extension instead of `.grammar`
 ⚠️ BREAKING: (no one should be affected) to use the previous "// parsersOnly" perf boost, end file in `.parsers`
 
@@ -177,8 +177,8 @@ This is a major release with significant name breaks. All logic is the same but 
   - rootNodeTypeDefinitionNode > rootParserDefinition
   - invalidNodeTypes > invalidParsers
   - getNodeTypeUsage > getParserUsage
-  - asCellTypeParticlesWithNodeConstructorNames > asCellTypeParticlesWithParserIds
-  - toPreludeCellTypeParticlesWithNodeConstructorNames > toPreludeCellTypeParticlesWithParserIds
+  - asAtomTypeParticlesWithNodeConstructorNames > asAtomTypeParticlesWithParserIds
+  - toPreludeAtomTypeParticlesWithNodeConstructorNames > toPreludeAtomTypeParticlesWithParserIds
   - asTreeWithNodeTypes > asTreeWithParsers
   - nodeTypeId > parserId
   - topNodeTypeDefinitions > topParserDefinitions
@@ -463,7 +463,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ TrueBase: setDir and setGrammarDir must now be used instead of a constructor
 ⚠️ TrueBase: TrueBaseFile instances have the id as key; TrueBaseFolder handles mapping to filesystem
 ⚠️ TrueBase: grammar parsing now done at TrueBaseFile level
-⚠️ TrueBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
+⚠️ TrueBase: removed atomCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
 ⚠️ TrueBase: typedMapShort is now typedMap
 ⚠️ TrueBase: define fileExtension in Grammar files (or programmatically)
 ⚠️ Grammar: toSQLiteInsertStatement now takes a string instead of function
@@ -621,7 +621,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 49.0.1 2019-12-09
 🎉 JTable: seed param in Table class
-🏥 JTable: first non-blank cell now used for column type prediction
+🏥 JTable: first non-blank atom now used for column type prediction
 
 📦 49.0.0 2019-12-08
 🧹 general refactor to prep for switch to have Grammar entirely written in Grammar
@@ -695,7 +695,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 lengthen core method
 🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls
 🎉 toStumpString added to Grammar programs and webForm added to CLI
-⚠️ getInPlaceCellTypeParticles: toCellTypeParticles, getInPlaceCellTypeParticlesWithNodeConstructorNames: toCellTypeParticlesWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeParticlesWithNodeConstructorNames: toPreludeCellTypeParticlesWithNodeConstructorNames
+⚠️ getInPlaceAtomTypeParticles: toAtomTypeParticles, getInPlaceAtomTypeParticlesWithNodeConstructorNames: toAtomTypeParticlesWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeAtomTypeParticlesWithNodeConstructorNames: toPreludeAtomTypeParticlesWithNodeConstructorNames
 🏥 toSideBySide fix for when later trees are longer than earlier ones
 
 📦 44.1.0 2019-11-05
@@ -752,7 +752,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ getMTime is now getLineModifiedTime, getChildArrayModifiedTime, and getLineOrChildrenModifiedTime
 ⚠️ startExpressApp in TrueBase is removed. Now use TrueBaseServer class instead.
 ⚠️ some default routes changed in TrueBase
-⚠️ experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
+⚠️ experimental generateSimulatedData methods are now synthesizeNode and synthesizeAtom
 🧹 moved papers to treenotation/research
 
 📦 41.2.0 2019-09-24
@@ -764,13 +764,13 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 generateSimulatedData regression fix and tests
 
 📦 41.0.0 2019-09-17
-🎉 postfix cell parsing
-🎉 omnifix cell parsing
-🎉 cellParser keyword in Grammar Language
-🎉 chuck demo lang demonstrating postfix cell parsing
+🎉 postfix atom parsing
+🎉 omnifix atom parsing
+🎉 atomParser keyword in Grammar Language
+🎉 chuck demo lang demonstrating postfix atom parsing
 🎉 improved Explain visualization on designer app
 🏥 poop demo lang now implements omnifix
-⚠️ removed _getGrammarBackedCellArray method and replaced with new CellParser class
+⚠️ removed _getGrammarBackedAtomArray method and replaced with new AtomParser class
 
 📦 40.3.0 2019-09-16
 🎉 added Arrow sample language
@@ -786,11 +786,11 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 builder improvements
 
 📦 40.2.0 2019-09-11
-🎉 getInPlacePreludeCellTypeParticlesWithNodeConstructorNames
+🎉 getInPlacePreludeAtomTypeParticlesWithNodeConstructorNames
 🎉 generateSimulatedData
 🎉 designer app - simulate data and explain roots buttons
 🎉 explain 2D visualizer in designer app
-🏥 highlighting fix for regression caused by blank cells fix
+🏥 highlighting fix for regression caused by blank atoms fix
 🏥 generateSimulatedData improvements
 🧹 migrated Sandbox and Designer apps to PCF
 
@@ -801,9 +801,9 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
 
 📦 40.0.0 2019-09-03
-⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
-🎉 default highlightScopes for basic cellTypes
-🏥 fixes from reducing complexity of ExtendibleParticle and firstCellType
+⚠️ removed "firstAtomType" property. Now you must specifically add a atom for the firstAtomType for keyword Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
+🎉 default highlightScopes for basic atomTypes
+🏥 fixes from reducing complexity of ExtendibleParticle and firstAtomType
 
 📦 39.6.0 2019-09-03
 🎉 added jtable
@@ -856,8 +856,8 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 📦 38.0.0 2019-08-17
 🎉 toReadMe method on ParsersProgram
 🎉 toBundle method on ParsersProgram
-⚠️ removed "anyFirstCell". Now just use "anyCell"
-🏥 anyCell now always added to inferred grammar
+⚠️ removed "anyFirstAtom". Now just use "anyAtom"
+🏥 anyAtom now always added to inferred grammar
 🏥 various fixes to make inferring prefix grammars more robust
 🧹 now run UnknownParsersProgram against all sample grammars
 🧹 builder is now compiled into a product
@@ -868,7 +868,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 37.0.0 2019-08-08
 ⚠️ No more "dist" folder. Use files in "/products/" folder instead.
-🏥 Grammar inference (UnknownParsersProgram) now predicts base cell types
+🏥 Grammar inference (UnknownParsersProgram) now predicts base atom types
 🧹 switched to TypeScript for all JS src files and test files.
 🧹 new folders for each product
 🧹 "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.
@@ -907,19 +907,19 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 35.0.0 2019-07-24
 🎉 "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
-🎉 polymorphism and symbol tables via enumFromCellTypes
+🎉 polymorphism and symbol tables via enumFromAtomTypes
 🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.
-🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
-🎉 findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
+🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `atomType int` do `intAtom`
+🎉 findAllWordsWithAtomType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
 🎉 getAllTypedWords method in Grammar Programs
 🏥 removed all "parsersPath" 2nd params to new jtree.ParsersProgram(grammarCode, gammarPath), since it is no longer used.
-⚠️ Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
+⚠️ Javascript code and compiler nodes that previously referred to atomTypes that have been renamed, must be updated manually
 ⚠️ Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
 ⚠️ lineHints string is different
-⚠️ enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
-⚠️ cellTypes that ended in "Word" now end in "Cell".
+⚠️ enumFromGrammar is now enumFromAtomTypes and accepts any atomTypeId
+⚠️ atomTypes that ended in "Word" now end in "Atom".
 ⚠️ removed public "getFirstWordMap" method.
-⚠️ removed "updateNodeTypeIds" method. Use findAllWordsWithCellType and findAllNodesWithNodeType
+⚠️ removed "updateNodeTypeIds" method. Use findAllWordsWithAtomType and findAllNodesWithNodeType
 ⚠️ use createParser() instead of getNodeConstructor
 
 📦 34.2.0 2019-07-21
@@ -975,9 +975,9 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 added "joinChildrenWith" word to compiler nodeTypes in grammar language
 🎉 added "dug" language which compiles to JSON
 🎉 improved documentation for grammar compiler nodeTypes
-🎉 in compiler nodes, and generated classes, you can now access the firstCellType in this.cells just like other cells
+🎉 in compiler nodes, and generated classes, you can now access the firstAtomType in this.atoms just like other atoms
 🏥 fixed bugs in runtime extended nodeType constructor loading
-⚠️ rarely used listDelimiter compiler property in Grammar Language is now "catchAllCellDelimiter"
+⚠️ rarely used listDelimiter compiler property in Grammar Language is now "catchAllAtomDelimiter"
 ⚠️ Terminal vs NonTerminal nodeTypes are now determined by duck typing. Use GrammarBackedNonRootNode in place of those now.
 
 📦 30.0.0 2019-07-03
@@ -995,12 +995,12 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 28.0.0 2019-07-02
 🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
-🎉 "reservedWords" attribute on cellTypes in Grammar Language
+🎉 "reservedWords" attribute on atomTypes in Grammar Language
 ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
 ⚠️ compileParsers method is now compileParsersForNodeJs and compileParsersForBrowser
 ⚠️ nodeTypeId's now can only be alphanumeric
 ⚠️ nodeTypeId's are now identical to the generated Javascript class names. Some nodeTypeIds are now reserved and those now require using a "match" node
-⚠️ cellTypeId's now can only be alphanumeric
+⚠️ atomTypeId's now can only be alphanumeric
 ⚠️ constants in Grammar Language alphanumeric
 ⚠️ removed "group" property on abstract nodeTypes. To achieve the same affect use a build script.
 ⚠️ "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
@@ -1043,7 +1043,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 extends now works correctly
 🎉 added "todo" nodeType to grammar language
 🎉 added "extends" keyword in place of previous one line method
-⚠️ instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"
+⚠️ instead of "nodeType/atomType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"
 
 📦 26.1.1 2019-06-21
 🏥 support for mutliline strings in getConstantsObject
@@ -1073,36 +1073,36 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ stamp.js script is now stamp.cli.js
 ⚠️ removed "defaults" from grammar
 ⚠️ avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
-⚠️ removed getExpectedLineCellTypes--use getLineHints
+⚠️ removed getExpectedLineAtomTypes--use getLineHints
 ⚠️ nodeTypes in grammar is now "inScope", and is one line instead of parent/children
 ⚠️ removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
 ⚠️ fromJson is now fromJsonSubset and toJson is now toJsonSubset
 ⚠️ deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
 ⚠️ removed getCompiledProgramName
 ⚠️ getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
-⚠️ getCatchAllCellTypeName is now getCatchAllCellTypeId
-⚠️ getRequiredCellTypeNames is now getRequiredCellTypeIds
+⚠️ getCatchAllAtomTypeName is now getCatchAllAtomTypeId
+⚠️ getRequiredAtomTypeNames is now getRequiredAtomTypeIds
 ⚠️ getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
 ⚠️ removed getProgramErrorMessages. Use getAllErrors
-⚠️ getFirstCellType is now getFirstCellTypeId
+⚠️ getFirstAtomType is now getFirstAtomTypeId
 ⚠️ getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
 ⚠️ getParsersProgram is now getParsersProgramRoot
 ⚠️ getParsedWords removed
-⚠️ getCellTypeName is now getCellTypeId
-⚠️ getCellTypeDefinition is now getCellTypeDefinitionById
+⚠️ getAtomTypeName is now getAtomTypeId
+⚠️ getAtomTypeDefinition is now getAtomTypeDefinitionById
 ⚠️ getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
 ⚠️ getProgramErrors is now getAllErrors, getProgramErrorsIterator is now getAllErrorsIterator
 ⚠️ getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 ⚠️ removed "nodeType constructors javascript" in Parsers. Use "nodeType javascript" directly.
 ⚠️ no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
-⚠️ in Parsers, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
+⚠️ in Parsers, use "stringAtom" instead of "string", "intAtom" instead of "int", "floatAtom" instead of "float"
 ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
 A regex for finding breaks in untyped code:
 
 regexCode
- \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getParsersProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
+ \b(defaults|getExpectedLineAtomTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllAtomTypeName|getRequiredAtomTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstAtomType|getProgram|getParsersProgram|getParsedWords|getAtomTypeName|getAtomTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
 
 📦 25.2.0 2019-05-30
 🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
@@ -1111,7 +1111,7 @@ regexCode
 📦 25.1.0 2019-05-29
 🎉 Added BlankLineError type.
 🎉 Added inline syntax highlighting with error correction suggestions to grammar sandbox.
-🎉 Added parameters hints for nodeTypes with required cells in codeMirror
+🎉 Added parameters hints for nodeTypes with required atoms in codeMirror
 🎉 enabled using backup constructors in browser to allow Grammar Sandbox without access to constructor files
 🎉 ErrorType messaging improvments
 
@@ -1174,15 +1174,15 @@ code
 🏥 small lang regression fixes
 
 📦 23.0.0 2019-05-20
-⚠️ highlightScope is now defined only on cellTypes (no longer on nodeTypes)
+⚠️ highlightScope is now defined only on atomTypes (no longer on nodeTypes)
 ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
-⚠️ grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
+⚠️ grammars should all define a "atomType any" if they have leave any firstAtomTypes undefined
 ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
 ⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeParticles
+⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
 ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
-⚠️ getLineSyntax is now getLineCellTypes
+⚠️ getLineSyntax is now getLineAtomTypes
 
 📦 22.3.0 2019-05-16
 ⚠️ instead of FireProgram.js do Fire.js Program and same for Hakon and Numbers and Project and Stump and Swarm
@@ -1217,15 +1217,15 @@ code
 
 📦 21.0.0 2019-05-04
 🎉 getRunTimeEnumOptions method allows for run time autocomplete and run time validation
-🎉 autocomplete for grammar cellTypes
+🎉 autocomplete for grammar atomTypes
 🎉 grammar name keyword
-🎉 cells property on grammar non-root runtime nodes
+🎉 atoms property on grammar non-root runtime nodes
 🎉 makeGraphSort function. Also now used in grammar file prettification
-⚠️ in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
+⚠️ in grammar language: wordType to atomType, columns to atoms, catchAllColumn to catchAllAtomType
 ⚠️ removed ability in grammar files to have a wordType and keyword share the same name
 ⚠️ getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
 ⚠️ instead of "grammar parsersName" oneliner now use the grammar name keyword
-⚠️ removed parseWith cellType property
+⚠️ removed parseWith atomType property
 ⚠️ removed jtree.getLanguage. Instead do require('.../langs/...').
 ⚠️ in grammar keywordTable now enumFromGrammar
 🏥 all word types now have default regex of [^ ]* so no need to specify it
@@ -1238,10 +1238,10 @@ code
 🎉 catchAllColumn grammar keyword
 🎉 new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
 🎉 new methods keywordSort, getPrettified
-🎉 new method getCatchAllCellTypeName
+🎉 new method getCatchAllAtomTypeName
 ⚠️ the "@" prefix on grammar keywords has been removed
 ⚠️ for catch all columns use catchAllColumn instead of *
-⚠️ getNodeColumnTypes is now getRequiredCellTypeNames
+⚠️ getNodeColumnTypes is now getRequiredAtomTypeNames
 ⚠️ autocomplete help now only gets description and does not fall back to showing required columns
 ⚠️ removed getNodeColumnRegexes method
 

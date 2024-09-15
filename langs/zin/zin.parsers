@@ -1,8 +1,8 @@
-// Cell parsers
-nameCell
+// Atom parsers
+nameAtom
  description A person's name
  paint string
-keywordCell
+keywordAtom
  paint keyword
 
 // Line parsers
@@ -13,8 +13,8 @@ zinParser
  inScope alohaParser
 alohaParser
  description Say aloha to a person.
- catchAllCellType nameCell
- cells keywordCell
+ catchAllAtomType nameAtom
+ atoms keywordAtom
  crux aloha
 catchAllErrorParser
  baseParser errorParser

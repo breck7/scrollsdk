@@ -8,7 +8,7 @@ nodeProduct
  combineTypeScriptFiles products/particlesTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
 nodeProduct
  outputFileName Parsers.js
- insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
+ insertLastLine module.exports = { ParsersConstants, PreludeAtomTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
  combineTypeScriptFiles products/particlesTypes.ts parsers/Parsers.ts
 nodeProduct
  outputFileName TestRacer.js

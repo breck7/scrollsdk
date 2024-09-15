@@ -7,12 +7,12 @@ test parsersSample
     root
     compilesTo txt
     inScope baseParser
-   anyCell
-   wordCell
-    extends anyCell
+   anyAtom
+   wordAtom
+    extends anyAtom
    baseParser
     crux base
-   keywordCell
+   keywordAtom
    blockParser
     crux block
     extends baseParser
@@ -20,10 +20,10 @@ test parsersSample
    toParser
     crux to
     extends blockParser
-    cells keywordCell wordCell
+    atoms keywordAtom wordAtom
     tags test
     compiler
-     stringTemplate to {wordCell}
+     stringTemplate to {wordAtom}
      closeSubparticles end
  runTimeFirstWordsInScope
   assertLengthIs 1

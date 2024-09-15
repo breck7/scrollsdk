@@ -17,12 +17,12 @@ code
  pandaParser
   root
   catchAllParser expressionParser
- operatorCell
+ operatorAtom
   enum + -
- intCell
+ intAtom
  expressionParser
-  cells operatorCell
-  catchAllCellType intCell
+  atoms operatorAtom
+  catchAllAtomType intAtom
 
 The Parsers code can generate a parser that parses statements like `+ 1 2 5 10` and `- 10 2`.
 
@@ -52,11 +52,11 @@ thinColumns 2
 - The inScope parsers could change based upon current values of the particle. For example, you might have parsers where if you set `type website` certain parsers would come into/out of scope.
 - Scope Refactor. As part of the dependent type work the `inScope` implementation may undergo a refactor to allow for further future possibilities. For example, we may want to consider alternate approaches to `inScope` than the current inheritance system.
 
-## Union Cell Types
-- Sometimes a language may want to allow a number in a hole, or potentially something like an "N/A" value. Union Cell Types would be one way to do this.
+## Union Atom Types
+- Sometimes a language may want to allow a number in a hole, or potentially something like an "N/A" value. Union Atom Types would be one way to do this.
 
 ## Pattern Matching
-- You might want to have parsers with the same crux but different forms (for example, different cells). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
+- You might want to have parsers with the same crux but different forms (for example, different atoms). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
 
 ## Mixins
 - You might want to share code between parsers without creating an inheritance link. Mixins where code is copied at compile time would be a way to do this.

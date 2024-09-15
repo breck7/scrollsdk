@@ -11,7 +11,7 @@ var ParsersConstantsCompiler
 ;(function (ParsersConstantsCompiler) {
   ParsersConstantsCompiler["stringTemplate"] = "stringTemplate"
   ParsersConstantsCompiler["indentCharacter"] = "indentCharacter"
-  ParsersConstantsCompiler["catchAllCellDelimiter"] = "catchAllCellDelimiter"
+  ParsersConstantsCompiler["catchAllAtomDelimiter"] = "catchAllAtomDelimiter"
   ParsersConstantsCompiler["openSubparticles"] = "openSubparticles"
   ParsersConstantsCompiler["joinSubparticlesWith"] = "joinSubparticlesWith"
   ParsersConstantsCompiler["closeSubparticles"] = "closeSubparticles"
@@ -20,17 +20,17 @@ var ParsersConstantsMisc
 ;(function (ParsersConstantsMisc) {
   ParsersConstantsMisc["doNotSynthesize"] = "doNotSynthesize"
 })(ParsersConstantsMisc || (ParsersConstantsMisc = {}))
-var PreludeCellTypeIds
-;(function (PreludeCellTypeIds) {
-  PreludeCellTypeIds["anyCell"] = "anyCell"
-  PreludeCellTypeIds["keywordCell"] = "keywordCell"
-  PreludeCellTypeIds["extraWordCell"] = "extraWordCell"
-  PreludeCellTypeIds["floatCell"] = "floatCell"
-  PreludeCellTypeIds["numberCell"] = "numberCell"
-  PreludeCellTypeIds["bitCell"] = "bitCell"
-  PreludeCellTypeIds["boolCell"] = "boolCell"
-  PreludeCellTypeIds["intCell"] = "intCell"
-})(PreludeCellTypeIds || (PreludeCellTypeIds = {}))
+var PreludeAtomTypeIds
+;(function (PreludeAtomTypeIds) {
+  PreludeAtomTypeIds["anyAtom"] = "anyAtom"
+  PreludeAtomTypeIds["keywordAtom"] = "keywordAtom"
+  PreludeAtomTypeIds["extraWordAtom"] = "extraWordAtom"
+  PreludeAtomTypeIds["floatAtom"] = "floatAtom"
+  PreludeAtomTypeIds["numberAtom"] = "numberAtom"
+  PreludeAtomTypeIds["bitAtom"] = "bitAtom"
+  PreludeAtomTypeIds["boolAtom"] = "boolAtom"
+  PreludeAtomTypeIds["intAtom"] = "intAtom"
+})(PreludeAtomTypeIds || (PreludeAtomTypeIds = {}))
 var ParsersConstantsConstantTypes
 ;(function (ParsersConstantsConstantTypes) {
   ParsersConstantsConstantTypes["boolean"] = "boolean"
@@ -46,27 +46,27 @@ var ParsersBundleFiles
   ParsersBundleFiles["indexJs"] = "index.js"
   ParsersBundleFiles["testJs"] = "test.js"
 })(ParsersBundleFiles || (ParsersBundleFiles = {}))
-var ParsersCellParser
-;(function (ParsersCellParser) {
-  ParsersCellParser["prefix"] = "prefix"
-  ParsersCellParser["postfix"] = "postfix"
-  ParsersCellParser["omnifix"] = "omnifix"
-})(ParsersCellParser || (ParsersCellParser = {}))
+var ParsersAtomParser
+;(function (ParsersAtomParser) {
+  ParsersAtomParser["prefix"] = "prefix"
+  ParsersAtomParser["postfix"] = "postfix"
+  ParsersAtomParser["omnifix"] = "omnifix"
+})(ParsersAtomParser || (ParsersAtomParser = {}))
 var ParsersConstants
 ;(function (ParsersConstants) {
   // particle types
   ParsersConstants["extensions"] = "extensions"
   ParsersConstants["comment"] = "//"
   ParsersConstants["parser"] = "parser"
-  ParsersConstants["cellType"] = "cellType"
+  ParsersConstants["atomType"] = "atomType"
   ParsersConstants["parsersFileExtension"] = "parsers"
   ParsersConstants["abstractParserPrefix"] = "abstract"
   ParsersConstants["parserSuffix"] = "Parser"
-  ParsersConstants["cellTypeSuffix"] = "Cell"
+  ParsersConstants["atomTypeSuffix"] = "Atom"
   // error check time
   ParsersConstants["regex"] = "regex"
   ParsersConstants["reservedWords"] = "reservedWords"
-  ParsersConstants["enumFromCellTypes"] = "enumFromCellTypes"
+  ParsersConstants["enumFromAtomTypes"] = "enumFromAtomTypes"
   ParsersConstants["enum"] = "enum"
   ParsersConstants["examples"] = "examples"
   ParsersConstants["min"] = "min"
@@ -82,13 +82,13 @@ var ParsersConstants
   ParsersConstants["cruxFromId"] = "cruxFromId"
   ParsersConstants["pattern"] = "pattern"
   ParsersConstants["inScope"] = "inScope"
-  ParsersConstants["cells"] = "cells"
+  ParsersConstants["atoms"] = "atoms"
   ParsersConstants["listDelimiter"] = "listDelimiter"
   ParsersConstants["contentKey"] = "contentKey"
   ParsersConstants["subparticlesKey"] = "subparticlesKey"
   ParsersConstants["uniqueFirstWord"] = "uniqueFirstWord"
-  ParsersConstants["catchAllCellType"] = "catchAllCellType"
-  ParsersConstants["cellParser"] = "cellParser"
+  ParsersConstants["catchAllAtomType"] = "catchAllAtomType"
+  ParsersConstants["atomParser"] = "atomParser"
   ParsersConstants["catchAllParser"] = "catchAllParser"
   ParsersConstants["constants"] = "constants"
   ParsersConstants["required"] = "required"
@@ -111,8 +111,8 @@ var ParsersConstants
   ParsersConstants["paint"] = "paint"
 })(ParsersConstants || (ParsersConstants = {}))
 class TypedWord extends ParticleWord {
-  constructor(particle, cellIndex, type) {
-    super(particle, cellIndex)
+  constructor(particle, atomIndex, type) {
+    super(particle, atomIndex)
     this._type = type
   }
   get type() {
@@ -132,8 +132,8 @@ class ParserBackedParticle extends Particle {
   get rootParsersParticles() {
     return this.definition.root
   }
-  getAutocompleteResults(partialWord, cellIndex) {
-    return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
+  getAutocompleteResults(partialWord, atomIndex) {
+    return atomIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForAtom(partialWord, atomIndex)
   }
   makeError(message) {
     return new ParserDefinedError(this, message)
@@ -194,10 +194,10 @@ class ParserBackedParticle extends Particle {
       })
       .filter(i => i)
   }
-  _getAutocompleteResultsForCell(partialWord, cellIndex) {
+  _getAutocompleteResultsForAtom(partialWord, atomIndex) {
     // todo: root should be [] correct?
-    const cell = this.parsedCells[cellIndex]
-    return cell ? cell.getAutoCompleteWords(partialWord) : []
+    const atom = this.parsedAtoms[atomIndex]
+    return atom ? atom.getAutoCompleteWords(partialWord) : []
   }
   // note: this is overwritten by the root particle of a runtime parsers program.
   // some of the magic that makes this all work. but maybe there's a better way.
@@ -205,11 +205,11 @@ class ParserBackedParticle extends Particle {
     if (this.isRoot()) throw new Error(`Root particle without getHandParsersProgram defined.`)
     return this.root.handParsersProgram
   }
-  getRunTimeEnumOptions(cell) {
+  getRunTimeEnumOptions(atom) {
     return undefined
   }
-  getRunTimeEnumOptionsForValidation(cell) {
-    return this.getRunTimeEnumOptions(cell)
+  getRunTimeEnumOptionsForValidation(atom) {
+    return this.getRunTimeEnumOptions(atom)
   }
   _sortParticlesByInScopeOrder() {
     const parserOrder = this.definition._getMyInScopeParserIds()
@@ -226,37 +226,37 @@ class ParserBackedParticle extends Particle {
     })
     return errors
   }
-  get programAsCells() {
+  get programAsAtoms() {
     // todo: what is this?
     return this.topDownArray.map(particle => {
-      const cells = particle.parsedCells
+      const atoms = particle.parsedAtoms
       let indents = particle.getIndentLevel() - 1
       while (indents) {
-        cells.unshift(undefined)
+        atoms.unshift(undefined)
         indents--
       }
-      return cells
+      return atoms
     })
   }
   get programWidth() {
-    return Math.max(...this.programAsCells.map(line => line.length))
+    return Math.max(...this.programAsAtoms.map(line => line.length))
   }
   get allTypedWords() {
     const words = []
-    this.topDownArray.forEach(particle => particle.wordTypes.forEach((cell, index) => words.push(new TypedWord(particle, index, cell.cellTypeId))))
+    this.topDownArray.forEach(particle => particle.wordTypes.forEach((atom, index) => words.push(new TypedWord(particle, index, atom.atomTypeId))))
     return words
   }
-  findAllWordsWithCellType(cellTypeId) {
-    return this.allTypedWords.filter(typedWord => typedWord.type === cellTypeId)
+  findAllWordsWithAtomType(atomTypeId) {
+    return this.allTypedWords.filter(typedWord => typedWord.type === atomTypeId)
   }
   findAllParticlesWithParser(parserId) {
     return this.topDownArray.filter(particle => particle.definition.parserIdFromDefinition === parserId)
   }
-  toCellTypeParticles() {
-    return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.lineCellTypes).join("\n")
+  toAtomTypeParticles() {
+    return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.lineAtomTypes).join("\n")
   }
   getParseTable(maxColumnWidth = 40) {
-    const particle = new Particle(this.toCellTypeParticles())
+    const particle = new Particle(this.toAtomTypeParticles())
     return new Particle(
       particle.topDownArray.map((particle, lineNumber) => {
         const sourceParticle = this.particleAtLine(lineNumber)
@@ -266,7 +266,7 @@ class ParserBackedParticle extends Particle {
           lineNumber: lineNumber,
           source: sourceParticle.indentation + sourceParticle.getLine(),
           parser: sourceParticle.constructor.name,
-          cellTypes: particle.content,
+          atomTypes: particle.content,
           errorCount: errorCount
         }
         if (errorCount) obj.errorMessages = errs.map(err => err.message).join(";")
@@ -362,8 +362,8 @@ class ParserBackedParticle extends Particle {
     const usage = new Particle()
     const handParsersProgram = this.handParsersProgram
     handParsersProgram.validConcreteAndAbstractParserDefinitions.forEach(def => {
-      const requiredCellTypeIds = def.cellParser.getRequiredCellTypeIds()
-      usage.appendLine([def.parserIdFromDefinition, "line-id", "parser", requiredCellTypeIds.join(" ")].join(" "))
+      const requiredAtomTypeIds = def.atomParser.getRequiredAtomTypeIds()
+      usage.appendLine([def.parserIdFromDefinition, "line-id", "parser", requiredAtomTypeIds.join(" ")].join(" "))
     })
     this.topDownArray.forEach((particle, lineNumber) => {
       const stats = usage.getParticle(particle.parserId)
@@ -375,28 +375,28 @@ class ParserBackedParticle extends Particle {
     return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.getLinePaints()).join("\n")
   }
   toDefinitionLineNumberParticles() {
-    return this.topDownArray.map(subparticle => subparticle.definition.lineNumber + " " + subparticle.indentation + subparticle.cellDefinitionLineNumbers.join(" ")).join("\n")
+    return this.topDownArray.map(subparticle => subparticle.definition.lineNumber + " " + subparticle.indentation + subparticle.atomDefinitionLineNumbers.join(" ")).join("\n")
   }
-  get asCellTypeParticlesWithParserIds() {
-    return this.topDownArray.map(subparticle => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.lineCellTypes).join("\n")
+  get asAtomTypeParticlesWithParserIds() {
+    return this.topDownArray.map(subparticle => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.lineAtomTypes).join("\n")
   }
-  toPreludeCellTypeParticlesWithParserIds() {
-    return this.topDownArray.map(subparticle => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLineCellPreludeTypes()).join("\n")
+  toPreludeAtomTypeParticlesWithParserIds() {
+    return this.topDownArray.map(subparticle => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLineAtomPreludeTypes()).join("\n")
   }
   get asParticlesWithParsers() {
     return this.topDownArray.map(subparticle => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLine()).join("\n")
   }
-  getCellPaintAtPosition(lineIndex, wordIndex) {
-    this._initCellTypeCache()
+  getAtomPaintAtPosition(lineIndex, wordIndex) {
+    this._initAtomTypeCache()
     const typeParticle = this._cache_paintParticles.topDownArray[lineIndex - 1]
     return typeParticle ? typeParticle.getWord(wordIndex - 1) : undefined
   }
-  _initCellTypeCache() {
+  _initAtomTypeCache() {
     const particleMTime = this.getLineOrSubparticlesModifiedTime()
-    if (this._cache_programCellTypeStringMTime === particleMTime) return undefined
-    this._cache_typeParticles = new Particle(this.toCellTypeParticles())
+    if (this._cache_programAtomTypeStringMTime === particleMTime) return undefined
+    this._cache_typeParticles = new Particle(this.toAtomTypeParticles())
     this._cache_paintParticles = new Particle(this.toPaintParticles())
-    this._cache_programCellTypeStringMTime = particleMTime
+    this._cache_programAtomTypeStringMTime = particleMTime
   }
   createParserCombinator() {
     return this.isRoot() ? new Particle.ParserCombinator(BlobParser) : new Particle.ParserCombinator(this.parent._getParser()._getCatchAllParser(this.parent), {})
@@ -405,12 +405,12 @@ class ParserBackedParticle extends Particle {
     return this.definition.parserIdFromDefinition
   }
   get wordTypes() {
-    return this.parsedCells.filter(cell => cell.getWord() !== undefined)
+    return this.parsedAtoms.filter(atom => atom.getWord() !== undefined)
   }
-  get cellErrors() {
-    const { parsedCells } = this // todo: speedup. takes ~3s on pldb.
+  get atomErrors() {
+    const { parsedAtoms } = this // todo: speedup. takes ~3s on pldb.
     // todo: speedup getErrorIfAny. takes ~3s on pldb.
-    return parsedCells.map(check => check.getErrorIfAny()).filter(identity => identity)
+    return parsedAtoms.map(check => check.getErrorIfAny()).filter(identity => identity)
   }
   get singleParserUsedTwiceErrors() {
     const errors = []
@@ -446,29 +446,29 @@ class ParserBackedParticle extends Particle {
     return errors
   }
   getErrors() {
-    return this.cellErrors.concat(this.scopeErrors)
+    return this.atomErrors.concat(this.scopeErrors)
   }
-  get parsedCells() {
-    return this.definition.cellParser.getCellArray(this)
+  get parsedAtoms() {
+    return this.definition.atomParser.getAtomArray(this)
   }
   // todo: just make a fn that computes proper spacing and then is given a particle to print
-  get lineCellTypes() {
-    return this.parsedCells.map(slot => slot.cellTypeId).join(" ")
+  get lineAtomTypes() {
+    return this.parsedAtoms.map(slot => slot.atomTypeId).join(" ")
   }
-  getLineCellPreludeTypes() {
-    return this.parsedCells
+  getLineAtomPreludeTypes() {
+    return this.parsedAtoms
       .map(slot => {
-        const def = slot.cellTypeDefinition
+        const def = slot.atomTypeDefinition
         //todo: cleanup
-        return def ? def.preludeKindId : PreludeCellTypeIds.anyCell
+        return def ? def.preludeKindId : PreludeAtomTypeIds.anyAtom
       })
       .join(" ")
   }
   getLinePaints(defaultScope = "source") {
-    return this.parsedCells.map(slot => slot.paint || defaultScope).join(" ")
+    return this.parsedAtoms.map(slot => slot.paint || defaultScope).join(" ")
   }
-  get cellDefinitionLineNumbers() {
-    return this.parsedCells.map(cell => cell.definitionLineNumber)
+  get atomDefinitionLineNumbers() {
+    return this.parsedAtoms.map(atom => atom.definitionLineNumber)
   }
   _getCompiledIndentation() {
     const indentCharacter = this.definition._getCompilerObject()[ParsersConstantsCompiler.indentCharacter]
@@ -476,7 +476,7 @@ class ParserBackedParticle extends Particle {
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
   _getFields() {
-    // fields are like cells
+    // fields are like atoms
     const fields = {}
     this.forEach(particle => {
       const def = particle.definition
@@ -486,9 +486,9 @@ class ParserBackedParticle extends Particle {
   }
   _getCompiledLine() {
     const compiler = this.definition._getCompilerObject()
-    const catchAllCellDelimiter = compiler[ParsersConstantsCompiler.catchAllCellDelimiter]
+    const catchAllAtomDelimiter = compiler[ParsersConstantsCompiler.catchAllAtomDelimiter]
     const str = compiler[ParsersConstantsCompiler.stringTemplate]
-    return str !== undefined ? Utils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
+    return str !== undefined ? Utils.formatStr(str, catchAllAtomDelimiter, Object.assign(this._getFields(), this.atoms)) : this.getLine()
   }
   get listDelimiter() {
     return this.definition._getFromExtended(ParsersConstants.listDelimiter)
@@ -509,11 +509,11 @@ class ParserBackedParticle extends Particle {
     return this.listDelimiter ? this.content.split(this.listDelimiter) : super.list
   }
   get typedContent() {
-    // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the particle level
+    // todo: probably a better way to do this, perhaps by defining a atomDelimiter at the particle level
     // todo: this currently parse anything other than string types
     if (this.listDelimiter) return this.content.split(this.listDelimiter)
-    const cells = this.parsedCells
-    if (cells.length === 2) return cells[1].parsed
+    const atoms = this.parsedAtoms
+    if (atoms.length === 2) return atoms[1].parsed
     return this.content
   }
   get typedTuple() {
@@ -574,17 +574,17 @@ ${compiledSubparticles}
 ${indent}${closeSubparticlesString}`
   }
   // todo: remove
-  get cells() {
-    const cells = {}
-    this.parsedCells.forEach(cell => {
-      const cellTypeId = cell.cellTypeId
-      if (!cell.isCatchAll()) cells[cellTypeId] = cell.parsed
+  get atoms() {
+    const atoms = {}
+    this.parsedAtoms.forEach(atom => {
+      const atomTypeId = atom.atomTypeId
+      if (!atom.isCatchAll()) atoms[atomTypeId] = atom.parsed
       else {
-        if (!cells[cellTypeId]) cells[cellTypeId] = []
-        cells[cellTypeId].push(cell.parsed)
+        if (!atoms[atomTypeId]) atoms[atomTypeId] = []
+        atoms[atomTypeId].push(atom.parsed)
       }
     })
-    return cells
+    return atoms
   }
 }
 class BlobParser extends ParserBackedParticle {
@@ -605,15 +605,15 @@ class UnknownParserParticle extends ParserBackedParticle {
   }
 }
 /*
-A cell contains a word but also the type information for that word.
+A atom contains a word but also the type information for that word.
 */
-class AbstractParsersBackedCell {
-  constructor(particle, index, typeDef, cellTypeId, isCatchAll, parserDefinitionParser) {
+class AbstractParsersBackedAtom {
+  constructor(particle, index, typeDef, atomTypeId, isCatchAll, parserDefinitionParser) {
     this._typeDef = typeDef
     this._particle = particle
     this._isCatchAll = isCatchAll
     this._index = index
-    this._cellTypeId = cellTypeId
+    this._atomTypeId = atomTypeId
     this._parserDefinitionParser = parserDefinitionParser
   }
   getWord() {
@@ -622,34 +622,34 @@ class AbstractParsersBackedCell {
   get definitionLineNumber() {
     return this._typeDef.lineNumber
   }
-  get cellTypeId() {
-    return this._cellTypeId
+  get atomTypeId() {
+    return this._atomTypeId
   }
   getParticle() {
     return this._particle
   }
-  get cellIndex() {
+  get atomIndex() {
     return this._index
   }
   isCatchAll() {
     return this._isCatchAll
   }
   get min() {
-    return this.cellTypeDefinition.get(ParsersConstants.min) || "0"
+    return this.atomTypeDefinition.get(ParsersConstants.min) || "0"
   }
   get max() {
-    return this.cellTypeDefinition.get(ParsersConstants.max) || "100"
+    return this.atomTypeDefinition.get(ParsersConstants.max) || "100"
   }
   get placeholder() {
-    return this.cellTypeDefinition.get(ParsersConstants.examples) || ""
+    return this.atomTypeDefinition.get(ParsersConstants.examples) || ""
   }
   get paint() {
-    const definition = this.cellTypeDefinition
+    const definition = this.atomTypeDefinition
     if (definition) return definition.paint // todo: why the undefined?
   }
   getAutoCompleteWords(partialWord = "") {
-    const cellDef = this.cellTypeDefinition
-    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getParticle().root) : []
+    const atomDef = this.atomTypeDefinition
+    let words = atomDef ? atomDef._getAutocompleteWordOptions(this.getParticle().root) : []
     const runTimeOptions = this.getParticle().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
     if (partialWord) words = words.filter(word => word.includes(partialWord))
@@ -660,16 +660,16 @@ class AbstractParsersBackedCell {
       }
     })
   }
-  synthesizeCell(seed = Date.now()) {
+  synthesizeAtom(seed = Date.now()) {
     // todo: cleanup
-    const cellDef = this.cellTypeDefinition
-    const enumOptions = cellDef._getFromExtended(ParsersConstants.enum)
+    const atomDef = this.atomTypeDefinition
+    const enumOptions = atomDef._getFromExtended(ParsersConstants.enum)
     if (enumOptions) return Utils.getRandomString(1, enumOptions.split(" "))
-    return this._synthesizeCell(seed)
+    return this._synthesizeAtom(seed)
   }
   _getStumpEnumInput(crux) {
-    const cellDef = this.cellTypeDefinition
-    const enumOptions = cellDef._getFromExtended(ParsersConstants.enum)
+    const atomDef = this.atomTypeDefinition
+    const enumOptions = atomDef._getFromExtended(ParsersConstants.enum)
     if (!enumOptions) return undefined
     const options = new Particle(
       enumOptions
@@ -685,12 +685,12 @@ ${options.toString(1)}`
     // todo: remove
     const enumInput = this._getStumpEnumInput(crux)
     if (enumInput) return enumInput
-    // todo: cleanup. We shouldn't have these dual cellType classes.
+    // todo: cleanup. We shouldn't have these dual atomType classes.
     return `input
  name ${crux}
  placeholder ${this.placeholder}`
   }
-  get cellTypeDefinition() {
+  get atomTypeDefinition() {
     return this._typeDef
   }
   _getErrorContext() {
@@ -700,7 +700,7 @@ ${options.toString(1)}`
     const runTimeOptions = this.getParticle().getRunTimeEnumOptionsForValidation(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this.cellTypeDefinition.isValid(word, this.getParticle().root) && this._isValid()
+    return this.atomTypeDefinition.isValid(word, this.getParticle().root) && this._isValid()
   }
   getErrorIfAny() {
     const word = this.getWord()
@@ -709,13 +709,13 @@ ${options.toString(1)}`
     return word === undefined || word === "" ? new MissingWordError(this) : new InvalidWordError(this)
   }
 }
-AbstractParsersBackedCell.parserFunctionName = ""
-class ParsersBitCell extends AbstractParsersBackedCell {
+AbstractParsersBackedAtom.parserFunctionName = ""
+class ParsersBitAtom extends AbstractParsersBackedAtom {
   _isValid() {
     const word = this.getWord()
     return word === "0" || word === "1"
   }
-  _synthesizeCell() {
+  _synthesizeAtom() {
     return Utils.getRandomString(1, "01".split(""))
   }
   get regexString() {
@@ -726,8 +726,8 @@ class ParsersBitCell extends AbstractParsersBackedCell {
     return !!parseInt(word)
   }
 }
-ParsersBitCell.defaultPaint = "constant.numeric"
-class ParsersNumericCell extends AbstractParsersBackedCell {
+ParsersBitAtom.defaultPaint = "constant.numeric"
+class ParsersNumericAtom extends AbstractParsersBackedAtom {
   _toStumpInput(crux) {
     return `input
  name ${crux}
@@ -737,14 +737,14 @@ class ParsersNumericCell extends AbstractParsersBackedCell {
  max ${this.max}`
   }
 }
-class ParsersIntCell extends ParsersNumericCell {
+class ParsersIntAtom extends ParsersNumericAtom {
   _isValid() {
     const word = this.getWord()
     const num = parseInt(word)
     if (isNaN(num)) return false
     return num.toString() === word
   }
-  _synthesizeCell(seed) {
+  _synthesizeAtom(seed) {
     return Utils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
   }
   get regexString() {
@@ -755,15 +755,15 @@ class ParsersIntCell extends ParsersNumericCell {
     return parseInt(word)
   }
 }
-ParsersIntCell.defaultPaint = "constant.numeric.integer"
-ParsersIntCell.parserFunctionName = "parseInt"
-class ParsersFloatCell extends ParsersNumericCell {
+ParsersIntAtom.defaultPaint = "constant.numeric.integer"
+ParsersIntAtom.parserFunctionName = "parseInt"
+class ParsersFloatAtom extends ParsersNumericAtom {
   _isValid() {
     const word = this.getWord()
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?([eE][+-]?\d+)?$/.test(word)
   }
-  _synthesizeCell(seed) {
+  _synthesizeAtom(seed) {
     return Utils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
   }
   get regexString() {
@@ -774,10 +774,10 @@ class ParsersFloatCell extends ParsersNumericCell {
     return parseFloat(word)
   }
 }
-ParsersFloatCell.defaultPaint = "constant.numeric.float"
-ParsersFloatCell.parserFunctionName = "parseFloat"
-// ErrorCellType => parsers asks for a '' cell type here but the parsers does not specify a '' cell type. (todo: bring in didyoumean?)
-class ParsersBoolCell extends AbstractParsersBackedCell {
+ParsersFloatAtom.defaultPaint = "constant.numeric.float"
+ParsersFloatAtom.parserFunctionName = "parseFloat"
+// ErrorAtomType => parsers asks for a '' atom type here but the parsers does not specify a '' atom type. (todo: bring in didyoumean?)
+class ParsersBoolAtom extends AbstractParsersBackedAtom {
   constructor() {
     super(...arguments)
     this._trues = new Set(["1", "true", "t", "yes"])
@@ -788,7 +788,7 @@ class ParsersBoolCell extends AbstractParsersBackedCell {
     const str = word.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
   }
-  _synthesizeCell() {
+  _synthesizeAtom() {
     return Utils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
   }
   _getOptions() {
@@ -802,13 +802,13 @@ class ParsersBoolCell extends AbstractParsersBackedCell {
     return this._trues.has(word.toLowerCase())
   }
 }
-ParsersBoolCell.defaultPaint = "constant.numeric"
-class ParsersAnyCell extends AbstractParsersBackedCell {
+ParsersBoolAtom.defaultPaint = "constant.numeric"
+class ParsersAnyAtom extends AbstractParsersBackedAtom {
   _isValid() {
     return true
   }
-  _synthesizeCell() {
-    const examples = this.cellTypeDefinition._getFromExtended(ParsersConstants.examples)
+  _synthesizeAtom() {
+    const examples = this.atomTypeDefinition._getFromExtended(ParsersConstants.examples)
     if (examples) return Utils.getRandomString(1, examples.split(" "))
     return this._parserDefinitionParser.parserIdFromDefinition + "-" + this.constructor.name
   }
@@ -819,21 +819,21 @@ class ParsersAnyCell extends AbstractParsersBackedCell {
     return this.getWord()
   }
 }
-class ParsersKeywordCell extends ParsersAnyCell {
-  _synthesizeCell() {
+class ParsersKeywordAtom extends ParsersAnyAtom {
+  _synthesizeAtom() {
     return this._parserDefinitionParser.cruxIfAny
   }
 }
-ParsersKeywordCell.defaultPaint = "keyword"
-class ParsersExtraWordCellTypeCell extends AbstractParsersBackedCell {
+ParsersKeywordAtom.defaultPaint = "keyword"
+class ParsersExtraWordAtomTypeAtom extends AbstractParsersBackedAtom {
   _isValid() {
     return false
   }
-  synthesizeCell() {
-    throw new Error(`Trying to synthesize a ParsersExtraWordCellTypeCell`)
-    return this._synthesizeCell()
+  synthesizeAtom() {
+    throw new Error(`Trying to synthesize a ParsersExtraWordAtomTypeAtom`)
+    return this._synthesizeAtom()
   }
-  _synthesizeCell() {
+  _synthesizeAtom() {
     return "extraWord" // should never occur?
   }
   get parsed() {
@@ -843,22 +843,22 @@ class ParsersExtraWordCellTypeCell extends AbstractParsersBackedCell {
     return new ExtraWordError(this)
   }
 }
-class ParsersUnknownCellTypeCell extends AbstractParsersBackedCell {
+class ParsersUnknownAtomTypeAtom extends AbstractParsersBackedAtom {
   _isValid() {
     return false
   }
-  synthesizeCell() {
-    throw new Error(`Trying to synthesize an ParsersUnknownCellTypeCell`)
-    return this._synthesizeCell()
+  synthesizeAtom() {
+    throw new Error(`Trying to synthesize an ParsersUnknownAtomTypeAtom`)
+    return this._synthesizeAtom()
   }
-  _synthesizeCell() {
+  _synthesizeAtom() {
     return "extraWord" // should never occur?
   }
   get parsed() {
     return this.getWord()
   }
   getErrorIfAny() {
-    return new UnknownCellTypeError(this)
+    return new UnknownAtomTypeError(this)
   }
 }
 class AbstractParticleError {
@@ -875,7 +875,7 @@ class AbstractParticleError {
     return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex)
   }
   _doesCharacterIndexFallOnWord(characterIndex) {
-    return this.cellIndex === this.getParticle().getWordIndexAtCharacterIndex(characterIndex)
+    return this.atomIndex === this.getParticle().getWordIndexAtCharacterIndex(characterIndex)
   }
   // convenience method. may be removed.
   isBlankLineError() {
@@ -890,17 +890,17 @@ class AbstractParticleError {
   }
   getCodeMirrorLineWidgetElement(onApplySuggestionCallBack = () => {}) {
     const suggestion = this.suggestionMessage
-    if (this.isMissingWordError()) return this._getCodeMirrorLineWidgetElementCellTypeHints()
+    if (this.isMissingWordError()) return this._getCodeMirrorLineWidgetElementAtomTypeHints()
     if (suggestion) return this._getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion)
     return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
   }
   get parserId() {
     return this.getParticle().definition.parserIdFromDefinition
   }
-  _getCodeMirrorLineWidgetElementCellTypeHints() {
+  _getCodeMirrorLineWidgetElementAtomTypeHints() {
     const el = document.createElement("div")
     el.appendChild(document.createTextNode(this.getIndent() + this.getParticle().definition.lineHints))
-    el.className = "LintCellTypeHints"
+    el.className = "LintAtomTypeHints"
     return el
   }
   _getCodeMirrorLineWidgetElementWithoutSuggestion() {
@@ -931,14 +931,14 @@ class AbstractParticleError {
   get errorTypeName() {
     return this.constructor.name.replace("Error", "")
   }
-  get cellIndex() {
+  get atomIndex() {
     return 0
   }
   toObject() {
     return {
       type: this.errorTypeName,
       line: this.lineNumber,
-      cell: this.cellIndex,
+      atom: this.atomIndex,
       suggestion: this.suggestionMessage,
       path: this.getParticle().getFirstWordPath(),
       message: this.message
@@ -955,24 +955,24 @@ class AbstractParticleError {
   }
   applySuggestion() {}
   get message() {
-    return `${this.errorTypeName} at line ${this.lineNumber} cell ${this.cellIndex}.`
+    return `${this.errorTypeName} at line ${this.lineNumber} atom ${this.atomIndex}.`
   }
 }
-class AbstractCellError extends AbstractParticleError {
-  constructor(cell) {
-    super(cell.getParticle())
-    this._cell = cell
+class AbstractAtomError extends AbstractParticleError {
+  constructor(atom) {
+    super(atom.getParticle())
+    this._atom = atom
   }
-  get cell() {
-    return this._cell
+  get atom() {
+    return this._atom
   }
-  get cellIndex() {
-    return this._cell.cellIndex
+  get atomIndex() {
+    return this._atom.atomIndex
   }
   get wordSuggestion() {
     return Utils.didYouMean(
-      this.cell.getWord(),
-      this.cell.getAutoCompleteWords().map(option => option.text)
+      this.atom.getWord(),
+      this.atom.getAutoCompleteWords().map(option => option.text)
     )
   }
 }
@@ -999,7 +999,7 @@ class UnknownParserError extends AbstractParticleError {
   }
   applySuggestion() {
     const suggestion = this.wordSuggestion
-    if (suggestion) this.getParticle().setWord(this.cellIndex, suggestion)
+    if (suggestion) this.getParticle().setWord(this.atomIndex, suggestion)
     return this
   }
 }
@@ -1060,41 +1060,41 @@ class LineAppearsMultipleTimesError extends AbstractParticleError {
     return this.getParticle().destroy()
   }
 }
-class UnknownCellTypeError extends AbstractCellError {
+class UnknownAtomTypeError extends AbstractAtomError {
   get message() {
-    return super.message + ` No cellType "${this.cell.cellTypeId}" found. Language parsers for "${this.getExtension()}" may need to be fixed.`
+    return super.message + ` No atomType "${this.atom.atomTypeId}" found. Language parsers for "${this.getExtension()}" may need to be fixed.`
   }
 }
-class InvalidWordError extends AbstractCellError {
+class InvalidWordError extends AbstractAtomError {
   get message() {
-    return super.message + ` "${this.cell.getWord()}" does not fit in cellType "${this.cell.cellTypeId}".`
+    return super.message + ` "${this.atom.getWord()}" does not fit in atomType "${this.atom.atomTypeId}".`
   }
   get suggestionMessage() {
     const suggestion = this.wordSuggestion
-    if (suggestion) return `Change "${this.cell.getWord()}" to "${suggestion}"`
+    if (suggestion) return `Change "${this.atom.getWord()}" to "${suggestion}"`
     return ""
   }
   applySuggestion() {
     const suggestion = this.wordSuggestion
-    if (suggestion) this.getParticle().setWord(this.cellIndex, suggestion)
+    if (suggestion) this.getParticle().setWord(this.atomIndex, suggestion)
     return this
   }
 }
-class ExtraWordError extends AbstractCellError {
+class ExtraWordError extends AbstractAtomError {
   get message() {
-    return super.message + ` Extra word "${this.cell.getWord()}" in ${this.parserId}.`
+    return super.message + ` Extra word "${this.atom.getWord()}" in ${this.parserId}.`
   }
   get suggestionMessage() {
-    return `Delete word "${this.cell.getWord()}" at cell ${this.cellIndex}`
+    return `Delete word "${this.atom.getWord()}" at atom ${this.atomIndex}`
   }
   applySuggestion() {
-    return this.getParticle().deleteWordAt(this.cellIndex)
+    return this.getParticle().deleteWordAt(this.atomIndex)
   }
 }
-class MissingWordError extends AbstractCellError {
+class MissingWordError extends AbstractAtomError {
   // todo: autocomplete suggestion
   get message() {
-    return super.message + ` Missing word for cell "${this.cell.cellTypeId}".`
+    return super.message + ` Missing word for atom "${this.atom.atomTypeId}".`
   }
   isMissingWordError() {
     return true
@@ -1115,19 +1115,19 @@ class ParsersReservedWordsTestParser extends AbstractParsersWordTestParser {
   }
 }
 // todo: remove in favor of custom word type constructors
-class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
-  _getEnumFromCellTypes(programRootParticle) {
-    const cellTypeIds = this.getWordsFrom(1)
-    const enumGroup = cellTypeIds.join(" ")
+class EnumFromAtomTypesTestParser extends AbstractParsersWordTestParser {
+  _getEnumFromAtomTypes(programRootParticle) {
+    const atomTypeIds = this.getWordsFrom(1)
+    const enumGroup = atomTypeIds.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
     if (!programRootParticle._enumMaps) programRootParticle._enumMaps = {}
     if (programRootParticle._enumMaps[enumGroup]) return programRootParticle._enumMaps[enumGroup]
     const wordIndex = 1
     const map = {}
-    const cellTypeMap = {}
-    cellTypeIds.forEach(typeId => (cellTypeMap[typeId] = true))
+    const atomTypeMap = {}
+    atomTypeIds.forEach(typeId => (atomTypeMap[typeId] = true))
     programRootParticle.allTypedWords
-      .filter(typedWord => cellTypeMap[typedWord.type])
+      .filter(typedWord => atomTypeMap[typedWord.type])
       .forEach(typedWord => {
         map[typedWord.word] = true
       })
@@ -1136,7 +1136,7 @@ class EnumFromCellTypesTestParser extends AbstractParsersWordTestParser {
   }
   // todo: remove
   isValid(str, programRootParticle) {
-    return this._getEnumFromCellTypes(programRootParticle)[str] === true
+    return this._getEnumFromAtomTypes(programRootParticle)[str] === true
   }
 }
 class ParsersEnumTestParticle extends AbstractParsersWordTestParser {
@@ -1149,12 +1149,12 @@ class ParsersEnumTestParticle extends AbstractParsersWordTestParser {
     return this._map
   }
 }
-class cellTypeDefinitionParser extends AbstractExtendibleParticle {
+class atomTypeDefinitionParser extends AbstractExtendibleParticle {
   createParserCombinator() {
     const types = {}
     types[ParsersConstants.regex] = ParsersRegexTestParser
     types[ParsersConstants.reservedWords] = ParsersReservedWordsTestParser
-    types[ParsersConstants.enumFromCellTypes] = EnumFromCellTypesTestParser
+    types[ParsersConstants.enumFromAtomTypes] = EnumFromAtomTypesTestParser
     types[ParsersConstants.enum] = ParsersEnumTestParticle
     types[ParsersConstants.paint] = Particle
     types[ParsersConstants.comment] = Particle
@@ -1169,34 +1169,34 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     return this.getWord(0)
   }
   get idToParticleMap() {
-    return this.parent.cellTypeDefinitions
+    return this.parent.atomTypeDefinitions
   }
   getGetter(wordIndex) {
-    const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
-    return `get ${this.cellTypeId}() {
+    const wordToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
+    return `get ${this.atomTypeId}() {
       return ${wordToNativeJavascriptTypeParser ? wordToNativeJavascriptTypeParser + `(this.getWord(${wordIndex}))` : `this.getWord(${wordIndex})`}
     }`
   }
   getCatchAllGetter(wordIndex) {
-    const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
-    return `get ${this.cellTypeId}() {
+    const wordToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
+    return `get ${this.atomTypeId}() {
       return ${wordToNativeJavascriptTypeParser ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))` : `this.getWordsFrom(${wordIndex})`}
     }`
   }
   // `this.getWordsFrom(${requireds.length + 1})`
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
-  getCellConstructor() {
-    return this.preludeKind || ParsersAnyCell
+  getAtomConstructor() {
+    return this.preludeKind || ParsersAnyAtom
   }
   get preludeKind() {
-    return PreludeKinds[this.getWord(0)] || PreludeKinds[this._getExtendedCellTypeId()]
+    return PreludeKinds[this.getWord(0)] || PreludeKinds[this._getExtendedAtomTypeId()]
   }
   get preludeKindId() {
     if (PreludeKinds[this.getWord(0)]) return this.getWord(0)
-    else if (PreludeKinds[this._getExtendedCellTypeId()]) return this._getExtendedCellTypeId()
-    return PreludeCellTypeIds.anyCell
+    else if (PreludeKinds[this._getExtendedAtomTypeId()]) return this._getExtendedAtomTypeId()
+    return PreludeAtomTypeIds.anyAtom
   }
-  _getExtendedCellTypeId() {
+  _getExtendedAtomTypeId() {
     const arr = this._getAncestorsArray()
     return arr[arr.length - 1].id
   }
@@ -1214,12 +1214,12 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
     options.sort((a, b) => b.length - a.length)
     return options
   }
-  _getEnumFromCellTypeOptions(program) {
-    const particle = this._getParticleFromExtended(ParsersConstants.enumFromCellTypes)
-    return particle ? Object.keys(particle.getParticle(ParsersConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
+  _getEnumFromAtomTypeOptions(program) {
+    const particle = this._getParticleFromExtended(ParsersConstants.enumFromAtomTypes)
+    return particle ? Object.keys(particle.getParticle(ParsersConstants.enumFromAtomTypes)._getEnumFromAtomTypes(program)) : undefined
   }
   _getAutocompleteWordOptions(program) {
-    return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || []
+    return this._getEnumOptions() || this._getEnumFromAtomTypeOptions(program) || []
   }
   get regexString() {
     // todo: enum
@@ -1232,108 +1232,108 @@ class cellTypeDefinitionParser extends AbstractExtendibleParticle {
   isValid(str, programRootParticle) {
     return this._getAllTests().every(particle => particle.isValid(str, programRootParticle))
   }
-  get cellTypeId() {
+  get atomTypeId() {
     return this.getWord(0)
   }
 }
-class AbstractCellParser {
+class AbstractAtomParser {
   constructor(definition) {
     this._definition = definition
   }
-  get catchAllCellTypeId() {
-    return this._definition._getFromExtended(ParsersConstants.catchAllCellType)
+  get catchAllAtomTypeId() {
+    return this._definition._getFromExtended(ParsersConstants.catchAllAtomType)
   }
   // todo: improve layout (use bold?)
   get lineHints() {
-    const catchAllCellTypeId = this.catchAllCellTypeId
+    const catchAllAtomTypeId = this.catchAllAtomTypeId
     const parserId = this._definition.cruxIfAny || this._definition.id // todo: cleanup
-    return `${parserId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
+    return `${parserId}: ${this.getRequiredAtomTypeIds().join(" ")}${catchAllAtomTypeId ? ` ${catchAllAtomTypeId}...` : ""}`
   }
-  getRequiredCellTypeIds() {
-    if (!this._requiredCellTypeIds) {
-      const parameters = this._definition._getFromExtended(ParsersConstants.cells)
-      this._requiredCellTypeIds = parameters ? parameters.split(" ") : []
+  getRequiredAtomTypeIds() {
+    if (!this._requiredAtomTypeIds) {
+      const parameters = this._definition._getFromExtended(ParsersConstants.atoms)
+      this._requiredAtomTypeIds = parameters ? parameters.split(" ") : []
     }
-    return this._requiredCellTypeIds
+    return this._requiredAtomTypeIds
   }
-  _getCellTypeId(cellIndex, requiredCellTypeIds, totalWordCount) {
-    return requiredCellTypeIds[cellIndex]
+  _getAtomTypeId(atomIndex, requiredAtomTypeIds, totalWordCount) {
+    return requiredAtomTypeIds[atomIndex]
   }
-  _isCatchAllCell(cellIndex, numberOfRequiredCells, totalWordCount) {
-    return cellIndex >= numberOfRequiredCells
+  _isCatchAllAtom(atomIndex, numberOfRequiredAtoms, totalWordCount) {
+    return atomIndex >= numberOfRequiredAtoms
   }
-  getCellArray(particle = undefined) {
+  getAtomArray(particle = undefined) {
     const wordCount = particle ? particle.words.length : 0
     const def = this._definition
     const parsersProgram = def.languageDefinitionProgram
-    const requiredCellTypeIds = this.getRequiredCellTypeIds()
-    const numberOfRequiredCells = requiredCellTypeIds.length
-    const actualWordCountOrRequiredCellCount = Math.max(wordCount, numberOfRequiredCells)
-    const cells = []
-    // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
-    for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
-      const isCatchAll = this._isCatchAllCell(cellIndex, numberOfRequiredCells, wordCount)
-      let cellTypeId = isCatchAll ? this.catchAllCellTypeId : this._getCellTypeId(cellIndex, requiredCellTypeIds, wordCount)
-      let cellTypeDefinition = parsersProgram.getCellTypeDefinitionById(cellTypeId)
-      let cellConstructor
-      if (cellTypeDefinition) cellConstructor = cellTypeDefinition.getCellConstructor()
-      else if (cellTypeId) cellConstructor = ParsersUnknownCellTypeCell
+    const requiredAtomTypeIds = this.getRequiredAtomTypeIds()
+    const numberOfRequiredAtoms = requiredAtomTypeIds.length
+    const actualWordCountOrRequiredAtomCount = Math.max(wordCount, numberOfRequiredAtoms)
+    const atoms = []
+    // A for loop instead of map because "numberOfAtomsToFill" can be longer than words.length
+    for (let atomIndex = 0; atomIndex < actualWordCountOrRequiredAtomCount; atomIndex++) {
+      const isCatchAll = this._isCatchAllAtom(atomIndex, numberOfRequiredAtoms, wordCount)
+      let atomTypeId = isCatchAll ? this.catchAllAtomTypeId : this._getAtomTypeId(atomIndex, requiredAtomTypeIds, wordCount)
+      let atomTypeDefinition = parsersProgram.getAtomTypeDefinitionById(atomTypeId)
+      let atomConstructor
+      if (atomTypeDefinition) atomConstructor = atomTypeDefinition.getAtomConstructor()
+      else if (atomTypeId) atomConstructor = ParsersUnknownAtomTypeAtom
       else {
-        cellConstructor = ParsersExtraWordCellTypeCell
-        cellTypeId = PreludeCellTypeIds.extraWordCell
-        cellTypeDefinition = parsersProgram.getCellTypeDefinitionById(cellTypeId)
+        atomConstructor = ParsersExtraWordAtomTypeAtom
+        atomTypeId = PreludeAtomTypeIds.extraWordAtom
+        atomTypeDefinition = parsersProgram.getAtomTypeDefinitionById(atomTypeId)
       }
-      const anyCellConstructor = cellConstructor
-      cells[cellIndex] = new anyCellConstructor(particle, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
+      const anyAtomConstructor = atomConstructor
+      atoms[atomIndex] = new anyAtomConstructor(particle, atomIndex, atomTypeDefinition, atomTypeId, isCatchAll, def)
     }
-    return cells
+    return atoms
   }
 }
-class PrefixCellParser extends AbstractCellParser {}
-class PostfixCellParser extends AbstractCellParser {
-  _isCatchAllCell(cellIndex, numberOfRequiredCells, totalWordCount) {
-    return cellIndex < totalWordCount - numberOfRequiredCells
+class PrefixAtomParser extends AbstractAtomParser {}
+class PostfixAtomParser extends AbstractAtomParser {
+  _isCatchAllAtom(atomIndex, numberOfRequiredAtoms, totalWordCount) {
+    return atomIndex < totalWordCount - numberOfRequiredAtoms
   }
-  _getCellTypeId(cellIndex, requiredCellTypeIds, totalWordCount) {
-    const catchAllWordCount = Math.max(totalWordCount - requiredCellTypeIds.length, 0)
-    return requiredCellTypeIds[cellIndex - catchAllWordCount]
+  _getAtomTypeId(atomIndex, requiredAtomTypeIds, totalWordCount) {
+    const catchAllWordCount = Math.max(totalWordCount - requiredAtomTypeIds.length, 0)
+    return requiredAtomTypeIds[atomIndex - catchAllWordCount]
   }
 }
-class OmnifixCellParser extends AbstractCellParser {
-  getCellArray(particle = undefined) {
-    const cells = []
+class OmnifixAtomParser extends AbstractAtomParser {
+  getAtomArray(particle = undefined) {
+    const atoms = []
     const def = this._definition
     const program = particle ? particle.root : undefined
     const parsersProgram = def.languageDefinitionProgram
     const words = particle ? particle.words : []
-    const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => parsersProgram.getCellTypeDefinitionById(cellTypeId))
-    const catchAllCellTypeId = this.catchAllCellTypeId
-    const catchAllCellTypeDef = catchAllCellTypeId && parsersProgram.getCellTypeDefinitionById(catchAllCellTypeId)
+    const requiredAtomTypeDefs = this.getRequiredAtomTypeIds().map(atomTypeId => parsersProgram.getAtomTypeDefinitionById(atomTypeId))
+    const catchAllAtomTypeId = this.catchAllAtomTypeId
+    const catchAllAtomTypeDef = catchAllAtomTypeId && parsersProgram.getAtomTypeDefinitionById(catchAllAtomTypeId)
     words.forEach((word, wordIndex) => {
-      let cellConstructor
-      for (let index = 0; index < requiredCellTypeDefs.length; index++) {
-        const cellTypeDefinition = requiredCellTypeDefs[index]
-        if (cellTypeDefinition.isValid(word, program)) {
-          // todo: cleanup cellIndex/wordIndex stuff
-          cellConstructor = cellTypeDefinition.getCellConstructor()
-          cells.push(new cellConstructor(particle, wordIndex, cellTypeDefinition, cellTypeDefinition.id, false, def))
-          requiredCellTypeDefs.splice(index, 1)
+      let atomConstructor
+      for (let index = 0; index < requiredAtomTypeDefs.length; index++) {
+        const atomTypeDefinition = requiredAtomTypeDefs[index]
+        if (atomTypeDefinition.isValid(word, program)) {
+          // todo: cleanup atomIndex/wordIndex stuff
+          atomConstructor = atomTypeDefinition.getAtomConstructor()
+          atoms.push(new atomConstructor(particle, wordIndex, atomTypeDefinition, atomTypeDefinition.id, false, def))
+          requiredAtomTypeDefs.splice(index, 1)
           return true
         }
       }
-      if (catchAllCellTypeDef && catchAllCellTypeDef.isValid(word, program)) {
-        cellConstructor = catchAllCellTypeDef.getCellConstructor()
-        cells.push(new cellConstructor(particle, wordIndex, catchAllCellTypeDef, catchAllCellTypeId, true, def))
+      if (catchAllAtomTypeDef && catchAllAtomTypeDef.isValid(word, program)) {
+        atomConstructor = catchAllAtomTypeDef.getAtomConstructor()
+        atoms.push(new atomConstructor(particle, wordIndex, catchAllAtomTypeDef, catchAllAtomTypeId, true, def))
         return true
       }
-      cells.push(new ParsersUnknownCellTypeCell(particle, wordIndex, undefined, undefined, false, def))
+      atoms.push(new ParsersUnknownAtomTypeAtom(particle, wordIndex, undefined, undefined, false, def))
     })
     const wordCount = words.length
-    requiredCellTypeDefs.forEach((cellTypeDef, index) => {
-      let cellConstructor = cellTypeDef.getCellConstructor()
-      cells.push(new cellConstructor(particle, wordCount + index, cellTypeDef, cellTypeDef.id, false, def))
+    requiredAtomTypeDefs.forEach((atomTypeDef, index) => {
+      let atomConstructor = atomTypeDef.getAtomConstructor()
+      atoms.push(new atomConstructor(particle, wordCount + index, atomTypeDef, atomTypeDef.id, false, def))
     })
-    return cells
+    return atoms
   }
 }
 class ParsersExampleParser extends Particle {}
@@ -1342,7 +1342,7 @@ class ParsersCompilerParser extends Particle {
     const types = [
       ParsersConstantsCompiler.stringTemplate,
       ParsersConstantsCompiler.indentCharacter,
-      ParsersConstantsCompiler.catchAllCellDelimiter,
+      ParsersConstantsCompiler.catchAllAtomDelimiter,
       ParsersConstantsCompiler.joinSubparticlesWith,
       ParsersConstantsCompiler.openSubparticles,
       ParsersConstantsCompiler.closeSubparticles
@@ -1390,12 +1390,12 @@ class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
     const types = [
       ParsersConstants.popularity,
       ParsersConstants.inScope,
-      ParsersConstants.cells,
+      ParsersConstants.atoms,
       ParsersConstants.extends,
       ParsersConstants.description,
       ParsersConstants.catchAllParser,
-      ParsersConstants.catchAllCellType,
-      ParsersConstants.cellParser,
+      ParsersConstants.catchAllAtomType,
+      ParsersConstants.atomParser,
       ParsersConstants.extensions,
       ParsersConstants.tags,
       ParsersConstants.crux,
@@ -1495,9 +1495,9 @@ ${properties.join("\n")}
   get regexMatch() {
     return this.get(ParsersConstants.pattern)
   }
-  get firstCellEnumOptions() {
-    const firstCellDef = this._getMyCellTypeDefs()[0]
-    return firstCellDef ? firstCellDef._getEnumOptions() : undefined
+  get firstAtomEnumOptions() {
+    const firstAtomDef = this._getMyAtomTypeDefs()[0]
+    return firstAtomDef ? firstAtomDef._getEnumOptions() : undefined
   }
   get languageDefinitionProgram() {
     return this.root
@@ -1514,23 +1514,23 @@ ${properties.join("\n")}
   get runTimeFirstWordsInScope() {
     return this._getParser().getFirstWordOptions()
   }
-  _getMyCellTypeDefs() {
-    const requiredCells = this.get(ParsersConstants.cells)
-    if (!requiredCells) return []
+  _getMyAtomTypeDefs() {
+    const requiredAtoms = this.get(ParsersConstants.atoms)
+    if (!requiredAtoms) return []
     const parsersProgram = this.languageDefinitionProgram
-    return requiredCells.split(" ").map(cellTypeId => {
-      const cellTypeDef = parsersProgram.getCellTypeDefinitionById(cellTypeId)
-      if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
-      return cellTypeDef
+    return requiredAtoms.split(" ").map(atomTypeId => {
+      const atomTypeDef = parsersProgram.getAtomTypeDefinitionById(atomTypeId)
+      if (!atomTypeDef) throw new Error(`No atomType "${atomTypeId}" found`)
+      return atomTypeDef
     })
   }
-  // todo: what happens when you have a cell getter and constant with same name?
-  get cellGettersAndParserConstants() {
-    // todo: add cellType parsings
+  // todo: what happens when you have a atom getter and constant with same name?
+  get atomGettersAndParserConstants() {
+    // todo: add atomType parsings
     const parsersProgram = this.languageDefinitionProgram
-    const getters = this._getMyCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
-    const catchAllCellTypeId = this.get(ParsersConstants.catchAllCellType)
-    if (catchAllCellTypeId) getters.push(parsersProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
+    const getters = this._getMyAtomTypeDefs().map((atomTypeDef, index) => atomTypeDef.getGetter(index))
+    const catchAllAtomTypeId = this.get(ParsersConstants.catchAllAtomType)
+    if (catchAllAtomTypeId) getters.push(parsersProgram.getAtomTypeDefinitionById(catchAllAtomTypeId).getCatchAllGetter(getters.length))
     // Constants
     Object.values(this._getUniqueConstantParticles(false)).forEach(particle => getters.push(particle.getGetter()))
     return getters.join("\n")
@@ -1551,7 +1551,7 @@ ${properties.join("\n")}
         const def = allProgramParserDefinitionsMap[parserId]
         const regex = def.regexMatch
         const crux = def.cruxIfAny
-        const enumOptions = def.firstCellEnumOptions
+        const enumOptions = def.firstAtomEnumOptions
         if (regex) result.regexTests.push({ regex: regex, parser: def.parserIdFromDefinition })
         else if (crux) result.firstWordMap[crux] = def
         else if (enumOptions) {
@@ -1662,7 +1662,7 @@ ${properties.join("\n")}
     return particleDef.generatedClassName
   }
   get asJavascriptClass() {
-    const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.cellGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
+    const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.atomGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
     const thisClassName = this.generatedClassName
     if (this._amIRoot()) {
       components.push(`static cachedHandParsersProgramRoot = new HandParsersProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
@@ -1690,7 +1690,7 @@ ${properties.join("\n")}
   }
   // todo: improve layout (use bold?)
   get lineHints() {
-    return this.cellParser.lineHints
+    return this.atomParser.lineHints
   }
   isOrExtendsAParserInScope(firstWordsInScope) {
     const chain = this._getParserInheritanceSet()
@@ -1704,34 +1704,34 @@ ${properties.join("\n")}
     if (regexMatch) return `'${regexMatch}'`
     const cruxMatch = this.cruxIfAny
     if (cruxMatch) return `'^ *${Utils.escapeRegExp(cruxMatch)}(?: |$)'`
-    const enumOptions = this.firstCellEnumOptions
+    const enumOptions = this.firstAtomEnumOptions
     if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
   }
-  // todo: refactor. move some parts to cellParser?
+  // todo: refactor. move some parts to atomParser?
   _toSublimeMatchBlock() {
     const defaultPaint = "source"
     const program = this.languageDefinitionProgram
-    const cellParser = this.cellParser
-    const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
-    const catchAllCellTypeId = cellParser.catchAllCellTypeId
-    const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
-    const firstWordPaint = (firstCellTypeDef ? firstCellTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
+    const atomParser = this.atomParser
+    const requiredAtomTypeIds = atomParser.getRequiredAtomTypeIds()
+    const catchAllAtomTypeId = atomParser.catchAllAtomTypeId
+    const firstAtomTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
+    const firstWordPaint = (firstAtomTypeDef ? firstAtomTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
     const topHalf = ` '${this.parserIdFromDefinition}':
   - match: ${this.sublimeMatchLine}
     scope: ${firstWordPaint}`
-    if (catchAllCellTypeId) requiredCellTypeIds.push(catchAllCellTypeId)
-    if (!requiredCellTypeIds.length) return topHalf
-    const captures = requiredCellTypeIds
-      .map((cellTypeId, index) => {
-        const cellTypeDefinition = program.getCellTypeDefinitionById(cellTypeId) // todo: cleanup
-        if (!cellTypeDefinition) throw new Error(`No ${ParsersConstants.cellType} ${cellTypeId} found`) // todo: standardize error/capture error at parsers time
-        return `        ${index + 1}: ${(cellTypeDefinition.paint || defaultPaint) + "." + cellTypeDefinition.cellTypeId}`
+    if (catchAllAtomTypeId) requiredAtomTypeIds.push(catchAllAtomTypeId)
+    if (!requiredAtomTypeIds.length) return topHalf
+    const captures = requiredAtomTypeIds
+      .map((atomTypeId, index) => {
+        const atomTypeDefinition = program.getAtomTypeDefinitionById(atomTypeId) // todo: cleanup
+        if (!atomTypeDefinition) throw new Error(`No ${ParsersConstants.atomType} ${atomTypeId} found`) // todo: standardize error/capture error at parsers time
+        return `        ${index + 1}: ${(atomTypeDefinition.paint || defaultPaint) + "." + atomTypeDefinition.atomTypeId}`
       })
       .join("\n")
-    const cellTypesToRegex = cellTypeIds => cellTypeIds.map(cellTypeId => `({{${cellTypeId}}})?`).join(" ?")
+    const atomTypesToRegex = atomTypeIds => atomTypeIds.map(atomTypeId => `({{${atomTypeId}}})?`).join(" ?")
     return `${topHalf}
     push:
-     - match: ${cellTypesToRegex(requiredCellTypeIds)}
+     - match: ${atomTypesToRegex(requiredAtomTypeIds)}
        captures:
 ${captures}
      - match: $
@@ -1774,14 +1774,14 @@ ${captures}
   }
   _toStumpString() {
     const crux = this.cruxIfAny
-    const cellArray = this.cellParser.getCellArray().filter((item, index) => index) // for now this only works for keyword langs
-    if (!cellArray.length)
-      // todo: remove this! just doing it for now until we refactor getCellArray to handle catchAlls better.
+    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for keyword langs
+    if (!atomArray.length)
+      // todo: remove this! just doing it for now until we refactor getAtomArray to handle catchAlls better.
       return ""
-    const cells = new Particle(cellArray.map((cell, index) => cell._toStumpInput(crux)).join("\n"))
+    const atoms = new Particle(atomArray.map((atom, index) => atom._toStumpInput(crux)).join("\n"))
     return `div
  label ${crux}
-${cells.toString(1)}`
+${atoms.toString(1)}`
   }
   toStumpString() {
     const particleBreakSymbol = "\n"
@@ -1793,9 +1793,9 @@ ${cells.toString(1)}`
   _generateSimulatedLine(seed) {
     // todo: generate simulated data from catch all
     const crux = this.cruxIfAny
-    return this.cellParser
-      .getCellArray()
-      .map((cell, index) => (!index && crux ? crux : cell.synthesizeCell(seed)))
+    return this.atomParser
+      .getAtomArray()
+      .map((atom, index) => (!index && crux ? crux : atom.synthesizeAtom(seed)))
       .join(" ")
   }
   _shouldSynthesize(def, parserChain) {
@@ -1866,14 +1866,14 @@ ${cells.toString(1)}`
     }
     return lines
   }
-  get cellParser() {
-    if (!this._cellParser) {
-      const cellParsingStrategy = this._getFromExtended(ParsersConstants.cellParser)
-      if (cellParsingStrategy === ParsersCellParser.postfix) this._cellParser = new PostfixCellParser(this)
-      else if (cellParsingStrategy === ParsersCellParser.omnifix) this._cellParser = new OmnifixCellParser(this)
-      else this._cellParser = new PrefixCellParser(this)
+  get atomParser() {
+    if (!this._atomParser) {
+      const atomParsingStrategy = this._getFromExtended(ParsersConstants.atomParser)
+      if (atomParsingStrategy === ParsersAtomParser.postfix) this._atomParser = new PostfixAtomParser(this)
+      else if (atomParsingStrategy === ParsersAtomParser.omnifix) this._atomParser = new OmnifixAtomParser(this)
+      else this._atomParser = new PrefixAtomParser(this)
     }
-    return this._cellParser
+    return this._atomParser
   }
 }
 // todo: remove?
@@ -1887,7 +1887,7 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return new Particle.ParserCombinator(UnknownParserParticle, map, [
       { regex: HandParsersProgram.blankLineRegex, parser: Particle },
       { regex: HandParsersProgram.parserFullRegex, parser: parserDefinitionParser },
-      { regex: HandParsersProgram.cellTypeFullRegex, parser: cellTypeDefinitionParser }
+      { regex: HandParsersProgram.atomTypeFullRegex, parser: atomTypeDefinitionParser }
     ])
   }
   // rootParser
@@ -2015,14 +2015,14 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
   toReadMe() {
     const languageName = this.extensionName
     const rootParticleDef = this.rootParserDefinition
-    const cellTypes = this.cellTypeDefinitions
+    const atomTypes = this.atomTypeDefinitions
     const parserLineage = this.parserLineage
     const exampleParticle = rootParticleDef.examples[0]
     return `title2 ${languageName} stats
 
 list
  - ${languageName} has ${parserLineage.topDownArray.length} parsers.
- - ${languageName} has ${Object.keys(cellTypes).length} cell types.
+ - ${languageName} has ${Object.keys(atomTypes).length} atom types.
  - The source code for ${languageName} is ${this.topDownArray.length} lines long.
 `
   }
@@ -2072,17 +2072,17 @@ ${testCode}`
   get targetExtension() {
     return this.rootParserDefinition.get(ParsersConstants.compilesTo)
   }
-  get cellTypeDefinitions() {
-    if (this._cache_cellTypes) return this._cache_cellTypes
+  get atomTypeDefinitions() {
+    if (this._cache_atomTypes) return this._cache_atomTypes
     const types = {}
     // todo: add built in word types?
-    this.getSubparticlesByParser(cellTypeDefinitionParser).forEach(type => (types[type.cellTypeId] = type))
-    this._cache_cellTypes = types
+    this.getSubparticlesByParser(atomTypeDefinitionParser).forEach(type => (types[type.atomTypeId] = type))
+    this._cache_atomTypes = types
     return types
   }
-  getCellTypeDefinitionById(cellTypeId) {
-    // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
-    return this.cellTypeDefinitions[cellTypeId]
+  getAtomTypeDefinitionById(atomTypeId) {
+    // todo: return unknownAtomTypeDefinition? or is that handled somewhere else?
+    return this.atomTypeDefinitions[atomTypeId]
   }
   get parserLineage() {
     const newParticle = new Particle()
@@ -2195,9 +2195,9 @@ ${exportScript}
 `
   }
   toSublimeSyntaxFile() {
-    const cellTypeDefs = this.cellTypeDefinitions
-    const variables = Object.keys(cellTypeDefs)
-      .map(name => ` ${name}: '${cellTypeDefs[name].regexString}'`)
+    const atomTypeDefs = this.atomTypeDefinitions
+    const variables = Object.keys(atomTypeDefs)
+      .map(name => ` ${name}: '${atomTypeDefs[name].regexString}'`)
       .join("\n")
     const defs = this.validConcreteAndAbstractParserDefinitions.filter(kw => !kw._isAbstract())
     const parserContexts = defs.map(def => def._toSublimeMatchBlock()).join("\n\n")
@@ -2219,28 +2219,28 @@ ${parserContexts}`
   }
 }
 HandParsersProgram.makeParserId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.parserSuffixRegex, "") + ParsersConstants.parserSuffix
-HandParsersProgram.makeCellTypeId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.cellTypeSuffixRegex, "") + ParsersConstants.cellTypeSuffix
+HandParsersProgram.makeAtomTypeId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.atomTypeSuffixRegex, "") + ParsersConstants.atomTypeSuffix
 HandParsersProgram.parserSuffixRegex = new RegExp(ParsersConstants.parserSuffix + "$")
 HandParsersProgram.parserFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.parserSuffix + "$")
 HandParsersProgram.blankLineRegex = new RegExp("^$")
-HandParsersProgram.cellTypeSuffixRegex = new RegExp(ParsersConstants.cellTypeSuffix + "$")
-HandParsersProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.cellTypeSuffix + "$")
+HandParsersProgram.atomTypeSuffixRegex = new RegExp(ParsersConstants.atomTypeSuffix + "$")
+HandParsersProgram.atomTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.atomTypeSuffix + "$")
 HandParsersProgram._languages = {}
 HandParsersProgram._parsers = {}
 const PreludeKinds = {}
-PreludeKinds[PreludeCellTypeIds.anyCell] = ParsersAnyCell
-PreludeKinds[PreludeCellTypeIds.keywordCell] = ParsersKeywordCell
-PreludeKinds[PreludeCellTypeIds.floatCell] = ParsersFloatCell
-PreludeKinds[PreludeCellTypeIds.numberCell] = ParsersFloatCell
-PreludeKinds[PreludeCellTypeIds.bitCell] = ParsersBitCell
-PreludeKinds[PreludeCellTypeIds.boolCell] = ParsersBoolCell
-PreludeKinds[PreludeCellTypeIds.intCell] = ParsersIntCell
+PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
+PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
+PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
+PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
+PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
+PreludeKinds[PreludeAtomTypeIds.boolAtom] = ParsersBoolAtom
+PreludeKinds[PreludeAtomTypeIds.intAtom] = ParsersIntAtom
 class UnknownParsersProgram extends Particle {
   _inferRootParticleForAPrefixLanguage(parsersName) {
     parsersName = HandParsersProgram.makeParserId(parsersName)
     const rootParticle = new Particle(`${parsersName}
  ${ParsersConstants.root}`)
-    // note: right now we assume 1 global cellTypeMap and parserMap per parsers. But we may have scopes in the future?
+    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
     const rootParticleNames = this.getFirstWords()
       .filter(identity => identity)
       .map(word => HandParsersProgram.makeParserId(word))
@@ -2270,45 +2270,45 @@ class UnknownParsersProgram extends Particle {
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
   }
-  _inferParserDef(firstWord, globalCellTypeMap, subparticleFirstWords, instances) {
+  _inferParserDef(firstWord, globalAtomTypeMap, subparticleFirstWords, instances) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstWord)
     const particleDefParticle = new Particle(parserId).particleAt(0)
     const subparticleParserIds = subparticleFirstWords.map(word => HandParsersProgram.makeParserId(word))
     if (subparticleParserIds.length) particleDefParticle.touchParticle(ParsersConstants.inScope).setWordsFrom(1, subparticleParserIds)
-    const cellsForAllInstances = instances
+    const atomsForAllInstances = instances
       .map(line => line.content)
       .filter(identity => identity)
       .map(line => line.split(edgeSymbol))
-    const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
-    const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
-    const minCellsOnLine = Math.min(...Array.from(instanceCellCounts))
-    let catchAllCellType
-    let cellTypeIds = []
-    for (let cellIndex = 0; cellIndex < maxCellsOnLine; cellIndex++) {
-      const cellType = this._getBestCellType(
+    const instanceAtomCounts = new Set(atomsForAllInstances.map(atoms => atoms.length))
+    const maxAtomsOnLine = Math.max(...Array.from(instanceAtomCounts))
+    const minAtomsOnLine = Math.min(...Array.from(instanceAtomCounts))
+    let catchAllAtomType
+    let atomTypeIds = []
+    for (let atomIndex = 0; atomIndex < maxAtomsOnLine; atomIndex++) {
+      const atomType = this._getBestAtomType(
         firstWord,
         instances.length,
-        maxCellsOnLine,
-        cellsForAllInstances.map(cells => cells[cellIndex])
+        maxAtomsOnLine,
+        atomsForAllInstances.map(atoms => atoms[atomIndex])
       )
-      if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
-      cellTypeIds.push(cellType.cellTypeId)
+      if (!globalAtomTypeMap.has(atomType.atomTypeId)) globalAtomTypeMap.set(atomType.atomTypeId, atomType.atomTypeDefinition)
+      atomTypeIds.push(atomType.atomTypeId)
     }
-    if (maxCellsOnLine > minCellsOnLine) {
+    if (maxAtomsOnLine > minAtomsOnLine) {
       //columns = columns.slice(0, min)
-      catchAllCellType = cellTypeIds.pop()
-      while (cellTypeIds[cellTypeIds.length - 1] === catchAllCellType) {
-        cellTypeIds.pop()
+      catchAllAtomType = atomTypeIds.pop()
+      while (atomTypeIds[atomTypeIds.length - 1] === catchAllAtomType) {
+        atomTypeIds.pop()
       }
     }
     const needsCruxProperty = !firstWord.endsWith(UnknownParsersProgram._subparticleSuffix + ParsersConstants.parserSuffix) // todo: cleanup
     if (needsCruxProperty) particleDefParticle.set(ParsersConstants.crux, firstWord)
-    if (catchAllCellType) particleDefParticle.set(ParsersConstants.catchAllCellType, catchAllCellType)
-    const cellLine = cellTypeIds.slice()
-    cellLine.unshift(PreludeCellTypeIds.keywordCell)
-    if (cellLine.length > 0) particleDefParticle.set(ParsersConstants.cells, cellLine.join(edgeSymbol))
-    //if (!catchAllCellType && cellTypeIds.length === 1) particleDefParticle.set(ParsersConstants.cells, cellTypeIds[0])
+    if (catchAllAtomType) particleDefParticle.set(ParsersConstants.catchAllAtomType, catchAllAtomType)
+    const atomLine = atomTypeIds.slice()
+    atomLine.unshift(PreludeAtomTypeIds.keywordAtom)
+    if (atomLine.length > 0) particleDefParticle.set(ParsersConstants.atoms, atomLine.join(edgeSymbol))
+    //if (!catchAllAtomType && atomTypeIds.length === 1) particleDefParticle.set(ParsersConstants.atoms, atomTypeIds[0])
     // Todo: add conditional frequencies
     return particleDefParticle.parent.toString()
   }
@@ -2316,7 +2316,7 @@ class UnknownParsersProgram extends Particle {
   //     parsersName = HandParsersProgram.makeParserId(parsersName)
   //    const rootParticle = new Particle(`${parsersName}
   // ${ParsersConstants.root}`)
-  //    // note: right now we assume 1 global cellTypeMap and parserMap per parsers. But we may have scopes in the future?
+  //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
   //    const rootParticleNames = this.getFirstWords().map(word => HandParsersProgram.makeParserId(word))
   //    rootParticle
   //      .particleAt(0)
@@ -2328,15 +2328,15 @@ class UnknownParsersProgram extends Particle {
     const clone = this.clone()
     this._renameIntegerKeywords(clone)
     const { keywordsToChildKeywords, keywordsToParticleInstances } = this._getKeywordMaps(clone)
-    const globalCellTypeMap = new Map()
-    globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
+    const globalAtomTypeMap = new Map()
+    globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
     const parserDefs = Object.keys(keywordsToChildKeywords)
       .filter(identity => identity)
-      .map(firstWord => this._inferParserDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToParticleInstances[firstWord]))
-    const cellTypeDefs = []
-    globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
+      .map(firstWord => this._inferParserDef(firstWord, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToParticleInstances[firstWord]))
+    const atomTypeDefs = []
+    globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))
     const particleBreakSymbol = this.particleBreakSymbol
-    return this._formatCode([this._inferRootParticleForAPrefixLanguage(parsersName).toString(), cellTypeDefs.join(particleBreakSymbol), parserDefs.join(particleBreakSymbol)].filter(identity => identity).join("\n"))
+    return this._formatCode([this._inferRootParticleForAPrefixLanguage(parsersName).toString(), atomTypeDefs.join(particleBreakSymbol), parserDefs.join(particleBreakSymbol)].filter(identity => identity).join("\n"))
   }
   _formatCode(code) {
     // todo: make this run in browser too
@@ -2346,7 +2346,7 @@ class UnknownParsersProgram extends Particle {
     const program = new rootParser(code)
     return program.format().toString()
   }
-  _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {
+  _getBestAtomType(firstWord, instanceCount, maxAtomsOnLine, allValues) {
     const asSet = new Set(allValues)
     const edgeSymbol = this.edgeSymbol
     const values = Array.from(asSet).filter(identity => identity)
@@ -2356,7 +2356,7 @@ class UnknownParsersProgram extends Particle {
       }
       return true
     }
-    if (every(str => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
+    if (every(str => str === "0" || str === "1")) return { atomTypeId: PreludeAtomTypeIds.bitAtom }
     if (
       every(str => {
         const num = parseInt(str)
@@ -2364,22 +2364,22 @@ class UnknownParsersProgram extends Particle {
         return num.toString() === str
       })
     ) {
-      return { cellTypeId: PreludeCellTypeIds.intCell }
+      return { atomTypeId: PreludeAtomTypeIds.intAtom }
     }
-    if (every(str => str.match(/^-?\d*.?\d+$/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
+    if (every(str => str.match(/^-?\d*.?\d+$/))) return { atomTypeId: PreludeAtomTypeIds.floatAtom }
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (every(str => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
+    if (every(str => bools.has(str.toLowerCase()))) return { atomTypeId: PreludeAtomTypeIds.boolAtom }
     // todo: cleanup
     const enumLimit = 30
-    if (instanceCount > 1 && maxCellsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
+    if (instanceCount > 1 && maxAtomsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
-        cellTypeId: HandParsersProgram.makeCellTypeId(firstWord),
-        cellTypeDefinition: `${HandParsersProgram.makeCellTypeId(firstWord)}
+        atomTypeId: HandParsersProgram.makeAtomTypeId(firstWord),
+        atomTypeDefinition: `${HandParsersProgram.makeAtomTypeId(firstWord)}
  enum ${values.join(edgeSymbol)}`
       }
-    return { cellTypeId: PreludeCellTypeIds.anyCell }
+    return { atomTypeId: PreludeAtomTypeIds.anyAtom }
   }
 }
 UnknownParsersProgram._subparticleSuffix = "Subparticle"
 
-module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
+module.exports = { ParsersConstants, PreludeAtomTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }

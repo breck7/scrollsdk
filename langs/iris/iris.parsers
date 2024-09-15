@@ -1,26 +1,26 @@
-// Cell Parsers
-anyCell
-floatCell
+// Atom Parsers
+anyAtom
+floatAtom
  paint constant.numeric.float
-intCell
-keywordCell
-commentKeywordCell
- extends keywordCell
+intAtom
+keywordAtom
+commentKeywordAtom
+ extends keywordAtom
  paint comment
  enum comment
-headerCell
+headerAtom
  paint string
-commentCell
+commentAtom
  paint comment
-sepalLengthCell
- extends floatCell
-sepalWidthCell
- extends floatCell
-petalLengthCell
- extends floatCell
-petalWidthCell
- extends floatCell
-speciesCell
+sepalLengthAtom
+ extends floatAtom
+sepalWidthAtom
+ extends floatAtom
+petalLengthAtom
+ extends floatAtom
+petalWidthAtom
+ extends floatAtom
+speciesAtom
  enum virginica versicolor setosa
  paint constant.language
 
@@ -31,10 +31,10 @@ irisParser
  inScope commentParser headerParser
  catchAllParser rowParser
 commentParser
- catchAllCellType commentCell
- cells commentKeywordCell
+ catchAllAtomType commentAtom
+ atoms commentKeywordAtom
 headerParser
  // todo get this working? should we do a catchAllParserStack?
- catchAllCellType headerCell
+ catchAllAtomType headerAtom
 rowParser
- cells sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell
+ atoms sepalLengthAtom sepalWidthAtom petalLengthAtom petalWidthAtom speciesAtom

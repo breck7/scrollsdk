@@ -3116,7 +3116,7 @@ testParticles.typeTests = equal => {
   const a = new Particle("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.lineCellTypes, "undefinedCellType") // todo: make this a constant
+  equal(a.lineAtomTypes, "undefinedAtomType") // todo: make this a constant
 }
 testParticles.setTests = equal => {
   let base = new Particle(`foo bar`).particleAt(0)

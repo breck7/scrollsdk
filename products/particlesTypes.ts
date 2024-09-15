@@ -22,7 +22,7 @@ namespace particlesTypes {
     getExtension(): fileExtension
     getParticle(): particle
     getErrorTypeName(): string
-    getCellIndex(): positiveInt
+    getAtomIndex(): positiveInt
     hasSuggestion(): boolean
     getSuggestionMessage(): string
     applySuggestion(): void
@@ -40,7 +40,7 @@ namespace particlesTypes {
   }
 
   export interface SerializedParticle {
-    cells?: string[]
+    atoms?: string[]
     subparticles?: SerializedParticle[]
   }
   export declare type serializedParticle = string
@@ -100,7 +100,7 @@ namespace particlesTypes {
   export declare type idAccessorFunction = (particle: particle) => id
 
   export declare type parserId = string // todo: add character restrictions.
-  export declare type cellTypeId = string // todo: add character restrictions.
+  export declare type atomTypeId = string // todo: add character restrictions.
 
   export declare type semanticVersion = string
 

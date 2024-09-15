@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameAtom
  paint keyword
 fruitParser
  description A useless language to test scoped parsers.
@@ -21,7 +21,7 @@ fruitParser
    banana
 abstractFruitParser
  cruxFromId
- cells fruitNameCell
+ atoms fruitNameAtom
 appleParser
  extends abstractFruitParser
  inScope appleParser
@@ -36,7 +36,7 @@ errorParser
   }
 
   class abstractFruitParser extends ParserBackedParticle {
-    get fruitNameCell() {
+    get fruitNameAtom() {
       return this.getWord(0)
     }
   }

@@ -109,7 +109,7 @@ testParticles.codeMirrorTest = equal => {
 testParticles.iris = equal => {
   const irisParser = new HandParsersProgram(irisParsers).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
-  const codeWithMissingCell = `6.1 3 4.9  virginica`
+  const codeWithMissingAtom = `6.1 3 4.9  virginica`
   // Act
   const tokenLines = new MockCodeMirror(
     () =>
@@ -128,9 +128,9 @@ testParticles.iris = equal => {
       new ParsersCodeMirrorMode(
         "irisParser",
         () => irisParser,
-        () => codeWithMissingCell
+        () => codeWithMissingAtom
       )
-  ).getTokenLines(codeWithMissingCell)
+  ).getTokenLines(codeWithMissingAtom)
   // Assert
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }

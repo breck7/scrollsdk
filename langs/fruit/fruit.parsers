@@ -1,4 +1,4 @@
-fruitNameCell
+fruitNameAtom
  paint keyword
 fruitParser
  description A useless language to test scoped parsers.
@@ -10,7 +10,7 @@ fruitParser
    banana
 abstractFruitParser
  cruxFromId
- cells fruitNameCell
+ atoms fruitNameAtom
 appleParser
  extends abstractFruitParser
  inScope appleParser

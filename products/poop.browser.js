@@ -25,25 +25,25 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
-dateIntCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+dateIntAtom
  paint constant.numeric.integer
-monthIntCell
- extends dateIntCell
-intCell
+monthIntAtom
+ extends dateIntAtom
+intAtom
  regex \\d+
-yearIntCell
- extends dateIntCell
-dayIntCell
- extends dateIntCell
-timeIntCell
+yearIntAtom
+ extends dateIntAtom
+dayIntAtom
+ extends dateIntAtom
+timeIntAtom
  paint constant.numeric.integer
- extends intCell
-anyCell
-symbolCell
-memoryDescriptionCell
+ extends intAtom
+anyAtom
+symbolAtom
+memoryDescriptionAtom
  paint string
-eventTypeCell
+eventTypeAtom
  enum 💩 ✨ 🍼 😴 😀 ❤️
 
 // Line parsers
@@ -75,9 +75,9 @@ poopParser
   ✨ 6
   💩 630
 abstractEventParser
- cellParser omnifix
- cells eventTypeCell
- catchAllCellType timeIntCell
+ atomParser omnifix
+ atoms eventTypeAtom
+ catchAllAtomType timeIntAtom
  javascript
   getTime() {
    const time = this.getLine().match(/(\\d+)/)
@@ -122,8 +122,8 @@ awakeParser
 memoryParser
  crux ❤️
  pattern ❤️
- cells eventTypeCell
- catchAllCellType memoryDescriptionCell
+ atoms eventTypeAtom
+ catchAllAtomType memoryDescriptionAtom
  description Special memory.
  extends abstractEventParser
  string eventType memory
@@ -134,7 +134,7 @@ memoryParser
 dayParser
  crux 🌄
  description We survived another day!
- cells symbolCell monthIntCell dayIntCell yearIntCell
+ atoms symbolAtom monthIntAtom dayIntAtom yearIntAtom
  javascript
   getDay() {
    return Utils.removeNonAscii(this.getLine())
@@ -148,10 +148,10 @@ dayParser
   }
 
   class abstractEventParser extends ParserBackedParticle {
-    get eventTypeCell() {
+    get eventTypeAtom() {
       return this.getWord(0)
     }
-    get timeIntCell() {
+    get timeIntAtom() {
       return this.getWordsFrom(1).map(val => parseInt(val))
     }
     getTime() {
@@ -197,10 +197,10 @@ dayParser
   }
 
   class memoryParser extends abstractEventParser {
-    get eventTypeCell() {
+    get eventTypeAtom() {
       return this.getWord(0)
     }
-    get memoryDescriptionCell() {
+    get memoryDescriptionAtom() {
       return this.getWordsFrom(1)
     }
     get eventType() {
@@ -212,16 +212,16 @@ dayParser
   }
 
   class dayParser extends ParserBackedParticle {
-    get symbolCell() {
+    get symbolAtom() {
       return this.getWord(0)
     }
-    get monthIntCell() {
+    get monthIntAtom() {
       return this.getWord(1)
     }
-    get dayIntCell() {
+    get dayIntAtom() {
       return this.getWord(2)
     }
-    get yearIntCell() {
+    get yearIntAtom() {
       return this.getWord(3)
     }
     getDay() {

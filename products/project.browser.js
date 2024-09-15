@@ -68,13 +68,13 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
-anyCell
-filepathCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+anyAtom
+filepathAtom
  paint string
-termCell
+termAtom
  paint variable.parameter
-fileConstantCell
+fileConstantAtom
  paint keyword.control
 
 // Line Parsers
@@ -150,8 +150,8 @@ projectParser
  inScope fileParser
  catchAllParser errorParser
 abstractTermParser
- catchAllCellType filepathCell
- cells termCell
+ catchAllAtomType filepathAtom
+ atoms termAtom
 absoluteParser
  extends abstractTermParser
  crux absolute
@@ -164,17 +164,17 @@ relativeParser
 errorParser
  baseParser errorParser
 fileParser
- catchAllCellType filepathCell
+ catchAllAtomType filepathAtom
  inScope externalParser absoluteParser relativeParser
  javascript
   getFilePath() {
-   return this.filepathCell.join(" ")
+   return this.filepathAtom.join(" ")
   }
   _getDependencies() {
    return this.getSubparticles()
     .map(subparticle => {
      const firstWord = subparticle.firstWord
-     const subparticleFilePath = subparticle.filepathCell.join(" ")
+     const subparticleFilePath = subparticle.filepathAtom.join(" ")
      if (firstWord === "external") return ""
      if (firstWord === "absolute") return subparticleFilePath
      const link = subparticleFilePath
@@ -187,7 +187,7 @@ fileParser
   getMissingDependencies(includedMap) {
    return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
- cells fileConstantCell
+ atoms fileConstantAtom
  crux file`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
@@ -196,10 +196,10 @@ fileParser
   }
 
   class abstractTermParser extends ParserBackedParticle {
-    get termCell() {
+    get termAtom() {
       return this.getWord(0)
     }
-    get filepathCell() {
+    get filepathAtom() {
       return this.getWordsFrom(1)
     }
   }
@@ -220,20 +220,20 @@ fileParser
     createParserCombinator() {
       return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
-    get fileConstantCell() {
+    get fileConstantAtom() {
       return this.getWord(0)
     }
-    get filepathCell() {
+    get filepathAtom() {
       return this.getWordsFrom(1)
     }
     getFilePath() {
-      return this.filepathCell.join(" ")
+      return this.filepathAtom.join(" ")
     }
     _getDependencies() {
       return this.getSubparticles()
         .map(subparticle => {
           const firstWord = subparticle.firstWord
-          const subparticleFilePath = subparticle.filepathCell.join(" ")
+          const subparticleFilePath = subparticle.filepathAtom.join(" ")
           if (firstWord === "external") return ""
           if (firstWord === "absolute") return subparticleFilePath
           const link = subparticleFilePath

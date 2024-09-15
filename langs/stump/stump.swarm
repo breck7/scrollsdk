@@ -79,8 +79,8 @@ test syntax
    div
     bern
      Hello world
- toCellTypeParticles
+ toAtomTypeParticles
   assertParagraphIs
-   htmlTagNameCell
-    bernKeywordCell
-     anyHtmlContentCell anyHtmlContentCell
+   htmlTagNameAtom
+    bernKeywordAtom
+     anyHtmlContentAtom anyHtmlContentAtom

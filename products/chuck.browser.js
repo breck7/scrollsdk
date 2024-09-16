@@ -45,10 +45,10 @@ onlyNumbersParser
 
   class abstractOperatorParser extends ParserBackedParticle {
     get operatorAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get floatAtom() {
-      return this.getWordsFrom(1).map(val => parseFloat(val))
+      return this.getAtomsFrom(1).map(val => parseFloat(val))
     }
   }
 
@@ -60,7 +60,7 @@ onlyNumbersParser
 
   class onlyNumbersParser extends ParserBackedParticle {
     get floatAtom() {
-      return this.getWordsFrom(0).map(val => parseFloat(val))
+      return this.getAtomsFrom(0).map(val => parseFloat(val))
     }
   }
 

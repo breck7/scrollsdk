@@ -264,7 +264,7 @@ testParticles.atomTypeParticles = equal => {
 opSymbolAtom intAtom intAtom intAtom`,
     "word types should match"
   )
-  equal(someJibberishProgram.findAllWordsWithAtomType("intAtom").length, 3)
+  equal(someJibberishProgram.findAllAtomsWithAtomType("intAtom").length, 3)
 
   // Act
   const parsers = someJibberishProgram.asAtomTypeParticlesWithParserIds
@@ -429,7 +429,7 @@ com
   equal(program.execute().join(" "), "5 60")
 }
 
-testParticles.extraWord = equal => {
+testParticles.extraAtom = equal => {
   // Arrange
   const program = makeParsersProgram(`foobarParser
  root foo2`)
@@ -439,11 +439,11 @@ testParticles.extraWord = equal => {
   equal(
     program.toAtomTypeParticles(),
     `parserIdAtom
- propertyKeywordAtom extraWordAtom`
+ propertyKeywordAtom extraAtomAtom`
   )
 }
 
-testParticles.autocompleteAdditionalWords = equal => {
+testParticles.autocompleteAdditionalAtoms = equal => {
   // Arrange
   const program = makeParsersProgram(`fooAtom
  paint comme`)
@@ -597,7 +597,7 @@ testParticles.rootCatchAllParser = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.toAtomTypeParticles(), "extraWordAtom", "one word")
+  equal(program.toAtomTypeParticles(), "extraAtomAtom", "one word")
 
   // Arrange
   const abcLangWithErrors = new HandParsersProgram(`abcParser
@@ -669,7 +669,7 @@ foobarAtom
 
   // Assert
   anyProgram.findAllParticlesWithParser("regexParser").forEach((particle: any) => {
-    particle.setWord(0, "regexString")
+    particle.setAtom(0, "regexString")
   })
   equal(
     anyProgram.toString(),
@@ -727,7 +727,7 @@ addParser
 keywordAtom
 intAtom`
 )
-Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 atom 2. "B" does not fit in atomType "intAtom".`))
+Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidAtom at line 9 atom 2. "B" does not fit in atomType "intAtom".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 

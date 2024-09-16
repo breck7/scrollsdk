@@ -347,7 +347,7 @@ domains
   // Assert
   equal(particle8.topDownArray.length, 20)
   equal(particle8.numberOfLines, 20)
-  equal(particle8.numberOfWords, 30)
+  equal(particle8.numberOfAtoms, 30)
   equal(particle8.getParticle("domains test.test.com pages home settings data title").content, "Hello, World", "Multiline creation should be okay.")
   // Arrange
   const emptyArray = { post: { kind: {}, age: 100 } }
@@ -361,7 +361,7 @@ domains
   // Arrange
   const particle = new Particle(" ").particleAt(0)
   // Act/Assert
-  equal(particle.firstWord, "")
+  equal(particle.firstAtom, "")
   equal(particle.content, "")
   // Arrange
   const spaceChar = " "
@@ -437,13 +437,13 @@ testParticles.getParticlesByRegex = equal => {
   // AAA
   equal(new Particle("hello world\nhelmet\nthe").getParticlesByRegex(/^he/).length, 2)
 }
-testParticles.getWord = equal => {
+testParticles.getAtom = equal => {
   // Arrange
   const particle = new Particle("a b c")
   const aParticle = particle.getParticle("a")
   // Act/Assert
-  equal(aParticle.getWord(1), "b")
-  equal(aParticle.getWord(-1), "c")
+  equal(aParticle.getAtom(1), "b")
+  equal(aParticle.getAtom(-1), "c")
 }
 testParticles.getOneOf = equal => {
   // Arrange
@@ -477,15 +477,15 @@ testParticles.setPropertyIfMissing = equal => {
   equal(particle.get("one"), "2")
   equal(particle.get("two"), "a")
 }
-testParticles.setWords = equal => {
+testParticles.setAtoms = equal => {
   // Arrange
   const particle = new Particle("a b c")
   const aParticle = particle.getParticle("a")
   // Act/Assert
-  equal(aParticle.appendWord("d").asString, "a b c d")
-  equal(aParticle.setWords(["f", "g"]).asString, "f g")
-  equal(aParticle.setWordsFrom(1, ["h", "i"]).asString, "f h i")
-  equal(aParticle.deleteWordAt(2).asString, "f h")
+  equal(aParticle.appendAtom("d").asString, "a b c d")
+  equal(aParticle.setAtoms(["f", "g"]).asString, "f g")
+  equal(aParticle.setAtomsFrom(1, ["h", "i"]).asString, "f h i")
+  equal(aParticle.deleteAtomAt(2).asString, "f h")
 }
 testParticles.at = equal => {
   // Arrange
@@ -497,14 +497,14 @@ testParticles.at = equal => {
   equal(value.particleAt(3), undefined)
   equal(value.particleAt(-1).content, "friend")
 }
-testParticles.getWordBoundaryCharIndices = equal => {
+testParticles.getAtomBoundaryCharIndices = equal => {
   // Arrange
   const particle = new Particle(`
 a
 web 25 zzzz OK
  notes No notes`)
   // Act
-  const boundaries = particle.getAllWordBoundaryCoordinates()
+  const boundaries = particle.getAllAtomBoundaryCoordinates()
   // Assert
   equal(boundaries.length, 9)
 }
@@ -523,21 +523,21 @@ testParticles.fill = equal => {
     // Act/Assert
     equal(particle.length, filledParticle.length)
     equal(particle.numberOfLines, filledParticle.numberOfLines)
-    equal(particle.numberOfWords, filledParticle.numberOfWords)
+    equal(particle.numberOfAtoms, filledParticle.numberOfAtoms)
   })
 }
-testParticles.getWordProperties = equal => {
+testParticles.getAtomProperties = equal => {
   // Arrange
   const particle = new Particle(`
 a
 web 25 zzzz OK
  notes No notes`)
   // Act/Assert
-  const props = particle.particleAtLine(3).getWordProperties(2)
+  const props = particle.particleAtLine(3).getAtomProperties(2)
   equal(props.startCharIndex, 10)
   equal(props.endCharIndex, 15)
 }
-testParticles.getWordIndexAtCharacterIndex = equal => {
+testParticles.getAtomIndexAtCharacterIndex = equal => {
   // Arrange
   const particle = new Particle(`
 a
@@ -552,7 +552,7 @@ web 25 zzzz OK
   tests.split("\n").forEach((testLine, lineIndex) => {
     const particle = lineParticles[lineIndex]
     testLine.split("").forEach((char, charIndex) => {
-      if (char !== " ") equal(particle.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
+      if (char !== " ") equal(particle.getAtomIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
     })
   })
   // Arrange
@@ -561,7 +561,7 @@ web 25 zzzz OK
   c
    d`)
   // Act/Assert
-  equal(nested.getParticle("a b").getWordIndexAtCharacterIndex(0), -1)
+  equal(nested.getParticle("a b").getAtomIndexAtCharacterIndex(0), -1)
 }
 testParticles.clone = equal => {
   // Arrange/Act
@@ -696,7 +696,7 @@ other`
   const particle6 = new Particle(blankTest)
   // Act
   particle6.forEach(particle => {
-    if (!particle.firstWord.startsWith("p")) return true
+    if (!particle.firstAtom.startsWith("p")) return true
     particle.setContent("President")
     particle.delete("class")
   })
@@ -801,7 +801,7 @@ testParticles.forEach = equal => {
   var result = ""
   // Act
   value.forEach(function (particle) {
-    const property = particle.firstWord
+    const property = particle.firstAtom
     const v = particle.content
     result += property.toUpperCase()
     result += v.toUpperCase()
@@ -815,9 +815,9 @@ testParticles.forEach = equal => {
   const value2 = new Particle("hello world\nhi mom")
   // Act
   value2
-    .filter(particle => particle.firstWord !== "hello")
+    .filter(particle => particle.firstAtom !== "hello")
     .forEach(particle => {
-      const property = particle.firstWord
+      const property = particle.firstAtom
       const value = particle.content
       count++
     })
@@ -836,7 +836,7 @@ testParticles.forEach = equal => {
 testParticles.every = equal => {
   // Arrange/Act/Assert
   equal(
-    new Particle(`a 2\nb 2\nc 2`).every(particle => particle.getWord(1) === "2"),
+    new Particle(`a 2\nb 2\nc 2`).every(particle => particle.getAtom(1) === "2"),
     true
   )
 }
@@ -893,15 +893,15 @@ testParticles.firstProperty = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
-  equal(value.particleAt(0).firstWord, "hello")
+  equal(value.particleAt(0).firstAtom, "hello")
 }
 testParticles.hasDuplicates = equal => {
   // Arrange/Act/Assert
-  equal(new Particle(testStrings.sortByMultiple).hasDuplicateFirstWords(), true)
-  equal(new Particle().hasDuplicateFirstWords(), false, "empty")
-  equal(new Particle("a\na").hasDuplicateFirstWords(), true)
-  equal(new Particle("a\n a\n b").particleAt(0).hasDuplicateFirstWords(), false)
-  equal(new Particle("a\n b\n b").particleAt(0).hasDuplicateFirstWords(), true)
+  equal(new Particle(testStrings.sortByMultiple).hasDuplicateFirstAtoms(), true)
+  equal(new Particle().hasDuplicateFirstAtoms(), false, "empty")
+  equal(new Particle("a\na").hasDuplicateFirstAtoms(), true)
+  equal(new Particle("a\n a\n b").particleAt(0).hasDuplicateFirstAtoms(), false)
+  equal(new Particle("a\n b\n b").particleAt(0).hasDuplicateFirstAtoms(), true)
 }
 testParticles.toYaml = equal => {
   // Arrange/Act/Assert
@@ -1464,7 +1464,7 @@ testParticles.simpleParticleLanguage = equal => {
     }
     // Look! You created a declarative file format!
     getNumbers() {
-      return this.getWordsFrom(1).map(word => parseFloat(word))
+      return this.getAtomsFrom(1).map(word => parseFloat(word))
     }
     // Look! You created a compiler!
     compile() {
@@ -1506,19 +1506,19 @@ testParticles.simpleParticleLanguage = equal => {
   equal(program.getSubparticlesByParser(SubstractionParticleParser).length, 1)
   equal(program.getParticleByParser(SubstractionParticleParser) instanceof SubstractionParticleParser, true)
 }
-testParticles.getFirstWordPath = equal => {
+testParticles.getFirstAtomPath = equal => {
   // Arrange
   const particle = new Particle(testStrings.every)
   const parent = particle.getParticle("domains test.test.com pages home settings")
   const subparticle = particle.getParticle("domains test.test.com pages home settings data")
   const simple = new Particle("foo bar")
   // Assert
-  equal(subparticle.getFirstWordPath(), "domains test.test.com pages home settings data")
+  equal(subparticle.getFirstAtomPath(), "domains test.test.com pages home settings data")
   equal(subparticle.parent, parent)
   equal(subparticle.root, particle)
   equal(subparticle.getStack().length, 6)
   equal(simple.getParticle("foo").getStack().length, 1)
-  equal(subparticle.getFirstWordPathRelativeTo(parent), "data")
+  equal(subparticle.getFirstAtomPathRelativeTo(parent), "data")
 }
 testParticles.getPathVector = equal => {
   // Arrange
@@ -1533,7 +1533,7 @@ testParticles.getPathVector = equal => {
   equal(particle.particleAt(parent.getPathVector()), parent)
   equal(particle.particleAt(subparticle.getPathVector()), subparticle)
   // Act
-  const newNamePath = particle.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
+  const newNamePath = particle.pathVectorToFirstAtomPath([5, 0, 4, 0, 0])
   // Assert
   equal(newNamePath.join(" "), namePath)
 }
@@ -1687,14 +1687,14 @@ body {
   equal(splitParticles2.length, 3)
   equal(new Particle(`abc\n#find`).split(`#fi`).length, 1, "should not split on partial matches")
   equal(new Particle(`abc\n#find\n`).split(`#find`).length, 2, "should split on end of line")
-  equal(splitParticles[1].particleAt(1).getWord(1), "hi")
+  equal(splitParticles[1].particleAt(1).getAtom(1), "hi")
   // Act/Assert
   equal(splitParticles.join("\n"), test)
   equal(splitParticles2.join("\n"), test2)
   // Arrange/Act/Assert
   Object.keys(testStrings).forEach(key => {
     const particle = new Particle(testStrings[key])
-    const splitOn = particle.getFirstWords()[0] || "foo"
+    const splitOn = particle.getFirstAtoms()[0] || "foo"
     equal(particle.split(splitOn).join("\n"), particle.asString, `split join failed for ${key}`)
   })
 }
@@ -1836,7 +1836,7 @@ testParticles.htmlDsl = equal => {
   var page = ""
   // Act
   html.forEach(particle => {
-    const property = particle.firstWord
+    const property = particle.firstAtom
     const value = particle.content
     page += "<" + property + ">" + value + "</" + property + ">"
   })
@@ -1903,7 +1903,7 @@ testParticles.lastProperty = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")
   // Assert
-  equal(value.particleAt(-1).firstWord, "hi")
+  equal(value.particleAt(-1).firstAtom, "hi")
 }
 testParticles.lastValue = equal => {
   // Arrange
@@ -2115,7 +2115,7 @@ testParticles.copyToRegression = equal => {
  @blue
  >div`
   const migrateParticle = particle => {
-    if (!particle.firstWord.startsWith(">")) return true
+    if (!particle.firstAtom.startsWith(">")) return true
     if (particle.length) {
       const cla = particle.getParticle("class").content
       if (cla) particle.setContent(cla)
@@ -2124,8 +2124,8 @@ testParticles.copyToRegression = equal => {
         const particles = css.getSubparticles()
         const toMove = []
         particles.forEach(propParticle => {
-          const name = propParticle.firstWord.replace(":", " ")
-          propParticle.setFirstWord("@" + name)
+          const name = propParticle.firstAtom.replace(":", " ")
+          propParticle.setFirstAtom("@" + name)
           toMove.push(propParticle)
         })
         toMove.reverse()
@@ -2141,19 +2141,19 @@ testParticles.copyToRegression = equal => {
   // Assert
   equal(particle.asString, expected)
 }
-testParticles.insertWord = equal => {
+testParticles.insertAtom = equal => {
   // Arrange
   const a = new Particle("? result chekThis 1 2").getParticle("?")
   // Act
-  a.insertWord(2, "checkThis")
+  a.insertAtom(2, "checkThis")
   // Assert
   equal(a.getLine(), "? result checkThis chekThis 1 2")
 }
-testParticles.setWord = equal => {
+testParticles.setAtom = equal => {
   // Arrange
   const a = new Particle("? result chekThis 1 2").getParticle("?")
   // Act
-  a.setWord(2, "checkThis")
+  a.setAtom(2, "checkThis")
   // Assert
   equal(a.getLine(), "? result checkThis 1 2")
 }
@@ -2239,7 +2239,7 @@ testParticles.multiline = equal => {
 testParticles.order = equal => {
   // Arrange
   const a = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10")
-  const types = a.getFirstWords().join(" ")
+  const types = a.getFirstAtoms().join(" ")
   // Assert
   equal(types, "john susy bob", "order is preserved")
 }
@@ -2408,16 +2408,16 @@ testParticles.reorder = equal => {
   // Act
   a.touchParticle("hi").setContent("mom")
   // Assert
-  equal(a.getFirstWords().join(" "), "hello hi", "order correct")
+  equal(a.getFirstAtoms().join(" "), "hello hi", "order correct")
   // Act
   a.insertLine("yo pal", 0)
   // Assert
-  equal(a.getFirstWords().join(" "), "yo hello hi", "order correct")
+  equal(a.getFirstAtoms().join(" "), "yo hello hi", "order correct")
   // Act
   const result = a.insertLine("hola pal", 2)
   equal(result instanceof Particle, true)
   // Assert
-  equal(a.getFirstWords().join(" "), "yo hello hola hi", "order correct")
+  equal(a.getFirstAtoms().join(" "), "yo hello hola hi", "order correct")
 }
 testParticles.next = equal => {
   // Arrange
@@ -2433,11 +2433,11 @@ bob
   // Assert
   equal(a.next.asString, a.asString)
   equal(a.previous.asString, a.asString)
-  equal(b.previous.firstWord, "bob")
-  equal(b.previous.next.firstWord, "john")
-  equal(b.next.firstWord, "susy")
-  equal(c.next.firstWord, "score")
-  equal(c.previous.firstWord, "score")
+  equal(b.previous.firstAtom, "bob")
+  equal(b.previous.next.firstAtom, "john")
+  equal(b.next.firstAtom, "susy")
+  equal(c.next.firstAtom, "score")
+  equal(c.previous.firstAtom, "score")
 }
 testParticles.reverse = equal => {
   // Arrange
@@ -2455,8 +2455,8 @@ testParticles.reverse = equal => {
   // Act
   particle2.particleAt(0).reverse()
   // Assert
-  equal(particle2.particleAt(0).particleAt(0).firstWord, "age", "Expected reversed properties")
-  equal(particle2.particleAt(1).particleAt(0).firstWord, "name", "Expected unchanged properties")
+  equal(particle2.particleAt(0).particleAt(0).firstAtom, "age", "Expected reversed properties")
+  equal(particle2.particleAt(1).particleAt(0).firstAtom, "name", "Expected unchanged properties")
 }
 testParticles.set = equal => {
   // Arrange
@@ -2505,15 +2505,15 @@ testParticles.set = equal => {
   // Act
   particle4.touchParticle("hi").setContent("mom")
   // Assert
-  equal(particle4.getFirstWords().join(" "), "hello hi", "order correct")
+  equal(particle4.getFirstAtoms().join(" "), "hello hi", "order correct")
   // Act
   particle4.insertLine("yo pal", 0)
   // Assert
-  equal(particle4.getFirstWords().join(" "), "yo hello hi", "order correct")
+  equal(particle4.getFirstAtoms().join(" "), "yo hello hi", "order correct")
   // Act
   particle4.insertLine("hola pal", 2)
   // Assert
-  equal(particle4.getFirstWords().join(" "), "yo hello hola hi", "order correct")
+  equal(particle4.getFirstAtoms().join(" "), "yo hello hola hi", "order correct")
   // Arrange
   const particle5 = new Particle()
   // Act
@@ -2622,21 +2622,21 @@ testParticles.sort = equal => {
   // Arrange
   const particle = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10")
   // Assert
-  equal(particle.getFirstWords().join(" "), "john susy bob")
+  equal(particle.getFirstAtoms().join(" "), "john susy bob")
   // Act
-  particle.sort((a, b) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
+  particle.sort((a, b) => (b.firstAtom < a.firstAtom ? 1 : b.firstAtom === a.firstAtom ? 0 : -1))
   // Assert
-  equal(particle.getFirstWords().join(" "), "bob john susy")
+  equal(particle.getFirstAtoms().join(" "), "bob john susy")
 }
 testParticles.sortBy = equal => {
   // Arrange
   const particle = new Particle("john\n age 5\nsusy\n age 6\nbob\n age 10\nsam\n age 21\nbrian\n age 6")
   // Assert
-  equal(particle.getFirstWords().join(" "), "john susy bob sam brian")
+  equal(particle.getFirstAtoms().join(" "), "john susy bob sam brian")
   // Act
   particle.sortBy(["age"])
   // Assert
-  equal(particle.getFirstWords().join(" "), "bob sam john susy brian")
+  equal(particle.getFirstAtoms().join(" "), "bob sam john susy brian")
   // Sort by multiple properties
   // Arrange
   const particle2 = new Particle(testStrings.sortByMultiple)
@@ -2649,7 +2649,7 @@ testParticles.sortBy = equal => {
   // Assert
   equal(particle2.getColumn("key").join(""), "acb")
 }
-testParticles.firstWordSort = equal => {
+testParticles.firstAtomSort = equal => {
   // Arrange
   const particle = new Particle(`body
 footer
@@ -2657,7 +2657,7 @@ div
 header
 div`)
   // Act
-  particle.firstWordSort("header body div footer".split(" "))
+  particle.firstAtomSort("header body div footer".split(" "))
   // Assert
   equal(
     particle.asString,
@@ -3012,7 +3012,7 @@ b
  a
 b
  a
-c`).getFiltered(particle => particle.firstWord === "a").length,
+c`).getFiltered(particle => particle.firstAtom === "a").length,
     3
   )
 }
@@ -3120,10 +3120,10 @@ testParticles.typeTests = equal => {
 }
 testParticles.setTests = equal => {
   let base = new Particle(`foo bar`).particleAt(0)
-  equal(base.getWordsAsSet().has("bar"), true)
-  equal(base.getWordsAsSet().has("bar2"), false)
-  equal(base.appendWordIfMissing("bar").asString, `foo bar`)
-  equal(base.appendWordIfMissing("bam").getWordsAsSet().has("bam"), true, "word should be appended")
+  equal(base.getAtomsAsSet().has("bar"), true)
+  equal(base.getAtomsAsSet().has("bar2"), false)
+  equal(base.appendAtomIfMissing("bar").asString, `foo bar`)
+  equal(base.appendAtomIfMissing("bam").getAtomsAsSet().has("bam"), true, "word should be appended")
 }
 testParticles.getBiDirectionalMaps = equal => {
   const csv = Particle.fromCsv(Particle.iris)
@@ -3217,7 +3217,7 @@ testParticles.particles = equal => {
   // Assert
   equal(originalMtime > 0, true)
   equal(particle.isTerminal(), true)
-  equal(particle.firstWord, "text")
+  equal(particle.firstAtom, "text")
   equal(particle.content, undefined)
   equal(particle.length, 0)
   // Act
@@ -3235,7 +3235,7 @@ testParticles.particles = equal => {
   equal(a.has("text"), true)
   // Act
   const mtime = particle.getLineModifiedTime()
-  particle.setFirstWord("foo")
+  particle.setFirstAtom("foo")
   // Assert
   equal(a.asString, "foo hello world\n color blue")
   equal(particle.getLineModifiedTime() > mtime, true)

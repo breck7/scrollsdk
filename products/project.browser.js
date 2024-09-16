@@ -1,7 +1,7 @@
 {
   class projectParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { file: fileParser }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -173,10 +173,10 @@ fileParser
   _getDependencies() {
    return this.getSubparticles()
     .map(subparticle => {
-     const firstWord = subparticle.firstWord
+     const firstAtom = subparticle.firstAtom
      const subparticleFilePath = subparticle.filepathAtom.join(" ")
-     if (firstWord === "external") return ""
-     if (firstWord === "absolute") return subparticleFilePath
+     if (firstAtom === "external") return ""
+     if (firstAtom === "absolute") return subparticleFilePath
      const link = subparticleFilePath
      const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
@@ -197,10 +197,10 @@ fileParser
 
   class abstractTermParser extends ParserBackedParticle {
     get termAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get filepathAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -218,13 +218,13 @@ fileParser
 
   class fileParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
     get fileConstantAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get filepathAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     getFilePath() {
       return this.filepathAtom.join(" ")
@@ -232,10 +232,10 @@ fileParser
     _getDependencies() {
       return this.getSubparticles()
         .map(subparticle => {
-          const firstWord = subparticle.firstWord
+          const firstAtom = subparticle.firstAtom
           const subparticleFilePath = subparticle.filepathAtom.join(" ")
-          if (firstWord === "external") return ""
-          if (firstWord === "absolute") return subparticleFilePath
+          if (firstAtom === "external") return ""
+          if (firstAtom === "absolute") return subparticleFilePath
           const link = subparticleFilePath
           const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
           const resolvedPath = require("path").resolve(folderPath + "/" + link)

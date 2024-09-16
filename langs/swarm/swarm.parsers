@@ -72,7 +72,7 @@ abstractAssertionParser
    //todo: refactor. there is clearly a difference between sync and async that we are not
    // documenting. seems like async and sync have different atomTypes. the former requires
    // a method to get the result.
-   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getAtom(1))
    const subject = finalParts[0]
    const command = finalParts[1]
    const actual = subject[command]()
@@ -98,7 +98,7 @@ abstractAssertionParser
    this.getAssertionResult(actualAsString, expected, this.getLine())
   }
   getExpected() {
-   return this.getWordsFrom(2).join(" ")
+   return this.getAtomsFrom(2).join(" ")
   }
   getSyncExpected() {
    return this.content
@@ -286,10 +286,10 @@ actParser
   _getActArgs() {
    const paragraphActParsers = this.getSubparticleInstancesOfParserId("withParagraphParser")
    if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.subparticlesToString())
-   return this.getWordsFrom(1)
+   return this.getAtomsFrom(1)
   }
   _act(arrangedInstance) {
-   const actionMethodName = this.firstWord
+   const actionMethodName = this.firstAtom
    const actionMethod = arrangedInstance[actionMethodName]
    if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
    if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access

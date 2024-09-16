@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -413,7 +413,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -450,7 +450,7 @@ errorParser
       )
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -460,37 +460,37 @@ errorParser
 
   class functionParser extends abstractJsblockParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get functionIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get anyAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class ifParser extends abstractJsblockParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class whileParser extends abstractJsblockParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class abstractTerminalParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -498,13 +498,13 @@ errorParser
 
   class abstractArithmeticParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get anyAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -522,265 +522,265 @@ errorParser
 
   class greaterThanParser extends abstractBooleanOperatorParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get leftNumberAtom() {
-      return parseFloat(this.getWord(2))
+      return parseFloat(this.getAtom(2))
     }
     get numberAtom() {
-      return parseFloat(this.getWord(3))
+      return parseFloat(this.getAtom(3))
     }
   }
 
   class greaterThanOrEqualParser extends abstractBooleanOperatorParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get leftNumberAtom() {
-      return parseFloat(this.getWord(2))
+      return parseFloat(this.getAtom(2))
     }
     get numberAtom() {
-      return parseFloat(this.getWord(3))
+      return parseFloat(this.getAtom(3))
     }
   }
 
   class lessThanParser extends abstractBooleanOperatorParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get leftAnyAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
     get anyAtom() {
-      return this.getWord(3)
+      return this.getAtom(3)
     }
   }
 
   class lessThanOrEqualParser extends abstractBooleanOperatorParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get leftAnyAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
     get anyAtom() {
-      return this.getWord(3)
+      return this.getAtom(3)
     }
   }
 
   class sumParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numberIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get numberAtom() {
-      return this.getWordsFrom(2).map(val => parseFloat(val))
+      return this.getAtomsFrom(2).map(val => parseFloat(val))
     }
   }
 
   class booleanParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get booleanIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get booleanAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
   }
 
   class callFunctionAndSetParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get resultIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get functionIdentifierAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
     get anyAtom() {
-      return this.getWordsFrom(3)
+      return this.getAtomsFrom(3)
     }
   }
 
   class callMethodAndSetParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get resultIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get instanceIdentifierAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
     get methodIdentifierAtom() {
-      return this.getWord(3)
+      return this.getAtom(3)
     }
     get anyAtom() {
-      return this.getWordsFrom(4)
+      return this.getAtomsFrom(4)
     }
   }
 
   class joinParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get identifiersAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class mutableNumberParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get numberAtom() {
-      return parseFloat(this.getWord(2))
+      return parseFloat(this.getAtom(2))
     }
   }
 
   class numberParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get numberAtom() {
-      return parseFloat(this.getWord(2))
+      return parseFloat(this.getAtom(2))
     }
   }
 
   class numbersParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get numberAtom() {
-      return this.getWordsFrom(2).map(val => parseFloat(val))
+      return this.getAtomsFrom(2).map(val => parseFloat(val))
     }
   }
 
   class stringParser extends abstractAssignmentParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get stringIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get anyAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class callFunctionParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get functionIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get anyAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class decrementParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numberIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class dumpIdentifierParser extends abstractTerminalParser {
     get identifierAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class exportParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class incrementParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numberIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class printNumberParser extends abstractTerminalParser {
     get numberIdentifierAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class printStringParser extends abstractTerminalParser {
     get stringAtomsAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class requireParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get identifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get filepathAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
   }
 
   class returnParser extends abstractTerminalParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class hashbangParser extends ParserBackedParticle {
     get hashBangKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get hashBangAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 

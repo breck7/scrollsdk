@@ -1,7 +1,7 @@
 {
   class stampParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
     async executeSeries(parentDir) {
       const length = this.length
@@ -82,7 +82,7 @@ extraAtom
  paint invalid
 anyAtom
  paint string
-promptWordsAtom
+promptAtomsAtom
  paint string
 filepathAtom
 varNameAtom
@@ -198,7 +198,7 @@ fileParser
    return \`touch \${filePath}\\necho -e "\${this.subparticlesToString()}" >> \${filePath}\`
   }
   _getAbsolutePath(parentDir = process.cwd()) {
-   return parentDir + "/" + this.atoms.filepathAtom
+   return parentDir + "/" + this.atomsMap.filepathAtom
   }
   execute(parentDir) {
    const fs = require("fs")
@@ -220,7 +220,7 @@ folderParser
    return \`mkdir \${this._getAbsolutePath(parentDir)}\`
   }
   _getAbsolutePath(parentDir = process.cwd()) {
-   return parentDir + "/" + this.atoms.filepathAtom
+   return parentDir + "/" + this.atomsMap.filepathAtom
   }
   execute(parentDir) {
    const path = this._getAbsolutePath(parentDir)
@@ -237,10 +237,10 @@ folderParser
 
   class hashbangParser extends ParserBackedParticle {
     get commentAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get commentAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -249,10 +249,10 @@ folderParser
       return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get anyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -261,7 +261,7 @@ folderParser
       return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -273,26 +273,26 @@ folderParser
 
   class executableParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class fileParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get filepathAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     compileToBash(parentDir) {
       const filePath = this._getAbsolutePath(parentDir)
       return `touch ${filePath}\necho -e "${this.subparticlesToString()}" >> ${filePath}`
     }
     _getAbsolutePath(parentDir = process.cwd()) {
-      return parentDir + "/" + this.atoms.filepathAtom
+      return parentDir + "/" + this.atomsMap.filepathAtom
     }
     execute(parentDir) {
       const fs = require("fs")
@@ -309,16 +309,16 @@ folderParser
 
   class folderParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get filepathAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     compileToBash(parentDir) {
       return `mkdir ${this._getAbsolutePath(parentDir)}`
     }
     _getAbsolutePath(parentDir = process.cwd()) {
-      return parentDir + "/" + this.atoms.filepathAtom
+      return parentDir + "/" + this.atomsMap.filepathAtom
     }
     execute(parentDir) {
       const path = this._getAbsolutePath(parentDir)

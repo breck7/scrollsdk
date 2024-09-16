@@ -49,8 +49,8 @@ namespace particlesTypes {
   export declare type line = string // no ParticleBreakSymbol (\n)
   export declare type int = number
   export declare type positiveInt = number
-  export declare type stringMap = { [firstWord: string]: any }
-  export declare type queryStringMap = { [firstWord: string]: any }
+  export declare type stringMap = { [firstAtom: string]: any }
+  export declare type queryStringMap = { [firstAtom: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
   export declare type dataTable = any[][]
@@ -64,10 +64,10 @@ namespace particlesTypes {
   export declare type jsonSubset = string
 
   export declare type templateString = string // "Hello {name}! You are {age} years old."
-  export declare type firstWordPath = string // user emailAddress
+  export declare type firstAtomPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
-  export declare type word = string // string that cannot contain the ParticleBreakSymbol, WordBreakSymbol or WordBreakSymbol
-  export declare type firstWord = word
+  export declare type word = string // string that cannot contain the ParticleBreakSymbol, AtomBreakSymbol or AtomBreakSymbol
+  export declare type firstAtom = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
   export declare type fileContent = string
@@ -82,7 +82,7 @@ namespace particlesTypes {
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string
-  export declare type globPath = string // * firstWord firstWord *
+  export declare type globPath = string // * firstAtom firstAtom *
   export declare type targetLanguageId = fileExtension
   export declare type sortFn = (particleA: particle, particleB: particle) => triInt
   export declare type filterFn = (particle: particle, index: int) => boolean
@@ -119,7 +119,7 @@ namespace particlesTypes {
   export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
   export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 
-  export declare type firstWordToParserMap = { [firstWord: string]: ParticleParser }
+  export declare type firstAtomToParserMap = { [firstAtom: string]: ParticleParser }
 }
 
 export { particlesTypes }

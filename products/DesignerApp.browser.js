@@ -95,16 +95,16 @@ class DesignerApp extends AbstractParticleComponentParser {
     const rootAtomTypes = new Particle(program.toPreludeAtomTypeParticlesWithParserIds())
     const table = program.programAsAtoms
       .map((line, lineIndex) => {
-        const parser = atomTypes.particleAt(lineIndex).getWord(0)
+        const parser = atomTypes.particleAt(lineIndex).getAtom(0)
         let atoms = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
         for (let atomIndex = 0; atomIndex < columns; atomIndex++) {
           const atom = line[atomIndex]
           if (!atom) atoms += `<td>&nbsp;</td>`
           else {
-            const atomType = atomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
-            const rootAtomType = rootAtomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
+            const atomType = atomTypes.particleAt(lineIndex).getAtom(atomIndex + 1)
+            const rootAtomType = rootAtomTypes.particleAt(lineIndex).getAtom(atomIndex + 1)
             const atomTypeDivs = [atomType, rootAtomType] // todo: add full ancestry
-            atoms += `<td><span class="atomTypeSpan">${atomTypeDivs.join(" ")}</span>${atom.getWord()}</td>`
+            atoms += `<td><span class="atomTypeSpan">${atomTypeDivs.join(" ")}</span>${atom.getAtom()}</td>`
           }
         }
         return `<tr>${atoms}</tr>`
@@ -249,7 +249,7 @@ class DesignerApp extends AbstractParticleComponentParser {
       this.codeWidgets.length = 0
       errs
         .filter(err => !err.isBlankLineError())
-        .filter(err => !err.isCursorOnWord(cursor.line, cursor.ch))
+        .filter(err => !err.isCursorOnAtom(cursor.line, cursor.ch))
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach(err => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
@@ -548,7 +548,7 @@ class headerComponent extends AbstractParticleComponentParser {
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building languages on top of Particles. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/atom checking, suggested corrections, and more.
+  p This is a simple web IDE for designing and building languages on top of Particles. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, atom checking, suggested corrections, and more.
   p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }

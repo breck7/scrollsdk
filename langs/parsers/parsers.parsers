@@ -9,7 +9,7 @@ abstractConstantAtom
 
 javascriptSafeAlphaNumericIdentifierAtom
  regex [a-zA-Z0-9_]+
- reservedWords enum extends function static if while export return class for default require var let const new
+ reservedAtoms enum extends function static if while export return class for default require var let const new
 
 anyAtom
 
@@ -91,7 +91,7 @@ propertyKeywordAtom
 regexAtom
  paint string.regexp
 
-reservedWordAtom
+reservedAtomAtom
  description A word that a atom cannot contain.
  paint string
 
@@ -401,7 +401,7 @@ uniqueLineParser
  extends abstractValidationRuleParser
  tags analyzePhase
 
-uniqueFirstWordParser
+uniqueFirstAtomParser
  description Assert unique first words. For pattern parsers.
  // For catch all parsers or pattern particles, use this to indicate the 
  extends abstractValidationRuleParser
@@ -462,7 +462,7 @@ atomTypeDefinitionParser
  // todo Allow abstract atom types?
  // todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Atom$
- inScope paintParser regexParser reservedWordsParser enumFromAtomTypesParser atomTypeDescriptionParser enumParser slashCommentParser extendsAtomTypeParser examplesParser atomMinParser atomMaxParser
+ inScope paintParser regexParser reservedAtomsParser enumFromAtomTypesParser atomTypeDescriptionParser enumParser slashCommentParser extendsAtomTypeParser examplesParser atomMinParser atomMaxParser
  atoms atomTypeIdAtom
  tags assemblePhase
 
@@ -526,16 +526,16 @@ parserDefinitionParser
 
 regexParser
  catchAllAtomType regexAtom
- description Words must match this.
+ description Atoms must match this.
  single
  atoms atomPropertyNameAtom
  cruxFromId
  tags analyzePhase
 
-reservedWordsParser
+reservedAtomsParser
  single
- description Words can't be any of these.
- catchAllAtomType reservedWordAtom
+ description Atoms can't be any of these.
+ catchAllAtomType reservedAtomAtom
  atoms atomPropertyNameAtom
  cruxFromId
  tags analyzePhase

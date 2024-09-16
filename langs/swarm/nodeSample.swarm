@@ -29,7 +29,7 @@ test swarmParticlesample
      closeSubparticles end
  getAllErrors
   assertLengthIs 0
- runTimeFirstWordsInScope
+ runTimeFirstAtomsInScope
   assertLengthIs 1
  getParserDefinitionByParserId toParser
   assertTypeIs object

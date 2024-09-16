@@ -328,24 +328,24 @@ class ParsersCodeMirrorMode {
   private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: particleCodeMirrorState): string {
     let nextCharacter = stream.next()
     const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
-    const WordBreakSymbol = " "
+    const AtomBreakSymbol = " "
     const ParticleBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
 
-      if (nextCharacter === WordBreakSymbol) {
+      if (nextCharacter === AtomBreakSymbol) {
         if (peek === undefined || peek === ParticleBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === WordBreakSymbol && state.atomIndex) {
+        if (peek === AtomBreakSymbol && state.atomIndex) {
           // If we are missing a atom.
-          // TODO: this is broken for a blank 1st atom. We need to track WordBreakSymbol level.
+          // TODO: this is broken for a blank 1st atom. We need to track AtomBreakSymbol level.
           state.atomIndex++
         }
         return "bracket"
       }
-      if (peek === WordBreakSymbol) {
+      if (peek === AtomBreakSymbol) {
         state.atomIndex++
         return this._getAtomStyle(lineNumber, state.atomIndex)
       }

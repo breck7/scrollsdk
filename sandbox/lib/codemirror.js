@@ -328,15 +328,15 @@
     return inst
   }
 
-  var nonASCIISingleCaseWordChar = /[\u00df\u0587\u0590-\u05f4\u0600-\u06ff\u3040-\u309f\u30a0-\u30ff\u3400-\u4db5\u4e00-\u9fcc\uac00-\ud7af]/
-  function isWordCharBasic(ch) {
-    return /\w/.test(ch) || (ch > "\x80" && (ch.toUpperCase() != ch.toLowerCase() || nonASCIISingleCaseWordChar.test(ch)))
+  var nonASCIISingleCaseAtomChar = /[\u00df\u0587\u0590-\u05f4\u0600-\u06ff\u3040-\u309f\u30a0-\u30ff\u3400-\u4db5\u4e00-\u9fcc\uac00-\ud7af]/
+  function isAtomCharBasic(ch) {
+    return /\w/.test(ch) || (ch > "\x80" && (ch.toUpperCase() != ch.toLowerCase() || nonASCIISingleCaseAtomChar.test(ch)))
   }
-  function isWordChar(ch, helper) {
+  function isAtomChar(ch, helper) {
     if (!helper) {
-      return isWordCharBasic(ch)
+      return isAtomCharBasic(ch)
     }
-    if (helper.source.indexOf("\\w") > -1 && isWordCharBasic(ch)) {
+    if (helper.source.indexOf("\\w") > -1 && isAtomCharBasic(ch)) {
       return true
     }
     return helper.test(ch)
@@ -8638,16 +8638,16 @@
     "Ctrl-B": "goCharLeft",
     "Ctrl-P": "goLineUp",
     "Ctrl-N": "goLineDown",
-    "Alt-F": "goWordRight",
-    "Alt-B": "goWordLeft",
+    "Alt-F": "goAtomRight",
+    "Alt-B": "goAtomLeft",
     "Ctrl-A": "goLineStart",
     "Ctrl-E": "goLineEnd",
     "Ctrl-V": "goPageDown",
     "Shift-Ctrl-V": "goPageUp",
     "Ctrl-D": "delCharAfter",
     "Ctrl-H": "delCharBefore",
-    "Alt-D": "delWordAfter",
-    "Alt-Backspace": "delWordBefore",
+    "Alt-D": "delAtomAfter",
+    "Alt-Backspace": "delAtomBefore",
     "Ctrl-K": "killLine",
     "Ctrl-T": "transposeChars",
     "Ctrl-O": "openLine"
@@ -9135,7 +9135,7 @@
     goColumnRight: function (cm) {
       return cm.moveH(1, "column")
     },
-    goWordLeft: function (cm) {
+    goAtomLeft: function (cm) {
       return cm.moveH(-1, "word")
     },
     goGroupRight: function (cm) {
@@ -9144,7 +9144,7 @@
     goGroupLeft: function (cm) {
       return cm.moveH(-1, "group")
     },
-    goWordRight: function (cm) {
+    goAtomRight: function (cm) {
       return cm.moveH(1, "word")
     },
     delCharBefore: function (cm) {
@@ -9153,10 +9153,10 @@
     delCharAfter: function (cm) {
       return cm.deleteH(1, "char")
     },
-    delWordBefore: function (cm) {
+    delAtomBefore: function (cm) {
       return cm.deleteH(-1, "word")
     },
-    delWordAfter: function (cm) {
+    delAtomAfter: function (cm) {
       return cm.deleteH(1, "word")
     },
     delGroupBefore: function (cm) {
@@ -9705,7 +9705,7 @@
       return new Range(pos, pos)
     }
     if (unit == "word") {
-      return cm.findWordAt(pos)
+      return cm.findAtomAt(pos)
     }
     if (unit == "line") {
       return new Range(Pos(pos.line, 0), clipPos(cm.doc, Pos(pos.line + 1, 0)))
@@ -10435,7 +10435,7 @@
             return
           }
           e_preventDefault(e)
-          var word = cm.findWordAt(pos)
+          var word = cm.findAtomAt(pos)
           extendSelection(cm.doc, word.anchor, word.head)
         })
       )
@@ -10505,7 +10505,7 @@
           range = new Range(pos, pos)
         } else if (!touch.prev.prev || farAway(touch, touch.prev.prev)) {
           // Double tap
-          range = cm.findWordAt(pos)
+          range = cm.findAtomAt(pos)
         } // Triple tap
         else {
           range = new Range(Pos(pos.line, 0), clipPos(cm.doc, Pos(pos.line + 1, 0)))
@@ -11238,7 +11238,7 @@
       }),
 
       // Find the word at the given position (as returned by coordsChar).
-      findWordAt: function (pos) {
+      findAtomAt: function (pos) {
         var doc = this.doc,
           line = getLine(doc, pos.line).text
         var start = pos.ch,
@@ -11251,16 +11251,16 @@
             ++end
           }
           var startChar = line.charAt(start)
-          var check = isWordChar(startChar, helper)
+          var check = isAtomChar(startChar, helper)
             ? function (ch) {
-                return isWordChar(ch, helper)
+                return isAtomChar(ch, helper)
               }
             : /\s/.test(startChar)
             ? function (ch) {
                 return /\s/.test(ch)
               }
             : function (ch) {
-                return !/\s/.test(ch) && !isWordChar(ch)
+                return !/\s/.test(ch) && !isAtomChar(ch)
               }
           while (start > 0 && check(line.charAt(start - 1))) {
             --start
@@ -11480,7 +11480,7 @@
           break
         }
         var cur = lineObj.text.charAt(pos.ch) || "\n"
-        var type = isWordChar(cur, helper) ? "w" : group && cur == "\n" ? "n" : !group || /\s/.test(cur) ? null : "p"
+        var type = isAtomChar(cur, helper) ? "w" : group && cur == "\n" ? "n" : !group || /\s/.test(cur) ? null : "p"
         if (group && !first && !type) {
           type = "s"
         }
@@ -12727,7 +12727,7 @@
     CodeMirror.splitLines = splitLinesAuto
     CodeMirror.countColumn = countColumn
     CodeMirror.findColumn = findColumn
-    CodeMirror.isWordChar = isWordCharBasic
+    CodeMirror.isAtomChar = isAtomCharBasic
     CodeMirror.Pass = Pass
     CodeMirror.signal = signal
     CodeMirror.Line = Line
@@ -12826,7 +12826,6 @@
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
-
 ;(function (mod) {
   if (typeof exports == "object" && typeof module == "object")
     // CommonJS

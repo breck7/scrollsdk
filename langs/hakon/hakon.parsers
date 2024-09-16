@@ -59,7 +59,7 @@ propertyParser
  catchAllParser errorParser
  javascript
   compile(spaces) {
-   return `${spaces}${this.firstWord}: ${this.content};`
+   return `${spaces}${this.firstAtom}: ${this.content};`
   }
  atoms propertyKeywordAtom
 variableParser
@@ -84,7 +84,7 @@ selectorParser
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
-   return this.firstWord
+   return this.firstAtom
     .split(",")
     .map(part => {
      if (part.startsWith("&")) return parentSelector + part.substr(1)

@@ -3,7 +3,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
           hue: hueParser,
           saturation: saturationParser,
@@ -180,25 +180,25 @@ scoresParser
 
   class extendsAbstractParser extends abstractBaseClassParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get intAtom() {
-      return parseInt(this.getWord(1))
+      return parseInt(this.getAtom(1))
     }
   }
 
   class abstractTopLevelParser extends ParserBackedParticle {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class abstractColorPropertiesParser extends abstractTopLevelParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get intAtom() {
-      return parseInt(this.getWord(1))
+      return parseInt(this.getAtom(1))
     }
   }
 
@@ -210,7 +210,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -220,10 +220,10 @@ scoresParser
 
   class plusParser extends addParser {
     get opSymbolAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get intAtom() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }
 
@@ -231,7 +231,7 @@ scoresParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           hue: hueParser,
           saturation: saturationParser,
           constrast: constrastParser,
@@ -257,16 +257,16 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
   class toParser extends blockParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get wordAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
@@ -274,10 +274,10 @@ scoresParser
 
   class xColumnNameParser extends abstractTopLevelParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get columnNameEnumAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     getRunTimeEnumOptions(atom) {
       return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
@@ -286,10 +286,10 @@ scoresParser
 
   class lightbulbStateParser extends abstractTopLevelParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get onoffAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
@@ -337,10 +337,10 @@ world`
 
   class typeParser extends abstractTopLevelParser {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get wordAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
@@ -358,16 +358,16 @@ world`
       return this._getErrorParserErrors()
     }
     get errorAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get errorAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class lineOfCodeParser extends ParserBackedParticle {
     get wordAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -382,10 +382,10 @@ world`
 
   class scoresParser extends ParserBackedParticle {
     get topLevelPropertyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get intAtom() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }
 

@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { test: testParser, testOnly: testOnlyParser, skipTest: skipTestParser, "#!": hashbangParser, arrange: arrangeParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { test: testParser, testOnly: testOnlyParser, skipTest: skipTestParser, "#!": hashbangParser, arrange: arrangeParser }),
         undefined
       )
     }
@@ -105,7 +105,7 @@ abstractAssertionParser
    //todo: refactor. there is clearly a difference between sync and async that we are not
    // documenting. seems like async and sync have different atomTypes. the former requires
    // a method to get the result.
-   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getAtom(1))
    const subject = finalParts[0]
    const command = finalParts[1]
    const actual = subject[command]()
@@ -131,7 +131,7 @@ abstractAssertionParser
    this.getAssertionResult(actualAsString, expected, this.getLine())
   }
   getExpected() {
-   return this.getWordsFrom(2).join(" ")
+   return this.getAtomsFrom(2).join(" ")
   }
   getSyncExpected() {
    return this.content
@@ -319,10 +319,10 @@ actParser
   _getActArgs() {
    const paragraphActParsers = this.getSubparticleInstancesOfParserId("withParagraphParser")
    if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.subparticlesToString())
-   return this.getWordsFrom(1)
+   return this.getAtomsFrom(1)
   }
   _act(arrangedInstance) {
-   const actionMethodName = this.firstWord
+   const actionMethodName = this.firstAtom
    const actionMethod = arrangedInstance[actionMethodName]
    if (!actionMethod) throw new Error(\`No method "\${actionMethodName}" on "\${arrangedInstance.constructor.name}"\`)
    if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access
@@ -368,13 +368,13 @@ todoParser
 
   class abstractAssertionParser extends ParserBackedParticle {
     get assertionKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     async execute(arrangedInstance) {
       //todo: refactor. there is clearly a difference between sync and async that we are not
       // documenting. seems like async and sync have different atomTypes. the former requires
       // a method to get the result.
-      const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+      const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getAtom(1))
       const subject = finalParts[0]
       const command = finalParts[1]
       const actual = subject[command]()
@@ -400,7 +400,7 @@ todoParser
       this.getAssertionResult(actualAsString, expected, this.getLine())
     }
     getExpected() {
-      return this.getWordsFrom(2).join(" ")
+      return this.getAtomsFrom(2).join(" ")
     }
     getSyncExpected() {
       return this.content
@@ -421,10 +421,10 @@ todoParser
 
   class assertLengthIsParser extends abstractAssertionParser {
     get assertionKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get intAtom() {
-      return parseInt(this.getWord(1))
+      return parseInt(this.getAtom(1))
     }
     parseActual(actual) {
       return actual.length
@@ -433,7 +433,7 @@ todoParser
 
   class assertStringExcludesParser extends abstractAssertionParser {
     get anyAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
     getAssertionResult(actualAsString, expected, message) {
       const result = !actualAsString.includes(expected)
@@ -449,7 +449,7 @@ todoParser
 
   class assertStringIncludesParser extends abstractAssertionParser {
     get anyAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
     getAssertionResult(actualAsString, expected, message) {
       const result = actualAsString.includes(expected)
@@ -460,16 +460,16 @@ todoParser
 
   class assertStringIsParser extends abstractAssertionParser {
     get anyAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class assertTypeIsParser extends abstractAssertionParser {
     get assertionKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get typeOfOptionAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     parseActual(actual) {
       return typeof actual
@@ -478,7 +478,7 @@ todoParser
 
   class abstractArrangeFlagParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -486,13 +486,13 @@ todoParser
 
   class arrangeRequireParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get filepathAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get anyAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -500,13 +500,13 @@ todoParser
 
   class abstractTestBlockParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
+      return new Particle.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { arrange: arrangeParser }), undefined)
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     getArrangeParser() {
       return this.getParticle("arrange") || this.parent.getArrangeParser()
@@ -552,13 +552,13 @@ todoParser
 
   class hashbangParser extends ParserBackedParticle {
     get hashBangKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get hashBangAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get hashBangAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -566,7 +566,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           async: arrangeAsyncParser,
           require: arrangeRequireParser,
           static: arrangeStaticParser,
@@ -577,7 +577,7 @@ todoParser
       )
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     isAsync() {
       return this.has("async")
@@ -610,7 +610,7 @@ todoParser
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get parameterKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     executeSync() {}
   }
@@ -619,7 +619,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         actParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           assertParagraphIs: assertParagraphIsParser,
           assertLengthIs: assertLengthIsParser,
           assertStringExcludes: assertStringExcludesParser,
@@ -632,10 +632,10 @@ todoParser
       )
     }
     get commandAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     getTestBlock() {
       return this.parent
@@ -646,10 +646,10 @@ todoParser
     _getActArgs() {
       const paragraphActParsers = this.getSubparticleInstancesOfParserId("withParagraphParser")
       if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.subparticlesToString())
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     _act(arrangedInstance) {
-      const actionMethodName = this.firstWord
+      const actionMethodName = this.firstAtom
       const actionMethod = arrangedInstance[actionMethodName]
       if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
       if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access
@@ -670,7 +670,7 @@ todoParser
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     executeSync() {}
   }
@@ -686,10 +686,10 @@ todoParser
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get anyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -698,10 +698,10 @@ todoParser
       return new Particle.ParserCombinator(todoParser, undefined, undefined)
     }
     get todoKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get todoAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 

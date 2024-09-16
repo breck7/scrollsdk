@@ -119,16 +119,16 @@ class DesignerApp extends AbstractParticleComponentParser {
 
     const table = program.programAsAtoms
       .map((line: any, lineIndex: number) => {
-        const parser = atomTypes.particleAt(lineIndex).getWord(0)
+        const parser = atomTypes.particleAt(lineIndex).getAtom(0)
         let atoms = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
         for (let atomIndex = 0; atomIndex < columns; atomIndex++) {
           const atom = line[atomIndex]
           if (!atom) atoms += `<td>&nbsp;</td>`
           else {
-            const atomType = atomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
-            const rootAtomType = rootAtomTypes.particleAt(lineIndex).getWord(atomIndex + 1)
+            const atomType = atomTypes.particleAt(lineIndex).getAtom(atomIndex + 1)
+            const rootAtomType = rootAtomTypes.particleAt(lineIndex).getAtom(atomIndex + 1)
             const atomTypeDivs = [atomType, rootAtomType] // todo: add full ancestry
-            atoms += `<td><span class="atomTypeSpan">${atomTypeDivs.join(" ")}</span>${atom.getWord()}</td>`
+            atoms += `<td><span class="atomTypeSpan">${atomTypeDivs.join(" ")}</span>${atom.getAtom()}</td>`
           }
         }
         return `<tr>${atoms}</tr>`
@@ -324,7 +324,7 @@ class DesignerApp extends AbstractParticleComponentParser {
 
       errs
         .filter((err: any) => !err.isBlankLineError())
-        .filter((err: any) => !err.isCursorOnWord(cursor.line, cursor.ch))
+        .filter((err: any) => !err.isCursorOnAtom(cursor.line, cursor.ch))
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach((err: any) => {
           const el = err.getCodeMirrorLineWidgetElement(() => {

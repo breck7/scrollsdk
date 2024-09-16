@@ -1,7 +1,7 @@
 {
   class parsersParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
+      return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
         { regex: /^[a-zA-Z0-9_]+Atom$/, parser: atomTypeDefinitionParser },
         { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
@@ -19,7 +19,7 @@ abstractConstantAtom
 
 javascriptSafeAlphaNumericIdentifierAtom
  regex [a-zA-Z0-9_]+
- reservedWords enum extends function static if while export return class for default require var let const new
+ reservedAtoms enum extends function static if while export return class for default require var let const new
 
 anyAtom
 
@@ -101,7 +101,7 @@ propertyKeywordAtom
 regexAtom
  paint string.regexp
 
-reservedWordAtom
+reservedAtomAtom
  description A word that a atom cannot contain.
  paint string
 
@@ -411,7 +411,7 @@ uniqueLineParser
  extends abstractValidationRuleParser
  tags analyzePhase
 
-uniqueFirstWordParser
+uniqueFirstAtomParser
  description Assert unique first words. For pattern parsers.
  // For catch all parsers or pattern particles, use this to indicate the 
  extends abstractValidationRuleParser
@@ -472,7 +472,7 @@ atomTypeDefinitionParser
  // todo Allow abstract atom types?
  // todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Atom$
- inScope paintParser regexParser reservedWordsParser enumFromAtomTypesParser atomTypeDescriptionParser enumParser slashCommentParser extendsAtomTypeParser examplesParser atomMinParser atomMaxParser
+ inScope paintParser regexParser reservedAtomsParser enumFromAtomTypesParser atomTypeDescriptionParser enumParser slashCommentParser extendsAtomTypeParser examplesParser atomMinParser atomMaxParser
  atoms atomTypeIdAtom
  tags assemblePhase
 
@@ -536,16 +536,16 @@ parserDefinitionParser
 
 regexParser
  catchAllAtomType regexAtom
- description Words must match this.
+ description Atoms must match this.
  single
  atoms atomPropertyNameAtom
  cruxFromId
  tags analyzePhase
 
-reservedWordsParser
+reservedAtomsParser
  single
- description Words can't be any of these.
- catchAllAtomType reservedWordAtom
+ description Atoms can't be any of these.
+ catchAllAtomType reservedAtomAtom
  atoms atomPropertyNameAtom
  cruxFromId
  tags analyzePhase
@@ -575,16 +575,16 @@ extendsAtomTypeParser
 
   class blankLineParser extends ParserBackedParticle {
     get blankAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class abstractCompilerRuleParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get anyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -602,43 +602,43 @@ extendsAtomTypeParser
 
   class abstractConstantParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class booleanParser extends abstractConstantParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get constantIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get boolAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class floatParser extends abstractConstantParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get constantIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get floatAtom() {
-      return this.getWordsFrom(2).map(val => parseFloat(val))
+      return this.getAtomsFrom(2).map(val => parseFloat(val))
     }
   }
 
   class intParser extends abstractConstantParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get constantIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get intAtom() {
-      return this.getWordsFrom(2).map(val => parseInt(val))
+      return this.getAtomsFrom(2).map(val => parseInt(val))
     }
   }
 
@@ -647,34 +647,34 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get constantIdentifierAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get stringAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
   class abstractParserRuleParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class compilesToParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get fileExtensionAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class extensionsParser extends abstractParserRuleParser {
     get fileExtensionAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -682,43 +682,43 @@ extendsAtomTypeParser
 
   class baseParserParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get baseParsersAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class catchAllAtomTypeParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get atomTypeIdAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class atomParserParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get atomParserAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class catchAllParserParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get parserIdAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class atomsParser extends abstractParserRuleParser {
     get atomTypeIdAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -726,7 +726,7 @@ extendsAtomTypeParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           closeSubparticles: closeSubparticlesParser,
           indentCharacter: indentCharacterParser,
           catchAllAtomDelimiter: catchAllAtomDelimiterParser,
@@ -741,13 +741,13 @@ extendsAtomTypeParser
 
   class parserDescriptionParser extends abstractParserRuleParser {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class atomTypeDescriptionParser extends ParserBackedParticle {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -756,31 +756,31 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class extendsParserParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get parserIdAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class popularityParser extends abstractParserRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get floatAtom() {
-      return parseFloat(this.getWord(1))
+      return parseFloat(this.getAtom(1))
     }
   }
 
   class inScopeParser extends abstractParserRuleParser {
     get parserIdAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -808,22 +808,22 @@ extendsAtomTypeParser
 
   class cruxParser extends abstractParseRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get stringAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class cruxFromIdParser extends abstractParseRuleParser {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class patternParser extends abstractParseRuleParser {
     get regexAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -831,7 +831,7 @@ extendsAtomTypeParser
 
   class abstractValidationRuleParser extends abstractParserRuleParser {
     get boolAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -839,29 +839,29 @@ extendsAtomTypeParser
 
   class uniqueLineParser extends abstractValidationRuleParser {}
 
-  class uniqueFirstWordParser extends abstractValidationRuleParser {}
+  class uniqueFirstAtomParser extends abstractValidationRuleParser {}
 
   class listDelimiterParser extends abstractParserRuleParser {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class contentKeyParser extends abstractParserRuleParser {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class subparticlesKeyParser extends abstractParserRuleParser {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class tagsParser extends abstractParserRuleParser {
     get tagAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -876,10 +876,10 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get exampleAnyAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -888,7 +888,7 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     get javascriptCodeAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -897,10 +897,10 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get stringAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get stringAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -908,7 +908,7 @@ extendsAtomTypeParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           description: atomTypeDescriptionParser,
           enumFromAtomTypes: enumFromAtomTypesParser,
           enum: enumParser,
@@ -917,7 +917,7 @@ extendsAtomTypeParser
           max: atomMaxParser,
           paint: paintParser,
           regex: regexParser,
-          reservedWords: reservedWordsParser,
+          reservedAtoms: reservedAtomsParser,
           "//": slashCommentParser,
           extends: extendsAtomTypeParser
         }),
@@ -925,67 +925,67 @@ extendsAtomTypeParser
       )
     }
     get atomTypeIdAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class enumFromAtomTypesParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get atomTypeIdAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class enumParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get enumOptionAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class examplesParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get atomExampleAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class atomMinParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numericAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class atomMaxParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numericAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class paintParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get paintTypeAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class rootFlagParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -993,7 +993,7 @@ extendsAtomTypeParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         catchAllErrorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           boolean: booleanParser,
           float: floatParser,
           int: intParser,
@@ -1018,7 +1018,7 @@ extendsAtomTypeParser
           required: requiredParser,
           single: singleParser,
           uniqueLine: uniqueLineParser,
-          uniqueFirstWord: uniqueFirstWordParser,
+          uniqueFirstAtom: uniqueFirstAtomParser,
           listDelimiter: listDelimiterParser,
           contentKey: contentKeyParser,
           subparticlesKey: subparticlesKeyParser,
@@ -1030,31 +1030,31 @@ extendsAtomTypeParser
       )
     }
     get parserIdAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class regexParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get regexAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
-  class reservedWordsParser extends ParserBackedParticle {
+  class reservedAtomsParser extends ParserBackedParticle {
     get atomPropertyNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
-    get reservedWordAtom() {
-      return this.getWordsFrom(1)
+    get reservedAtomAtom() {
+      return this.getAtomsFrom(1)
     }
   }
 
   class commentLineParser extends ParserBackedParticle {
     get commentAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -1063,16 +1063,16 @@ extendsAtomTypeParser
       return new Particle.ParserCombinator(commentLineParser, undefined, undefined)
     }
     get commentAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class extendsAtomTypeParser extends ParserBackedParticle {
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get atomTypeIdAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 

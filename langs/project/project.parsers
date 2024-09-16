@@ -103,10 +103,10 @@ fileParser
   _getDependencies() {
    return this.getSubparticles()
     .map(subparticle => {
-     const firstWord = subparticle.firstWord
+     const firstAtom = subparticle.firstAtom
      const subparticleFilePath = subparticle.filepathAtom.join(" ")
-     if (firstWord === "external") return ""
-     if (firstWord === "absolute") return subparticleFilePath
+     if (firstAtom === "external") return ""
+     if (firstAtom === "absolute") return subparticleFilePath
      const link = subparticleFilePath
      const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)

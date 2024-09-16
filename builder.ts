@@ -144,7 +144,7 @@ class Builder extends Particle {
     const outputFileName = productParticle.get("outputFileName")
     const inputFiles = productParticle
       .getParticle("combineTypeScriptFiles")
-      .getWordsFrom(1)
+      .getAtomsFrom(1)
       .map((filePath: string) => path.join(projectRootPath, filePath))
     const firstLine = productParticle.get("insertFirstLine") ? productParticle.get("insertFirstLine") + "\n" : ""
     const lastLine = productParticle.get("insertLastLine") ? productParticle.get("insertLastLine") : ""

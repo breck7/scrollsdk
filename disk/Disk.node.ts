@@ -46,7 +46,7 @@ class Disk {
   static readTsvAsParticles = (path: particlesTypes.filepath) => Disk.getParticle().fromTsv(Disk.read(path))
   static insertIntoFile = (path: particlesTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsParticles = (path: particlesTypes.filepath) => Disk.detectDelimiterAndReadAsParticles(Disk.read(path))
-  static getAllOf = (particle: particlesTypes.particle, prop: string) => particle.filter((particle: particlesTypes.particle) => particle.getWord(0) === prop)
+  static getAllOf = (particle: particlesTypes.particle, prop: string) => particle.filter((particle: particlesTypes.particle) => particle.getAtom(0) === prop)
   static getDelimitedParticlesAsParticles = (particle: particlesTypes.particle, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsParticles(particle.subparticlesToString())
   static sleep = (ms: particlesTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
   static readParticles = (path: particlesTypes.filepath) => new (Disk.getParticle())(Disk.read(path))

@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         quickParagraphParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           link: linkParser,
           paragraph: paragraphParser,
           code: codeParser,
@@ -166,19 +166,19 @@ quickParagraphParser
 
   class abstractTopLevelParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class linkParser extends abstractTopLevelParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get urlAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get textAtom() {
-      return this.getWordsFrom(2)
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -190,7 +190,7 @@ quickParagraphParser
 
   class paragraphContentParser extends ParserBackedParticle {
     get textAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -205,13 +205,13 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 
   class blankLineParser extends ParserBackedParticle {
     get blankAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -220,22 +220,22 @@ quickParagraphParser
       return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     get codeAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class dashParser extends ParserBackedParticle {
     get dashAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get textAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class titleParser extends abstractTopLevelParser {
     get textAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
     compile(spaces) {
       const title = this.content
@@ -246,7 +246,7 @@ quickParagraphParser
 
   class title2Parser extends abstractTopLevelParser {
     get textAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -260,7 +260,7 @@ quickParagraphParser
 
   class quickParagraphParser extends ParserBackedParticle {
     get textAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 

@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -96,7 +96,7 @@ errorParser
 
   class abstractValueParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -104,25 +104,25 @@ errorParser
 
   class numberParser extends abstractValueParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numberAtom() {
-      return parseFloat(this.getWord(1))
+      return parseFloat(this.getAtom(1))
     }
   }
 
   class stringParser extends abstractValueParser {
     get stringAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class booleanParser extends abstractValueParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get booleanAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
@@ -136,7 +136,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -146,12 +146,12 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
     get stringAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 

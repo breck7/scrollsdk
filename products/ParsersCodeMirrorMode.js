@@ -12,7 +12,7 @@ var CmToken
   CmToken["Error"] = "error"
   CmToken["Header"] = "header"
   CmToken["HR"] = "hr"
-  CmToken["Keyatom"] = "keyword"
+  CmToken["Keyword"] = "keyword"
   CmToken["Link"] = "link"
   CmToken["Meta"] = "meta"
   CmToken["Number"] = "number"
@@ -100,7 +100,7 @@ const tmToCm = {
     }
   },
   keyword: {
-    $: CmToken.Keyatom,
+    $: CmToken.Keyword,
     operator: {
       $: CmToken.Operator
     },
@@ -126,7 +126,7 @@ const tmToCm = {
     // },
   },
   storage: {
-    $: CmToken.Keyatom
+    $: CmToken.Keyword
   },
   string: {
     $: CmToken.String,

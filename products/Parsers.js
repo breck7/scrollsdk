@@ -819,12 +819,12 @@ class ParsersAnyAtom extends AbstractParsersBackedAtom {
     return this.getAtom()
   }
 }
-class ParsersKeyatomAtom extends ParsersAnyAtom {
+class ParsersKeywordAtom extends ParsersAnyAtom {
   _synthesizeAtom() {
     return this._parserDefinitionParser.cruxIfAny
   }
 }
-ParsersKeyatomAtom.defaultPaint = "keyword"
+ParsersKeywordAtom.defaultPaint = "keyword"
 class ParsersExtraAtomAtomTypeAtom extends AbstractParsersBackedAtom {
   _isValid() {
     return false
@@ -2229,7 +2229,7 @@ HandParsersProgram._languages = {}
 HandParsersProgram._parsers = {}
 const PreludeKinds = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
-PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeyatomAtom
+PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
 PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
@@ -2250,7 +2250,7 @@ class UnknownParsersProgram extends Particle {
       .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
     return rootParticle
   }
-  _renameIntegerKeyatoms(clone) {
+  _renameIntegerKeywords(clone) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtomIsAnInteger = !!particle.firstAtom.match(/^\d+$/)
@@ -2258,17 +2258,17 @@ class UnknownParsersProgram extends Particle {
       if (firstAtomIsAnInteger && parentFirstAtom) particle.setFirstAtom(HandParsersProgram.makeParserId(parentFirstAtom + UnknownParsersProgram._subparticleSuffix))
     }
   }
-  _getKeyatomMaps(clone) {
-    const keywordsToChildKeyatoms = {}
+  _getKeywordMaps(clone) {
+    const keywordsToChildKeywords = {}
     const keywordsToParticleInstances = {}
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtom = particle.firstAtom
-      if (!keywordsToChildKeyatoms[firstAtom]) keywordsToChildKeyatoms[firstAtom] = {}
+      if (!keywordsToChildKeywords[firstAtom]) keywordsToChildKeywords[firstAtom] = {}
       if (!keywordsToParticleInstances[firstAtom]) keywordsToParticleInstances[firstAtom] = []
       keywordsToParticleInstances[firstAtom].push(particle)
-      particle.forEach(subparticle => (keywordsToChildKeyatoms[firstAtom][subparticle.firstAtom] = true))
+      particle.forEach(subparticle => (keywordsToChildKeywords[firstAtom][subparticle.firstAtom] = true))
     }
-    return { keywordsToChildKeyatoms: keywordsToChildKeyatoms, keywordsToParticleInstances: keywordsToParticleInstances }
+    return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
   }
   _inferParserDef(firstAtom, globalAtomTypeMap, subparticleFirstAtoms, instances) {
     const edgeSymbol = this.edgeSymbol
@@ -2324,15 +2324,15 @@ class UnknownParsersProgram extends Particle {
   //      .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
   //    return rootParticle
   //  }
-  inferParsersFileForAKeyatomLanguage(parsersName) {
+  inferParsersFileForAKeywordLanguage(parsersName) {
     const clone = this.clone()
-    this._renameIntegerKeyatoms(clone)
-    const { keywordsToChildKeyatoms, keywordsToParticleInstances } = this._getKeyatomMaps(clone)
+    this._renameIntegerKeywords(clone)
+    const { keywordsToChildKeywords, keywordsToParticleInstances } = this._getKeywordMaps(clone)
     const globalAtomTypeMap = new Map()
     globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
-    const parserDefs = Object.keys(keywordsToChildKeyatoms)
+    const parserDefs = Object.keys(keywordsToChildKeywords)
       .filter(identity => identity)
-      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeyatoms[firstAtom]), keywordsToParticleInstances[firstAtom]))
+      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[firstAtom]), keywordsToParticleInstances[firstAtom]))
     const atomTypeDefs = []
     globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))
     const particleBreakSymbol = this.particleBreakSymbol

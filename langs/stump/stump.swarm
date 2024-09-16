@@ -82,5 +82,5 @@ test syntax
  toAtomTypeParticles
   assertParagraphIs
    htmlTagNameAtom
-    bernKeyatomAtom
+    bernKeywordAtom
      anyHtmlContentAtom anyHtmlContentAtom

@@ -15,7 +15,7 @@
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
 anyAtom
 keywordAtom
-commentKeyatomAtom
+commentKeywordAtom
  extends keywordAtom
  paint comment
  enum comment
@@ -27,11 +27,11 @@ selectorAtom
  paint keyword.control
  examples body h1
  // todo add html tags, css and ids selector regexes, etc
-vendorPrefixPropertyKeyatomAtom
+vendorPrefixPropertyKeywordAtom
  description Properties like -moz-column-fill
  paint variable.function
  extends keywordAtom
-propertyKeyatomAtom
+propertyKeywordAtom
  paint variable.function
  extends keywordAtom
  // todo Where are these coming from? Can we add a url link
@@ -75,20 +75,20 @@ propertyParser
   compile(spaces) {
    return \`\${spaces}\${this.firstAtom}: \${this.content};\`
   }
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
 variableParser
  extends propertyParser
  pattern --
 browserPrefixPropertyParser
  extends propertyParser
  pattern ^\\-\\w.+
- atoms vendorPrefixPropertyKeyatomAtom
+ atoms vendorPrefixPropertyKeywordAtom
 errorParser
  catchAllParser errorParser
  catchAllAtomType errorAtom
  baseParser errorParser
 commentParser
- atoms commentKeyatomAtom
+ atoms commentKeywordAtom
  catchAllAtomType commentAtom
  catchAllParser commentParser
 selectorParser
@@ -125,7 +125,7 @@ selectorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get cssValueAtom() {
@@ -139,7 +139,7 @@ selectorParser
   class variableParser extends propertyParser {}
 
   class browserPrefixPropertyParser extends propertyParser {
-    get vendorPrefixPropertyKeyatomAtom() {
+    get vendorPrefixPropertyKeywordAtom() {
       return this.getAtom(0)
     }
   }
@@ -160,7 +160,7 @@ selectorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(commentParser, undefined, undefined)
     }
-    get commentKeyatomAtom() {
+    get commentKeywordAtom() {
       return this.getAtom(0)
     }
     get commentAtom() {

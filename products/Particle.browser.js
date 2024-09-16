@@ -1072,7 +1072,7 @@ class Particle extends AbstractParticle {
     })
     return Object.keys(obj)
   }
-  getAncestorParticlesByInheritanceViaExtendsKeyatom(key) {
+  getAncestorParticlesByInheritanceViaExtendsKeyword(key) {
     const ancestorParticles = this._getAncestorParticles(
       (particle, id) => particle._getParticlesByColumn(0, id),
       particle => particle.get(key),

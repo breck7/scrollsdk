@@ -101,7 +101,7 @@ parserIdAtom
  extends javascriptSafeAlphaNumericIdentifierAtom
  enumFromAtomTypes parserIdAtom
 
-propertyKeyatomAtom
+propertyKeywordAtom
  paint constant.language
 
 regexAtom
@@ -167,7 +167,7 @@ blankLineParser
 
 abstractCompilerRuleParser
  catchAllAtomType anyAtom
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
 
 closeSubparticlesParser
  extends abstractCompilerRuleParser
@@ -201,31 +201,31 @@ joinSubparticlesWithParser
 
 abstractConstantParser
  description A constant.
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
  cruxFromId
  // todo: make tags inherit
  tags actPhase
 
 booleanParser
- atoms propertyKeyatomAtom constantIdentifierAtom
+ atoms propertyKeywordAtom constantIdentifierAtom
  catchAllAtomType boolAtom
  extends abstractConstantParser
  tags actPhase
 
 floatParser
- atoms propertyKeyatomAtom constantIdentifierAtom
+ atoms propertyKeywordAtom constantIdentifierAtom
  catchAllAtomType floatAtom
  extends abstractConstantParser
  tags actPhase
 
 intParser
- atoms propertyKeyatomAtom constantIdentifierAtom
+ atoms propertyKeywordAtom constantIdentifierAtom
  catchAllAtomType intAtom
  tags actPhase
  extends abstractConstantParser
 
 stringParser
- atoms propertyKeyatomAtom constantIdentifierAtom
+ atoms propertyKeywordAtom constantIdentifierAtom
  catchAllAtomType stringAtom
  catchAllParser catchAllMultilineStringConstantParser
  extends abstractConstantParser
@@ -233,10 +233,10 @@ stringParser
 
 abstractParserRuleParser
  single
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
 
 compilesToParser
- atoms propertyKeyatomAtom fileExtensionAtom
+ atoms propertyKeywordAtom fileExtensionAtom
  extends abstractParserRuleParser
  description File extension for simple compilers.
  // todo: deprecate?
@@ -256,7 +256,7 @@ abstractNonTerminalParserRuleParser
  extends abstractParserRuleParser
 
 baseParserParser
- atoms propertyKeyatomAtom baseParsersAtom
+ atoms propertyKeywordAtom baseParsersAtom
  description Set for blobs or errors. 
  // In rare cases with untyped content you can use a blobParser, for now, to skip parsing for performance gains. The base errorParser will report errors when parsed. Use that if you don't want to implement your own error parser.
  extends abstractParserRuleParser
@@ -264,7 +264,7 @@ baseParserParser
  tags analyzePhase
 
 catchAllAtomTypeParser
- atoms propertyKeyatomAtom atomTypeIdAtom
+ atoms propertyKeywordAtom atomTypeIdAtom
  description Use for lists.
  // Aka 'listAtomType'. Use this when the value in a key/value pair is a list. If there are extra atoms in the particle's line, parse these atoms as this type. Often used with \`listDelimiterParser\`.
  extends abstractParserRuleParser
@@ -272,7 +272,7 @@ catchAllAtomTypeParser
  tags analyzePhase
 
 atomParserParser
- atoms propertyKeyatomAtom atomParserAtom
+ atoms propertyKeywordAtom atomParserAtom
  description Set parsing strategy.
  // prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractParserRuleParser
@@ -282,7 +282,7 @@ atomParserParser
 catchAllParserParser
  description Attach this to unmatched lines.
  // If a parser is not found in the inScope list, instantiate this type of particle instead.
- atoms propertyKeyatomAtom parserIdAtom
+ atoms propertyKeywordAtom parserIdAtom
  extends abstractParserRuleParser
  cruxFromId
  tags acquirePhase
@@ -329,13 +329,13 @@ extendsParserParser
  tags assemblePhase
  description Extend another parser.
  // todo: add a catchall that is used for mixins
- atoms propertyKeyatomAtom parserIdAtom
+ atoms propertyKeywordAtom parserIdAtom
  extends abstractParserRuleParser
 
 popularityParser
  // todo Remove this parser. Switch to conditional frequencies.
  description Parser popularity.
- atoms propertyKeyatomAtom floatAtom
+ atoms propertyKeywordAtom floatAtom
  extends abstractParserRuleParser
  cruxFromId
  tags assemblePhase
@@ -376,13 +376,13 @@ abstractParseRuleParser
  cruxFromId
 
 cruxParser
- atoms propertyKeyatomAtom stringAtom
+ atoms propertyKeywordAtom stringAtom
  description Attach by matching first atom.
  extends abstractParseRuleParser
  tags acquirePhase
 
 cruxFromIdParser
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
  description Derive crux from parserId.
  // for example 'fooParser' would have crux of 'foo'.
  extends abstractParseRuleParser
@@ -518,7 +518,7 @@ atomMaxParser
  tags analyzePhase
 
 paintParser
- atoms propertyKeyatomAtom paintTypeAtom
+ atoms propertyKeywordAtom paintTypeAtom
  description Instructor editor how to color these.
  single
  cruxFromId
@@ -528,7 +528,7 @@ rootFlagParser
  crux root
  description Set root parser.
  // Mark a parser as root if it is the root of your language. The parserId will be the name of your language. The parserId will also serve as the default file extension, if you don't specify another. If more than 1 parser is marked as "root", the last one wins.
- atoms propertyKeyatomAtom
+ atoms propertyKeywordAtom
  tags assemblePhase
 
 parserDefinitionParser
@@ -570,7 +570,7 @@ extendsAtomTypeParser
  crux extends
  description Extend another atomType.
  // todo Add mixin support in addition to extends?
- atoms propertyKeyatomAtom atomTypeIdAtom
+ atoms propertyKeywordAtom atomTypeIdAtom
  tags assemblePhase
  single`)
     get handParsersProgram() {
@@ -586,7 +586,7 @@ extendsAtomTypeParser
   }
 
   class abstractCompilerRuleParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get anyAtom() {
@@ -607,13 +607,13 @@ extendsAtomTypeParser
   class joinSubparticlesWithParser extends abstractCompilerRuleParser {}
 
   class abstractConstantParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
   }
 
   class booleanParser extends abstractConstantParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -625,7 +625,7 @@ extendsAtomTypeParser
   }
 
   class floatParser extends abstractConstantParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -637,7 +637,7 @@ extendsAtomTypeParser
   }
 
   class intParser extends abstractConstantParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -652,7 +652,7 @@ extendsAtomTypeParser
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -664,13 +664,13 @@ extendsAtomTypeParser
   }
 
   class abstractParserRuleParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
   }
 
   class compilesToParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get fileExtensionAtom() {
@@ -687,7 +687,7 @@ extendsAtomTypeParser
   class abstractNonTerminalParserRuleParser extends abstractParserRuleParser {}
 
   class baseParserParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get baseParsersAtom() {
@@ -696,7 +696,7 @@ extendsAtomTypeParser
   }
 
   class catchAllAtomTypeParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get atomTypeIdAtom() {
@@ -705,7 +705,7 @@ extendsAtomTypeParser
   }
 
   class atomParserParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get atomParserAtom() {
@@ -714,7 +714,7 @@ extendsAtomTypeParser
   }
 
   class catchAllParserParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get parserIdAtom() {
@@ -767,7 +767,7 @@ extendsAtomTypeParser
   }
 
   class extendsParserParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get parserIdAtom() {
@@ -776,7 +776,7 @@ extendsAtomTypeParser
   }
 
   class popularityParser extends abstractParserRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get floatAtom() {
@@ -813,7 +813,7 @@ extendsAtomTypeParser
   class abstractParseRuleParser extends abstractParserRuleParser {}
 
   class cruxParser extends abstractParseRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get stringAtom() {
@@ -822,7 +822,7 @@ extendsAtomTypeParser
   }
 
   class cruxFromIdParser extends abstractParseRuleParser {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
   }
@@ -981,7 +981,7 @@ extendsAtomTypeParser
   }
 
   class paintParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get paintTypeAtom() {
@@ -990,7 +990,7 @@ extendsAtomTypeParser
   }
 
   class rootFlagParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
   }
@@ -1074,7 +1074,7 @@ extendsAtomTypeParser
   }
 
   class extendsAtomTypeParser extends ParserBackedParticle {
-    get propertyKeyatomAtom() {
+    get propertyKeywordAtom() {
       return this.getAtom(0)
     }
     get atomTypeIdAtom() {

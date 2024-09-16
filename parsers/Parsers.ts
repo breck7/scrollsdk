@@ -1021,7 +1021,7 @@ class ParsersAnyAtom extends AbstractParsersBackedAtom<string> {
   }
 }
 
-class ParsersKeyatomAtom extends ParsersAnyAtom {
+class ParsersKeywordAtom extends ParsersAnyAtom {
   static defaultPaint = "keyword"
 
   _synthesizeAtom() {
@@ -2745,7 +2745,7 @@ ${parserContexts}`
 
 const PreludeKinds: particlesTypes.stringMap = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
-PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeyatomAtom
+PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
 PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
@@ -2772,7 +2772,7 @@ class UnknownParsersProgram extends Particle {
 
   private static _subparticleSuffix = "Subparticle"
 
-  private _renameIntegerKeyatoms(clone: UnknownParsersProgram) {
+  private _renameIntegerKeywords(clone: UnknownParsersProgram) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtomIsAnInteger = !!particle.firstAtom.match(/^\d+$/)
@@ -2781,17 +2781,17 @@ class UnknownParsersProgram extends Particle {
     }
   }
 
-  private _getKeyatomMaps(clone: UnknownParsersProgram) {
-    const keywordsToChildKeyatoms: { [firstAtom: string]: particlesTypes.stringMap } = {}
+  private _getKeywordMaps(clone: UnknownParsersProgram) {
+    const keywordsToChildKeywords: { [firstAtom: string]: particlesTypes.stringMap } = {}
     const keywordsToParticleInstances: { [firstAtom: string]: Particle[] } = {}
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtom = particle.firstAtom
-      if (!keywordsToChildKeyatoms[firstAtom]) keywordsToChildKeyatoms[firstAtom] = {}
+      if (!keywordsToChildKeywords[firstAtom]) keywordsToChildKeywords[firstAtom] = {}
       if (!keywordsToParticleInstances[firstAtom]) keywordsToParticleInstances[firstAtom] = []
       keywordsToParticleInstances[firstAtom].push(particle)
-      particle.forEach((subparticle: Particle) => (keywordsToChildKeyatoms[firstAtom][subparticle.firstAtom] = true))
+      particle.forEach((subparticle: Particle) => (keywordsToChildKeywords[firstAtom][subparticle.firstAtom] = true))
     }
-    return { keywordsToChildKeyatoms: keywordsToChildKeyatoms, keywordsToParticleInstances: keywordsToParticleInstances }
+    return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
   }
 
   private _inferParserDef(firstAtom: string, globalAtomTypeMap: Map<string, string>, subparticleFirstAtoms: string[], instances: Particle[]) {
@@ -2859,17 +2859,17 @@ class UnknownParsersProgram extends Particle {
   //    return rootParticle
   //  }
 
-  inferParsersFileForAKeyatomLanguage(parsersName: string): string {
+  inferParsersFileForAKeywordLanguage(parsersName: string): string {
     const clone = <UnknownParsersProgram>this.clone()
-    this._renameIntegerKeyatoms(clone)
+    this._renameIntegerKeywords(clone)
 
-    const { keywordsToChildKeyatoms, keywordsToParticleInstances } = this._getKeyatomMaps(clone)
+    const { keywordsToChildKeywords, keywordsToParticleInstances } = this._getKeywordMaps(clone)
 
     const globalAtomTypeMap = new Map()
     globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
-    const parserDefs = Object.keys(keywordsToChildKeyatoms)
+    const parserDefs = Object.keys(keywordsToChildKeywords)
       .filter(identity => identity)
-      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeyatoms[firstAtom]), keywordsToParticleInstances[firstAtom]))
+      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[firstAtom]), keywordsToParticleInstances[firstAtom]))
 
     const atomTypeDefs: string[] = []
     globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))

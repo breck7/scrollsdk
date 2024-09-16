@@ -29,10 +29,10 @@ floatAtom
 commentAtom
  paint comment
 keywordAtom
-hashBangKeyatomAtom
+hashBangKeywordAtom
  extends keywordAtom
  paint comment
-commentKeyatomAtom
+commentKeywordAtom
  extends keywordAtom
  paint comment
  enum comment
@@ -92,14 +92,14 @@ commentParser
  description This is a line comment.
  catchAllAtomType commentAtom
  catchAllParser commentContentParser
- atoms commentKeyatomAtom
+ atoms commentKeywordAtom
 commentContentParser
  catchAllAtomType commentAtom
  catchAllParser commentContentParser
 
 hashBangParser
  crux #!
- atoms hashBangKeyatomAtom
+ atoms hashBangKeywordAtom
  catchAllAtomType commentAtom
 
 errorParser
@@ -165,7 +165,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
-    get commentKeyatomAtom() {
+    get commentKeywordAtom() {
       return this.getAtom(0)
     }
     get commentAtom() {
@@ -183,7 +183,7 @@ errorParser
   }
 
   class hashBangParser extends ParserBackedParticle {
-    get hashBangKeyatomAtom() {
+    get hashBangKeywordAtom() {
       return this.getAtom(0)
     }
     get commentAtom() {

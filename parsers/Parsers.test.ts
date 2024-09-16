@@ -439,7 +439,7 @@ testParticles.extraAtom = equal => {
   equal(
     program.toAtomTypeParticles(),
     `parserIdAtom
- propertyKeyatomAtom extraAtomAtom`
+ propertyKeywordAtom extraAtomAtom`
   )
 }
 

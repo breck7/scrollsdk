@@ -1166,7 +1166,7 @@ code
 📦 23.1.0 2019-05-21
 🎉 executeFiles method
 🎉 50% speed improvement in getExpanded and extend and ParsersProgram.newFromCondensed
-⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyatom
+⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
 ⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices
 
 📦 23.0.1 2019-05-20
@@ -1177,11 +1177,11 @@ code
 ⚠️ highlightScope is now defined only on atomTypes (no longer on nodeTypes)
 ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
 ⚠️ grammars should all define a "atomType any" if they have leave any firstAtomTypes undefined
-⚠️ getKeyatom is now getFirstAtom, getKeyatoms is getFirstAtoms, hasDuplicateKeyatoms is now hasDuplicateFirstAtoms, setKeyatom is now setFirstAtom, getKeyatomPath is getFirstAtomPath, pathVectorToKeyatomPath is pathVectorToFirstAtomPath, getKeyatomMap is getFirstAtomMap, keywordSort is firstAtomSort
-⚠️ in grammar, keyword is nodeType, catchAllKeyatom is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
-⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeyatomDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeyatomMap is now def.getRunTimeFirstAtomMap, def.getRunTimeKeyatomNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeyatomMapWithDefinitions is def.getRunTimeFirstAtomMapWithDefinitions, def.isOrExtendsAKeyatomInScope is def.isOrExtendsANodeTypeInScope, def.getKeyatomInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeyatomDefinitions is program def.getNodeTypeDefinitions, program.getKeyatomUsage is now getNodeTypeUsage, program.getKeyatomDefinitionByKeyatomPath is program.getNodeTypeDefinitionByFirstAtomPath, program.getInvalidKeyatoms is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
-⚠️ in stump, findStumpNodeByKeyatom is now findStumpNodeByFirstAtom
+⚠️ getKeyword is now getFirstAtom, getKeywords is getFirstAtoms, hasDuplicateKeywords is now hasDuplicateFirstAtoms, setKeyword is now setFirstAtom, getKeywordPath is getFirstAtomPath, pathVectorToKeywordPath is pathVectorToFirstAtomPath, getKeywordMap is getFirstAtomMap, keywordSort is firstAtomSort
+⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
+⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstAtomMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstAtomMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
+⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstAtomPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
+⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstAtom
 ⚠️ getLineSyntax is now getLineAtomTypes
 
 📦 22.3.0 2019-05-16
@@ -1255,7 +1255,7 @@ code
 🎉 getErrorsInGrammarExamples method on ParsersProgram
 
 📦 19.4.0 2019-04-24
-🎉 getKeyatomInheritanceSet method
+🎉 getKeywordInheritanceSet method
 
 📦 19.3.2 2019-04-23
 🏥 better error handling for incomplete grammars
@@ -1315,8 +1315,8 @@ code
 🎉 added @tags feature to grammar
 ⚠️ @atomType > @regex with `.?` should now be `.*`
 ⚠️ in @atomType > @regex now all @regex are enclosed by ^$ automatically
-⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeyatomDefinitionByName
-⚠️ _isOrExtendsAKeyatomInScope is now isOrExtendsAKeyatomInScope
+⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeywordDefinitionByName
+⚠️ _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope
 
 📦 17.1.3 2019-03-14
 🏥 added support for constructors with nested paths in grammar languages in browser
@@ -1330,7 +1330,7 @@ code
 📦 17.1.0 2019-03-13
 ⚠️ getCatchAllNodeClass is now getCatchAllNodeConstructor
 ⚠️ getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor
-🏥 catchAllKeyatoms can now instantiate a custom class
+🏥 catchAllKeywords can now instantiate a custom class
 🎉 checking a grammar programmatically now throws an error a constructor path in a grammar file does not exist
 🧹 added tap-mocha-reporter for clearer test run output
 
@@ -1356,7 +1356,7 @@ code
 🎉 for convenience added map, forEach, filter, find and slice methods aliasing getSubparticles().map ...
 🎉 sortByColumns method
 🎉 predictGrammarFile method
-🎉 getInvalidKeyatoms method
+🎉 getInvalidKeywords method
 🎉 @abstract keyword in grammars
 🎉 @any keyword in grammars
 🎉 any, bit, bool, float, int default atom types
@@ -1488,7 +1488,7 @@ code
 ⚠️ fromDelimited now requires quoteChar param
 ⚠️ toTable now accepts 0 params, use toFormattedTable to pass params
 ⚠️ getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
-⚠️ getKeyatomPath now takes no params, use getKeyatomPathRelativeTo
+⚠️ getKeywordPath now takes no params, use getKeywordPathRelativeTo
 ⚠️ getStack, getRootNode now take no params
 ⚠️ getAtoms now takes 0 params. use getAtomsFrom
 ⚠️ use getGraphByKey to getGraphByKey
@@ -1497,7 +1497,7 @@ code
 🎉 export ParsersProgram
 
 📦 11.4.0 2017-11-08
-⚠️ getGrammarUsage is now getKeyatomUsage
+⚠️ getGrammarUsage is now getKeywordUsage
 ⚠️ removed undocumented getNodeClasses, run, and getErrorCount methods
 
 📦 11.3.0 2017-11-07
@@ -1617,7 +1617,7 @@ code
 🏥 fix for executeFile static method when more than one #! line.
 
 📦 7.1.0 2017-9-15
-⚠️ Symbol is now Keyatom throughout. Same changes at 7.0.0, except substitute keyword for symbol.
+⚠️ Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.
 
 📦 7.0.0 2017-9-14
 ⚠️ getNodeTypes is now getSymbolMap

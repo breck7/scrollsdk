@@ -4,7 +4,7 @@ floatAtom
  paint constant.numeric.float
 intAtom
 keywordAtom
-commentKeyatomAtom
+commentKeywordAtom
  extends keywordAtom
  paint comment
  enum comment
@@ -32,7 +32,7 @@ irisParser
  catchAllParser rowParser
 commentParser
  catchAllAtomType commentAtom
- atoms commentKeyatomAtom
+ atoms commentKeywordAtom
 headerParser
  // todo get this working? should we do a catchAllParserStack?
  catchAllAtomType headerAtom

@@ -13,7 +13,7 @@ enum CmToken {
   Error = "error",
   Header = "header",
   HR = "hr",
-  Keyatom = "keyword",
+  Keyword = "keyword",
   Link = "link",
   Meta = "meta",
   Number = "number",
@@ -106,7 +106,7 @@ const tmToCm = {
   },
 
   keyword: {
-    $: CmToken.Keyatom,
+    $: CmToken.Keyword,
     operator: {
       $: CmToken.Operator
     },
@@ -133,7 +133,7 @@ const tmToCm = {
   },
 
   storage: {
-    $: CmToken.Keyatom
+    $: CmToken.Keyword
   },
 
   string: {

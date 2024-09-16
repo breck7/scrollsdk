@@ -39,7 +39,7 @@
 anyAtom
  paint string
  examples lorem ipsum
-assertionKeyatomAtom
+assertionKeywordAtom
  paint keyword.operator
  extends keywordAtom
 commandAtom
@@ -52,7 +52,7 @@ filepathAtom
  examples foobar.foo someFile.foo
  paint string
 keywordAtom
-hashBangKeyatomAtom
+hashBangKeywordAtom
  extends keywordAtom
  paint comment
  enum #!
@@ -61,12 +61,12 @@ hashBangAtom
 intAtom
  regex \\-?[0-9]+
  paint constant.numeric.integer
-parameterKeyatomAtom
+parameterKeywordAtom
  extends keywordAtom
  paint variable.parameter
 todoAtom
  paint comment
-todoKeyatomAtom
+todoKeywordAtom
  extends keywordAtom
  paint comment
 typeOfOptionAtom
@@ -136,7 +136,7 @@ abstractAssertionParser
   getSyncExpected() {
    return this.content
   }
- atoms assertionKeyatomAtom
+ atoms assertionKeywordAtom
 assertParagraphIsParser
  crux assertParagraphIs
  description When your expected value is a multiline string.
@@ -152,7 +152,7 @@ assertParagraphIsParser
 assertLengthIsParser
  crux assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
- atoms assertionKeyatomAtom intAtom
+ atoms assertionKeywordAtom intAtom
  javascript
   parseActual(actual) {
    return actual.length
@@ -193,7 +193,7 @@ assertStringIsParser
 assertTypeIsParser
  crux assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
- atoms assertionKeyatomAtom typeOfOptionAtom
+ atoms assertionKeywordAtom typeOfOptionAtom
  javascript
   parseActual(actual) {
    return typeof actual
@@ -263,7 +263,7 @@ skipTestParser
 hashbangParser
  crux #!
  description Standard bash hashbang line.
- atoms hashBangKeyatomAtom hashBangAtom
+ atoms hashBangKeywordAtom hashBangAtom
  catchAllAtomType hashBangAtom
 arrangeParser
  crux arrange
@@ -306,7 +306,7 @@ withParagraphParser
  javascript
   executeSync() {}
  catchAllParser paragraphLineParser
- atoms parameterKeyatomAtom
+ atoms parameterKeywordAtom
  crux withParagraph
 actParser
  javascript
@@ -359,7 +359,7 @@ todoParser
  catchAllAtomType todoAtom
  catchAllParser todoParser
  crux todo
- atoms todoKeyatomAtom`)
+ atoms todoKeywordAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -367,7 +367,7 @@ todoParser
   }
 
   class abstractAssertionParser extends ParserBackedParticle {
-    get assertionKeyatomAtom() {
+    get assertionKeywordAtom() {
       return this.getAtom(0)
     }
     async execute(arrangedInstance) {
@@ -420,7 +420,7 @@ todoParser
   }
 
   class assertLengthIsParser extends abstractAssertionParser {
-    get assertionKeyatomAtom() {
+    get assertionKeywordAtom() {
       return this.getAtom(0)
     }
     get intAtom() {
@@ -465,7 +465,7 @@ todoParser
   }
 
   class assertTypeIsParser extends abstractAssertionParser {
-    get assertionKeyatomAtom() {
+    get assertionKeywordAtom() {
       return this.getAtom(0)
     }
     get typeOfOptionAtom() {
@@ -551,7 +551,7 @@ todoParser
   }
 
   class hashbangParser extends ParserBackedParticle {
-    get hashBangKeyatomAtom() {
+    get hashBangKeywordAtom() {
       return this.getAtom(0)
     }
     get hashBangAtom() {
@@ -609,7 +609,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
-    get parameterKeyatomAtom() {
+    get parameterKeywordAtom() {
       return this.getAtom(0)
     }
     executeSync() {}
@@ -697,7 +697,7 @@ todoParser
     createParserCombinator() {
       return new Particle.ParserCombinator(todoParser, undefined, undefined)
     }
-    get todoKeyatomAtom() {
+    get todoKeywordAtom() {
       return this.getAtom(0)
     }
     get todoAtom() {

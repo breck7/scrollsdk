@@ -50,7 +50,7 @@ class DesignerApp extends AbstractParticleComponentParser {
   }
 
   inferPrefixParsersCommand() {
-    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeyatomLanguage("inferredLanguage"))
+    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
     this._onParsersKeyup()
   }
 

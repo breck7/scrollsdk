@@ -148,7 +148,7 @@ htmlAttributeNameAtom
  paint entity.name.type
  extends keywordAtom
  enum accept accept-charset accesskey action align alt async autocomplete autofocus autoplay bgcolor border charset checked class color cols colspan content contenteditable controls coords datetime default defer dir dirname disabled download draggable dropzone enctype for formaction headers height hidden high href hreflang http-equiv id ismap kind lang list loop low max maxlength media method min multiple muted name novalidate onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel open optimum pattern placeholder poster preload property readonly rel required reversed rows rowspan sandbox scope selected shape size sizes spellcheck src srcdoc srclang srcset start step style tabindex target title translate type usemap value width wrap
-bernKeywordAtom
+bernKeyatomAtom
  enum bern
  extends keywordAtom
 
@@ -244,19 +244,19 @@ htmlTagParser
   }
   addClassToStumpParticle(className) {
    const classParser = this.touchParticle("class")
-   const words = classParser.getAtomsFrom(1)
+   const atoms = classParser.getAtomsFrom(1)
    // note: we call add on shadow regardless, because at the moment stump may have gotten out of
    // sync with shadow, if things modified the dom. todo: cleanup.
    this.getShadow().addClassToShadow(className)
-   if (words.includes(className)) return this
-   words.push(className)
-   classParser.setContent(words.join(this.wordBreakSymbol))
+   if (atoms.includes(className)) return this
+   atoms.push(className)
+   classParser.setContent(atoms.join(this.atomBreakSymbol))
    return this
   }
   removeClassFromStumpParticle(className) {
    const classParser = this.getParticle("class")
    if (!classParser) return this
-   const newClasses = classParser.words.filter(word => word !== className)
+   const newClasses = classParser.atoms.filter(atom => atom !== className)
    if (!newClasses.length) classParser.destroy()
    else classParser.setContent(newClasses.join(" "))
    this.getShadow().removeClassFromShadow(className)
@@ -264,7 +264,7 @@ htmlTagParser
   }
   stumpParticleHasClass(className) {
    const classParser = this.getParticle("class")
-   return classParser && classParser.words.includes(className) ? true : false
+   return classParser && classParser.atoms.includes(className) ? true : false
   }
   isStumpParticleCheckbox() {
    return this.get("type") === "checkbox"
@@ -319,7 +319,7 @@ htmlTagParser
      particle.has("class") &&
      particle
       .getParticle("class")
-      .words
+      .atoms
       .includes(className)
    )
   }
@@ -395,7 +395,7 @@ bernParser
    return this.subparticlesToString()
   }
   getTextContent() {return ""}
- atoms bernKeywordAtom`)
+ atoms bernKeyatomAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -775,19 +775,19 @@ bernParser
     }
     addClassToStumpParticle(className) {
       const classParser = this.touchParticle("class")
-      const words = classParser.getAtomsFrom(1)
+      const atoms = classParser.getAtomsFrom(1)
       // note: we call add on shadow regardless, because at the moment stump may have gotten out of
       // sync with shadow, if things modified the dom. todo: cleanup.
       this.getShadow().addClassToShadow(className)
-      if (words.includes(className)) return this
-      words.push(className)
-      classParser.setContent(words.join(this.wordBreakSymbol))
+      if (atoms.includes(className)) return this
+      atoms.push(className)
+      classParser.setContent(atoms.join(this.atomBreakSymbol))
       return this
     }
     removeClassFromStumpParticle(className) {
       const classParser = this.getParticle("class")
       if (!classParser) return this
-      const newClasses = classParser.words.filter(word => word !== className)
+      const newClasses = classParser.atoms.filter(atom => atom !== className)
       if (!newClasses.length) classParser.destroy()
       else classParser.setContent(newClasses.join(" "))
       this.getShadow().removeClassFromShadow(className)
@@ -795,7 +795,7 @@ bernParser
     }
     stumpParticleHasClass(className) {
       const classParser = this.getParticle("class")
-      return classParser && classParser.words.includes(className) ? true : false
+      return classParser && classParser.atoms.includes(className) ? true : false
     }
     isStumpParticleCheckbox() {
       return this.get("type") === "checkbox"
@@ -844,7 +844,7 @@ bernParser
       return this.topDownArray.filter(particle => particle.doesExtend("htmlTagParser") && particle.hasLine(line))
     }
     findStumpParticlesWithClass(className) {
-      return this.topDownArray.filter(particle => particle.doesExtend("htmlTagParser") && particle.has("class") && particle.getParticle("class").words.includes(className))
+      return this.topDownArray.filter(particle => particle.doesExtend("htmlTagParser") && particle.has("class") && particle.getParticle("class").atoms.includes(className))
     }
     getShadowClass() {
       return this.parent.getShadowClass()
@@ -940,7 +940,7 @@ bernParser
     createParserCombinator() {
       return new Particle.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
-    get bernKeywordAtom() {
+    get bernKeyatomAtom() {
       return this.getAtom(0)
     }
     get isTileAttribute() {

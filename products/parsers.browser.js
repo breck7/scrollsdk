@@ -9,7 +9,7 @@
     }
     static cachedHandParsersProgramRoot =
       new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support parsers split across multiple files, and better enable parsers from compositions of reusable bits?
-// todo Do error checking for if you have a firstwordAtomType, atoms, and/or catchAllAtomType with same name.
+// todo Do error checking for if you have a firstatomAtomType, atoms, and/or catchAllAtomType with same name.
 // todo Add enumOption root level type?
 // todo compile atoms. add javascript property. move getRunTimeEnumOptions to atoms.
 
@@ -51,7 +51,7 @@ constantIdentifierAtom
  // todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\\w+
  paint constant.other
- description A word that can be assigned to the parser in the target language.
+ description A atom that can be assigned to the parser in the target language.
 
 constructorFilePathAtom
 
@@ -95,18 +95,18 @@ parserIdAtom
  extends javascriptSafeAlphaNumericIdentifierAtom
  enumFromAtomTypes parserIdAtom
 
-propertyKeywordAtom
+propertyKeyatomAtom
  paint constant.language
 
 regexAtom
  paint string.regexp
 
 reservedAtomAtom
- description A word that a atom cannot contain.
+ description A atom that a atom cannot contain.
  paint string
 
 paintTypeAtom
- enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
+ enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.atom keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  paint string
 
 scriptUrlAtom
@@ -123,7 +123,7 @@ stringAtom
 tagAtom
  paint string
 
-wordAtom
+atomAtom
  regex [a-zA-Z]+
  paint variable.parameter
 
@@ -161,7 +161,7 @@ blankLineParser
 
 abstractCompilerRuleParser
  catchAllAtomType anyAtom
- atoms propertyKeywordAtom
+ atoms propertyKeyatomAtom
 
 closeSubparticlesParser
  extends abstractCompilerRuleParser
@@ -195,31 +195,31 @@ joinSubparticlesWithParser
 
 abstractConstantParser
  description A constant.
- atoms propertyKeywordAtom
+ atoms propertyKeyatomAtom
  cruxFromId
  // todo: make tags inherit
  tags actPhase
 
 booleanParser
- atoms propertyKeywordAtom constantIdentifierAtom
+ atoms propertyKeyatomAtom constantIdentifierAtom
  catchAllAtomType boolAtom
  extends abstractConstantParser
  tags actPhase
 
 floatParser
- atoms propertyKeywordAtom constantIdentifierAtom
+ atoms propertyKeyatomAtom constantIdentifierAtom
  catchAllAtomType floatAtom
  extends abstractConstantParser
  tags actPhase
 
 intParser
- atoms propertyKeywordAtom constantIdentifierAtom
+ atoms propertyKeyatomAtom constantIdentifierAtom
  catchAllAtomType intAtom
  tags actPhase
  extends abstractConstantParser
 
 stringParser
- atoms propertyKeywordAtom constantIdentifierAtom
+ atoms propertyKeyatomAtom constantIdentifierAtom
  catchAllAtomType stringAtom
  catchAllParser catchAllMultilineStringConstantParser
  extends abstractConstantParser
@@ -227,10 +227,10 @@ stringParser
 
 abstractParserRuleParser
  single
- atoms propertyKeywordAtom
+ atoms propertyKeyatomAtom
 
 compilesToParser
- atoms propertyKeywordAtom fileExtensionAtom
+ atoms propertyKeyatomAtom fileExtensionAtom
  extends abstractParserRuleParser
  description File extension for simple compilers.
  // todo: deprecate?
@@ -250,7 +250,7 @@ abstractNonTerminalParserRuleParser
  extends abstractParserRuleParser
 
 baseParserParser
- atoms propertyKeywordAtom baseParsersAtom
+ atoms propertyKeyatomAtom baseParsersAtom
  description Set for blobs or errors. 
  // In rare cases with untyped content you can use a blobParser, for now, to skip parsing for performance gains. The base errorParser will report errors when parsed. Use that if you don't want to implement your own error parser.
  extends abstractParserRuleParser
@@ -258,15 +258,15 @@ baseParserParser
  tags analyzePhase
 
 catchAllAtomTypeParser
- atoms propertyKeywordAtom atomTypeIdAtom
+ atoms propertyKeyatomAtom atomTypeIdAtom
  description Use for lists.
- // Aka 'listAtomType'. Use this when the value in a key/value pair is a list. If there are extra words in the particle's line, parse these words as this type. Often used with \`listDelimiterParser\`.
+ // Aka 'listAtomType'. Use this when the value in a key/value pair is a list. If there are extra atoms in the particle's line, parse these atoms as this type. Often used with \`listDelimiterParser\`.
  extends abstractParserRuleParser
  cruxFromId
  tags analyzePhase
 
 atomParserParser
- atoms propertyKeywordAtom atomParserAtom
+ atoms propertyKeyatomAtom atomParserAtom
  description Set parsing strategy.
  // prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractParserRuleParser
@@ -276,7 +276,7 @@ atomParserParser
 catchAllParserParser
  description Attach this to unmatched lines.
  // If a parser is not found in the inScope list, instantiate this type of particle instead.
- atoms propertyKeywordAtom parserIdAtom
+ atoms propertyKeyatomAtom parserIdAtom
  extends abstractParserRuleParser
  cruxFromId
  tags acquirePhase
@@ -323,13 +323,13 @@ extendsParserParser
  tags assemblePhase
  description Extend another parser.
  // todo: add a catchall that is used for mixins
- atoms propertyKeywordAtom parserIdAtom
+ atoms propertyKeyatomAtom parserIdAtom
  extends abstractParserRuleParser
 
 popularityParser
  // todo Remove this parser. Switch to conditional frequencies.
  description Parser popularity.
- atoms propertyKeywordAtom floatAtom
+ atoms propertyKeyatomAtom floatAtom
  extends abstractParserRuleParser
  cruxFromId
  tags assemblePhase
@@ -370,13 +370,13 @@ abstractParseRuleParser
  cruxFromId
 
 cruxParser
- atoms propertyKeywordAtom stringAtom
- description Attach by matching first word.
+ atoms propertyKeyatomAtom stringAtom
+ description Attach by matching first atom.
  extends abstractParseRuleParser
  tags acquirePhase
 
 cruxFromIdParser
- atoms propertyKeywordAtom
+ atoms propertyKeyatomAtom
  description Derive crux from parserId.
  // for example 'fooParser' would have crux of 'foo'.
  extends abstractParseRuleParser
@@ -412,7 +412,7 @@ uniqueLineParser
  tags analyzePhase
 
 uniqueFirstAtomParser
- description Assert unique first words. For pattern parsers.
+ description Assert unique first atoms. For pattern parsers.
  // For catch all parsers or pattern particles, use this to indicate the 
  extends abstractValidationRuleParser
  tags analyzePhase
@@ -512,7 +512,7 @@ atomMaxParser
  tags analyzePhase
 
 paintParser
- atoms propertyKeywordAtom paintTypeAtom
+ atoms propertyKeyatomAtom paintTypeAtom
  description Instructor editor how to color these.
  single
  cruxFromId
@@ -522,7 +522,7 @@ rootFlagParser
  crux root
  description Set root parser.
  // Mark a parser as root if it is the root of your language. The parserId will be the name of your language. The parserId will also serve as the default file extension, if you don't specify another. If more than 1 parser is marked as "root", the last one wins.
- atoms propertyKeywordAtom
+ atoms propertyKeyatomAtom
  tags assemblePhase
 
 parserDefinitionParser
@@ -564,7 +564,7 @@ extendsAtomTypeParser
  crux extends
  description Extend another atomType.
  // todo Add mixin support in addition to extends?
- atoms propertyKeywordAtom atomTypeIdAtom
+ atoms propertyKeyatomAtom atomTypeIdAtom
  tags assemblePhase
  single`)
     get handParsersProgram() {
@@ -580,7 +580,7 @@ extendsAtomTypeParser
   }
 
   class abstractCompilerRuleParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get anyAtom() {
@@ -601,13 +601,13 @@ extendsAtomTypeParser
   class joinSubparticlesWithParser extends abstractCompilerRuleParser {}
 
   class abstractConstantParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
   }
 
   class booleanParser extends abstractConstantParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -619,7 +619,7 @@ extendsAtomTypeParser
   }
 
   class floatParser extends abstractConstantParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -631,7 +631,7 @@ extendsAtomTypeParser
   }
 
   class intParser extends abstractConstantParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -646,7 +646,7 @@ extendsAtomTypeParser
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get constantIdentifierAtom() {
@@ -658,13 +658,13 @@ extendsAtomTypeParser
   }
 
   class abstractParserRuleParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
   }
 
   class compilesToParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get fileExtensionAtom() {
@@ -681,7 +681,7 @@ extendsAtomTypeParser
   class abstractNonTerminalParserRuleParser extends abstractParserRuleParser {}
 
   class baseParserParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get baseParsersAtom() {
@@ -690,7 +690,7 @@ extendsAtomTypeParser
   }
 
   class catchAllAtomTypeParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get atomTypeIdAtom() {
@@ -699,7 +699,7 @@ extendsAtomTypeParser
   }
 
   class atomParserParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get atomParserAtom() {
@@ -708,7 +708,7 @@ extendsAtomTypeParser
   }
 
   class catchAllParserParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get parserIdAtom() {
@@ -761,7 +761,7 @@ extendsAtomTypeParser
   }
 
   class extendsParserParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get parserIdAtom() {
@@ -770,7 +770,7 @@ extendsAtomTypeParser
   }
 
   class popularityParser extends abstractParserRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get floatAtom() {
@@ -807,7 +807,7 @@ extendsAtomTypeParser
   class abstractParseRuleParser extends abstractParserRuleParser {}
 
   class cruxParser extends abstractParseRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get stringAtom() {
@@ -816,7 +816,7 @@ extendsAtomTypeParser
   }
 
   class cruxFromIdParser extends abstractParseRuleParser {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
   }
@@ -975,7 +975,7 @@ extendsAtomTypeParser
   }
 
   class paintParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get paintTypeAtom() {
@@ -984,7 +984,7 @@ extendsAtomTypeParser
   }
 
   class rootFlagParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
   }
@@ -1068,7 +1068,7 @@ extendsAtomTypeParser
   }
 
   class extendsAtomTypeParser extends ParserBackedParticle {
-    get propertyKeywordAtom() {
+    get propertyKeyatomAtom() {
       return this.getAtom(0)
     }
     get atomTypeIdAtom() {

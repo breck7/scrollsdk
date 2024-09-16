@@ -48,7 +48,7 @@ thinColumns 4
 ⚠️ BREAKING: This is a MAJOR rewrite of the ScrollSDK.
 ⚠️ BREAKING: Scroll Notation is now Particles
 ⚠️ BREAKING: Nodes/Trees are now referred to universally as Particles.
-⚠️ BREAKING: EVERYWHERE the word tree or node was used, now we use the word particle.
+⚠️ BREAKING: EVERYWHERE the atom tree or node was used, now we use the atom particle.
 
 📦 83.1.0 2024-8-26
 🎉 Parsers: tag parsers for better documentation
@@ -219,7 +219,7 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
  - getNodeTypeId > nodeTypeId
  - getTableNameIfAny > tableNameIfAny
  - getEdgeSymbol > edgeSymbol
- - getAtomBreakSymbol > wordBreakSymbol
+ - getAtomBreakSymbol > atomBreakSymbol
  - getNodeBreakSymbol > nodeBreakSymbol
  - On errors:
   - getMessage > message
@@ -268,19 +268,19 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 
 TrueBaseFolder:
 loop
- words makeId getFile rename createFile searchIndex
+ atoms makeId getFile rename createFile searchIndex
  javascript `<code>${item}</code>`
  join  
 
 TrueBaseFile:
 loop
- words sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
+ atoms sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
  javascript `<code>${item}</code>`
  join  
 
 TrueBaseServer:
 loop
- words applyPatch validateSubmission
+ atoms applyPatch validateSubmission
  javascript `<code>${item}</code>`
 
 📦 67.2.0 2023-2-12
@@ -305,7 +305,7 @@ table
   getParent() parent
   getContent() content
   getRootNode() root
-  getAtoms() words
+  getAtoms() atoms
   getFirstAtom() firstAtom
 
 📦 65.4.0 2023-2-6
@@ -450,7 +450,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 minor dependency bump
 
 📦 56.0.0 2022-08-31
-⚠️ BREAKING: removed the keyword `abstract` from Grammar Language. Grammar Language is now a suffix AND prefix language. The functionality of abstract node type definitions is identical, but now instead of flagging them with the `abstract` keyword, you need to ensure that the node type definition id begins with the word `abstract`. This turned out to be the best design pattern already, so you may already do this, and then the migration step is simple—just delete all occurrences of `/^ abstract\n/` in your `*.grammar` files. In the rare chance you have any nodes that are not abstract whose id's begin with the prefix `abstract`, you will need to give those nodes a new id.
+⚠️ BREAKING: removed the keyword `abstract` from Grammar Language. Grammar Language is now a suffix AND prefix language. The functionality of abstract node type definitions is identical, but now instead of flagging them with the `abstract` keyword, you need to ensure that the node type definition id begins with the atom `abstract`. This turned out to be the best design pattern already, so you may already do this, and then the migration step is simple—just delete all occurrences of `/^ abstract\n/` in your `*.grammar` files. In the rare chance you have any nodes that are not abstract whose id's begin with the prefix `abstract`, you will need to give those nodes a new id.
 
 📦 55.1.1 2022-08-18
 🏥 TrueBase: fixed error reporting bug.
@@ -795,8 +795,8 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 migrated Sandbox and Designer apps to PCF
 
 📦 40.1.0 2019-09-08
-🏥 missing words now trigger "MissingAtom" error instead of "InvalidAtom"
-🏥 fixed bug in codemirror where a missing word would break syntax highlighting of remaining words
+🏥 missing atoms now trigger "MissingAtom" error instead of "InvalidAtom"
+🏥 fixed bug in codemirror where a missing atom would break syntax highlighting of remaining atoms
 🏥 bug fix in Disk
 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
 
@@ -972,7 +972,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 fixed 2.5x test speed regression and got them back down to 2s
 
 📦 31.0.0 2019-07-05
-🎉 added "joinChildrenWith" word to compiler nodeTypes in grammar language
+🎉 added "joinChildrenWith" atom to compiler nodeTypes in grammar language
 🎉 added "dug" language which compiles to JSON
 🎉 improved documentation for grammar compiler nodeTypes
 🎉 in compiler nodes, and generated classes, you can now access the firstAtomType in this.atoms just like other atoms
@@ -994,7 +994,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ no more "constructors" node for nodeTypes or root programs.
 
 📦 28.0.0 2019-07-02
-🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
+🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first atom match
 🎉 "reservedAtoms" attribute on atomTypes in Grammar Language
 ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
 ⚠️ compileParsers method is now compileParsersForNodeJs and compileParsersForBrowser
@@ -1067,7 +1067,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 added support for "tooling" directives in Grammar language
 🎉 getFirstNode method
 🎉 getNodeTypeId on NonRootRunTime nodes
-🎉 findNodes in base can now take an array of first words
+🎉 findNodes in base can now take an array of first atoms
 🎉 "nodeType javascript" property
 🎉 add custom javascript to rootNodeTypes in grammar files
 ⚠️ stamp.js script is now stamp.cli.js
@@ -1166,7 +1166,7 @@ code
 📦 23.1.0 2019-05-21
 🎉 executeFiles method
 🎉 50% speed improvement in getExpanded and extend and ParsersProgram.newFromCondensed
-⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
+⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyatom
 ⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices
 
 📦 23.0.1 2019-05-20
@@ -1177,11 +1177,11 @@ code
 ⚠️ highlightScope is now defined only on atomTypes (no longer on nodeTypes)
 ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
 ⚠️ grammars should all define a "atomType any" if they have leave any firstAtomTypes undefined
-⚠️ getKeyword is now getFirstAtom, getKeywords is getFirstAtoms, hasDuplicateKeywords is now hasDuplicateFirstAtoms, setKeyword is now setFirstAtom, getKeywordPath is getFirstAtomPath, pathVectorToKeywordPath is pathVectorToFirstAtomPath, getKeywordMap is getFirstAtomMap, keywordSort is firstAtomSort
-⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
-⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstAtomMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstAtomMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstAtomPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
-⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstAtom
+⚠️ getKeyatom is now getFirstAtom, getKeyatoms is getFirstAtoms, hasDuplicateKeyatoms is now hasDuplicateFirstAtoms, setKeyatom is now setFirstAtom, getKeyatomPath is getFirstAtomPath, pathVectorToKeyatomPath is pathVectorToFirstAtomPath, getKeyatomMap is getFirstAtomMap, keywordSort is firstAtomSort
+⚠️ in grammar, keyword is nodeType, catchAllKeyatom is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
+⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeyatomDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeyatomMap is now def.getRunTimeFirstAtomMap, def.getRunTimeKeyatomNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeyatomMapWithDefinitions is def.getRunTimeFirstAtomMapWithDefinitions, def.isOrExtendsAKeyatomInScope is def.isOrExtendsANodeTypeInScope, def.getKeyatomInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
+⚠️ program.getKeyatomDefinitions is program def.getNodeTypeDefinitions, program.getKeyatomUsage is now getNodeTypeUsage, program.getKeyatomDefinitionByKeyatomPath is program.getNodeTypeDefinitionByFirstAtomPath, program.getInvalidKeyatoms is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
+⚠️ in stump, findStumpNodeByKeyatom is now findStumpNodeByFirstAtom
 ⚠️ getLineSyntax is now getLineAtomTypes
 
 📦 22.3.0 2019-05-16
@@ -1221,14 +1221,14 @@ code
 🎉 grammar name keyword
 🎉 atoms property on grammar non-root runtime nodes
 🎉 makeGraphSort function. Also now used in grammar file prettification
-⚠️ in grammar language: wordType to atomType, columns to atoms, catchAllColumn to catchAllAtomType
-⚠️ removed ability in grammar files to have a wordType and keyword share the same name
+⚠️ in grammar language: atomType to atomType, columns to atoms, catchAllColumn to catchAllAtomType
+⚠️ removed ability in grammar files to have a atomType and keyword share the same name
 ⚠️ getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
 ⚠️ instead of "grammar parsersName" oneliner now use the grammar name keyword
 ⚠️ removed parseWith atomType property
 ⚠️ removed jtree.getLanguage. Instead do require('.../langs/...').
 ⚠️ in grammar keywordTable now enumFromGrammar
-🏥 all word types now have default regex of [^ ]* so no need to specify it
+🏥 all atom types now have default regex of [^ ]* so no need to specify it
 🏥 grammar code cleanup
 🏥 small fixes to grammar sandbox
 🧹 repo folder cleanup
@@ -1255,7 +1255,7 @@ code
 🎉 getErrorsInGrammarExamples method on ParsersProgram
 
 📦 19.4.0 2019-04-24
-🎉 getKeywordInheritanceSet method
+🎉 getKeyatomInheritanceSet method
 
 📦 19.3.2 2019-04-23
 🏥 better error handling for incomplete grammars
@@ -1264,10 +1264,10 @@ code
 🏥 grammar checking of grammar files now only checks constructors if in correct env
 
 📦 19.3.0 2019-04-22
-🎉 autocomplete for words beyond keywords
+🎉 autocomplete for atoms beyond keywords
 🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getAtomIndexAtCharacterIndex, getAtomProperties, getAtomBoundaryIndices,   getAllAtomBoundaryCoordinates
 🎉 on runtime programs: getAutocompleteAtomsAt and getAllSuggestions
-🎉 getAutocompleteResults now provides descriptions, if present, along with completion word
+🎉 getAutocompleteResults now provides descriptions, if present, along with completion atom
 🏥 error highlight scope fixes
 ⚠️ instead of getAutocompleteAtoms use getAutocompleteAtomsAt
 
@@ -1309,14 +1309,14 @@ code
 📦 18.0.0 2019-03-24
 🎉 basic .sublime-syntax file generation works. Scopes not yet integrated.
 🎉 added gen command to cli.js for generating syntax files
-🎉 added @highlightScope property to @keyword and @wordType in grammar language
+🎉 added @highlightScope property to @keyword and @atomType in grammar language
 🎉 added @required feature to grammar with appropriate error messages
 🎉 added @single feature to grammar with appropriate error messages
 🎉 added @tags feature to grammar
-⚠️ @wordType > @regex with `.?` should now be `.*`
-⚠️ in @wordType > @regex now all @regex are enclosed by ^$ automatically
-⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeywordDefinitionByName
-⚠️ _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope
+⚠️ @atomType > @regex with `.?` should now be `.*`
+⚠️ in @atomType > @regex now all @regex are enclosed by ^$ automatically
+⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeyatomDefinitionByName
+⚠️ _isOrExtendsAKeyatomInScope is now isOrExtendsAKeyatomInScope
 
 📦 17.1.3 2019-03-14
 🏥 added support for constructors with nested paths in grammar languages in browser
@@ -1330,7 +1330,7 @@ code
 📦 17.1.0 2019-03-13
 ⚠️ getCatchAllNodeClass is now getCatchAllNodeConstructor
 ⚠️ getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor
-🏥 catchAllKeywords can now instantiate a custom class
+🏥 catchAllKeyatoms can now instantiate a custom class
 🎉 checking a grammar programmatically now throws an error a constructor path in a grammar file does not exist
 🧹 added tap-mocha-reporter for clearer test run output
 
@@ -1356,10 +1356,10 @@ code
 🎉 for convenience added map, forEach, filter, find and slice methods aliasing getSubparticles().map ...
 🎉 sortByColumns method
 🎉 predictGrammarFile method
-🎉 getInvalidKeywords method
+🎉 getInvalidKeyatoms method
 🎉 @abstract keyword in grammars
 🎉 @any keyword in grammars
-🎉 any, bit, bool, float, int default word types
+🎉 any, bit, bool, float, int default atom types
 🎉 toDisk method in node.js version
 🎉 getOneHot method
 🎉 deleteColumn method
@@ -1420,10 +1420,10 @@ code
 
 📦 14.5.0 2017-11-23
 🎉 standardized error messages into a grammar
-🎉 @parseWith wordType property
+🎉 @parseWith atomType property
 
 📦 14.4.0 2017-11-19
-🎉 added @enum wordType
+🎉 added @enum atomType
 
 📦 14.3.3 2017-11-17
 🎉 added toMarkdownTable methods
@@ -1454,7 +1454,7 @@ code
 ⚠️ renamed otree to jtree
 
 📦 13.0.0 2017-11-09
-⚠️ Tree Grammar switched to @wordType nodes for defining word types, no more implicit types
+⚠️ Tree Grammar switched to @atomType nodes for defining atom types, no more implicit types
 ⚠️ replaceNode now returns an array
 
 📦 12.2.1 2017-11-09
@@ -1488,7 +1488,7 @@ code
 ⚠️ fromDelimited now requires quoteChar param
 ⚠️ toTable now accepts 0 params, use toFormattedTable to pass params
 ⚠️ getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
-⚠️ getKeywordPath now takes no params, use getKeywordPathRelativeTo
+⚠️ getKeyatomPath now takes no params, use getKeyatomPathRelativeTo
 ⚠️ getStack, getRootNode now take no params
 ⚠️ getAtoms now takes 0 params. use getAtomsFrom
 ⚠️ use getGraphByKey to getGraphByKey
@@ -1497,7 +1497,7 @@ code
 🎉 export ParsersProgram
 
 📦 11.4.0 2017-11-08
-⚠️ getGrammarUsage is now getKeywordUsage
+⚠️ getGrammarUsage is now getKeyatomUsage
 ⚠️ removed undocumented getNodeClasses, run, and getErrorCount methods
 
 📦 11.3.0 2017-11-07
@@ -1617,7 +1617,7 @@ code
 🏥 fix for executeFile static method when more than one #! line.
 
 📦 7.1.0 2017-9-15
-⚠️ Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.
+⚠️ Symbol is now Keyatom throughout. Same changes at 7.0.0, except substitute keyword for symbol.
 
 📦 7.0.0 2017-9-14
 ⚠️ getNodeTypes is now getSymbolMap
@@ -1725,7 +1725,7 @@ code
 🎉 Added getStackString method
 
 📦 3.9.2 2017-6-17
-🎉 getGraph method now also takes 0 params, in which case it uses word1.
+🎉 getGraph method now also takes 0 params, in which case it uses atom1.
 
 📦 3.9.1 2017-6-17
 🎉 Added getGraph method

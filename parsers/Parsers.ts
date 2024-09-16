@@ -146,7 +146,7 @@ class TypedAtom extends ParticleAtom {
     return this._type
   }
   toString() {
-    return this.word + ":" + this.type
+    return this.atom + ":" + this.type
   }
 }
 
@@ -270,7 +270,7 @@ abstract class ParserBackedParticle extends Particle {
     const parserOrder = this.definition._getMyInScopeParserIds()
     if (!parserOrder.length) return this
     const orderMap: particlesTypes.stringMap = {}
-    parserOrder.forEach((word, index) => (orderMap[word] = index))
+    parserOrder.forEach((atom, index) => (orderMap[atom] = index))
     this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
     return this
   }
@@ -301,9 +301,9 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get allTypedAtoms() {
-    const words: TypedAtom[] = []
-    this.topDownArray.forEach((particle: ParserBackedParticle) => particle.wordTypes.forEach((atom, index) => words.push(new TypedAtom(particle, index, atom.atomTypeId))))
-    return words
+    const atoms: TypedAtom[] = []
+    this.topDownArray.forEach((particle: ParserBackedParticle) => particle.atomTypes.forEach((atom, index) => atoms.push(new TypedAtom(particle, index, atom.atomTypeId))))
+    return atoms
   }
 
   findAllAtomsWithAtomType(atomTypeId: particlesTypes.atomTypeId) {
@@ -355,8 +355,8 @@ abstract class ParserBackedParticle extends Particle {
       return {
         lineIndex: coordinate.lineIndex,
         charIndex: coordinate.charIndex,
-        wordIndex: coordinate.wordIndex,
-        word: results.word,
+        atomIndex: coordinate.atomIndex,
+        atom: results.atom,
         suggestions: results.matches
       }
     })
@@ -368,7 +368,7 @@ abstract class ParserBackedParticle extends Particle {
     this._getAllAutoCompleteAtoms().forEach(hole => {
       hole.suggestions.forEach((suggestion, index) => {
         if (!particles[index + 1]) particles[index + 1] = filled.clone()
-        particles[index + 1].particleAtLine(hole.lineIndex).setAtom(hole.wordIndex, suggestion.text)
+        particles[index + 1].particleAtLine(hole.lineIndex).setAtom(hole.atomIndex, suggestion.text)
       })
     })
     return new Particle(particles)
@@ -391,13 +391,13 @@ abstract class ParserBackedParticle extends Particle {
     // todo: second param this.subparticlesToString()
     // todo: change to getAutocomplete definitions
 
-    const wordIndex = lineParticle.getAtomIndexAtCharacterIndex(charIndex)
-    const wordProperties = lineParticle.getAtomProperties(wordIndex)
+    const atomIndex = lineParticle.getAtomIndexAtCharacterIndex(charIndex)
+    const atomProperties = lineParticle.getAtomProperties(atomIndex)
     return {
-      startCharIndex: wordProperties.startCharIndex,
-      endCharIndex: wordProperties.endCharIndex,
-      word: wordProperties.word,
-      matches: particleInScope.getAutocompleteResults(wordProperties.word, wordIndex)
+      startCharIndex: atomProperties.startCharIndex,
+      endCharIndex: atomProperties.endCharIndex,
+      atom: atomProperties.atom,
+      matches: particleInScope.getAutocompleteResults(atomProperties.atom, atomIndex)
     }
   }
 
@@ -441,7 +441,7 @@ abstract class ParserBackedParticle extends Particle {
     })
     this.topDownArray.forEach((particle: ParserBackedParticle, lineNumber: number) => {
       const stats = usage.getParticle(particle.parserId)
-      stats.appendLine([filepath + "-" + lineNumber, particle.words.join(" ")].join(" "))
+      stats.appendLine([filepath + "-" + lineNumber, particle.atoms.join(" ")].join(" "))
     })
     return usage
   }
@@ -455,21 +455,21 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get asAtomTypeParticlesWithParserIds() {
-    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.lineAtomTypes).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.atomBreakSymbol + subparticle.indentation + subparticle.lineAtomTypes).join("\n")
   }
 
   toPreludeAtomTypeParticlesWithParserIds() {
-    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLineAtomPreludeTypes()).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.atomBreakSymbol + subparticle.indentation + subparticle.getLineAtomPreludeTypes()).join("\n")
   }
 
   get asParticlesWithParsers() {
-    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.wordBreakSymbol + subparticle.indentation + subparticle.getLine()).join("\n")
+    return this.topDownArray.map((subparticle: ParserBackedParticle) => subparticle.constructor.name + this.atomBreakSymbol + subparticle.indentation + subparticle.getLine()).join("\n")
   }
 
-  getAtomPaintAtPosition(lineIndex: number, wordIndex: number): particlesTypes.paint | undefined {
+  getAtomPaintAtPosition(lineIndex: number, atomIndex: number): particlesTypes.paint | undefined {
     this._initAtomTypeCache()
     const typeParticle = this._cache_paintParticles.topDownArray[lineIndex - 1]
-    return typeParticle ? typeParticle.getAtom(wordIndex - 1) : undefined
+    return typeParticle ? typeParticle.getAtom(atomIndex - 1) : undefined
   }
 
   private _cache_programAtomTypeStringMTime: number
@@ -493,7 +493,7 @@ abstract class ParserBackedParticle extends Particle {
     return this.definition.parserIdFromDefinition
   }
 
-  get wordTypes() {
+  get atomTypes() {
     return this.parsedAtoms.filter(atom => atom.getAtom() !== undefined)
   }
 
@@ -743,7 +743,7 @@ class UnknownParserParticle extends ParserBackedParticle {
 }
 
 /*
-A atom contains a word but also the type information for that word.
+A atom contains a atom but also the type information for that atom.
 */
 abstract class AbstractParsersBackedAtom<T> {
   constructor(particle: ParserBackedParticle, index: particlesTypes.int, typeDef: atomTypeDefinitionParser, atomTypeId: string, isCatchAll: boolean, parserDefinitionParser: AbstractParserDefinitionParser) {
@@ -809,16 +809,16 @@ abstract class AbstractParsersBackedAtom<T> {
 
   getAutoCompleteAtoms(partialAtom: string = "") {
     const atomDef = this.atomTypeDefinition
-    let words = atomDef ? atomDef._getAutocompleteAtomOptions(<ParserBackedParticle>this.getParticle().root) : []
+    let atoms = atomDef ? atomDef._getAutocompleteAtomOptions(<ParserBackedParticle>this.getParticle().root) : []
 
     const runTimeOptions = this.getParticle().getRunTimeEnumOptions(this)
-    if (runTimeOptions) words = runTimeOptions.concat(words)
+    if (runTimeOptions) atoms = runTimeOptions.concat(atoms)
 
-    if (partialAtom) words = words.filter(word => word.includes(partialAtom))
-    return words.map(word => {
+    if (partialAtom) atoms = atoms.filter(atom => atom.includes(partialAtom))
+    return atoms.map(atom => {
       return {
-        text: word,
-        displayText: word
+        text: atom,
+        displayText: atom
       }
     })
   }
@@ -871,24 +871,24 @@ ${options.toString(1)}`
 
   isValid(): boolean {
     const runTimeOptions = this.getParticle().getRunTimeEnumOptionsForValidation(this)
-    const word = this.getAtom()
-    if (runTimeOptions) return runTimeOptions.includes(word)
-    return this.atomTypeDefinition.isValid(word, <ParserBackedParticle>this.getParticle().root) && this._isValid()
+    const atom = this.getAtom()
+    if (runTimeOptions) return runTimeOptions.includes(atom)
+    return this.atomTypeDefinition.isValid(atom, <ParserBackedParticle>this.getParticle().root) && this._isValid()
   }
 
   getErrorIfAny(): particlesTypes.ParticleError {
-    const word = this.getAtom()
-    if (word !== undefined && this.isValid()) return undefined
+    const atom = this.getAtom()
+    if (atom !== undefined && this.isValid()) return undefined
 
-    // todo: refactor invalidwordError. We want better error messages.
-    return word === undefined || word === "" ? new MissingAtomError(this) : new InvalidAtomError(this)
+    // todo: refactor invalidatomError. We want better error messages.
+    return atom === undefined || atom === "" ? new MissingAtomError(this) : new InvalidAtomError(this)
   }
 }
 
 class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
   _isValid() {
-    const word = this.getAtom()
-    return word === "0" || word === "1"
+    const atom = this.getAtom()
+    return atom === "0" || atom === "1"
   }
 
   static defaultPaint = "constant.numeric"
@@ -902,8 +902,8 @@ class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
   }
 
   get parsed() {
-    const word = this.getAtom()
-    return !!parseInt(word)
+    const atom = this.getAtom()
+    return !!parseInt(atom)
   }
 }
 
@@ -920,10 +920,10 @@ abstract class ParsersNumericAtom extends AbstractParsersBackedAtom<number> {
 
 class ParsersIntAtom extends ParsersNumericAtom {
   _isValid() {
-    const word = this.getAtom()
-    const num = parseInt(word)
+    const atom = this.getAtom()
+    const num = parseInt(atom)
     if (isNaN(num)) return false
-    return num.toString() === word
+    return num.toString() === atom
   }
 
   static defaultPaint = "constant.numeric.integer"
@@ -937,8 +937,8 @@ class ParsersIntAtom extends ParsersNumericAtom {
   }
 
   get parsed() {
-    const word = this.getAtom()
-    return parseInt(word)
+    const atom = this.getAtom()
+    return parseInt(atom)
   }
 
   static parserFunctionName = "parseInt"
@@ -946,9 +946,9 @@ class ParsersIntAtom extends ParsersNumericAtom {
 
 class ParsersFloatAtom extends ParsersNumericAtom {
   _isValid() {
-    const word = this.getAtom()
-    const num = parseFloat(word)
-    return !isNaN(num) && /^-?\d*(\.\d+)?([eE][+-]?\d+)?$/.test(word)
+    const atom = this.getAtom()
+    const num = parseFloat(atom)
+    return !isNaN(num) && /^-?\d*(\.\d+)?([eE][+-]?\d+)?$/.test(atom)
   }
 
   static defaultPaint = "constant.numeric.float"
@@ -962,8 +962,8 @@ class ParsersFloatAtom extends ParsersNumericAtom {
   }
 
   get parsed() {
-    const word = this.getAtom()
-    return parseFloat(word)
+    const atom = this.getAtom()
+    return parseFloat(atom)
   }
 
   static parserFunctionName = "parseFloat"
@@ -976,8 +976,8 @@ class ParsersBoolAtom extends AbstractParsersBackedAtom<boolean> {
   private _falses = new Set(["0", "false", "f", "no"])
 
   _isValid() {
-    const word = this.getAtom()
-    const str = word.toLowerCase()
+    const atom = this.getAtom()
+    const str = atom.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
   }
 
@@ -996,8 +996,8 @@ class ParsersBoolAtom extends AbstractParsersBackedAtom<boolean> {
   }
 
   get parsed() {
-    const word = this.getAtom()
-    return this._trues.has(word.toLowerCase())
+    const atom = this.getAtom()
+    return this._trues.has(atom.toLowerCase())
   }
 }
 
@@ -1021,7 +1021,7 @@ class ParsersAnyAtom extends AbstractParsersBackedAtom<string> {
   }
 }
 
-class ParsersKeywordAtom extends ParsersAnyAtom {
+class ParsersKeyatomAtom extends ParsersAnyAtom {
   static defaultPaint = "keyword"
 
   _synthesizeAtom() {
@@ -1211,7 +1211,7 @@ abstract class AbstractAtomError extends AbstractParticleError {
     return this._atom.atomIndex
   }
 
-  protected get wordSuggestion() {
+  protected get atomSuggestion() {
     return Utils.didYouMean(
       this.atom.getAtom(),
       this.atom.getAutoCompleteAtoms().map(option => option.text)
@@ -1229,7 +1229,7 @@ class UnknownParserError extends AbstractParticleError {
     return super.message + ` Invalid parser "${particle.firstAtom}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
   }
 
-  protected get wordSuggestion() {
+  protected get atomSuggestion() {
     const particle = this.getParticle()
     const parentParticle = particle.parent
     return Utils.didYouMean(
@@ -1239,7 +1239,7 @@ class UnknownParserError extends AbstractParticleError {
   }
 
   get suggestionMessage() {
-    const suggestion = this.wordSuggestion
+    const suggestion = this.atomSuggestion
     const particle = this.getParticle()
 
     if (suggestion) return `Change "${particle.firstAtom}" to "${suggestion}"`
@@ -1248,7 +1248,7 @@ class UnknownParserError extends AbstractParticleError {
   }
 
   applySuggestion() {
-    const suggestion = this.wordSuggestion
+    const suggestion = this.atomSuggestion
     if (suggestion) this.getParticle().setAtom(this.atomIndex, suggestion)
     return this
   }
@@ -1339,7 +1339,7 @@ class InvalidAtomError extends AbstractAtomError {
   }
 
   get suggestionMessage() {
-    const suggestion = this.wordSuggestion
+    const suggestion = this.atomSuggestion
 
     if (suggestion) return `Change "${this.atom.getAtom()}" to "${suggestion}"`
 
@@ -1347,7 +1347,7 @@ class InvalidAtomError extends AbstractAtomError {
   }
 
   applySuggestion() {
-    const suggestion = this.wordSuggestion
+    const suggestion = this.atomSuggestion
     if (suggestion) this.getParticle().setAtom(this.atomIndex, suggestion)
     return this
   }
@@ -1355,11 +1355,11 @@ class InvalidAtomError extends AbstractAtomError {
 
 class ExtraAtomError extends AbstractAtomError {
   get message(): string {
-    return super.message + ` Extra word "${this.atom.getAtom()}" in ${this.parserId}.`
+    return super.message + ` Extra atom "${this.atom.getAtom()}" in ${this.parserId}.`
   }
 
   get suggestionMessage() {
-    return `Delete word "${this.atom.getAtom()}" at atom ${this.atomIndex}`
+    return `Delete atom "${this.atom.getAtom()}" at atom ${this.atomIndex}`
   }
 
   applySuggestion() {
@@ -1371,7 +1371,7 @@ class MissingAtomError extends AbstractAtomError {
   // todo: autocomplete suggestion
 
   get message(): string {
-    return super.message + ` Missing word for atom "${this.atom.atomTypeId}".`
+    return super.message + ` Missing atom for atom "${this.atom.atomTypeId}".`
   }
 
   isMissingAtomError() {
@@ -1403,7 +1403,7 @@ class ParsersReservedAtomsTestParser extends AbstractParsersAtomTestParser {
   }
 }
 
-// todo: remove in favor of custom word type constructors
+// todo: remove in favor of custom atom type constructors
 class EnumFromAtomTypesTestParser extends AbstractParsersAtomTestParser {
   _getEnumFromAtomTypes(programRootParticle: ParserBackedParticle): particlesTypes.stringMap {
     const atomTypeIds = this.getAtomsFrom(1)
@@ -1412,14 +1412,14 @@ class EnumFromAtomTypesTestParser extends AbstractParsersAtomTestParser {
     if (!(<any>programRootParticle)._enumMaps) (<any>programRootParticle)._enumMaps = {}
     if ((<any>programRootParticle)._enumMaps[enumGroup]) return (<any>programRootParticle)._enumMaps[enumGroup]
 
-    const wordIndex = 1
+    const atomIndex = 1
     const map: particlesTypes.stringMap = {}
     const atomTypeMap: particlesTypes.stringMap = {}
     atomTypeIds.forEach(typeId => (atomTypeMap[typeId] = true))
     programRootParticle.allTypedAtoms
       .filter((typedAtom: TypedAtom) => atomTypeMap[typedAtom.type])
       .forEach(typedAtom => {
-        map[typedAtom.word] = true
+        map[typedAtom.atom] = true
       })
     ;(<any>programRootParticle)._enumMaps[enumGroup] = map
     return map
@@ -1470,17 +1470,17 @@ class atomTypeDefinitionParser extends AbstractExtendibleParticle {
     return (<HandParsersProgram>this.parent).atomTypeDefinitions
   }
 
-  getGetter(wordIndex: number) {
-    const wordToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
+  getGetter(atomIndex: number) {
+    const atomToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
     return `get ${this.atomTypeId}() {
-      return ${wordToNativeJavascriptTypeParser ? wordToNativeJavascriptTypeParser + `(this.getAtom(${wordIndex}))` : `this.getAtom(${wordIndex})`}
+      return ${atomToNativeJavascriptTypeParser ? atomToNativeJavascriptTypeParser + `(this.getAtom(${atomIndex}))` : `this.getAtom(${atomIndex})`}
     }`
   }
 
-  getCatchAllGetter(wordIndex: number) {
-    const wordToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
+  getCatchAllGetter(atomIndex: number) {
+    const atomToNativeJavascriptTypeParser = this.getAtomConstructor().parserFunctionName
     return `get ${this.atomTypeId}() {
-      return ${wordToNativeJavascriptTypeParser ? `this.getAtomsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))` : `this.getAtomsFrom(${wordIndex})`}
+      return ${atomToNativeJavascriptTypeParser ? `this.getAtomsFrom(${atomIndex}).map(val => ${atomToNativeJavascriptTypeParser}(val))` : `this.getAtomsFrom(${atomIndex})`}
     }`
   }
 
@@ -1590,20 +1590,20 @@ abstract class AbstractAtomParser {
   }
 
   getAtomArray(particle: ParserBackedParticle = undefined): AbstractParsersBackedAtom<any>[] {
-    const wordCount = particle ? particle.words.length : 0
+    const atomCount = particle ? particle.atoms.length : 0
     const def = this._definition
     const parsersProgram = def.languageDefinitionProgram
     const requiredAtomTypeIds = this.getRequiredAtomTypeIds()
     const numberOfRequiredAtoms = requiredAtomTypeIds.length
 
-    const actualAtomCountOrRequiredAtomCount = Math.max(wordCount, numberOfRequiredAtoms)
+    const actualAtomCountOrRequiredAtomCount = Math.max(atomCount, numberOfRequiredAtoms)
     const atoms: AbstractParsersBackedAtom<any>[] = []
 
-    // A for loop instead of map because "numberOfAtomsToFill" can be longer than words.length
+    // A for loop instead of map because "numberOfAtomsToFill" can be longer than atoms.length
     for (let atomIndex = 0; atomIndex < actualAtomCountOrRequiredAtomCount; atomIndex++) {
-      const isCatchAll = this._isCatchAllAtom(atomIndex, numberOfRequiredAtoms, wordCount)
+      const isCatchAll = this._isCatchAllAtom(atomIndex, numberOfRequiredAtoms, atomCount)
 
-      let atomTypeId = isCatchAll ? this.catchAllAtomTypeId : this._getAtomTypeId(atomIndex, requiredAtomTypeIds, wordCount)
+      let atomTypeId = isCatchAll ? this.catchAllAtomTypeId : this._getAtomTypeId(atomIndex, requiredAtomTypeIds, atomCount)
 
       let atomTypeDefinition = parsersProgram.getAtomTypeDefinitionById(atomTypeId)
 
@@ -1642,34 +1642,34 @@ class OmnifixAtomParser extends AbstractAtomParser {
     const def = this._definition
     const program = <ParserBackedParticle>(particle ? particle.root : undefined)
     const parsersProgram = def.languageDefinitionProgram
-    const words = particle ? particle.words : []
+    const atoms = particle ? particle.atoms : []
     const requiredAtomTypeDefs = this.getRequiredAtomTypeIds().map(atomTypeId => parsersProgram.getAtomTypeDefinitionById(atomTypeId))
     const catchAllAtomTypeId = this.catchAllAtomTypeId
     const catchAllAtomTypeDef = catchAllAtomTypeId && parsersProgram.getAtomTypeDefinitionById(catchAllAtomTypeId)
 
-    words.forEach((word, wordIndex) => {
+    atoms.forEach((atom, atomIndex) => {
       let atomConstructor: any
       for (let index = 0; index < requiredAtomTypeDefs.length; index++) {
         const atomTypeDefinition = requiredAtomTypeDefs[index]
-        if (atomTypeDefinition.isValid(word, program)) {
-          // todo: cleanup atomIndex/wordIndex stuff
+        if (atomTypeDefinition.isValid(atom, program)) {
+          // todo: cleanup atomIndex/atomIndex stuff
           atomConstructor = atomTypeDefinition.getAtomConstructor()
-          atoms.push(new atomConstructor(particle, wordIndex, atomTypeDefinition, atomTypeDefinition.id, false, def))
+          atoms.push(new atomConstructor(particle, atomIndex, atomTypeDefinition, atomTypeDefinition.id, false, def))
           requiredAtomTypeDefs.splice(index, 1)
           return true
         }
       }
-      if (catchAllAtomTypeDef && catchAllAtomTypeDef.isValid(word, program)) {
+      if (catchAllAtomTypeDef && catchAllAtomTypeDef.isValid(atom, program)) {
         atomConstructor = catchAllAtomTypeDef.getAtomConstructor()
-        atoms.push(new atomConstructor(particle, wordIndex, catchAllAtomTypeDef, catchAllAtomTypeId, true, def))
+        atoms.push(new atomConstructor(particle, atomIndex, catchAllAtomTypeDef, catchAllAtomTypeId, true, def))
         return true
       }
-      atoms.push(new ParsersUnknownAtomTypeAtom(particle, wordIndex, undefined, undefined, false, def))
+      atoms.push(new ParsersUnknownAtomTypeAtom(particle, atomIndex, undefined, undefined, false, def))
     })
-    const wordCount = words.length
+    const atomCount = atoms.length
     requiredAtomTypeDefs.forEach((atomTypeDef, index) => {
       let atomConstructor: any = atomTypeDef.getAtomConstructor()
-      atoms.push(new atomConstructor(particle, wordCount + index, atomTypeDef, atomTypeDef.id, false, def))
+      atoms.push(new atomConstructor(particle, atomCount + index, atomTypeDef, atomTypeDef.id, false, def))
     })
 
     return atoms
@@ -1711,8 +1711,8 @@ abstract class AbstractParserConstantParser extends Particle {
   }
 
   get constantValueAsJsText() {
-    const words = this.getAtomsFrom(2)
-    return words.length > 1 ? `[${words.join(",")}]` : words[0]
+    const atoms = this.getAtomsFrom(2)
+    return atoms.length > 1 ? `[${atoms.join(",")}]` : atoms[0]
   }
 
   get constantValue() {
@@ -2027,7 +2027,7 @@ ${properties.join("\n")}
     const myFirstAtomMap = parserInfo.firstAtomMap
     const regexRules = parserInfo.regexTests
 
-    // todo: use constants in first word maps?
+    // todo: use constants in first atom maps?
     // todo: cache the super extending?
     const firstAtoms = Object.keys(myFirstAtomMap)
     const hasFirstAtoms = firstAtoms.length
@@ -2562,7 +2562,7 @@ ${testCode}`
   get atomTypeDefinitions() {
     if (this._cache_atomTypes) return this._cache_atomTypes
     const types: { [typeName: string]: atomTypeDefinitionParser } = {}
-    // todo: add built in word types?
+    // todo: add built in atom types?
     this.getSubparticlesByParser(atomTypeDefinitionParser).forEach(type => (types[(<atomTypeDefinitionParser>type).atomTypeId] = type))
     this._cache_atomTypes = types
     return types
@@ -2745,7 +2745,7 @@ ${parserContexts}`
 
 const PreludeKinds: particlesTypes.stringMap = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
-PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
+PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeyatomAtom
 PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
@@ -2761,7 +2761,7 @@ class UnknownParsersProgram extends Particle {
     // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
     const rootParticleNames = this.getFirstAtoms()
       .filter(identity => identity)
-      .map(word => HandParsersProgram.makeParserId(word))
+      .map(atom => HandParsersProgram.makeParserId(atom))
     rootParticle
       .particleAt(0)
       .touchParticle(ParsersConstants.inScope)
@@ -2772,7 +2772,7 @@ class UnknownParsersProgram extends Particle {
 
   private static _subparticleSuffix = "Subparticle"
 
-  private _renameIntegerKeywords(clone: UnknownParsersProgram) {
+  private _renameIntegerKeyatoms(clone: UnknownParsersProgram) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtomIsAnInteger = !!particle.firstAtom.match(/^\d+$/)
@@ -2781,24 +2781,24 @@ class UnknownParsersProgram extends Particle {
     }
   }
 
-  private _getKeywordMaps(clone: UnknownParsersProgram) {
-    const keywordsToChildKeywords: { [firstAtom: string]: particlesTypes.stringMap } = {}
+  private _getKeyatomMaps(clone: UnknownParsersProgram) {
+    const keywordsToChildKeyatoms: { [firstAtom: string]: particlesTypes.stringMap } = {}
     const keywordsToParticleInstances: { [firstAtom: string]: Particle[] } = {}
     for (let particle of clone.getTopDownArrayIterator()) {
       const firstAtom = particle.firstAtom
-      if (!keywordsToChildKeywords[firstAtom]) keywordsToChildKeywords[firstAtom] = {}
+      if (!keywordsToChildKeyatoms[firstAtom]) keywordsToChildKeyatoms[firstAtom] = {}
       if (!keywordsToParticleInstances[firstAtom]) keywordsToParticleInstances[firstAtom] = []
       keywordsToParticleInstances[firstAtom].push(particle)
-      particle.forEach((subparticle: Particle) => (keywordsToChildKeywords[firstAtom][subparticle.firstAtom] = true))
+      particle.forEach((subparticle: Particle) => (keywordsToChildKeyatoms[firstAtom][subparticle.firstAtom] = true))
     }
-    return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
+    return { keywordsToChildKeyatoms: keywordsToChildKeyatoms, keywordsToParticleInstances: keywordsToParticleInstances }
   }
 
   private _inferParserDef(firstAtom: string, globalAtomTypeMap: Map<string, string>, subparticleFirstAtoms: string[], instances: Particle[]) {
     const edgeSymbol = this.edgeSymbol
     const parserId = HandParsersProgram.makeParserId(firstAtom)
     const particleDefParticle = <Particle>new Particle(parserId).particleAt(0)
-    const subparticleParserIds = subparticleFirstAtoms.map(word => HandParsersProgram.makeParserId(word))
+    const subparticleParserIds = subparticleFirstAtoms.map(atom => HandParsersProgram.makeParserId(atom))
     if (subparticleParserIds.length) particleDefParticle.touchParticle(ParsersConstants.inScope).setAtomsFrom(1, subparticleParserIds)
 
     const atomsForAllInstances = instances
@@ -2850,7 +2850,7 @@ class UnknownParsersProgram extends Particle {
   // ${ParsersConstants.root}`)
 
   //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-  //    const rootParticleNames = this.getFirstAtoms().map(word => HandParsersProgram.makeParserId(word))
+  //    const rootParticleNames = this.getFirstAtoms().map(atom => HandParsersProgram.makeParserId(atom))
   //    rootParticle
   //      .particleAt(0)
   //      .touchParticle(ParsersConstants.inScope)
@@ -2859,17 +2859,17 @@ class UnknownParsersProgram extends Particle {
   //    return rootParticle
   //  }
 
-  inferParsersFileForAKeywordLanguage(parsersName: string): string {
+  inferParsersFileForAKeyatomLanguage(parsersName: string): string {
     const clone = <UnknownParsersProgram>this.clone()
-    this._renameIntegerKeywords(clone)
+    this._renameIntegerKeyatoms(clone)
 
-    const { keywordsToChildKeywords, keywordsToParticleInstances } = this._getKeywordMaps(clone)
+    const { keywordsToChildKeyatoms, keywordsToParticleInstances } = this._getKeyatomMaps(clone)
 
     const globalAtomTypeMap = new Map()
     globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
-    const parserDefs = Object.keys(keywordsToChildKeywords)
+    const parserDefs = Object.keys(keywordsToChildKeyatoms)
       .filter(identity => identity)
-      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[firstAtom]), keywordsToParticleInstances[firstAtom]))
+      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeyatoms[firstAtom]), keywordsToParticleInstances[firstAtom]))
 
     const atomTypeDefs: string[] = []
     globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))

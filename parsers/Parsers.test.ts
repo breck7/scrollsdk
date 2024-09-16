@@ -262,7 +262,7 @@ testParticles.atomTypeParticles = equal => {
     someJibberishProgram.toAtomTypeParticles(),
     `topLevelPropertyAtom
 opSymbolAtom intAtom intAtom intAtom`,
-    "word types should match"
+    "atom types should match"
   )
   equal(someJibberishProgram.findAllAtomsWithAtomType("intAtom").length, 3)
 
@@ -275,13 +275,13 @@ opSymbolAtom intAtom intAtom intAtom`,
     parsers,
     `fooParser topLevelPropertyAtom
 plusParser opSymbolAtom intAtom intAtom intAtom`,
-    "parsers word types should match"
+    "parsers atom types should match"
   )
   equal(
     particlesWithParsers,
     `fooParser foo
 plusParser + 2 3 2`,
-    "particlesWithParsers word types should match"
+    "particlesWithParsers atom types should match"
   )
 }
 
@@ -416,7 +416,7 @@ com
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0, "should be none")
 
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
-  // todo: test for descriptions in addition to returned words
+  // todo: test for descriptions in addition to returned atoms
 
   // Arrange/Act/Assert
   equal(makeNumbersProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 7, "should be 7 results at root level")
@@ -439,7 +439,7 @@ testParticles.extraAtom = equal => {
   equal(
     program.toAtomTypeParticles(),
     `parserIdAtom
- propertyKeywordAtom extraAtomAtom`
+ propertyKeyatomAtom extraAtomAtom`
   )
 }
 
@@ -554,7 +554,7 @@ div
 //   const path = parsersParsersPath
 //   const anyProgram = makeProgram(
 //     readFileSync(path, "utf8"),
-//     `atomType word
+//     `atomType atom
 // parser baseParser`,
 //     path
 //   )
@@ -597,7 +597,7 @@ testParticles.rootCatchAllParser = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.toAtomTypeParticles(), "extraAtomAtom", "one word")
+  equal(program.toAtomTypeParticles(), "extraAtomAtom", "one atom")
 
   // Arrange
   const abcLangWithErrors = new HandParsersProgram(`abcParser

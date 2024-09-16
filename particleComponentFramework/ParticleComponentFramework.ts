@@ -513,7 +513,7 @@ class AbstractWillowBrowser extends stumpParser {
   async appendScript(url: string) {}
 
   getWindowTitle() {
-    // todo: deep getParticleByBase/withBase/type/word or something?
+    // todo: deep getParticleByBase/withBase/type/atom or something?
     const particles = this.topDownArray
     const titleParticle = particles.find((particle: particlesTypes.particle) => particle.firstAtom === WillowConstants.titleTag)
     return titleParticle ? titleParticle.content : ""
@@ -1289,7 +1289,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedParticle {
   }
 
   getCommandNames() {
-    return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => word.endsWith("Command"))
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(atom => atom.endsWith("Command"))
   }
 
   private async _executeCommandOnStumpParticle(stumpParticle: any, commandMethod: string) {

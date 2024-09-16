@@ -266,13 +266,13 @@ class SweeperCraftGame {
     return neighbors
   }
   static boardFromAtoms(sentence) {
-    const words = sentence.split(/ /g)
+    const atoms = sentence.split(/ /g)
     const lines = []
     const bombChar = "#"
     let maxWidth = 0
     let boardString = ""
-    words.forEach(word => {
-      const line = Figlet.write(word, "banner")
+    atoms.forEach(atom => {
+      const line = Figlet.write(atom, "banner")
       const length = line.split(/\n/)[0].length
       if (length > maxWidth) maxWidth = length
       boardString += "\n" + line.replace(/ /g, "0")
@@ -577,7 +577,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         location.hash = SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(16, 30, 99))
       },
       w: () => {
-        const phrase = prompt("Enter a word or phrase to turn into a board:")
+        const phrase = prompt("Enter a atom or phrase to turn into a board:")
         if (!phrase) return
         const board = SweeperCraftGame.boardFromAtoms(phrase)
         const link = SweeperCraftGame.toPermalink(board)
@@ -828,7 +828,7 @@ class shortcutsTableComponent extends AbstractParticleComponentParser {
     clickCommand triggerShortcut h
    tr
     td w
-    td New board from word
+    td New board from atom
     clickCommand triggerShortcut w
    tr
     td d

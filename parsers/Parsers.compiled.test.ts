@@ -141,7 +141,7 @@ testParticles.predictParsersFile = equal => {
   const input = Disk.read(path.join(__dirname, "UnknownParsers.sample.scroll"))
 
   // Act
-  const parsersFile = new UnknownParsersProgram(input).inferParsersFileForAKeywordLanguage("foobar")
+  const parsersFile = new UnknownParsersProgram(input).inferParsersFileForAKeyatomLanguage("foobar")
 
   // Assert
   equal(parsersFile, Disk.read(path.join(__dirname, "UnknownParsers.expected.parsers")), "predicted parsers correct")
@@ -155,7 +155,7 @@ testParticles.emojis = equal => {
   💩`
 
   // Act
-  const parsersFile = new UnknownParsersProgram(source).inferParsersFileForAKeywordLanguage("emojiLang")
+  const parsersFile = new UnknownParsersProgram(source).inferParsersFileForAKeyatomLanguage("emojiLang")
   // Assert
   equal(parsersFile, Disk.read(path.join(__dirname, "UnknownParsers.expectedEmoji.parsers")), "predicted emoji parsers correct")
 }
@@ -173,7 +173,7 @@ langs.forEach((name: string) => {
     if (Disk.read(path.join(langsDir, name, `${name}.parsers`)).includes("nonPrefixParsers")) return equal(true, true, `skipped ${name} beause not prefix parsers`)
 
     // Act
-    const inferredPrefixParsersCode = new UnknownParsersProgram(sampleCode).inferParsersFileForAKeywordLanguage("foobar")
+    const inferredPrefixParsersCode = new UnknownParsersProgram(sampleCode).inferParsersFileForAKeyatomLanguage("foobar")
     const inferredPrefixParsersProgram = new HandParsersProgram(inferredPrefixParsersCode)
     const rootParser = inferredPrefixParsersProgram.compileAndReturnRootParser()
     const programParsedWithInferredParsers = new rootParser(sampleCode)

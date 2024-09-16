@@ -3,10 +3,10 @@ floatAtom
 commentAtom
  paint comment
 keywordAtom
-hashBangKeywordAtom
+hashBangKeyatomAtom
  extends keywordAtom
  paint comment
-commentKeywordAtom
+commentKeyatomAtom
  extends keywordAtom
  paint comment
  enum comment
@@ -66,14 +66,14 @@ commentParser
  description This is a line comment.
  catchAllAtomType commentAtom
  catchAllParser commentContentParser
- atoms commentKeywordAtom
+ atoms commentKeyatomAtom
 commentContentParser
  catchAllAtomType commentAtom
  catchAllParser commentContentParser
 
 hashBangParser
  crux #!
- atoms hashBangKeywordAtom
+ atoms hashBangKeyatomAtom
  catchAllAtomType commentAtom
 
 errorParser

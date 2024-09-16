@@ -445,7 +445,7 @@ testParticles.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
  :`
   // Act/Assert
   class TestParticles extends Particle {
-    get wordBreakSymbol() {
+    get atomBreakSymbol() {
       return ":"
     }
   }
@@ -1618,7 +1618,7 @@ testParticles.getContentsArray = equal => {
 
 testParticles.multiply = equal => {
   class MathParticle extends Particle {
-    get wordBreakSymbol() {
+    get atomBreakSymbol() {
       return " "
     }
 
@@ -1768,7 +1768,7 @@ testParticles.simpleParticleLanguage = equal => {
 
     // Look! You created a declarative file format!
     getNumbers() {
-      return this.getAtomsFrom(1).map((word: string) => parseFloat(word))
+      return this.getAtomsFrom(1).map((atom: string) => parseFloat(atom))
     }
 
     // Look! You created a compiler!
@@ -1932,9 +1932,9 @@ Mammal
  milk`
   )
   // Act/Assert
-  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 4)
-  equal(particle.getParticle("Thing").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 1)
-  equal(particle.getParticle("Animal").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 2)
+  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritanceViaExtendsKeyatom("extends").length, 4)
+  equal(particle.getParticle("Thing").getAncestorParticlesByInheritanceViaExtendsKeyatom("extends").length, 1)
+  equal(particle.getParticle("Animal").getAncestorParticlesByInheritanceViaExtendsKeyatom("extends").length, 2)
 }
 
 testParticles.getGraphConventional = equal => {
@@ -3261,7 +3261,7 @@ testParticles.syntax = equal => {
   const test2 = `person;=name=Breck;=country=USA;=books;==one=SICP;==two=Pragmatic;=num=12;=multiline=this=is=a=string;==over=multiple=lines.;=====and=this=one=has=extra=indents;=num=12;`
 
   class TestLanguage extends Particle {
-    get wordBreakSymbol() {
+    get atomBreakSymbol() {
       return "="
     }
 
@@ -3791,7 +3791,7 @@ testParticles.setTests = equal => {
   equal(base.getAtomsAsSet().has("bar"), true)
   equal(base.getAtomsAsSet().has("bar2"), false)
   equal(base.appendAtomIfMissing("bar").asString, `foo bar`)
-  equal(base.appendAtomIfMissing("bam").getAtomsAsSet().has("bam"), true, "word should be appended")
+  equal(base.appendAtomIfMissing("bam").getAtomsAsSet().has("bam"), true, "atom should be appended")
 }
 
 testParticles.getBiDirectionalMaps = equal => {

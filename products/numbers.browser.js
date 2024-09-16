@@ -3,7 +3,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           "%": modParser,
           "*": timesParser,
           "+": addParser,
@@ -110,15 +110,15 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
         undefined
       )
     }
     get operatorAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get numbersAtom() {
-      return this.getWordsFrom(1).map(val => parseFloat(val))
+      return this.getAtomsFrom(1).map(val => parseFloat(val))
     }
     execute() {
       return this.numbersAtom.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersAtom[0])
@@ -160,10 +160,10 @@ errorParser
       return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get commentAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -172,16 +172,16 @@ errorParser
       return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
   class hashBangParser extends ParserBackedParticle {
     get hashBangKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get commentAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -190,10 +190,10 @@ errorParser
       return this._getErrorParserErrors()
     }
     get errorAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get errorAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 

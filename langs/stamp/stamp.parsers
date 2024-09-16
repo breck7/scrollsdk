@@ -6,7 +6,7 @@ extraAtom
  paint invalid
 anyAtom
  paint string
-promptWordsAtom
+promptAtomsAtom
  paint string
 filepathAtom
 varNameAtom

@@ -581,8 +581,8 @@ class Utils {
     return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
 
-  static getUniqueWordsArray(allWords: string) {
-    const words = allWords.replace(/\n/g, " ").split(" ")
+  static getUniqueAtomsArray(allAtoms: string) {
+    const words = allAtoms.replace(/\n/g, " ").split(" ")
     const index: particlesTypes.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
@@ -756,7 +756,7 @@ class Utils {
       const particleBFirst = 1
 
       if (!particleAExtends && !particleBExtends) {
-        // If neither extends, sort by firstWord
+        // If neither extends, sort by firstAtom
         if (particleAUniqueId > particleBUniqueId) return particleBFirst
         else if (particleAUniqueId < particleBUniqueId) return particleAFirst
         return 0
@@ -773,7 +773,7 @@ class Utils {
       if (particleAExtends > particleBExtends) return particleBFirst
       else if (particleAExtends < particleBExtends) return particleAFirst
 
-      // Finally sort by firstWord
+      // Finally sort by firstAtom
       if (particleAUniqueId > particleBUniqueId) return particleBFirst
       else if (particleAUniqueId < particleBUniqueId) return particleAFirst
 

@@ -66,8 +66,8 @@ testParticles.getParentFolder = equal => {
   equal(Utils.getParentFolder(`/bam/boom/bah`), "/bam/boom/")
 }
 
-testParticles.getUniqueWordsArray = equal => {
-  equal(Utils.getUniqueWordsArray(`hi hi hey`).length, 2)
+testParticles.getUniqueAtomsArray = equal => {
+  equal(Utils.getUniqueAtomsArray(`hi hi hey`).length, 2)
 }
 
 testParticles.ucfirst = equal => {
@@ -93,8 +93,8 @@ cat animal
 house`)
   a.sort(
     Utils._makeGraphSortFunction(
-      (particle: any) => particle.getWord(0),
-      (particle: any) => particle.getWord(1)
+      (particle: any) => particle.getAtom(0),
+      (particle: any) => particle.getAtom(1)
     )
   )
 

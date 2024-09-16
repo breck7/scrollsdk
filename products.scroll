@@ -4,7 +4,7 @@ nodeProduct
  insertLastLine module.exports = { AbstractParticleComponentParser, WillowBrowser, AbstractGithubTriangleComponent, ParticleComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName Particle.js
- insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
+ insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleAtom }
  combineTypeScriptFiles products/particlesTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
 nodeProduct
  outputFileName Parsers.js

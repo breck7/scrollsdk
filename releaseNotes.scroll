@@ -219,7 +219,7 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
  - getNodeTypeId > nodeTypeId
  - getTableNameIfAny > tableNameIfAny
  - getEdgeSymbol > edgeSymbol
- - getWordBreakSymbol > wordBreakSymbol
+ - getAtomBreakSymbol > wordBreakSymbol
  - getNodeBreakSymbol > nodeBreakSymbol
  - On errors:
   - getMessage > message
@@ -305,8 +305,8 @@ table
   getParent() parent
   getContent() content
   getRootNode() root
-  getWords() words
-  getFirstWord() firstWord
+  getAtoms() words
+  getFirstAtom() firstAtom
 
 📦 65.4.0 2023-2-6
 🎉 Utils: Upstream `titleToPermalink` method from pldb
@@ -340,7 +340,7 @@ table
 📦 64.3.0 2023-1-31
 🎉 TQL: added support for nested dot paths like `github.stars`
 🏥 TQL: various fixes.
-🏥 Particle: renamed current `has` to `hasFirstWord` and `has` now works correctly for deep paths.
+🏥 Particle: renamed current `has` to `hasFirstAtom` and `has` now works correctly for deep paths.
 
 📦 64.2.0 2023-1-31
 🎉 TQL: Added `sortBy` and `reverse` keywords.
@@ -480,7 +480,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 📦 54.0.0 2022-07-24
 🎉 TrueBase: typedMapShort, id, and dir
 🎉 Grammar: typedMap
-🎉 Grammar: contentKey, childrenKey, uniqueFirstWord (may all be temporary), to support typedMap
+🎉 Grammar: contentKey, childrenKey, uniqueFirstAtom (may all be temporary), to support typedMap
 
 📦 53.7.1 2022-07-20
 🏥 Designer: shows root level required and dupe use errors
@@ -672,8 +672,8 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 toHtmlCube method
 ⚠️ getAllSuggestions is now toAutoCompleteTable
 ⚠️ removed getPoint. Use getIndentLevel and getLineNumber
-⚠️ getAllWordBoundaryCoordinates now returns type with members lineIndex and charIndex instead of y and x
-⚠️ getWordBoundaryIndices is now getWordBoundaryCharIndices
+⚠️ getAllAtomBoundaryCoordinates now returns type with members lineIndex and charIndex instead of y and x
+⚠️ getAtomBoundaryIndices is now getAtomBoundaryCharIndices
 🏥 getIndentLevel now returns correct level
 
 📦 46.1.0 2019-11-22
@@ -734,11 +734,11 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 removed qunit, tap, and tap mocha dependencies
 
 📦 43.0.0 2019-10-07
-⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol
+⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getAtomBreakSymbol, getXI is getEdgeSymbol
 🧹 PCF debugger work
 
 📦 42.2.0 2019-10-04
-🎉 getNumberOfWords method
+🎉 getNumberOfAtoms method
 🧹 added swim tests
 
 📦 42.1.0 2019-10-03
@@ -795,7 +795,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🧹 migrated Sandbox and Designer apps to PCF
 
 📦 40.1.0 2019-09-08
-🏥 missing words now trigger "MissingWord" error instead of "InvalidWord"
+🏥 missing words now trigger "MissingAtom" error instead of "InvalidAtom"
 🏥 fixed bug in codemirror where a missing word would break syntax highlighting of remaining words
 🏥 bug fix in Disk
 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
@@ -889,7 +889,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 36.0.0 2019-07-30
 🎉 added TrueBase and "base" command to CLI
-🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setSubparticlesAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
+🎉 added methods to base class: getAtomsAsSet, appendAtomIfMissing, addObjectsAsDelimited, setSubparticlesAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
@@ -910,16 +910,16 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 polymorphism and symbol tables via enumFromAtomTypes
 🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.
 🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `atomType int` do `intAtom`
-🎉 findAllWordsWithAtomType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
-🎉 getAllTypedWords method in Grammar Programs
+🎉 findAllAtomsWithAtomType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
+🎉 getAllTypedAtoms method in Grammar Programs
 🏥 removed all "parsersPath" 2nd params to new jtree.ParsersProgram(grammarCode, gammarPath), since it is no longer used.
 ⚠️ Javascript code and compiler nodes that previously referred to atomTypes that have been renamed, must be updated manually
 ⚠️ Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
 ⚠️ lineHints string is different
 ⚠️ enumFromGrammar is now enumFromAtomTypes and accepts any atomTypeId
-⚠️ atomTypes that ended in "Word" now end in "Atom".
-⚠️ removed public "getFirstWordMap" method.
-⚠️ removed "updateNodeTypeIds" method. Use findAllWordsWithAtomType and findAllNodesWithNodeType
+⚠️ atomTypes that ended in "Atom" now end in "Atom".
+⚠️ removed public "getFirstAtomMap" method.
+⚠️ removed "updateNodeTypeIds" method. Use findAllAtomsWithAtomType and findAllNodesWithNodeType
 ⚠️ use createParser() instead of getNodeConstructor
 
 📦 34.2.0 2019-07-21
@@ -951,7 +951,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 33.0.0 2019-07-10
 ⚠️ no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.
-⚠️ removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
+⚠️ removed runTimeFirstAtom methods. Now that grammars are compiled, just use normal firstAtom methods.
 ⚠️ removed unused getTheGrammarFilePath method
 ⚠️ compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
 🏥 prettify grammar files multiple inheritance sort fix and added regression test
@@ -995,7 +995,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 📦 28.0.0 2019-07-02
 🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
-🎉 "reservedWords" attribute on atomTypes in Grammar Language
+🎉 "reservedAtoms" attribute on atomTypes in Grammar Language
 ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
 ⚠️ compileParsers method is now compileParsersForNodeJs and compileParsersForBrowser
 ⚠️ nodeTypeId's now can only be alphanumeric
@@ -1075,19 +1075,19 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 ⚠️ removed getExpectedLineAtomTypes--use getLineHints
 ⚠️ nodeTypes in grammar is now "inScope", and is one line instead of parent/children
-⚠️ removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
+⚠️ removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstAtomByIndex, toFlatTree
 ⚠️ fromJson is now fromJsonSubset and toJson is now toJsonSubset
 ⚠️ deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
 ⚠️ removed getCompiledProgramName
 ⚠️ getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
 ⚠️ getCatchAllAtomTypeName is now getCatchAllAtomTypeId
 ⚠️ getRequiredAtomTypeNames is now getRequiredAtomTypeIds
-⚠️ getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
+⚠️ getRunTimeNodeTypeNames is now getRunTimeFirstAtomsInScope
 ⚠️ removed getProgramErrorMessages. Use getAllErrors
 ⚠️ getFirstAtomType is now getFirstAtomTypeId
 ⚠️ getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
 ⚠️ getParsersProgram is now getParsersProgramRoot
-⚠️ getParsedWords removed
+⚠️ getParsedAtoms removed
 ⚠️ getAtomTypeName is now getAtomTypeId
 ⚠️ getAtomTypeDefinition is now getAtomTypeDefinitionById
 ⚠️ getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
@@ -1102,7 +1102,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 A regex for finding breaks in untyped code:
 
 regexCode
- \b(defaults|getExpectedLineAtomTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllAtomTypeName|getRequiredAtomTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstAtomType|getProgram|getParsersProgram|getParsedWords|getAtomTypeName|getAtomTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
+ \b(defaults|getExpectedLineAtomTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstAtomByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllAtomTypeName|getRequiredAtomTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstAtomType|getProgram|getParsersProgram|getParsedAtoms|getAtomTypeName|getAtomTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
 
 📦 25.2.0 2019-05-30
 🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
@@ -1117,7 +1117,7 @@ regexCode
 
 📦 25.0.0 2019-05-28
 🎉 standardized error messages with suggested fixes!
-🎉 added deleteWordAt method
+🎉 added deleteAtomAt method
 🏥 minor fixes to grammar sandbox and updated to use new error message code
 ⚠️ interface of errors changed, so code that uses getErrors, getErrorsInGrammarExamples, or getProgramErrors needs to change
 🧹 refactored "types" file into "jTreeTypes"
@@ -1125,13 +1125,13 @@ regexCode
 🧹 fixed TypeScript browser target build issues
 
 📦 24.2.0 2019-05-27
-🎉 extraWord syntax highlighting
+🎉 extraAtom syntax highlighting
 🎉 improved syntax highlighting for Hakon, Stump, and others
 
 📦 24.1.0 2019-05-27
 🎉 getAncestorNodeTypeNamesArray method on definition nodes
 🎉 getNodeTypeLineage method on parsersPrograms
-🎉 setWords, setWordsFrom and appendWord methods on base tree
+🎉 setAtoms, setAtomsFrom and appendAtom methods on base tree
 
 📦 24.0.0 2019-05-21
 🎉 targeting es2017
@@ -1177,11 +1177,11 @@ code
 ⚠️ highlightScope is now defined only on atomTypes (no longer on nodeTypes)
 ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
 ⚠️ grammars should all define a "atomType any" if they have leave any firstAtomTypes undefined
-⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
+⚠️ getKeyword is now getFirstAtom, getKeywords is getFirstAtoms, hasDuplicateKeywords is now hasDuplicateFirstAtoms, setKeyword is now setFirstAtom, getKeywordPath is getFirstAtomPath, pathVectorToKeywordPath is pathVectorToFirstAtomPath, getKeywordMap is getFirstAtomMap, keywordSort is firstAtomSort
 ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
-⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
-⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
-⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
+⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstAtomMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstAtomMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
+⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstAtomPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceAtomTypeParticlesWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceAtomTypeParticles
+⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstAtom
 ⚠️ getLineSyntax is now getLineAtomTypes
 
 📦 22.3.0 2019-05-16
@@ -1265,11 +1265,11 @@ code
 
 📦 19.3.0 2019-04-22
 🎉 autocomplete for words beyond keywords
-🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getWordIndexAtCharacterIndex, getWordProperties, getWordBoundaryIndices,   getAllWordBoundaryCoordinates
-🎉 on runtime programs: getAutocompleteWordsAt and getAllSuggestions
+🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getAtomIndexAtCharacterIndex, getAtomProperties, getAtomBoundaryIndices,   getAllAtomBoundaryCoordinates
+🎉 on runtime programs: getAutocompleteAtomsAt and getAllSuggestions
 🎉 getAutocompleteResults now provides descriptions, if present, along with completion word
 🏥 error highlight scope fixes
-⚠️ instead of getAutocompleteWords use getAutocompleteWordsAt
+⚠️ instead of getAutocompleteAtoms use getAutocompleteAtomsAt
 
 📦 19.2.1 2019-04-20
 🏥 grammar sandbox bug on first visit
@@ -1436,7 +1436,7 @@ code
 
 📦 14.3.0 2017-11-13
 🎉 added macroExpand method
-🎉 hasWord method
+🎉 hasAtom method
 
 📦 14.2.0 2017-11-12
 🎉 added @version keyword to grammar
@@ -1461,13 +1461,13 @@ code
 🏥 bug fix in getExpanded
 
 📦 12.2.0 2017-11-09
-🎉 insertWord method
+🎉 insertAtom method
 🏥 fixes to usage reports
 ⚠️ renamed getBeamParameters to getNodeColumnTypes
 
 📦 12.1.0 2017-11-09
-⚠️ getWordTypeLine is now getLineSyntax
-⚠️ getProgramWordTypeString is now getInPlaceSyntaxTree
+⚠️ getAtomTypeLine is now getLineSyntax
+⚠️ getProgramAtomTypeString is now getInPlaceSyntaxTree
 🎉 getTreeWithNodeTypes and getInPlaceSyntaxTreeWithNodeTypes methods for inspecting the parse
 
 📦 12.0.0 2017-11-09
@@ -1490,7 +1490,7 @@ code
 ⚠️ getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
 ⚠️ getKeywordPath now takes no params, use getKeywordPathRelativeTo
 ⚠️ getStack, getRootNode now take no params
-⚠️ getWords now takes 0 params. use getWordsFrom
+⚠️ getAtoms now takes 0 params. use getAtomsFrom
 ⚠️ use getGraphByKey to getGraphByKey
 
 📦 11.4.1 2017-11-08
@@ -1613,7 +1613,7 @@ code
 🧹 prep work for grammar and blaze library merger -- consoleApp and src directory
 
 📦 7.1.1 2017-9-17
-🎉 getErrors and getWordTypeLine methods
+🎉 getErrors and getAtomTypeLine methods
 🏥 fix for executeFile static method when more than one #! line.
 
 📦 7.1.0 2017-9-15
@@ -1651,7 +1651,7 @@ code
 🏥 fixed timing bug in getTreeMTime
 
 📦 5.7.0 2017-8-24
-🎉 getWord can now take a negative int
+🎉 getAtom can now take a negative int
 🎉 added static method executeFile and cli.js
 
 📦 5.6.2 2017-8-20
@@ -1697,7 +1697,7 @@ code
 ⚠️ getTails is now getBeams
 
 📦 4.1.2 2017-6-26
-🎉 Added setWord method
+🎉 Added setAtom method
 
 📦 4.1.1 2017-6-26
 🏥 Bug fix in getPoint method
@@ -1717,7 +1717,7 @@ code
 📦 4.0.0 2017-6-18
 ⚠️ removed _getSize if any ETNs were using that
 ⚠️ changes some output classes in toHtml() method
-🎉 getWords() now takes an optional starting WI location
+🎉 getAtoms() now takes an optional starting WI location
 🎉 Final version of paper, mistakes and all.
 
 📦 3.10.0 2017-6-17
@@ -1732,7 +1732,7 @@ code
 
 📦 3.9.0 2017-6-16
 ⚠️ Removed Particle.ExecutableParticle. TreeNotation now has execute method by default.
-⚠️ getWord now ignores getSize. In fact, we'll probably ditch getSize.
+⚠️ getAtom now ignores getSize. In fact, we'll probably ditch getSize.
 
 📦 3.8.0 2017-6-15
 🎉 toOutline now takes an optional mapping fn

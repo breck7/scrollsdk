@@ -369,7 +369,7 @@ class SweeperCraftGame {
     return neighbors
   }
 
-  static boardFromWords(sentence: string): Board {
+  static boardFromAtoms(sentence: string): Board {
     const words = sentence.split(/ /g)
     const lines = []
     const bombChar = "#"
@@ -721,7 +721,7 @@ class SweeperCraftApp extends AbstractParticleComponentParser {
         const phrase = prompt("Enter a word or phrase to turn into a board:")
         if (!phrase) return
 
-        const board = SweeperCraftGame.boardFromWords(phrase)
+        const board = SweeperCraftGame.boardFromAtoms(phrase)
         const link = SweeperCraftGame.toPermalink(board)
         location.hash = link
       },

@@ -1,7 +1,7 @@
 {
   class poopParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
         { regex: /✨/, parser: bladderParser },
         { regex: /🍼/, parser: bottleParser },
@@ -149,10 +149,10 @@ dayParser
 
   class abstractEventParser extends ParserBackedParticle {
     get eventTypeAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get timeIntAtom() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
     getTime() {
       const time = this.getLine().match(/(\d+)/)
@@ -198,10 +198,10 @@ dayParser
 
   class memoryParser extends abstractEventParser {
     get eventTypeAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get memoryDescriptionAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     get eventType() {
       return `memory`
@@ -213,16 +213,16 @@ dayParser
 
   class dayParser extends ParserBackedParticle {
     get symbolAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get monthIntAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
     get dayIntAtom() {
-      return this.getWord(2)
+      return this.getAtom(2)
     }
     get yearIntAtom() {
-      return this.getWord(3)
+      return this.getAtom(3)
     }
     getDay() {
       return Utils.removeNonAscii(this.getLine()).trim().replace(/ /g, "/")

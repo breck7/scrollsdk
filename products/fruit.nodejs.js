@@ -7,7 +7,7 @@
 
   class fruitParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { apple: appleParser }), undefined)
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameAtom
  paint keyword
@@ -37,14 +37,14 @@ errorParser
 
   class abstractFruitParser extends ParserBackedParticle {
     get fruitNameAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
   class appleParser extends abstractFruitParser {
     createParserCombinator() {
       class bananaParser extends abstractFruitParser {}
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { apple: appleParser, banana: bananaParser }), undefined)
     }
   }
 

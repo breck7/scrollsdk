@@ -25,7 +25,7 @@ test parsersSample
     compiler
      stringTemplate to {wordAtom}
      closeSubparticles end
- runTimeFirstWordsInScope
+ runTimeFirstAtomsInScope
   assertLengthIs 1
  getParserDefinitionByParserId toParser
   assertTypeIs object

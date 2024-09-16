@@ -438,8 +438,8 @@ class Utils {
   static stripHtml(text) {
     return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
-  static getUniqueWordsArray(allWords) {
-    const words = allWords.replace(/\n/g, " ").split(" ")
+  static getUniqueAtomsArray(allAtoms) {
+    const words = allAtoms.replace(/\n/g, " ").split(" ")
     const index = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
@@ -589,7 +589,7 @@ class Utils {
       const particleAFirst = -1
       const particleBFirst = 1
       if (!particleAExtends && !particleBExtends) {
-        // If neither extends, sort by firstWord
+        // If neither extends, sort by firstAtom
         if (particleAUniqueId > particleBUniqueId) return particleBFirst
         else if (particleAUniqueId < particleBUniqueId) return particleAFirst
         return 0
@@ -603,7 +603,7 @@ class Utils {
       // Sort by what they extend
       if (particleAExtends > particleBExtends) return particleBFirst
       else if (particleAExtends < particleBExtends) return particleAFirst
-      // Finally sort by firstWord
+      // Finally sort by firstAtom
       if (particleAUniqueId > particleBUniqueId) return particleBFirst
       else if (particleAUniqueId < particleBUniqueId) return particleAFirst
       // Should never hit this, unless we have a duplicate line.

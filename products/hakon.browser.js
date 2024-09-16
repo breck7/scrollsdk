@@ -1,7 +1,7 @@
 {
   class hakonParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }), undefined)
+      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { comment: commentParser }), undefined)
     }
     getSelector() {
       return ""
@@ -73,7 +73,7 @@ propertyParser
  catchAllParser errorParser
  javascript
   compile(spaces) {
-   return \`\${spaces}\${this.firstWord}: \${this.content};\`
+   return \`\${spaces}\${this.firstAtom}: \${this.content};\`
   }
  atoms propertyKeywordAtom
 variableParser
@@ -98,7 +98,7 @@ selectorParser
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
-   return this.firstWord
+   return this.firstAtom
     .split(",")
     .map(part => {
      if (part.startsWith("&")) return parentSelector + part.substr(1)
@@ -126,13 +126,13 @@ selectorParser
       return new Particle.ParserCombinator(errorParser, undefined, undefined)
     }
     get propertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get cssValueAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     compile(spaces) {
-      return `${spaces}${this.firstWord}: ${this.content};`
+      return `${spaces}${this.firstAtom}: ${this.content};`
     }
   }
 
@@ -140,7 +140,7 @@ selectorParser
 
   class browserPrefixPropertyParser extends propertyParser {
     get vendorPrefixPropertyKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
   }
 
@@ -152,7 +152,7 @@ selectorParser
       return this._getErrorParserErrors()
     }
     get errorAtom() {
-      return this.getWordsFrom(0)
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -161,10 +161,10 @@ selectorParser
       return new Particle.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentKeywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get commentAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
@@ -172,7 +172,7 @@ selectorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         selectorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           "border-bottom-right-radius": propertyParser,
           "transition-timing-function": propertyParser,
           "animation-iteration-count": propertyParser,
@@ -390,14 +390,14 @@ selectorParser
       )
     }
     get selectorAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get isSelectorParser() {
       return true
     }
     getSelector() {
       const parentSelector = this.parent.getSelector()
-      return this.firstWord
+      return this.firstAtom
         .split(",")
         .map(part => {
           if (part.startsWith("&")) return parentSelector + part.substr(1)

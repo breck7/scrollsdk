@@ -1,10 +1,10 @@
 {
   class commentParser extends ParserBackedParticle {
     get commentAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get commentAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
     get suggestInAutocomplete() {
       return false
@@ -13,7 +13,7 @@
 
   class arrowParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
@@ -112,12 +112,12 @@ tokenParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
         undefined
       )
     }
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     async execute() {
       const card = this.get("cardNumber")
@@ -129,46 +129,46 @@ tokenParser
 
   class cardNumberParser extends abstractChargeAttributeParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get cardNumberAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class amountParser extends abstractChargeAttributeParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get amountAtom() {
-      return parseFloat(this.getWord(1))
+      return parseFloat(this.getAtom(1))
     }
   }
 
   class currencyParser extends abstractChargeAttributeParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get currencyAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 
   class descriptionParser extends abstractChargeAttributeParser {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get descriptionAtom() {
-      return this.getWordsFrom(1)
+      return this.getAtomsFrom(1)
     }
   }
 
   class tokenParser extends ParserBackedParticle {
     get keywordAtom() {
-      return this.getWord(0)
+      return this.getAtom(0)
     }
     get tokenAtom() {
-      return this.getWord(1)
+      return this.getAtom(1)
     }
   }
 

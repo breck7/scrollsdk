@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getParticleByBase/withBase/type/word or something?
     const particles = this.topDownArray
-    const titleParticle = particles.find((particle: particlesTypes.particle) => particle.firstWord === WillowConstants.titleTag)
+    const titleParticle = particles.find((particle: particlesTypes.particle) => particle.firstAtom === WillowConstants.titleTag)
     return titleParticle ? titleParticle.content : ""
   }
 
   setWindowTitle(value: string) {
     const particles = this.topDownArray
-    const headParticle = particles.find((particle: particlesTypes.particle) => particle.firstWord === WillowConstants.tags.head)
+    const headParticle = particles.find((particle: particlesTypes.particle) => particle.firstAtom === WillowConstants.tags.head)
     headParticle.touchParticle(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1151,7 +1151,7 @@ declare class abstractHtmlTag extends ParserBackedParticle {
   addClassToStumpParticle(...args: any[]): void
   findStumpParticleByChild(...args: any[]): void
   findStumpParticleByChildString(...args: any[]): void
-  findStumpParticleByFirstWord(...args: any[]): void
+  findStumpParticleByFirstAtom(...args: any[]): void
   findStumpParticlesByChild(...args: any[]): void
   findStumpParticlesWithClass(...args: any[]): void
   getParticleByGuid(...args: any[]): void
@@ -1265,7 +1265,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedParticle {
   _getHtmlOnlyParticles() {
     const particles: any[] = []
     this.willowBrowser.getHtmlStumpParticle().deepVisit((particle: any) => {
-      if (particle.firstWord === "styleTag" || (particle.content || "").startsWith("<svg ")) return false
+      if (particle.firstAtom === "styleTag" || (particle.content || "").startsWith("<svg ")) return false
       particles.push(particle)
     })
     return particles
@@ -1276,7 +1276,7 @@ abstract class AbstractParticleComponentParser extends ParserBackedParticle {
     const clone = new Particle(this.willowBrowser.getHtmlStumpParticle().toString())
 
     clone.topDownArray.forEach((particle: any) => {
-      if (particle.firstWord === "styleTag" || (particle.content || "").startsWith("<svg ")) particle.destroy()
+      if (particle.firstAtom === "styleTag" || (particle.content || "").startsWith("<svg ")) particle.destroy()
     })
     return clone.toString()
   }
@@ -1548,16 +1548,16 @@ ${new stumpParser(this.toStumpCode()).compile()}
   }
 
   // todo: move to keyword particle class?
-  toggle(firstWord: string, contentOptions: string[]) {
-    const currentParticle = <AbstractParticleComponentParser>this.getParticle(firstWord)
-    if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(firstWord)
+  toggle(firstAtom: string, contentOptions: string[]) {
+    const currentParticle = <AbstractParticleComponentParser>this.getParticle(firstAtom)
+    if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(firstAtom)
     const currentContent = currentParticle === undefined ? undefined : currentParticle.content
 
     const index = contentOptions.indexOf(currentContent)
     const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
 
-    this.delete(firstWord)
-    if (newContent) this.touchParticle(firstWord).setContent(newContent)
+    this.delete(firstAtom)
+    if (newContent) this.touchParticle(firstAtom).setContent(newContent)
     return newContent
   }
 
@@ -1565,8 +1565,8 @@ ${new stumpParser(this.toStumpCode()).compile()}
     return !!this._htmlStumpParticle
   }
 
-  toggleAndRender(firstWord: string, contentOptions: string[]) {
-    this.toggle(firstWord, contentOptions)
+  toggleAndRender(firstAtom: string, contentOptions: string[]) {
+    this.toggle(firstAtom, contentOptions)
     this.root.renderAndGetRenderReport()
   }
 
@@ -1621,7 +1621,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
   }
 
   toStumpLoadingCode() {
-    return `div Loading ${this.firstWord}...
+    return `div Loading ${this.firstAtom}...
  class ${this.getCssClassNames().join(" ")}
  id ${this.getParticleComponentId()}`
   }
@@ -1717,7 +1717,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
       }
     }
 
-    let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${particleComponentUpdateReport.shouldUpdate} ${particleComponentUpdateReport.reason}`
+    let str = `${this.getAtom(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${particleComponentUpdateReport.shouldUpdate} ${particleComponentUpdateReport.reason}`
     subparticleResults.forEach((subparticle: any) => (str += "\n" + subparticle.toString(1)))
     return new Particle(str)
   }

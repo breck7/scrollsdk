@@ -594,7 +594,7 @@ abstract class ParserBackedParticle extends Particle {
     const compiler = this.definition._getCompilerObject()
     const catchAllAtomDelimiter = compiler[ParsersConstantsCompiler.catchAllAtomDelimiter]
     const str = compiler[ParsersConstantsCompiler.stringTemplate]
-    return str !== undefined ? Utils.formatStr(str, catchAllAtomDelimiter, Object.assign(this._getFields(), this.atoms)) : this.getLine()
+    return str !== undefined ? Utils.formatStr(str, catchAllAtomDelimiter, Object.assign(this._getFields(), this.atomsMap)) : this.getLine()
   }
 
   protected get listDelimiter() {
@@ -707,17 +707,17 @@ ${indent}${closeSubparticlesString}`
   }
 
   // todo: remove
-  get atoms() {
-    const atoms: particlesTypes.stringMap = {}
+  get atomsMap() {
+    const atomsMap: particlesTypes.stringMap = {}
     this.parsedAtoms.forEach(atom => {
       const atomTypeId = atom.atomTypeId
-      if (!atom.isCatchAll()) atoms[atomTypeId] = atom.parsed
+      if (!atom.isCatchAll()) atomsMap[atomTypeId] = atom.parsed
       else {
-        if (!atoms[atomTypeId]) atoms[atomTypeId] = []
-        atoms[atomTypeId].push(atom.parsed)
+        if (!atoms[atomTypeId]) atomsMap[atomTypeId] = []
+        atomsMap[atomTypeId].push(atom.parsed)
       }
     })
-    return atoms
+    return atomsMap
   }
 }
 

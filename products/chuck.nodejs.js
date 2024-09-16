@@ -16,11 +16,11 @@
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Make this compile and execute
 
-// Cell Parsers
-operatorCell
+// Atom Parsers
+operatorAtom
  paint keyword
  enum + * print
-floatCell
+floatAtom
 
 // Line Parsers
 chuckParser
@@ -28,9 +28,9 @@ chuckParser
  root
  inScope abstractOperatorParser onlyNumbersParser
 abstractOperatorParser
- catchAllCellType floatCell
- cells operatorCell
- cellParser postfix
+ catchAllAtomType floatAtom
+ atoms operatorAtom
+ atomParser postfix
 addParser
  extends abstractOperatorParser
  pattern \\+
@@ -41,7 +41,7 @@ printParser
  extends abstractOperatorParser
  pattern print
 onlyNumbersParser
- catchAllCellType floatCell
+ catchAllAtomType floatAtom
  pattern ^[\\d\\. ]+$`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
@@ -50,11 +50,11 @@ onlyNumbersParser
   }
 
   class abstractOperatorParser extends ParserBackedParticle {
-    get operatorCell() {
-      return this.getWord(0)
+    get operatorAtom() {
+      return this.getAtom(0)
     }
-    get floatCell() {
-      return this.getWordsFrom(1).map(val => parseFloat(val))
+    get floatAtom() {
+      return this.getAtomsFrom(1).map(val => parseFloat(val))
     }
   }
 
@@ -65,8 +65,8 @@ onlyNumbersParser
   class printParser extends abstractOperatorParser {}
 
   class onlyNumbersParser extends ParserBackedParticle {
-    get floatCell() {
-      return this.getWordsFrom(0).map(val => parseFloat(val))
+    get floatAtom() {
+      return this.getAtomsFrom(0).map(val => parseFloat(val))
     }
   }
 

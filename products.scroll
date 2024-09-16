@@ -4,11 +4,11 @@ nodeProduct
  insertLastLine module.exports = { AbstractParticleComponentParser, WillowBrowser, AbstractGithubTriangleComponent, ParticleComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName Particle.js
- insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleWord }
+ insertLastLine module.exports = {Particle, ExtendibleParticle, AbstractExtendibleParticle, ParticleEvents, ParticleAtom }
  combineTypeScriptFiles products/particlesTypes.ts particle/AbstractParticle.node.ts particle/Particle.ts
 nodeProduct
  outputFileName Parsers.js
- insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
+ insertLastLine module.exports = { ParsersConstants, PreludeAtomTypeIds, HandParsersProgram, ParserBackedParticle, UnknownParserError, UnknownParsersProgram }
  combineTypeScriptFiles products/particlesTypes.ts parsers/Parsers.ts
 nodeProduct
  outputFileName TestRacer.js

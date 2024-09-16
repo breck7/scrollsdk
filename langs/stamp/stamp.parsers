@@ -1,21 +1,21 @@
 // todo File permissions
 
-// Cell parsers
-anyCell
-extraCell
+// Atom parsers
+anyAtom
+extraAtom
  paint invalid
-anyCell
+anyAtom
  paint string
-promptWordsCell
+promptAtomsAtom
  paint string
-filepathCell
-varNameCell
+filepathAtom
+varNameAtom
  paint string
-commentCell
+commentAtom
  paint comment
-inputTypeCell
+inputTypeAtom
  enum string int any lowercase
-keywordCell
+keywordAtom
  paint keyword.control
 
 // Line parsers
@@ -99,30 +99,30 @@ stampParser
  inScope hashbangParser folderParser fileParser
 hashbangParser
  crux #!
- catchAllCellType commentCell
- cells commentCell
+ catchAllAtomType commentAtom
+ atoms commentAtom
 catchAllAnyLineParser
- catchAllCellType anyCell
+ catchAllAtomType anyAtom
  catchAllParser catchAllAnyLineParser
- cells anyCell
+ atoms anyAtom
 dataParser
  catchAllParser catchAllAnyLineParser
- cells keywordCell
+ atoms keywordAtom
  crux data
 errorParser
  baseParser errorParser
 executableParser
- cells keywordCell
+ atoms keywordAtom
  crux executable
 fileParser
- cells keywordCell filepathCell
+ atoms keywordAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    const filePath = this._getAbsolutePath(parentDir)
    return `touch ${filePath}\necho -e "${this.subparticlesToString()}" >> ${filePath}`
   }
   _getAbsolutePath(parentDir = process.cwd()) {
-   return parentDir + "/" + this.cells.filepathCell
+   return parentDir + "/" + this.atomsMap.filepathAtom
   }
   execute(parentDir) {
    const fs = require("fs")
@@ -138,13 +138,13 @@ fileParser
  inScope dataParser executableParser
  crux file
 folderParser
- cells keywordCell filepathCell
+ atoms keywordAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    return `mkdir ${this._getAbsolutePath(parentDir)}`
   }
   _getAbsolutePath(parentDir = process.cwd()) {
-   return parentDir + "/" + this.cells.filepathCell
+   return parentDir + "/" + this.atomsMap.filepathAtom
   }
   execute(parentDir) {
    const path = this._getAbsolutePath(parentDir)

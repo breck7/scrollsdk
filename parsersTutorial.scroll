@@ -27,7 +27,7 @@ _Parsers_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
  https://sublimetext.com SublimeText4
 
 # Step 1
-[] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
+[] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved atom like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
 
 # Step 2
 [] If you are using the Parser Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.parsers`
@@ -47,7 +47,7 @@ psuedoCode
   description {thisIsALangageToHelpYouDoX}
 
 ## Step 5
-[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cruxFromId`. Most Languages are keyword based. Because the word `keyword` is currently a reserved language in many programming languages, we currently use the word `crux` to refer to the same concept. The line `cruxFromId` instructs the Parser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Parsers.
+[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cruxFromId`. Most Languages are keyword based. Because the atom `keyword` is currently a reserved language in many programming languages, we currently use the atom `crux` to refer to the same concept. The line `cruxFromId` instructs the Parser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Parsers.
 parsersCode
  birthdaysParser
   root
@@ -94,18 +94,18 @@ psuedoCode
  ...
 
 ## Step 10
-[] A second minor concept in Parsers are cell types. A Particles document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
+[] A second minor concept in Parsers are atom types. A Particles document has lines and atoms. Whereas Parsers parse the lines, AtomTypes are responsible for individual atoms on a line. Atom Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the AtomTypes at the top of our parsers file.
 psuedoCode
- nameCell
+ nameAtom
   paint string
  ...
 
 ## Step 11
-[] Now let's make `nameParser` accept a "catch all" Cell Type of the `nameCell`.
+[] Now let's make `nameParser` accept a "catch all" Atom Type of the `nameAtom`.
 psuedoCode
  ...
  nameParser
-  catchAllCellType nameCell
+  catchAllAtomType nameAtom
 
 ## Step 12
 [] Now the following is a valid program in your language:

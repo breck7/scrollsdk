@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-;(function(mod) {
+;(function (mod) {
   if (typeof exports == "object" && typeof module == "object")
     // CommonJS
     mod(require("../../lib/codemirror"))
@@ -10,7 +10,7 @@
     define(["../../lib/codemirror"], mod)
   // Plain browser env
   else mod(CodeMirror)
-})(function(CodeMirror) {
+})(function (CodeMirror) {
   "use strict"
 
   var HINT_ELEMENT_CLASS = "CodeMirror-hint"
@@ -18,7 +18,7 @@
 
   // This is the old interface, kept around for now to stay
   // backwards-compatible.
-  CodeMirror.showHint = function(cm, getHints, options) {
+  CodeMirror.showHint = function (cm, getHints, options) {
     if (!getHints) return cm.showHint(options)
     if (options && options.async) getHints.async = true
     var newOpts = { hint: getHints }
@@ -26,7 +26,7 @@
     return cm.showHint(newOpts)
   }
 
-  CodeMirror.defineExtension("showHint", function(options) {
+  CodeMirror.defineExtension("showHint", function (options) {
     options = parseOptions(this, this.getCursor("start"), options)
     var selections = this.listSelections()
     if (selections.length > 1) return
@@ -47,7 +47,7 @@
     completion.update(true)
   })
 
-  CodeMirror.defineExtension("closeHint", function() {
+  CodeMirror.defineExtension("closeHint", function () {
     if (this.state.completionActive) this.state.completionActive.close()
   })
 
@@ -63,7 +63,7 @@
     var self = this
     cm.on(
       "cursorActivity",
-      (this.activityFunc = function() {
+      (this.activityFunc = function () {
         self.cursorActivity()
       })
     )
@@ -71,13 +71,13 @@
 
   var requestAnimationFrame =
     window.requestAnimationFrame ||
-    function(fn) {
+    function (fn) {
       return setTimeout(fn, 1000 / 60)
     }
   var cancelAnimationFrame = window.cancelAnimationFrame || clearTimeout
 
   Completion.prototype = {
-    close: function() {
+    close: function () {
       if (!this.active()) return
       this.cm.state.completionActive = null
       this.tick = null
@@ -88,11 +88,11 @@
       CodeMirror.signal(this.cm, "endCompletion", this.cm)
     },
 
-    active: function() {
+    active: function () {
       return this.cm.state.completionActive == this
     },
 
-    pick: function(data, i) {
+    pick: function (data, i) {
       var completion = data.list[i]
       if (completion.hint) completion.hint(this.cm, data, completion)
       else this.cm.replaceRange(getText(completion), completion.from || data.from, completion.to || data.to, "complete")
@@ -100,7 +100,7 @@
       this.close()
     },
 
-    cursorActivity: function() {
+    cursorActivity: function () {
       if (this.debounce) {
         cancelAnimationFrame(this.debounce)
         this.debounce = 0
@@ -108,33 +108,27 @@
 
       var pos = this.cm.getCursor(),
         line = this.cm.getLine(pos.line)
-      if (
-        pos.line != this.startPos.line ||
-        line.length - pos.ch != this.startLen - this.startPos.ch ||
-        pos.ch < this.startPos.ch ||
-        this.cm.somethingSelected() ||
-        (!pos.ch || this.options.closeCharacters.test(line.charAt(pos.ch - 1)))
-      ) {
+      if (pos.line != this.startPos.line || line.length - pos.ch != this.startLen - this.startPos.ch || pos.ch < this.startPos.ch || this.cm.somethingSelected() || !pos.ch || this.options.closeCharacters.test(line.charAt(pos.ch - 1))) {
         this.close()
       } else {
         var self = this
-        this.debounce = requestAnimationFrame(function() {
+        this.debounce = requestAnimationFrame(function () {
           self.update()
         })
         if (this.widget) this.widget.disable()
       }
     },
 
-    update: function(first) {
+    update: function (first) {
       if (this.tick == null) return
       var self = this,
         myTick = ++this.tick
-      fetchHints(this.options.hint, this.cm, this.options, function(data) {
+      fetchHints(this.options.hint, this.cm, this.options, function (data) {
         if (self.tick == myTick) self.finishUpdate(data, first)
       })
     },
 
-    finishUpdate: function(data, first) {
+    finishUpdate: function (data, first) {
       if (this.data) CodeMirror.signal(this.data, "update")
 
       var picked = (this.widget && this.widget.picked) || (first && this.options.completeSingle)
@@ -170,22 +164,22 @@
 
   function buildKeyMap(completion, handle) {
     var baseMap = {
-      Up: function() {
+      Up: function () {
         handle.moveFocus(-1)
       },
-      Down: function() {
+      Down: function () {
         handle.moveFocus(1)
       },
-      PageUp: function() {
+      PageUp: function () {
         handle.moveFocus(-handle.menuSize() + 1, true)
       },
-      PageDown: function() {
+      PageDown: function () {
         handle.moveFocus(handle.menuSize() - 1, true)
       },
-      Home: function() {
+      Home: function () {
         handle.setFocus(0)
       },
-      End: function() {
+      End: function () {
         handle.setFocus(handle.length - 1)
       },
       Enter: handle.pick,
@@ -196,10 +190,10 @@
     var mac = /Mac/.test(navigator.platform)
 
     if (mac) {
-      baseMap["Ctrl-P"] = function() {
+      baseMap["Ctrl-P"] = function () {
         handle.moveFocus(-1)
       }
-      baseMap["Ctrl-N"] = function() {
+      baseMap["Ctrl-N"] = function () {
         handle.moveFocus(1)
       }
     }
@@ -209,7 +203,7 @@
     function addBinding(key, val) {
       var bound
       if (typeof val != "string")
-        bound = function(cm) {
+        bound = function (cm) {
           return val(cm, handle)
         }
       // This mechanism is deprecated
@@ -256,17 +250,15 @@
       elt.hintId = i
     }
 
-    var pos = cm.cursorCoords(completion.options.alignWithWord ? data.from : null)
+    var pos = cm.cursorCoords(completion.options.alignWithAtom ? data.from : null)
     var left = pos.left,
       top = pos.bottom,
       below = true
     hints.style.left = left + "px"
     hints.style.top = top + "px"
     // If we're at the edge of the screen, then we want the menu to appear on the left of the cursor.
-    var winW =
-      parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth)
-    var winH =
-      parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight)
+    var winW = parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth)
+    var winH = parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight)
     ;(completion.options.container || ownerDocument.body).appendChild(hints)
     var box = hints.getBoundingClientRect(),
       overlapY = box.bottom - winH
@@ -299,26 +291,24 @@
       }
       hints.style.left = (left = pos.left - overlapX) + "px"
     }
-    if (scrolls)
-      for (var node = hints.firstChild; node; node = node.nextSibling)
-        node.style.paddingRight = cm.display.nativeBarWidth + "px"
+    if (scrolls) for (var node = hints.firstChild; node; node = node.nextSibling) node.style.paddingRight = cm.display.nativeBarWidth + "px"
 
     cm.addKeyMap(
       (this.keyMap = buildKeyMap(completion, {
-        moveFocus: function(n, avoidWrap) {
+        moveFocus: function (n, avoidWrap) {
           widget.changeActive(widget.selectedHint + n, avoidWrap)
         },
-        setFocus: function(n) {
+        setFocus: function (n) {
           widget.changeActive(n)
         },
-        menuSize: function() {
+        menuSize: function () {
           return widget.screenAmount()
         },
         length: completions.length,
-        close: function() {
+        close: function () {
           completion.close()
         },
-        pick: function() {
+        pick: function () {
           widget.pick()
         },
         data: data
@@ -329,15 +319,15 @@
       var closingOnBlur
       cm.on(
         "blur",
-        (this.onBlur = function() {
-          closingOnBlur = setTimeout(function() {
+        (this.onBlur = function () {
+          closingOnBlur = setTimeout(function () {
             completion.close()
           }, 100)
         })
       )
       cm.on(
         "focus",
-        (this.onFocus = function() {
+        (this.onFocus = function () {
           clearTimeout(closingOnBlur)
         })
       )
@@ -345,12 +335,11 @@
 
     cm.on(
       "scroll",
-      (this.onScroll = function() {
+      (this.onScroll = function () {
         var curScroll = cm.getScrollInfo(),
           editor = cm.getWrapperElement().getBoundingClientRect()
         var newTop = top + startScroll.top - curScroll.top
-        var point =
-          newTop - (parentWindow.pageYOffset || (ownerDocument.documentElement || ownerDocument.body).scrollTop)
+        var point = newTop - (parentWindow.pageYOffset || (ownerDocument.documentElement || ownerDocument.body).scrollTop)
         if (!below) point += hints.offsetHeight
         if (point <= editor.top || point >= editor.bottom) return completion.close()
         hints.style.top = newTop + "px"
@@ -358,7 +347,7 @@
       })
     )
 
-    CodeMirror.on(hints, "dblclick", function(e) {
+    CodeMirror.on(hints, "dblclick", function (e) {
       var t = getHintElement(hints, e.target || e.srcElement)
       if (t && t.hintId != null) {
         widget.changeActive(t.hintId)
@@ -366,7 +355,7 @@
       }
     })
 
-    CodeMirror.on(hints, "click", function(e) {
+    CodeMirror.on(hints, "click", function (e) {
       var t = getHintElement(hints, e.target || e.srcElement)
       if (t && t.hintId != null) {
         widget.changeActive(t.hintId)
@@ -374,8 +363,8 @@
       }
     })
 
-    CodeMirror.on(hints, "mousedown", function() {
-      setTimeout(function() {
+    CodeMirror.on(hints, "mousedown", function () {
+      setTimeout(function () {
         cm.focus()
       }, 20)
     })
@@ -385,7 +374,7 @@
   }
 
   Widget.prototype = {
-    close: function() {
+    close: function () {
       if (this.completion.widget != this) return
       this.completion.widget = null
       this.hints.parentNode.removeChild(this.hints)
@@ -399,22 +388,22 @@
       cm.off("scroll", this.onScroll)
     },
 
-    disable: function() {
+    disable: function () {
       this.completion.cm.removeKeyMap(this.keyMap)
       var widget = this
       this.keyMap = {
-        Enter: function() {
+        Enter: function () {
           widget.picked = true
         }
       }
       this.completion.cm.addKeyMap(this.keyMap)
     },
 
-    pick: function() {
+    pick: function () {
       this.completion.pick(this.data, this.selectedHint)
     },
 
-    changeActive: function(i, avoidWrap) {
+    changeActive: function (i, avoidWrap) {
       if (i >= this.data.list.length) i = avoidWrap ? this.data.list.length - 1 : 0
       else if (i < 0) i = avoidWrap ? 0 : this.data.list.length - 1
       if (this.selectedHint == i) return
@@ -423,12 +412,11 @@
       node = this.hints.childNodes[(this.selectedHint = i)]
       node.className += " " + ACTIVE_HINT_ELEMENT_CLASS
       if (node.offsetTop < this.hints.scrollTop) this.hints.scrollTop = node.offsetTop - 3
-      else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight)
-        this.hints.scrollTop = node.offsetTop + node.offsetHeight - this.hints.clientHeight + 3
+      else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight) this.hints.scrollTop = node.offsetTop + node.offsetHeight - this.hints.clientHeight + 3
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node)
     },
 
-    screenAmount: function() {
+    screenAmount: function () {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1
     }
   }
@@ -454,11 +442,11 @@
     var helpers = cm.getHelpers(pos, "hint"),
       words
     if (helpers.length) {
-      var resolved = function(cm, callback, options) {
+      var resolved = function (cm, callback, options) {
         var app = applicableHelpers(cm, helpers)
         function run(i) {
           if (i == app.length) return callback(null)
-          fetchHints(app[i], cm, options, function(result) {
+          fetchHints(app[i], cm, options, function (result) {
             if (result && result.list.length > 0) callback(result)
             else run(i + 1)
           })
@@ -468,16 +456,16 @@
       resolved.async = true
       resolved.supportsSelection = true
       return resolved
-    } else if ((words = cm.getHelper(cm.getCursor(), "hintWords"))) {
-      return function(cm) {
+    } else if ((words = cm.getHelper(cm.getCursor(), "hintAtoms"))) {
+      return function (cm) {
         return CodeMirror.hint.fromList(cm, { words: words })
       }
     } else if (CodeMirror.hint.anyword) {
-      return function(cm, options) {
+      return function (cm, options) {
         return CodeMirror.hint.anyword(cm, options)
       }
     } else {
-      return function() {}
+      return function () {}
     }
   }
 
@@ -485,7 +473,7 @@
     resolve: resolveAutoHints
   })
 
-  CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
+  CodeMirror.registerHelper("hint", "fromList", function (cm, options) {
     var cur = cm.getCursor(),
       token = cm.getTokenAt(cur)
     var term,
@@ -511,7 +499,7 @@
   var defaultOptions = {
     hint: CodeMirror.hint.auto,
     completeSingle: true,
-    alignWithWord: true,
+    alignWithAtom: true,
     closeCharacters: /[\s()\[\]{};:>,]/,
     closeOnUnfocus: true,
     completeOnSingleClick: true,

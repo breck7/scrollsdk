@@ -1,5 +1,12 @@
 [
   {
+    "version": "87.0.0",
+    "releaseDate": "2024-9-15",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
     "version": "86.0.0",
     "releaseDate": "2024-9-14",
     "bugFixes": 0,

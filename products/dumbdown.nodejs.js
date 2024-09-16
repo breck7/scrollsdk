@@ -15,7 +15,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         quickParagraphParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           link: linkParser,
           paragraph: paragraphParser,
           code: codeParser,
@@ -30,18 +30,18 @@
         [{ regex: /^$/, parser: blankLineParser }]
       )
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
-anyCell
-blankCell
-dashCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+anyAtom
+blankAtom
+dashAtom
  paint constant.language
-codeCell
+codeAtom
  paint comment
-keywordCell
+keywordAtom
  paint keyword
-textCell
+textAtom
  paint string
-urlCell
+urlAtom
  paint constant.language
 
 // Line Parsers
@@ -68,13 +68,13 @@ dumbdownParser
    // You can add code as well.
    print("Hello world")
 abstractTopLevelParser
- cells keywordCell
+ atoms keywordAtom
 linkParser
- cells keywordCell urlCell
- catchAllCellType textCell
+ atoms keywordAtom urlAtom
+ catchAllAtomType textAtom
  extends abstractTopLevelParser
  compiler
-  stringTemplate <a href="{urlCell}">{textCell}</a>
+  stringTemplate <a href="{urlAtom}">{textAtom}</a>
  crux link
 paragraphParser
  catchAllParser paragraphContentParser
@@ -86,9 +86,9 @@ paragraphParser
   stringTemplate 
 paragraphContentParser
  inScope paragraphContentParser
- catchAllCellType textCell
+ catchAllAtomType textAtom
  compiler
-  stringTemplate {textCell}
+  stringTemplate {textAtom}
 codeParser
  description A code block.
  catchAllParser lineOfCodeParser
@@ -108,22 +108,22 @@ listParser
  crux list
 blankLineParser
  description Blank lines compile to nothing in the HTML.
- cells blankCell
+ atoms blankAtom
  compiler
   stringTemplate 
  pattern ^$
  tags doNotSynthesize
 lineOfCodeParser
- catchAllCellType codeCell
+ catchAllAtomType codeAtom
  catchAllParser lineOfCodeParser
 dashParser
  crux -
- catchAllCellType textCell
+ catchAllAtomType textAtom
  compiler
-  stringTemplate <li>{textCell}</li>
- cells dashCell
+  stringTemplate <li>{textAtom}</li>
+ atoms dashAtom
 titleParser
- catchAllCellType textCell
+ catchAllAtomType textAtom
  extends abstractTopLevelParser
  compiler
   stringTemplate 
@@ -135,35 +135,35 @@ titleParser
    return \`<h1 id="\${permalink}"><a href="#\${permalink}">\${title}</a></h1>\`
   }
 title2Parser
- catchAllCellType textCell
+ catchAllAtomType textAtom
  extends abstractTopLevelParser
  compiler
-  stringTemplate <h2>{textCell}</h2>
+  stringTemplate <h2>{textAtom}</h2>
  crux title2
 title3Parser
  extends title2Parser
  compiler
-  stringTemplate <h3>{textCell}</h3>
+  stringTemplate <h3>{textAtom}</h3>
  crux title3
 title4Parser
  extends title2Parser
  compiler
-  stringTemplate <h4>{textCell}</h4>
+  stringTemplate <h4>{textAtom}</h4>
  crux title4
 title5Parser
  extends title2Parser
  compiler
-  stringTemplate <h5>{textCell}</h5>
+  stringTemplate <h5>{textAtom}</h5>
  crux title5
 title6Parser
  extends title2Parser
  compiler
-  stringTemplate <h6>{textCell}</h6>
+  stringTemplate <h6>{textAtom}</h6>
  crux title6
 quickParagraphParser
- catchAllCellType textCell
+ catchAllAtomType textAtom
  compiler
-  stringTemplate <p>{textCell}</p>`)
+  stringTemplate <p>{textAtom}</p>`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -171,20 +171,20 @@ quickParagraphParser
   }
 
   class abstractTopLevelParser extends ParserBackedParticle {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
   }
 
   class linkParser extends abstractTopLevelParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get urlCell() {
-      return this.getWord(1)
+    get urlAtom() {
+      return this.getAtom(1)
     }
-    get textCell() {
-      return this.getWordsFrom(2)
+    get textAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -195,8 +195,8 @@ quickParagraphParser
   }
 
   class paragraphContentParser extends ParserBackedParticle {
-    get textCell() {
-      return this.getWordsFrom(0)
+    get textAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -211,13 +211,13 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 
   class blankLineParser extends ParserBackedParticle {
-    get blankCell() {
-      return this.getWord(0)
+    get blankAtom() {
+      return this.getAtom(0)
     }
   }
 
@@ -225,23 +225,23 @@ quickParagraphParser
     createParserCombinator() {
       return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
-    get codeCell() {
-      return this.getWordsFrom(0)
+    get codeAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
   class dashParser extends ParserBackedParticle {
-    get dashCell() {
-      return this.getWord(0)
+    get dashAtom() {
+      return this.getAtom(0)
     }
-    get textCell() {
-      return this.getWordsFrom(1)
+    get textAtom() {
+      return this.getAtomsFrom(1)
     }
   }
 
   class titleParser extends abstractTopLevelParser {
-    get textCell() {
-      return this.getWordsFrom(0)
+    get textAtom() {
+      return this.getAtomsFrom(0)
     }
     compile(spaces) {
       const title = this.content
@@ -251,8 +251,8 @@ quickParagraphParser
   }
 
   class title2Parser extends abstractTopLevelParser {
-    get textCell() {
-      return this.getWordsFrom(0)
+    get textAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -265,8 +265,8 @@ quickParagraphParser
   class title6Parser extends title2Parser {}
 
   class quickParagraphParser extends ParserBackedParticle {
-    get textCell() {
-      return this.getWordsFrom(0)
+    get textAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 

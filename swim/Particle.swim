@@ -70,13 +70,13 @@ aReverseTest
  assert
   world
   hello
-aWordCountTest
+aAtomCountTest
  arrange
   hello
    brave
     new world
  act
-  new Particle(arrange).numberOfWords.toString()
+  new Particle(arrange).numberOfAtoms.toString()
  assert
   4
 aFilterTest

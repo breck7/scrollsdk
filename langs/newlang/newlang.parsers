@@ -1,8 +1,8 @@
-// Cell Parsers
-nameCell
+// Atom Parsers
+nameAtom
  description A person's name
  paint string
-keywordCell
+keywordAtom
  paint keyword
 
 // Line Parsers
@@ -12,8 +12,8 @@ newlangParser
  catchAllParser catchAllErrorParser
  inScope helloParser
 helloParser
- catchAllCellType nameCell
- cells keywordCell
+ catchAllAtomType nameAtom
+ atoms keywordAtom
  crux hello
 catchAllErrorParser
  baseParser errorParser

@@ -1,7 +1,7 @@
 {
   class poopParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
+      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
         { regex: /✨/, parser: bladderParser },
         { regex: /🍼/, parser: bottleParser },
@@ -25,25 +25,25 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
-dateIntCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+dateIntAtom
  paint constant.numeric.integer
-monthIntCell
- extends dateIntCell
-intCell
+monthIntAtom
+ extends dateIntAtom
+intAtom
  regex \\d+
-yearIntCell
- extends dateIntCell
-dayIntCell
- extends dateIntCell
-timeIntCell
+yearIntAtom
+ extends dateIntAtom
+dayIntAtom
+ extends dateIntAtom
+timeIntAtom
  paint constant.numeric.integer
- extends intCell
-anyCell
-symbolCell
-memoryDescriptionCell
+ extends intAtom
+anyAtom
+symbolAtom
+memoryDescriptionAtom
  paint string
-eventTypeCell
+eventTypeAtom
  enum 💩 ✨ 🍼 😴 😀 ❤️
 
 // Line parsers
@@ -75,9 +75,9 @@ poopParser
   ✨ 6
   💩 630
 abstractEventParser
- cellParser omnifix
- cells eventTypeCell
- catchAllCellType timeIntCell
+ atomParser omnifix
+ atoms eventTypeAtom
+ catchAllAtomType timeIntAtom
  javascript
   getTime() {
    const time = this.getLine().match(/(\\d+)/)
@@ -122,8 +122,8 @@ awakeParser
 memoryParser
  crux ❤️
  pattern ❤️
- cells eventTypeCell
- catchAllCellType memoryDescriptionCell
+ atoms eventTypeAtom
+ catchAllAtomType memoryDescriptionAtom
  description Special memory.
  extends abstractEventParser
  string eventType memory
@@ -134,7 +134,7 @@ memoryParser
 dayParser
  crux 🌄
  description We survived another day!
- cells symbolCell monthIntCell dayIntCell yearIntCell
+ atoms symbolAtom monthIntAtom dayIntAtom yearIntAtom
  javascript
   getDay() {
    return Utils.removeNonAscii(this.getLine())
@@ -148,11 +148,11 @@ dayParser
   }
 
   class abstractEventParser extends ParserBackedParticle {
-    get eventTypeCell() {
-      return this.getWord(0)
+    get eventTypeAtom() {
+      return this.getAtom(0)
     }
-    get timeIntCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+    get timeIntAtom() {
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
     getTime() {
       const time = this.getLine().match(/(\d+)/)
@@ -197,11 +197,11 @@ dayParser
   }
 
   class memoryParser extends abstractEventParser {
-    get eventTypeCell() {
-      return this.getWord(0)
+    get eventTypeAtom() {
+      return this.getAtom(0)
     }
-    get memoryDescriptionCell() {
-      return this.getWordsFrom(1)
+    get memoryDescriptionAtom() {
+      return this.getAtomsFrom(1)
     }
     get eventType() {
       return `memory`
@@ -212,17 +212,17 @@ dayParser
   }
 
   class dayParser extends ParserBackedParticle {
-    get symbolCell() {
-      return this.getWord(0)
+    get symbolAtom() {
+      return this.getAtom(0)
     }
-    get monthIntCell() {
-      return this.getWord(1)
+    get monthIntAtom() {
+      return this.getAtom(1)
     }
-    get dayIntCell() {
-      return this.getWord(2)
+    get dayIntAtom() {
+      return this.getAtom(2)
     }
-    get yearIntCell() {
-      return this.getWord(3)
+    get yearIntAtom() {
+      return this.getAtom(3)
     }
     getDay() {
       return Utils.removeNonAscii(this.getLine()).trim().replace(/ /g, "/")

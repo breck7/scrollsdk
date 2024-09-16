@@ -270,8 +270,8 @@ class ParsersCodeMirrorMode {
     const cursor = cmInstance.getDoc().getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
     const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
-    // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
-    if (result.matches.length === 1 && result.matches[0].text === result.word) return null
+    // It seems to be better UX if there's only 1 result, and its the atom the user entered, to close autocomplete
+    if (result.matches.length === 1 && result.matches[0].text === result.atom) return null
     return result.matches.length
       ? {
           list: result.matches,
@@ -289,49 +289,49 @@ class ParsersCodeMirrorMode {
   _advanceStreamAndReturnTokenType(stream, state) {
     let nextCharacter = stream.next()
     const lineNumber = stream.lineOracle.line + 1 // state.lineIndex
-    const WordBreakSymbol = " "
+    const AtomBreakSymbol = " "
     const ParticleBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
-      if (nextCharacter === WordBreakSymbol) {
+      if (nextCharacter === AtomBreakSymbol) {
         if (peek === undefined || peek === ParticleBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === WordBreakSymbol && state.cellIndex) {
-          // If we are missing a cell.
-          // TODO: this is broken for a blank 1st cell. We need to track WordBreakSymbol level.
-          state.cellIndex++
+        if (peek === AtomBreakSymbol && state.atomIndex) {
+          // If we are missing a atom.
+          // TODO: this is broken for a blank 1st atom. We need to track AtomBreakSymbol level.
+          state.atomIndex++
         }
         return "bracket"
       }
-      if (peek === WordBreakSymbol) {
-        state.cellIndex++
-        return this._getCellStyle(lineNumber, state.cellIndex)
+      if (peek === AtomBreakSymbol) {
+        state.atomIndex++
+        return this._getAtomStyle(lineNumber, state.atomIndex)
       }
       nextCharacter = stream.next()
     }
-    state.cellIndex++
-    const style = this._getCellStyle(lineNumber, state.cellIndex)
+    state.atomIndex++
+    const style = this._getAtomStyle(lineNumber, state.atomIndex)
     this._incrementLine(state)
     return style
   }
-  _getCellStyle(lineIndex, cellIndex) {
+  _getAtomStyle(lineIndex, atomIndex) {
     const program = this._getParsedProgram()
-    // todo: if the current word is an error, don't show red?
-    if (!program.getCellPaintAtPosition) console.log(program)
-    const paint = program.getCellPaintAtPosition(lineIndex, cellIndex)
+    // todo: if the current atom is an error, don't show red?
+    if (!program.getAtomPaintAtPosition) console.log(program)
+    const paint = program.getAtomPaintAtPosition(lineIndex, atomIndex)
     const style = paint ? textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined
     return style || "noPaintDefinedInParsers"
   }
   // todo: remove.
   startState() {
     return {
-      cellIndex: 0
+      atomIndex: 0
     }
   }
   _incrementLine(state) {
-    state.cellIndex = 0
+    state.atomIndex = 0
   }
 }
 window.ParsersCodeMirrorMode = ParsersCodeMirrorMode

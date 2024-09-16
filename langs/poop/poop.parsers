@@ -1,22 +1,22 @@
-// Cell parsers
-dateIntCell
+// Atom parsers
+dateIntAtom
  paint constant.numeric.integer
-monthIntCell
- extends dateIntCell
-intCell
+monthIntAtom
+ extends dateIntAtom
+intAtom
  regex \d+
-yearIntCell
- extends dateIntCell
-dayIntCell
- extends dateIntCell
-timeIntCell
+yearIntAtom
+ extends dateIntAtom
+dayIntAtom
+ extends dateIntAtom
+timeIntAtom
  paint constant.numeric.integer
- extends intCell
-anyCell
-symbolCell
-memoryDescriptionCell
+ extends intAtom
+anyAtom
+symbolAtom
+memoryDescriptionAtom
  paint string
-eventTypeCell
+eventTypeAtom
  enum 💩 ✨ 🍼 😴 😀 ❤️
 
 // Line parsers
@@ -48,9 +48,9 @@ poopParser
   ✨ 6
   💩 630
 abstractEventParser
- cellParser omnifix
- cells eventTypeCell
- catchAllCellType timeIntCell
+ atomParser omnifix
+ atoms eventTypeAtom
+ catchAllAtomType timeIntAtom
  javascript
   getTime() {
    const time = this.getLine().match(/(\d+)/)
@@ -95,8 +95,8 @@ awakeParser
 memoryParser
  crux ❤️
  pattern ❤️
- cells eventTypeCell
- catchAllCellType memoryDescriptionCell
+ atoms eventTypeAtom
+ catchAllAtomType memoryDescriptionAtom
  description Special memory.
  extends abstractEventParser
  string eventType memory
@@ -107,7 +107,7 @@ memoryParser
 dayParser
  crux 🌄
  description We survived another day!
- cells symbolCell monthIntCell dayIntCell yearIntCell
+ atoms symbolAtom monthIntAtom dayIntAtom yearIntAtom
  javascript
   getDay() {
    return Utils.removeNonAscii(this.getLine())

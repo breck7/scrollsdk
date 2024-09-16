@@ -8,9 +8,9 @@ test swarmParticlesample
     compilesTo txt
     inScope baseParser
     catchAllParser errorParser
-   anyCell
-   wordCell
-    extends anyCell
+   anyAtom
+   atomAtom
+    extends anyAtom
    errorParser
     baseParser errorParser
    baseParser
@@ -22,14 +22,14 @@ test swarmParticlesample
    toParser
     crux to
     extends blockParser
-    cells wordCell
+    atoms atomAtom
     tags test
     compiler
-     stringTemplate to {wordCell}
+     stringTemplate to {atomAtom}
      closeSubparticles end
  getAllErrors
   assertLengthIs 0
- runTimeFirstWordsInScope
+ runTimeFirstAtomsInScope
   assertLengthIs 1
  getParserDefinitionByParserId toParser
   assertTypeIs object

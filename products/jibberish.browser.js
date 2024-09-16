@@ -3,7 +3,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
           hue: hueParser,
           saturation: saturationParser,
@@ -30,20 +30,20 @@
     execute() {
       return 42
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
-anyCell
-columnNameEnumCell
-columnNameCell
-errorCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+anyAtom
+columnNameEnumAtom
+columnNameAtom
+errorAtom
  paint invalid
-intCell
+intAtom
  paint constant.numeric
-onoffCell
+onoffAtom
  enum on off
-wordCell
-topLevelPropertyCell
+atomAtom
+topLevelPropertyAtom
  paint constant.language
-opSymbolCell
+opSymbolAtom
  paint keyword.operator.arithmetic
 
 // Line Parsers
@@ -59,13 +59,13 @@ jibberishParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 abstractBaseClassParser
 extendsAbstractParser
- cells topLevelPropertyCell intCell
+ atoms topLevelPropertyAtom intAtom
  extends abstractBaseClassParser
  crux extendsAbstract
 abstractTopLevelParser
- cells topLevelPropertyCell
+ atoms topLevelPropertyAtom
 abstractColorPropertiesParser
- cells topLevelPropertyCell intCell
+ atoms topLevelPropertyAtom intAtom
  extends abstractTopLevelParser
 hueParser
  extends abstractColorPropertiesParser
@@ -90,8 +90,8 @@ plusParser
  extends addParser
  example Adding two numbers:
   + 1 2
- catchAllCellType intCell
- cells opSymbolCell
+ catchAllAtomType intAtom
+ atoms opSymbolAtom
 blockParser
  inScope abstractTopLevelParser scoreBlockParser
  extends abstractTopLevelParser
@@ -102,9 +102,9 @@ scoreBlockParser
  inScope scoresParser
  crux scoreBlock
 toParser
- cells topLevelPropertyCell wordCell
+ atoms topLevelPropertyAtom atomAtom
  compiler
-  stringTemplate to {word}
+  stringTemplate to {atom}
   closeSubparticles end
  extends blockParser
  crux to
@@ -113,16 +113,16 @@ fooParser
  crux foo
 xColumnNameParser
  description The name of the column to use for the x axis
- cells topLevelPropertyCell columnNameEnumCell
+ atoms topLevelPropertyAtom columnNameEnumAtom
  tags doNotSynthesize
  javascript
-  getRunTimeEnumOptions(cell) {
-   return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+  getRunTimeEnumOptions(atom) {
+   return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
   }
  extends abstractTopLevelParser
  crux xColumnName
 lightbulbStateParser
- cells topLevelPropertyCell onoffCell
+ atoms topLevelPropertyAtom onoffAtom
  extends abstractTopLevelParser
  crux lightbulbState
 nestedParser
@@ -130,7 +130,7 @@ nestedParser
  crux nested
 particleWithConstsParser
  string greeting hello world
- string singleCell hello
+ string singleAtom hello
  string thisHasQuotes "'\`
  string longText
   hello
@@ -150,7 +150,7 @@ someCodeParser
  extends abstractTopLevelParser
  crux someCode
 typeParser
- cells topLevelPropertyCell wordCell
+ atoms topLevelPropertyAtom atomAtom
  single
  extends abstractTopLevelParser
  crux type
@@ -158,17 +158,17 @@ contentParser
  baseParser blobParser
  crux content
 errorParser
- catchAllCellType errorCell
+ catchAllAtomType errorAtom
  baseParser errorParser
- cells errorCell
+ atoms errorAtom
 lineOfCodeParser
- catchAllCellType wordCell
+ catchAllAtomType atomAtom
 textParser
  baseParser blobParser
  crux text
 scoresParser
- catchAllCellType intCell
- cells topLevelPropertyCell
+ catchAllAtomType intAtom
+ atoms topLevelPropertyAtom
  crux scores`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
@@ -179,26 +179,26 @@ scoresParser
   class abstractBaseClassParser extends ParserBackedParticle {}
 
   class extendsAbstractParser extends abstractBaseClassParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get intCell() {
-      return parseInt(this.getWord(1))
+    get intAtom() {
+      return parseInt(this.getAtom(1))
     }
   }
 
   class abstractTopLevelParser extends ParserBackedParticle {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
   }
 
   class abstractColorPropertiesParser extends abstractTopLevelParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get intCell() {
-      return parseInt(this.getWord(1))
+    get intAtom() {
+      return parseInt(this.getAtom(1))
     }
   }
 
@@ -210,7 +210,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -219,11 +219,11 @@ scoresParser
   class addParser extends abstractTopLevelParser {}
 
   class plusParser extends addParser {
-    get opSymbolCell() {
-      return this.getWord(0)
+    get opSymbolAtom() {
+      return this.getAtom(0)
     }
-    get intCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+    get intAtom() {
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }
 
@@ -231,7 +231,7 @@ scoresParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           hue: hueParser,
           saturation: saturationParser,
           constrast: constrastParser,
@@ -257,39 +257,39 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
   class toParser extends blockParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get wordCell() {
-      return this.getWord(1)
+    get atomAtom() {
+      return this.getAtom(1)
     }
   }
 
   class fooParser extends abstractTopLevelParser {}
 
   class xColumnNameParser extends abstractTopLevelParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get columnNameEnumCell() {
-      return this.getWord(1)
+    get columnNameEnumAtom() {
+      return this.getAtom(1)
     }
-    getRunTimeEnumOptions(cell) {
-      return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+    getRunTimeEnumOptions(atom) {
+      return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
     }
   }
 
   class lightbulbStateParser extends abstractTopLevelParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get onoffCell() {
-      return this.getWord(1)
+    get onoffAtom() {
+      return this.getAtom(1)
     }
   }
 
@@ -315,7 +315,7 @@ world`
     get thisHasQuotes() {
       return `"'\``
     }
-    get singleCell() {
+    get singleAtom() {
       return `hello`
     }
     get greeting() {
@@ -336,11 +336,11 @@ world`
   }
 
   class typeParser extends abstractTopLevelParser {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get wordCell() {
-      return this.getWord(1)
+    get atomAtom() {
+      return this.getAtom(1)
     }
   }
 
@@ -357,17 +357,17 @@ world`
     getErrors() {
       return this._getErrorParserErrors()
     }
-    get errorCell() {
-      return this.getWord(0)
+    get errorAtom() {
+      return this.getAtom(0)
     }
-    get errorCell() {
-      return this.getWordsFrom(1)
+    get errorAtom() {
+      return this.getAtomsFrom(1)
     }
   }
 
   class lineOfCodeParser extends ParserBackedParticle {
-    get wordCell() {
-      return this.getWordsFrom(0)
+    get atomAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
@@ -381,11 +381,11 @@ world`
   }
 
   class scoresParser extends ParserBackedParticle {
-    get topLevelPropertyCell() {
-      return this.getWord(0)
+    get topLevelPropertyAtom() {
+      return this.getAtom(0)
     }
-    get intCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+    get intAtom() {
+      return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }
 

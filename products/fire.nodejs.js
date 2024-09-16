@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -59,48 +59,48 @@
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Explore best ways to add polymorphism
 
-// Cell Parsers
-anyCell
-booleanCell
+// Atom Parsers
+anyAtom
+booleanAtom
  enum false true
-filepathCell
-identifierCell
+filepathAtom
+identifierAtom
  regex [$A-Za-z_][0-9a-zA-Z_$]*
  paint variable
  examples myVarA someVarB
-numberCell
+numberAtom
  regex \\-?[0-9]*\\.?[0-9]*
  paint constant.numeric
-numberIdentifierCell
- extends identifierCell
-hashBangCell
+numberIdentifierAtom
+ extends identifierAtom
+hashBangAtom
  paint comment
-hashBangKeywordCell
+hashBangKeywordAtom
  paint comment
-stringCell
+stringAtom
  paint string
-booleanIdentifierCell
- extends identifierCell
-functionIdentifierCell
- extends identifierCell
-identifiersCell
- extends identifierCell
-instanceIdentifierCell
- extends identifierCell
-methodIdentifierCell
- extends identifierCell
-resultIdentifierCell
- extends identifierCell
-keywordCell
+booleanIdentifierAtom
+ extends identifierAtom
+functionIdentifierAtom
+ extends identifierAtom
+identifiersAtom
+ extends identifierAtom
+instanceIdentifierAtom
+ extends identifierAtom
+methodIdentifierAtom
+ extends identifierAtom
+resultIdentifierAtom
+ extends identifierAtom
+keywordAtom
  paint keyword
-stringIdentifierCell
- extends identifierCell
-stringCellsCell
- extends stringCell
-leftNumberCell
- extends numberCell
-leftAnyCell
- extends anyCell
+stringIdentifierAtom
+ extends identifierAtom
+stringAtomsAtom
+ extends stringAtom
+leftNumberAtom
+ extends numberAtom
+leftAnyAtom
+ extends anyAtom
 
 // Line Parsers
 fireParser
@@ -123,7 +123,7 @@ fireParser
   }
 abstractNonTerminalParser
  inScope abstractTerminalParser abstractNonTerminalParser
- cells keywordCell
+ atoms keywordAtom
 abstractJsblockParser
  compiler
   openSubparticles  {
@@ -133,68 +133,68 @@ blockParser
  description block of code
  popularity .2
  compiler
-  stringTemplate /* {identifierCell} */
+  stringTemplate /* {identifierAtom} */
  extends abstractJsblockParser
  crux block
 functionParser
  crux function
  description Function Assignment
- cells keywordCell functionIdentifierCell
- catchAllCellType anyCell
+ atoms keywordAtom functionIdentifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
-  catchAllCellDelimiter , 
+  stringTemplate const {functionIdentifierAtom} = ({anyAtom}) =>
+  catchAllAtomDelimiter , 
  popularity .1
  extends abstractJsblockParser
 ifParser
  crux if
  description If tile
- cells keywordCell identifierCell
+ atoms keywordAtom identifierAtom
  popularity .2
  compiler
-  stringTemplate if ({identifierCell})
+  stringTemplate if ({identifierAtom})
  extends abstractJsblockParser
 whileParser
  crux while
  description While tile
- cells keywordCell identifierCell
+ atoms keywordAtom identifierAtom
  popularity .1
  compiler
-  stringTemplate while ({identifierCell})
+  stringTemplate while ({identifierAtom})
  extends abstractJsblockParser
 abstractTerminalParser
- cells keywordCell
+ atoms keywordAtom
 abstractAssignmentParser
  extends abstractTerminalParser
 abstractArithmeticParser
- cells keywordCell identifierCell
- catchAllCellType anyCell
+ atoms keywordAtom identifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate const {identifierCell} = {anyCell}
+  stringTemplate const {identifierAtom} = {anyAtom}
  popularity .2
  extends abstractAssignmentParser
 divideParser
  description Divide Numbers
  compiler
-  catchAllCellDelimiter  / 
+  catchAllAtomDelimiter  / 
  extends abstractArithmeticParser
  crux divide
 moduloParser
  description Modulo Numbers
  compiler
-  catchAllCellDelimiter %
+  catchAllAtomDelimiter %
  extends abstractArithmeticParser
  crux modulo
 multiplyParser
  description Multiply Numbers
  compiler
-  catchAllCellDelimiter  * 
+  catchAllAtomDelimiter  * 
  extends abstractArithmeticParser
  crux multiply
 substractParser
  description Subtract Numbers
  compiler
-  catchAllCellDelimiter  - 
+  catchAllAtomDelimiter  - 
  extends abstractArithmeticParser
  crux substract
 addParser
@@ -203,202 +203,202 @@ addParser
   add ten 2 3 5
  description Add numbers and store result
  compiler
-  catchAllCellDelimiter  + 
+  catchAllAtomDelimiter  + 
  extends abstractArithmeticParser
 abstractBooleanOperatorParser
  description Runs a boolean test and saves result.
  extends abstractAssignmentParser
 greaterThanParser
  description Greater than test
- cells keywordCell identifierCell leftNumberCell numberCell
+ atoms keywordAtom identifierAtom leftNumberAtom numberAtom
  compiler
-  stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
+  stringTemplate const {identifierAtom} = {leftNumberAtom} > {numberAtom}
  popularity .1
  extends abstractBooleanOperatorParser
  crux greaterThan
 greaterThanOrEqualParser
  description Greater than or equal to test
- cells keywordCell identifierCell leftNumberCell numberCell
+ atoms keywordAtom identifierAtom leftNumberAtom numberAtom
  compiler
-  stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
+  stringTemplate const {identifierAtom} = {leftNumberAtom} >= {numberAtom}
  popularity .1
  extends abstractBooleanOperatorParser
  crux greaterThanOrEqual
 lessThanParser
  description Less than test
- cells keywordCell identifierCell leftAnyCell anyCell
+ atoms keywordAtom identifierAtom leftAnyAtom anyAtom
  compiler
-  stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
+  stringTemplate const {identifierAtom} = {leftAnyAtom} < {anyAtom}
  popularity .1
  extends abstractBooleanOperatorParser
  crux lessThan
 lessThanOrEqualParser
  crux lessThanOrEqual
  description Less than or equal to test
- cells keywordCell identifierCell leftAnyCell anyCell
+ atoms keywordAtom identifierAtom leftAnyAtom anyAtom
  compiler
-  stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
+  stringTemplate const {identifierAtom} = {leftAnyAtom} <= {anyAtom}
  popularity .1
  extends abstractBooleanOperatorParser
 sumParser
  crux sum
  description Add numbers and store result
- cells keywordCell numberIdentifierCell
- catchAllCellType numberCell
+ atoms keywordAtom numberIdentifierAtom
+ catchAllAtomType numberAtom
  compiler
-  stringTemplate const {numberIdentifierCell} = [{numberCell}].reduce((sum, num) => sum + num)
-  catchAllCellDelimiter , 
+  stringTemplate const {numberIdentifierAtom} = [{numberAtom}].reduce((sum, num) => sum + num)
+  catchAllAtomDelimiter , 
  popularity .1
  extends abstractAssignmentParser
 booleanParser
  crux boolean
  description Boolean Assignment
- cells keywordCell booleanIdentifierCell booleanCell
+ atoms keywordAtom booleanIdentifierAtom booleanAtom
  compiler
-  stringTemplate const {booleanIdentifierCell} = {booleanCell}
+  stringTemplate const {booleanIdentifierAtom} = {booleanAtom}
  extends abstractAssignmentParser
 callFunctionAndSetParser
  crux callFunctionAndSet
  description Function Call
  popularity .5
- cells keywordCell resultIdentifierCell functionIdentifierCell
- catchAllCellType anyCell
+ atoms keywordAtom resultIdentifierAtom functionIdentifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate const {resultIdentifierCell} = {functionIdentifierCell}({anyCell})
-  catchAllCellDelimiter , 
+  stringTemplate const {resultIdentifierAtom} = {functionIdentifierAtom}({anyAtom})
+  catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 callMethodAndSetParser
  crux callMethodAndSet
  description Method Call
  popularity .5
- cells keywordCell resultIdentifierCell instanceIdentifierCell methodIdentifierCell
- catchAllCellType anyCell
+ atoms keywordAtom resultIdentifierAtom instanceIdentifierAtom methodIdentifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate const {resultIdentifierCell} = {instanceIdentifierCell}.{methodIdentifierCell}({anyCell})
-  catchAllCellDelimiter , 
+  stringTemplate const {resultIdentifierAtom} = {instanceIdentifierAtom}.{methodIdentifierAtom}({anyAtom})
+  catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 joinParser
  crux join
  description Join strings to form new string
- cells keywordCell identifierCell
- catchAllCellType identifiersCell
+ atoms keywordAtom identifierAtom
+ catchAllAtomType identifiersAtom
  compiler
-  stringTemplate const {identifierCell} = [{identifiersCell}].join("")
-  catchAllCellDelimiter , 
+  stringTemplate const {identifierAtom} = [{identifiersAtom}].join("")
+  catchAllAtomDelimiter , 
  popularity .2
  extends abstractAssignmentParser
 mutableNumberParser
  crux mutableNumber
  description Mutable Number Assignment
- cells keywordCell identifierCell numberCell
+ atoms keywordAtom identifierAtom numberAtom
  compiler
-  stringTemplate let {identifierCell} = {numberCell}
+  stringTemplate let {identifierAtom} = {numberAtom}
  extends abstractAssignmentParser
 numberParser
  crux number
  description Number Assignment
- cells keywordCell identifierCell numberCell
+ atoms keywordAtom identifierAtom numberAtom
  compiler
-  stringTemplate const {identifierCell} = {numberCell}
+  stringTemplate const {identifierAtom} = {numberAtom}
  popularity .3
  extends abstractAssignmentParser
 numbersParser
  crux numbers
  description Number Array Assignment
- cells keywordCell identifierCell
- catchAllCellType numberCell
+ atoms keywordAtom identifierAtom
+ catchAllAtomType numberAtom
  popularity .4
  compiler
-  stringTemplate const {identifierCell} = [{numberCell}]
-  catchAllCellDelimiter , 
+  stringTemplate const {identifierAtom} = [{numberAtom}]
+  catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 stringParser
  crux string
  description String Assignment
- cells keywordCell stringIdentifierCell
- catchAllCellType anyCell
+ atoms keywordAtom stringIdentifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate const {stringIdentifierCell} = "{anyCell}"
+  stringTemplate const {stringIdentifierAtom} = "{anyAtom}"
  popularity .2
  extends abstractAssignmentParser
 callFunctionParser
  crux callFunction
  description Function call ignore result.
  popularity .1
- cells keywordCell functionIdentifierCell
- catchAllCellType anyCell
+ atoms keywordAtom functionIdentifierAtom
+ catchAllAtomType anyAtom
  compiler
-  stringTemplate {functionIdentifierCell}({anyCell})
-  catchAllCellDelimiter , 
+  stringTemplate {functionIdentifierAtom}({anyAtom})
+  catchAllAtomDelimiter , 
  extends abstractTerminalParser
 decrementParser
  crux decrement
  description Decrement
- cells keywordCell numberIdentifierCell
+ atoms keywordAtom numberIdentifierAtom
  compiler
-  stringTemplate {numberIdentifierCell}--
+  stringTemplate {numberIdentifierAtom}--
  popularity .1
  extends abstractTerminalParser
 dumpIdentifierParser
  crux dumpIdentifier
  description Dump variable(s) to console
- catchAllCellType identifierCell
+ catchAllAtomType identifierAtom
  compiler
-  stringTemplate console.log({identifierCell})
-  catchAllCellDelimiter , 
+  stringTemplate console.log({identifierAtom})
+  catchAllAtomDelimiter , 
  popularity .5
  extends abstractTerminalParser
 exportParser
  crux export
  description Export This
- cells keywordCell identifierCell
+ atoms keywordAtom identifierAtom
  compiler
-  stringTemplate module.exports = {identifierCell}
+  stringTemplate module.exports = {identifierAtom}
  popularity .1
  extends abstractTerminalParser
 incrementParser
  crux increment
  description Increment
  popularity .3
- cells keywordCell numberIdentifierCell
+ atoms keywordAtom numberIdentifierAtom
  compiler
-  stringTemplate {numberIdentifierCell}++
+  stringTemplate {numberIdentifierAtom}++
  extends abstractTerminalParser
 printNumberParser
  crux printNumber
  extends abstractTerminalParser
- catchAllCellType numberIdentifierCell
+ catchAllAtomType numberIdentifierAtom
  compiler
-  stringTemplate console.log({numberIdentifierCell})
+  stringTemplate console.log({numberIdentifierAtom})
 printStringParser
  crux printString
  // todo Allow printing of multiline strings
  extends abstractTerminalParser
- catchAllCellType stringCellsCell
+ catchAllAtomType stringAtomsAtom
  compiler
-  stringTemplate console.log("{stringCells}")
+  stringTemplate console.log("{stringAtoms}")
 requireParser
  crux require
  description Require Something
- cells keywordCell identifierCell filepathCell
+ atoms keywordAtom identifierAtom filepathAtom
  compiler
-  stringTemplate const {identifierCell} = require("{filepathCell}")
+  stringTemplate const {identifierAtom} = require("{filepathAtom}")
  popularity .1
  extends abstractTerminalParser
 returnParser
  crux return
- cells keywordCell anyCell
+ atoms keywordAtom anyAtom
  compiler
-  stringTemplate return {anyCell}
+  stringTemplate return {anyAtom}
  popularity .1
  extends abstractTerminalParser
 hashbangParser
  crux #!
  description Standard bash hashbang line.
- catchAllCellType hashBangCell
+ catchAllAtomType hashBangAtom
  compiler
-  stringTemplate // #! {hashBangCell}
- cells hashBangKeywordCell
+  stringTemplate // #! {hashBangAtom}
+ atoms hashBangKeywordAtom
 errorParser
  baseParser errorParser
  compiler
@@ -413,7 +413,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -449,8 +449,8 @@ errorParser
         undefined
       )
     }
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
   }
 
@@ -459,52 +459,52 @@ errorParser
   class blockParser extends abstractJsblockParser {}
 
   class functionParser extends abstractJsblockParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get functionIdentifierCell() {
-      return this.getWord(1)
+    get functionIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get anyCell() {
-      return this.getWordsFrom(2)
+    get anyAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
   class ifParser extends abstractJsblockParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
   }
 
   class whileParser extends abstractJsblockParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
   }
 
   class abstractTerminalParser extends ParserBackedParticle {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
   }
 
   class abstractAssignmentParser extends abstractTerminalParser {}
 
   class abstractArithmeticParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get anyCell() {
-      return this.getWordsFrom(2)
+    get anyAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
@@ -521,266 +521,266 @@ errorParser
   class abstractBooleanOperatorParser extends abstractAssignmentParser {}
 
   class greaterThanParser extends abstractBooleanOperatorParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get leftNumberCell() {
-      return parseFloat(this.getWord(2))
+    get leftNumberAtom() {
+      return parseFloat(this.getAtom(2))
     }
-    get numberCell() {
-      return parseFloat(this.getWord(3))
+    get numberAtom() {
+      return parseFloat(this.getAtom(3))
     }
   }
 
   class greaterThanOrEqualParser extends abstractBooleanOperatorParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get leftNumberCell() {
-      return parseFloat(this.getWord(2))
+    get leftNumberAtom() {
+      return parseFloat(this.getAtom(2))
     }
-    get numberCell() {
-      return parseFloat(this.getWord(3))
+    get numberAtom() {
+      return parseFloat(this.getAtom(3))
     }
   }
 
   class lessThanParser extends abstractBooleanOperatorParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get leftAnyCell() {
-      return this.getWord(2)
+    get leftAnyAtom() {
+      return this.getAtom(2)
     }
-    get anyCell() {
-      return this.getWord(3)
+    get anyAtom() {
+      return this.getAtom(3)
     }
   }
 
   class lessThanOrEqualParser extends abstractBooleanOperatorParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get leftAnyCell() {
-      return this.getWord(2)
+    get leftAnyAtom() {
+      return this.getAtom(2)
     }
-    get anyCell() {
-      return this.getWord(3)
+    get anyAtom() {
+      return this.getAtom(3)
     }
   }
 
   class sumParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get numberIdentifierCell() {
-      return this.getWord(1)
+    get numberIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get numberCell() {
-      return this.getWordsFrom(2).map(val => parseFloat(val))
+    get numberAtom() {
+      return this.getAtomsFrom(2).map(val => parseFloat(val))
     }
   }
 
   class booleanParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get booleanIdentifierCell() {
-      return this.getWord(1)
+    get booleanIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get booleanCell() {
-      return this.getWord(2)
+    get booleanAtom() {
+      return this.getAtom(2)
     }
   }
 
   class callFunctionAndSetParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get resultIdentifierCell() {
-      return this.getWord(1)
+    get resultIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get functionIdentifierCell() {
-      return this.getWord(2)
+    get functionIdentifierAtom() {
+      return this.getAtom(2)
     }
-    get anyCell() {
-      return this.getWordsFrom(3)
+    get anyAtom() {
+      return this.getAtomsFrom(3)
     }
   }
 
   class callMethodAndSetParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get resultIdentifierCell() {
-      return this.getWord(1)
+    get resultIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get instanceIdentifierCell() {
-      return this.getWord(2)
+    get instanceIdentifierAtom() {
+      return this.getAtom(2)
     }
-    get methodIdentifierCell() {
-      return this.getWord(3)
+    get methodIdentifierAtom() {
+      return this.getAtom(3)
     }
-    get anyCell() {
-      return this.getWordsFrom(4)
+    get anyAtom() {
+      return this.getAtomsFrom(4)
     }
   }
 
   class joinParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get identifiersCell() {
-      return this.getWordsFrom(2)
+    get identifiersAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
   class mutableNumberParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get numberCell() {
-      return parseFloat(this.getWord(2))
+    get numberAtom() {
+      return parseFloat(this.getAtom(2))
     }
   }
 
   class numberParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get numberCell() {
-      return parseFloat(this.getWord(2))
+    get numberAtom() {
+      return parseFloat(this.getAtom(2))
     }
   }
 
   class numbersParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get numberCell() {
-      return this.getWordsFrom(2).map(val => parseFloat(val))
+    get numberAtom() {
+      return this.getAtomsFrom(2).map(val => parseFloat(val))
     }
   }
 
   class stringParser extends abstractAssignmentParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get stringIdentifierCell() {
-      return this.getWord(1)
+    get stringIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get anyCell() {
-      return this.getWordsFrom(2)
+    get anyAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
   class callFunctionParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get functionIdentifierCell() {
-      return this.getWord(1)
+    get functionIdentifierAtom() {
+      return this.getAtom(1)
     }
-    get anyCell() {
-      return this.getWordsFrom(2)
+    get anyAtom() {
+      return this.getAtomsFrom(2)
     }
   }
 
   class decrementParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get numberIdentifierCell() {
-      return this.getWord(1)
+    get numberIdentifierAtom() {
+      return this.getAtom(1)
     }
   }
 
   class dumpIdentifierParser extends abstractTerminalParser {
-    get identifierCell() {
-      return this.getWordsFrom(0)
+    get identifierAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
   class exportParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
   }
 
   class incrementParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get numberIdentifierCell() {
-      return this.getWord(1)
+    get numberIdentifierAtom() {
+      return this.getAtom(1)
     }
   }
 
   class printNumberParser extends abstractTerminalParser {
-    get numberIdentifierCell() {
-      return this.getWordsFrom(0)
+    get numberIdentifierAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
   class printStringParser extends abstractTerminalParser {
-    get stringCellsCell() {
-      return this.getWordsFrom(0)
+    get stringAtomsAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
   class requireParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get identifierCell() {
-      return this.getWord(1)
+    get identifierAtom() {
+      return this.getAtom(1)
     }
-    get filepathCell() {
-      return this.getWord(2)
+    get filepathAtom() {
+      return this.getAtom(2)
     }
   }
 
   class returnParser extends abstractTerminalParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get anyCell() {
-      return this.getWord(1)
+    get anyAtom() {
+      return this.getAtom(1)
     }
   }
 
   class hashbangParser extends ParserBackedParticle {
-    get hashBangKeywordCell() {
-      return this.getWord(0)
+    get hashBangKeywordAtom() {
+      return this.getAtom(0)
     }
-    get hashBangCell() {
-      return this.getWordsFrom(1)
+    get hashBangAtom() {
+      return this.getAtomsFrom(1)
     }
   }
 

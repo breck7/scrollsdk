@@ -3,7 +3,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -14,16 +14,16 @@
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 // todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 
-// Cell Parsers
-anyCell
-keywordCell
+// Atom Parsers
+anyAtom
+keywordAtom
  paint keyword
-stringCell
+stringAtom
  paint string
-booleanCell
+booleanAtom
  enum true false
  paint constant.numeric
-numberCell
+numberAtom
  paint constant.numeric
 
 // Line Parsers
@@ -38,7 +38,7 @@ dugParser
    return JSON.stringify(JSON.parse(res), null, 2)
   }
 abstractValueParser
- cells keywordCell
+ atoms keywordAtom
  cruxFromId
 nullParser
  compiler
@@ -46,19 +46,19 @@ nullParser
  extends abstractValueParser
 numberParser
  extends abstractValueParser
- cells keywordCell numberCell
+ atoms keywordAtom numberAtom
  compiler
-  stringTemplate {numberCell}
+  stringTemplate {numberAtom}
 stringParser
- catchAllCellType stringCell
+ catchAllAtomType stringAtom
  compiler
-  stringTemplate "{stringCell}"
+  stringTemplate "{stringAtom}"
  extends abstractValueParser
 booleanParser
  extends abstractValueParser
- cells keywordCell booleanCell
+ atoms keywordAtom booleanAtom
  compiler
-  stringTemplate {booleanCell}
+  stringTemplate {booleanAtom}
 objectParser
  catchAllParser memberParser
  extends abstractValueParser
@@ -78,8 +78,8 @@ arrayParser
 memberParser
  inScope abstractValueParser
  compiler
-  stringTemplate "{stringCell}" :
- cells stringCell
+  stringTemplate "{stringAtom}" :
+ atoms stringAtom
 errorParser
  baseParser errorParser`)
     get handParsersProgram() {
@@ -89,34 +89,34 @@ errorParser
   }
 
   class abstractValueParser extends ParserBackedParticle {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
   }
 
   class nullParser extends abstractValueParser {}
 
   class numberParser extends abstractValueParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get numberCell() {
-      return parseFloat(this.getWord(1))
+    get numberAtom() {
+      return parseFloat(this.getAtom(1))
     }
   }
 
   class stringParser extends abstractValueParser {
-    get stringCell() {
-      return this.getWordsFrom(0)
+    get stringAtom() {
+      return this.getAtomsFrom(0)
     }
   }
 
   class booleanParser extends abstractValueParser {
-    get keywordCell() {
-      return this.getWord(0)
+    get keywordAtom() {
+      return this.getAtom(0)
     }
-    get booleanCell() {
-      return this.getWord(1)
+    get booleanAtom() {
+      return this.getAtom(1)
     }
   }
 
@@ -130,7 +130,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -140,12 +140,12 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
-    get stringCell() {
-      return this.getWord(0)
+    get stringAtom() {
+      return this.getAtom(0)
     }
   }
 

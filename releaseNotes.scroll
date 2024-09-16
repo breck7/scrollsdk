@@ -18,6 +18,10 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 87.0.0 2024-9-15
+🎉 Reduced 2 concepts "cells" and "words" to one concept: atoms
+⚠️ BREAKING: MAJOR Breaks! Roughly rename Cell > Atom. cell > atom. Word > Atom. word > atom.
+
 📦 86.0.0 2024-9-14
 🎉 Switched from "children" to the term "subparticles"
 ⚠️ BREAKING: Generally rename children > subparticles, child => subparticle

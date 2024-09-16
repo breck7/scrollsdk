@@ -5,11 +5,11 @@ An exploration of different kinds of particles.
 code
  keywordParsers
   description A parser where each node type is determined by the presence of a keyword
-  prefixKeywordParsers
+  prefixKeyatomParsers
    keyword 1 2 3 foo
-  postfixKeywordParsers
+  postfixKeyatomParsers
    1 2 keyword
-  omnifixKeywordParsers
+  omnifixKeyatomParsers
    1 keyword 2
  flatParsers
   description A parser that has only 1 scope

@@ -8,7 +8,7 @@ test parsersSample
     compilesTo txt
     inScope baseParser
    anyAtom
-   wordAtom
+   atomAtom
     extends anyAtom
    baseParser
     crux base
@@ -20,10 +20,10 @@ test parsersSample
    toParser
     crux to
     extends blockParser
-    atoms keywordAtom wordAtom
+    atoms keywordAtom atomAtom
     tags test
     compiler
-     stringTemplate to {wordAtom}
+     stringTemplate to {atomAtom}
      closeSubparticles end
  runTimeFirstAtomsInScope
   assertLengthIs 1

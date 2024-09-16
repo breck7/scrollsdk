@@ -13,7 +13,7 @@ enum CmToken {
   Error = "error",
   Header = "header",
   HR = "hr",
-  Keyword = "keyword",
+  Keyatom = "keyword",
   Link = "link",
   Meta = "meta",
   Number = "number",
@@ -106,7 +106,7 @@ const tmToCm = {
   },
 
   keyword: {
-    $: CmToken.Keyword,
+    $: CmToken.Keyatom,
     operator: {
       $: CmToken.Operator
     },
@@ -133,7 +133,7 @@ const tmToCm = {
   },
 
   storage: {
-    $: CmToken.Keyword
+    $: CmToken.Keyatom
   },
 
   string: {
@@ -306,8 +306,8 @@ class ParsersCodeMirrorMode {
     const codeMirrorLib = this._getCodeMirrorLib()
     const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
 
-    // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
-    if (result.matches.length === 1 && result.matches[0].text === result.word) return null
+    // It seems to be better UX if there's only 1 result, and its the atom the user entered, to close autocomplete
+    if (result.matches.length === 1 && result.matches[0].text === result.atom) return null
 
     return result.matches.length
       ? {
@@ -362,7 +362,7 @@ class ParsersCodeMirrorMode {
   private _getAtomStyle(lineIndex: particlesTypes.int, atomIndex: particlesTypes.int): string {
     const program = this._getParsedProgram()
 
-    // todo: if the current word is an error, don't show red?
+    // todo: if the current atom is an error, don't show red?
     if (!program.getAtomPaintAtPosition) console.log(program)
     const paint = program.getAtomPaintAtPosition(lineIndex, atomIndex)
     const style = paint ? <string>textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined

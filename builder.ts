@@ -215,7 +215,7 @@ class Builder extends Particle {
 
   _getAllCommands() {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-      .filter(word => !word.startsWith("_") && word !== "constructor")
+      .filter(atom => !atom.startsWith("_") && atom !== "constructor")
       .sort()
   }
 

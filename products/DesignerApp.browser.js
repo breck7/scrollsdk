@@ -39,7 +39,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
   }
   inferPrefixParsersCommand() {
-    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
+    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeyatomLanguage("inferredLanguage"))
     this._onParsersKeyup()
   }
   synthesizeProgramCommand() {

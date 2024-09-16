@@ -72,9 +72,9 @@ class MockCodeMirror {
 
   private _mode: any
 
-  getTokenLines(words: any) {
+  getTokenLines(atoms: any) {
     const mode = this._mode
-    const testStream = new MockStream(words)
+    const testStream = new MockStream(atoms)
     const startState = mode.startState()
     let tokens = []
     const lines = []

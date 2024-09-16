@@ -4,10 +4,10 @@ namespace particlesTypes {
     y: int
   }
 
-  export interface wordBoundary {
+  export interface atomBoundary {
     lineIndex: int
     charIndex: int
-    wordIndex: int
+    atomIndex: int
   }
 
   export interface inheritanceInfo {
@@ -66,8 +66,8 @@ namespace particlesTypes {
   export declare type templateString = string // "Hello {name}! You are {age} years old."
   export declare type firstAtomPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
-  export declare type word = string // string that cannot contain the ParticleBreakSymbol, AtomBreakSymbol or AtomBreakSymbol
-  export declare type firstAtom = word
+  export declare type atom = string // string that cannot contain the ParticleBreakSymbol, AtomBreakSymbol or AtomBreakSymbol
+  export declare type firstAtom = atom
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
   export declare type fileContent = string

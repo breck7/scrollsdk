@@ -75,7 +75,7 @@ numberIdentifierAtom
  extends identifierAtom
 hashBangAtom
  paint comment
-hashBangKeywordAtom
+hashBangKeyatomAtom
  paint comment
 stringAtom
  paint string
@@ -398,7 +398,7 @@ hashbangParser
  catchAllAtomType hashBangAtom
  compiler
   stringTemplate // #! {hashBangAtom}
- atoms hashBangKeywordAtom
+ atoms hashBangKeyatomAtom
 errorParser
  baseParser errorParser
  compiler
@@ -776,7 +776,7 @@ errorParser
   }
 
   class hashbangParser extends ParserBackedParticle {
-    get hashBangKeywordAtom() {
+    get hashBangKeyatomAtom() {
       return this.getAtom(0)
     }
     get hashBangAtom() {

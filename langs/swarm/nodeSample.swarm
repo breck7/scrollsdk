@@ -9,7 +9,7 @@ test swarmParticlesample
     inScope baseParser
     catchAllParser errorParser
    anyAtom
-   wordAtom
+   atomAtom
     extends anyAtom
    errorParser
     baseParser errorParser
@@ -22,10 +22,10 @@ test swarmParticlesample
    toParser
     crux to
     extends blockParser
-    atoms wordAtom
+    atoms atomAtom
     tags test
     compiler
-     stringTemplate to {wordAtom}
+     stringTemplate to {atomAtom}
      closeSubparticles end
  getAllErrors
   assertLengthIs 0

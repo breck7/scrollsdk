@@ -4,7 +4,7 @@ import { particlesTypes } from "../products/particlesTypes"
 const { Utils } = require("../products/Utils.js")
 
 declare type int = particlesTypes.int
-declare type word = particlesTypes.word
+declare type atom = particlesTypes.atom
 
 declare type atomFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
@@ -45,7 +45,7 @@ class ParticleAtom {
   replace(newAtom: string) {
     this._particle.setAtom(this._atomIndex, newAtom)
   }
-  get word() {
+  get atom() {
     return this._particle.getAtom(this._atomIndex)
   }
 }
@@ -101,8 +101,8 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextParticle: particlesTypes.particle, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
-    return this._getFirstAtomMap().get(this._getFirstAtom(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
+  _getParser(line: string, contextParticle: particlesTypes.particle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
+    return this._getFirstAtomMap().get(this._getFirstAtom(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
   _getCatchAllParser(contextParticle: particlesTypes.particle) {
@@ -122,8 +122,8 @@ class ParserCombinator {
     return undefined
   }
 
-  private _getFirstAtom(line: string, wordBreakSymbol: string) {
-    const firstBreak = line.indexOf(wordBreakSymbol)
+  private _getFirstAtom(line: string, atomBreakSymbol: string) {
+    const firstBreak = line.indexOf(atomBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 }
@@ -137,7 +137,7 @@ class Particle extends AbstractParticle {
   }
 
   private _uid: int
-  private _words: string[]
+  private _atoms: string[]
   private _parent: Particle | undefined
   private _subparticles: Particle[]
   private _line: string
@@ -158,7 +158,7 @@ class Particle extends AbstractParticle {
 
   get lineAtomTypes() {
     // todo: make this any a constant
-    return "undefinedAtomType ".repeat(this.words.length).trim()
+    return "undefinedAtomType ".repeat(this.atoms.length).trim()
   }
 
   isNodeJs() {
@@ -248,18 +248,18 @@ class Particle extends AbstractParticle {
   private _getMaxUnitsOnALine() {
     let max = 0
     for (let particle of this.getTopDownArrayIterator()) {
-      const count = particle.words.length + particle.getIndentLevel()
+      const count = particle.atoms.length + particle.getIndentLevel()
       if (count > max) max = count
     }
     return max
   }
 
   get numberOfAtoms(): int {
-    let wordCount = 0
+    let atomCount = 0
     for (let particle of this.getTopDownArrayIterator()) {
-      wordCount += particle.words.length
+      atomCount += particle.atoms.length
     }
-    return wordCount
+    return atomCount
   }
 
   get lineNumber(): int {
@@ -338,10 +338,10 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  getAtom(index: int): word {
-    const words = this._getAtoms(0)
-    if (index < 0) index = words.length + index
-    return words[index]
+  getAtom(index: int): atom {
+    const atoms = this._getAtoms(0)
+    if (index < 0) index = atoms.length + index
+    return atoms[index]
   }
 
   get list() {
@@ -366,11 +366,11 @@ class Particle extends AbstractParticle {
   }
 
   protected _getAtoms(startFrom: int) {
-    if (!this._words) this._words = this._getLine().split(this.wordBreakSymbol)
-    return startFrom ? this._words.slice(startFrom) : this._words
+    if (!this._atoms) this._atoms = this._getLine().split(this.atomBreakSymbol)
+    return startFrom ? this._atoms.slice(startFrom) : this._atoms
   }
 
-  get words(): word[] {
+  get atoms(): atom[] {
     return this._getAtoms(0)
   }
 
@@ -473,52 +473,52 @@ class Particle extends AbstractParticle {
     return [oneToTwo, twoToOne]
   }
 
-  private _getAtomIndexCharacterStartPosition(wordIndex: int): particlesTypes.positiveInt {
+  private _getAtomIndexCharacterStartPosition(atomIndex: int): particlesTypes.positiveInt {
     const xiLength = this.edgeSymbol.length
     const numIndents = this._getIndentLevel() - 1
     const indentPosition = xiLength * numIndents
-    if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
-    return indentPosition + this.words.slice(0, wordIndex).join(this.wordBreakSymbol).length + this.wordBreakSymbol.length
+    if (atomIndex < 1) return xiLength * (numIndents + atomIndex)
+    return indentPosition + this.atoms.slice(0, atomIndex).join(this.atomBreakSymbol).length + this.atomBreakSymbol.length
   }
 
   getParticleInScopeAtCharIndex(charIndex: particlesTypes.positiveInt) {
     if (this.isRoot()) return this
-    let wordIndex = this.getAtomIndexAtCharacterIndex(charIndex)
-    if (wordIndex > 0) return this
+    let atomIndex = this.getAtomIndexAtCharacterIndex(charIndex)
+    if (atomIndex > 0) return this
     let particle: Particle = this
-    while (wordIndex < 1) {
+    while (atomIndex < 1) {
       particle = particle.parent
-      wordIndex++
+      atomIndex++
     }
     return particle
   }
 
-  getAtomProperties(wordIndex: int) {
-    const start = this._getAtomIndexCharacterStartPosition(wordIndex)
-    const word = wordIndex < 0 ? "" : this.getAtom(wordIndex)
+  getAtomProperties(atomIndex: int) {
+    const start = this._getAtomIndexCharacterStartPosition(atomIndex)
+    const atom = atomIndex < 0 ? "" : this.getAtom(atomIndex)
     return {
       startCharIndex: start,
-      endCharIndex: start + word.length,
-      word: word
+      endCharIndex: start + atom.length,
+      atom: atom
     }
   }
 
   fill(fill = "") {
     this.topDownArray.forEach(line => {
-      line.words.forEach((word, index) => line.setAtom(index, fill))
+      line.atoms.forEach((atom, index) => line.setAtom(index, fill))
     })
     return this
   }
 
   getAllAtomBoundaryCoordinates() {
-    const coordinates: particlesTypes.wordBoundary[] = []
+    const coordinates: particlesTypes.atomBoundary[] = []
     let lineIndex = 0
     for (let particle of this.getTopDownArrayIterator()) {
-      ;(<Particle>particle).getAtomBoundaryCharIndices().forEach((charIndex, wordIndex) => {
+      ;(<Particle>particle).getAtomBoundaryCharIndices().forEach((charIndex, atomIndex) => {
         coordinates.push({
           lineIndex: lineIndex,
           charIndex: charIndex,
-          wordIndex: wordIndex
+          atomIndex: atomIndex
         })
       })
 
@@ -529,11 +529,11 @@ class Particle extends AbstractParticle {
 
   getAtomBoundaryCharIndices(): particlesTypes.positiveInt[] {
     let indentLevel = this._getIndentLevel()
-    const wordBreakSymbolLength = this.wordBreakSymbol.length
+    const atomBreakSymbolLength = this.atomBreakSymbol.length
     let elapsed = indentLevel
-    return this.words.map((word, wordIndex) => {
+    return this.atoms.map((atom, atomIndex) => {
       const boundary = elapsed
-      elapsed += word.length + wordBreakSymbolLength
+      elapsed += atom.length + atomBreakSymbolLength
       return boundary
     })
   }
@@ -547,11 +547,11 @@ class Particle extends AbstractParticle {
     while (spots.length < numberOfIndents) {
       spots.push(-(numberOfIndents - spots.length))
     }
-    this.words.forEach((word, wordIndex) => {
-      word.split("").forEach(letter => {
-        spots.push(wordIndex)
+    this.atoms.forEach((atom, atomIndex) => {
+      atom.split("").forEach(letter => {
+        spots.push(atomIndex)
       })
-      spots.push(wordIndex)
+      spots.push(atomIndex)
     })
 
     return spots[charIndex]
@@ -581,13 +581,13 @@ class Particle extends AbstractParticle {
     }
   }
 
-  get firstAtom(): word {
-    return this.words[0]
+  get firstAtom(): atom {
+    return this.atoms[0]
   }
 
   get content(): string {
-    const words = this.getAtomsFrom(1)
-    return words.length ? words.join(this.wordBreakSymbol) : undefined
+    const atoms = this.getAtomsFrom(1)
+    return atoms.length ? atoms.join(this.atomBreakSymbol) : undefined
   }
 
   get contentWithSubparticles(): string {
@@ -618,11 +618,11 @@ class Particle extends AbstractParticle {
   }
 
   getLine(language?: Particle) {
-    if (!this._words && !language) return this._getLine() // todo: how does this interact with "language" param?
-    return this.words.join((language || this).wordBreakSymbol)
+    if (!this._atoms && !language) return this._getLine() // todo: how does this interact with "language" param?
+    return this.atoms.join((language || this).atomBreakSymbol)
   }
 
-  getColumnNames(): word[] {
+  getColumnNames(): atom[] {
     return this._getUnionNames()
   }
 
@@ -679,7 +679,7 @@ class Particle extends AbstractParticle {
   }
 
   protected _getLineHtml() {
-    return this.words.map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`).join(`<span class="zIncrement">${this.wordBreakSymbol}</span>`)
+    return this.atoms.map((atom, index) => `<span class="atom${index}">${Utils.stripHtml(atom)}</span>`).join(`<span class="zIncrement">${this.atomBreakSymbol}</span>`)
   }
 
   protected _getXmlContent(indentCount: particlesTypes.positiveInt) {
@@ -798,12 +798,12 @@ class Particle extends AbstractParticle {
   }
 
   protected _hasColumns(columns: string[]) {
-    const words = this.words
-    return columns.every((searchTerm, index) => searchTerm === words[index])
+    const atoms = this.atoms
+    return columns.every((searchTerm, index) => searchTerm === atoms[index])
   }
 
-  hasAtom(index: int, word: string): boolean {
-    return this.getAtom(index) === word
+  hasAtom(index: int, atom: string): boolean {
+    return this.getAtom(index) === atom
   }
 
   getParticleByColumns(...columns: string[]): Particle {
@@ -814,7 +814,7 @@ class Particle extends AbstractParticle {
     return this.find(particle => particle.getAtom(index) === name)
   }
 
-  protected _getParticlesByColumn(index: int, name: word): Particle[] {
+  protected _getParticlesByColumn(index: int, name: atom): Particle[] {
     return this.filter(particle => particle.getAtom(index) === name)
   }
 
@@ -1009,10 +1009,10 @@ class Particle extends AbstractParticle {
   }
 
   protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): particlesTypes.htmlString {
-    const getLine = (atomIndex: number, word = "") =>
-      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--atomWidth) * ${atomIndex});">${word}</span>`
+    const getLine = (atomIndex: number, atom = "") =>
+      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--atomWidth) * ${atomIndex});">${atom}</span>`
     let atoms: string[] = []
-    this.words.forEach((word, index) => (word ? atoms.push(getLine(index + indents, word)) : ""))
+    this.atoms.forEach((atom, index) => (atom ? atoms.push(getLine(index + indents, atom)) : ""))
     return atoms.join("")
   }
 
@@ -1125,11 +1125,11 @@ class Particle extends AbstractParticle {
   private _toObjectForSerialization(): particlesTypes.SerializedParticle {
     return this.length
       ? {
-          atoms: this.words,
+          atoms: this.atoms,
           subparticles: this.map(subparticle => subparticle._toObjectForSerialization())
         }
       : {
-          atoms: this.words
+          atoms: this.atoms
         }
   }
 
@@ -1138,7 +1138,7 @@ class Particle extends AbstractParticle {
   }
 
   get asGrid() {
-    const AtomBreakSymbol = this.wordBreakSymbol
+    const AtomBreakSymbol = this.atomBreakSymbol
     return this.toString()
       .split(this.particleBreakSymbol)
       .map(line => line.split(AtomBreakSymbol))
@@ -1168,7 +1168,7 @@ class Particle extends AbstractParticle {
     console.log(message)
   }
 
-  getColumn(path: word): string[] {
+  getColumn(path: atom): string[] {
     return this.map(particle => particle.get(path))
   }
 
@@ -1188,7 +1188,7 @@ class Particle extends AbstractParticle {
 
   getFrom(prefix: string) {
     const hit = this.filter(particle => particle.getLine().startsWith(prefix))[0]
-    if (hit) return hit.getLine().substr((prefix + this.wordBreakSymbol).length)
+    if (hit) return hit.getLine().substr((prefix + this.atomBreakSymbol).length)
   }
 
   get(firstAtomPath: particlesTypes.firstAtomPath) {
@@ -1280,7 +1280,7 @@ class Particle extends AbstractParticle {
     return Object.keys(obj)
   }
 
-  getAncestorParticlesByInheritanceViaExtendsKeyword(key: word): Particle[] {
+  getAncestorParticlesByInheritanceViaExtendsKeyatom(key: atom): Particle[] {
     const ancestorParticles = this._getAncestorParticles(
       (particle, id) => particle._getParticlesByColumn(0, id),
       particle => particle.get(key),
@@ -1301,7 +1301,7 @@ class Particle extends AbstractParticle {
     return ancestorParticles
   }
 
-  protected _getAncestorParticles(getPotentialParentParticlesByIdFn: (thisParentParticle: Particle, id: word) => Particle[], getParentIdFn: (thisParticle: Particle) => word, cannotContainParticle: Particle): Particle[] {
+  protected _getAncestorParticles(getPotentialParentParticlesByIdFn: (thisParentParticle: Particle, id: atom) => Particle[], getParentIdFn: (thisParticle: Particle) => atom, cannotContainParticle: Particle): Particle[] {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
 
@@ -1320,7 +1320,7 @@ class Particle extends AbstractParticle {
     return ancestorParticles
   }
 
-  pathVectorToFirstAtomPath(pathVector: particlesTypes.pathVector): word[] {
+  pathVectorToFirstAtomPath(pathVector: particlesTypes.pathVector): atom[] {
     const path = pathVector.slice() // copy array
     const names = []
     let particle: Particle = this
@@ -1507,10 +1507,10 @@ class Particle extends AbstractParticle {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstAtom: particlesTypes.word): Particle[] {
+  split(firstAtom: particlesTypes.atom): Particle[] {
     const constructor = <any>this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
-    const AtomBreakSymbol = this.wordBreakSymbol
+    const AtomBreakSymbol = this.atomBreakSymbol
 
     // todo: cleanup. the escaping is wierd.
     return this.toString()
@@ -1522,7 +1522,7 @@ class Particle extends AbstractParticle {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn: particlesTypes.formatFunction): string {
+  toMarkdownTableAdvanced(columns: atom[], formatFn: particlesTypes.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1542,7 +1542,7 @@ class Particle extends AbstractParticle {
     return TN_NODE_BREAK_SYMBOL
   }
 
-  get wordBreakSymbol(): string {
+  get atomBreakSymbol(): string {
     return TN_WORD_BREAK_SYMBOL
   }
 
@@ -1576,7 +1576,7 @@ class Particle extends AbstractParticle {
 
   protected _setLine(line = "") {
     this._line = line
-    if (this._words) delete this._words
+    if (this._atoms) delete this._atoms
     return this
   }
 
@@ -1619,7 +1619,7 @@ class Particle extends AbstractParticle {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstAtom: particlesTypes.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstAtom: particlesTypes.atom, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let subparticles
@@ -1710,13 +1710,13 @@ class Particle extends AbstractParticle {
     return this.find(subparticle => subparticle instanceof parser)
   }
 
-  indexOfLast(firstAtom: word): int {
+  indexOfLast(firstAtom: atom): int {
     const result = this._getIndex()[firstAtom]
     return result === undefined ? -1 : result
   }
 
   // todo: renmae to indexOfFirst?
-  indexOf(firstAtom: word): int {
+  indexOf(firstAtom: atom): int {
     if (!this.has(firstAtom)) return -1
 
     const length = this.length
@@ -1732,7 +1732,7 @@ class Particle extends AbstractParticle {
     return this._toObject()
   }
 
-  getFirstAtoms(): word[] {
+  getFirstAtoms(): atom[] {
     return this.map(particle => particle.firstAtom)
   }
 
@@ -1766,7 +1766,7 @@ class Particle extends AbstractParticle {
     return new (<any>this.constructor)(subparticles, line)
   }
 
-  hasFirstAtom(firstAtom: word): boolean {
+  hasFirstAtom(firstAtom: atom): boolean {
     return this._hasFirstAtom(firstAtom)
   }
 
@@ -2053,13 +2053,13 @@ class Particle extends AbstractParticle {
     const clone = this.clone()
     const defs = clone.findParticles(macroDefinitionAtom)
     const allUses = clone.findParticles(macroUsageAtom)
-    const wordBreakSymbol = clone.wordBreakSymbol
+    const atomBreakSymbol = clone.atomBreakSymbol
     defs.forEach(def => {
       const macroName = def.getAtom(1)
       const uses = allUses.filter(particle => particle.hasAtom(1, macroName))
       const params = def.getAtomsFrom(2)
       const replaceFn = (str: string) => {
-        const paramValues = str.split(wordBreakSymbol).slice(2)
+        const paramValues = str.split(atomBreakSymbol).slice(2)
         let newParticle = def.subparticlesToString()
         params.forEach((param, index) => {
           newParticle = newParticle.replace(new RegExp(param, "g"), paramValues[index])
@@ -2082,11 +2082,11 @@ class Particle extends AbstractParticle {
     this._lineModifiedTime = this._getProcessTimeInMilliseconds()
   }
 
-  insertAtom(index: int, word: string) {
-    const wi = this.wordBreakSymbol
-    const words = this._getLine().split(wi)
-    words.splice(index, 0, word)
-    this.setLine(words.join(wi))
+  insertAtom(index: int, atom: string) {
+    const wi = this.atomBreakSymbol
+    const atoms = this._getLine().split(wi)
+    atoms.splice(index, 0, atom)
+    this.setLine(atoms.join(wi))
     return this
   }
 
@@ -2100,11 +2100,11 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  setAtom(index: int, word: string) {
-    const wi = this.wordBreakSymbol
-    const words = this._getLine().split(wi)
-    words[index] = word
-    this.setLine(words.join(wi))
+  setAtom(index: int, atom: string) {
+    const wi = this.atomBreakSymbol
+    const atoms = this._getLine().split(wi)
+    atoms[index] = atom
+    this.setLine(atoms.join(wi))
     return this
   }
 
@@ -2120,7 +2120,7 @@ class Particle extends AbstractParticle {
       if (content.match(this.particleBreakSymbol)) return this.setContentWithSubparticles(content)
       newArray.push(content)
     }
-    this._setLine(newArray.join(this.wordBreakSymbol))
+    this._setLine(newArray.join(this.atomBreakSymbol))
     this._updateLineModifiedTimeAndTriggerEvent()
     return this
   }
@@ -2152,7 +2152,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  setFirstAtom(firstAtom: word) {
+  setFirstAtom(firstAtom: atom) {
     return this.setAtom(0, firstAtom)
   }
 
@@ -2289,11 +2289,11 @@ class Particle extends AbstractParticle {
   }
 
   invert() {
-    this.forEach(particle => particle.words.reverse())
+    this.forEach(particle => particle.atoms.reverse())
     return this
   }
 
-  protected _rename(oldFirstAtom: particlesTypes.word, newFirstAtom: particlesTypes.word) {
+  protected _rename(oldFirstAtom: particlesTypes.atom, newFirstAtom: particlesTypes.atom) {
     const index = this.indexOf(oldFirstAtom)
 
     if (index === -1) return this
@@ -2314,17 +2314,17 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  rename(oldFirstAtom: word, newFirstAtom: word) {
+  rename(oldFirstAtom: atom, newFirstAtom: atom) {
     this._rename(oldFirstAtom, newFirstAtom)
     return this
   }
 
-  renameAll(oldName: word, newName: word) {
+  renameAll(oldName: atom, newName: atom) {
     this.findParticles(oldName).forEach(particle => particle.setFirstAtom(newName))
     return this
   }
 
-  protected _deleteAllChildParticlesWithFirstAtom(firstAtom: word) {
+  protected _deleteAllChildParticlesWithFirstAtom(firstAtom: atom) {
     if (!this.has(firstAtom)) return this
     const allParticles = this._getSubparticlesArray()
     const indexesToDelete: int[] = []
@@ -2387,7 +2387,7 @@ class Particle extends AbstractParticle {
     while (this.has(index.toString())) {
       index++
     }
-    const line = index.toString() + (content === undefined ? "" : this.wordBreakSymbol + content)
+    const line = index.toString() + (content === undefined ? "" : this.atomBreakSymbol + content)
     return this.appendLineAndSubparticles(line, subparticles)
   }
 
@@ -2400,14 +2400,14 @@ class Particle extends AbstractParticle {
 
   // todo: add "globalReplace" method? Which runs a global regex or string replace on the Particle as a string?
 
-  firstAtomSort(firstAtomOrder: particlesTypes.word[]): this {
+  firstAtomSort(firstAtomOrder: particlesTypes.atom[]): this {
     return this._firstAtomSort(firstAtomOrder)
   }
 
-  deleteAtomAt(wordIndex: particlesTypes.positiveInt): this {
-    const words = this.words
-    words.splice(wordIndex, 1)
-    return this.setAtoms(words)
+  deleteAtomAt(atomIndex: particlesTypes.positiveInt): this {
+    const atoms = this.atoms
+    atoms.splice(atomIndex, 1)
+    return this.setAtoms(atoms)
   }
 
   private _listeners: Map<any, ParticleEventHandler[]>
@@ -2454,27 +2454,27 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  setAtoms(words: particlesTypes.word[]): this {
-    return this.setLine(words.join(this.wordBreakSymbol))
+  setAtoms(atoms: particlesTypes.atom[]): this {
+    return this.setLine(atoms.join(this.atomBreakSymbol))
   }
 
-  setAtomsFrom(index: particlesTypes.positiveInt, words: particlesTypes.word[]): this {
-    this.setAtoms(this.words.slice(0, index).concat(words))
+  setAtomsFrom(index: particlesTypes.positiveInt, atoms: particlesTypes.atom[]): this {
+    this.setAtoms(this.atoms.slice(0, index).concat(atoms))
     return this
   }
 
-  appendAtom(word: particlesTypes.word): this {
-    const words = this.words
-    words.push(word)
-    return this.setAtoms(words)
+  appendAtom(atom: particlesTypes.atom): this {
+    const atoms = this.atoms
+    atoms.push(atom)
+    return this.setAtoms(atoms)
   }
 
-  _firstAtomSort(firstAtomOrder: particlesTypes.word[], secondarySortFn?: particlesTypes.sortFn): this {
+  _firstAtomSort(firstAtomOrder: particlesTypes.atom[], secondarySortFn?: particlesTypes.sortFn): this {
     const particleAFirst = -1
     const particleBFirst = 1
     const map: { [firstAtom: string]: int } = {}
-    firstAtomOrder.forEach((word, index) => {
-      map[word] = index
+    firstAtomOrder.forEach((atom, index) => {
+      map[atom] = index
     })
     this.sort((particleA, particleB) => {
       const valA = map[particleA.firstAtom]
@@ -2486,7 +2486,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  protected _touchParticle(firstAtomPathArray: particlesTypes.word[]) {
+  protected _touchParticle(firstAtomPathArray: particlesTypes.atom[]) {
     let contextParticle = this
     firstAtomPathArray.forEach(firstAtom => {
       contextParticle = contextParticle.getParticle(firstAtom) || contextParticle.appendLine(firstAtom)
@@ -2496,7 +2496,7 @@ class Particle extends AbstractParticle {
 
   protected _touchParticleByString(str: string) {
     str = str.replace(this.particleBreakSymbolRegex, "") // todo: do we want to do this sanitization?
-    return this._touchParticle(str.split(this.wordBreakSymbol))
+    return this._touchParticle(str.split(this.atomBreakSymbol))
   }
 
   touchParticle(str: particlesTypes.firstAtomPath) {
@@ -2535,13 +2535,13 @@ class Particle extends AbstractParticle {
 
     const length = indices.length
     this.sort((particleA, particleB) => {
-      const wordsA = particleA.words
-      const wordsB = particleB.words
+      const atomsA = particleA.atoms
+      const atomsB = particleB.atoms
 
       for (let index = 0; index < length; index++) {
         const col = indices[index]
-        const av = wordsA[col]
-        const bv = wordsB[col]
+        const av = atomsA[col]
+        const bv = atomsB[col]
 
         if (av === undefined) return -1
         if (bv === undefined) return 1
@@ -2558,9 +2558,9 @@ class Particle extends AbstractParticle {
     return new Set(this.getAtomsFrom(1))
   }
 
-  appendAtomIfMissing(word: string) {
-    if (this.getAtomsAsSet().has(word)) return this
-    return this.appendAtom(word)
+  appendAtomIfMissing(atom: string) {
+    if (this.getAtomsAsSet().has(atom)) return this
+    return this.appendAtom(atom)
   }
 
   // todo: check to ensure identical objects
@@ -2656,7 +2656,7 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  sortBy(nameOrNames: particlesTypes.word[]) {
+  sortBy(nameOrNames: particlesTypes.atom[]) {
     const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
     const length = names.length
@@ -2779,7 +2779,7 @@ class Particle extends AbstractParticle {
 
   static serializedParticleToParticle(particle: particlesTypes.SerializedParticle) {
     const language = new Particle()
-    const atomDelimiter = language.wordBreakSymbol
+    const atomDelimiter = language.atomBreakSymbol
     const particleDelimiter = language.particleBreakSymbol
     const line = particle.atoms ? particle.atoms.join(atomDelimiter) : undefined
     const newParticle = new Particle(undefined, line)
@@ -2797,7 +2797,7 @@ class Particle extends AbstractParticle {
   static fromGridJson(str: string) {
     const lines = JSON.parse(str)
     const language = new Particle()
-    const atomDelimiter = language.wordBreakSymbol
+    const atomDelimiter = language.atomBreakSymbol
     const particleDelimiter = language.particleBreakSymbol
     return new Particle(lines.map((line: any) => line.join(atomDelimiter)).join(particleDelimiter))
   }

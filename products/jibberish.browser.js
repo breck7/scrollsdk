@@ -40,7 +40,7 @@ intAtom
  paint constant.numeric
 onoffAtom
  enum on off
-wordAtom
+atomAtom
 topLevelPropertyAtom
  paint constant.language
 opSymbolAtom
@@ -102,9 +102,9 @@ scoreBlockParser
  inScope scoresParser
  crux scoreBlock
 toParser
- atoms topLevelPropertyAtom wordAtom
+ atoms topLevelPropertyAtom atomAtom
  compiler
-  stringTemplate to {word}
+  stringTemplate to {atom}
   closeSubparticles end
  extends blockParser
  crux to
@@ -150,7 +150,7 @@ someCodeParser
  extends abstractTopLevelParser
  crux someCode
 typeParser
- atoms topLevelPropertyAtom wordAtom
+ atoms topLevelPropertyAtom atomAtom
  single
  extends abstractTopLevelParser
  crux type
@@ -162,7 +162,7 @@ errorParser
  baseParser errorParser
  atoms errorAtom
 lineOfCodeParser
- catchAllAtomType wordAtom
+ catchAllAtomType atomAtom
 textParser
  baseParser blobParser
  crux text
@@ -265,7 +265,7 @@ scoresParser
     get topLevelPropertyAtom() {
       return this.getAtom(0)
     }
-    get wordAtom() {
+    get atomAtom() {
       return this.getAtom(1)
     }
   }
@@ -339,7 +339,7 @@ world`
     get topLevelPropertyAtom() {
       return this.getAtom(0)
     }
-    get wordAtom() {
+    get atomAtom() {
       return this.getAtom(1)
     }
   }
@@ -366,7 +366,7 @@ world`
   }
 
   class lineOfCodeParser extends ParserBackedParticle {
-    get wordAtom() {
+    get atomAtom() {
       return this.getAtomsFrom(0)
     }
   }

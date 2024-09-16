@@ -1638,7 +1638,7 @@ class PostfixAtomParser extends AbstractAtomParser {
 
 class OmnifixAtomParser extends AbstractAtomParser {
   getAtomArray(particle: ParserBackedParticle = undefined): AbstractParsersBackedAtom<any>[] {
-    const atoms: AbstractParsersBackedAtom<any>[] = []
+    const atomsArr: AbstractParsersBackedAtom<any>[] = []
     const def = this._definition
     const program = <ParserBackedParticle>(particle ? particle.root : undefined)
     const parsersProgram = def.languageDefinitionProgram
@@ -1654,25 +1654,25 @@ class OmnifixAtomParser extends AbstractAtomParser {
         if (atomTypeDefinition.isValid(atom, program)) {
           // todo: cleanup atomIndex/atomIndex stuff
           atomConstructor = atomTypeDefinition.getAtomConstructor()
-          atoms.push(new atomConstructor(particle, atomIndex, atomTypeDefinition, atomTypeDefinition.id, false, def))
+          atomsArr.push(new atomConstructor(particle, atomIndex, atomTypeDefinition, atomTypeDefinition.id, false, def))
           requiredAtomTypeDefs.splice(index, 1)
           return true
         }
       }
       if (catchAllAtomTypeDef && catchAllAtomTypeDef.isValid(atom, program)) {
         atomConstructor = catchAllAtomTypeDef.getAtomConstructor()
-        atoms.push(new atomConstructor(particle, atomIndex, catchAllAtomTypeDef, catchAllAtomTypeId, true, def))
+        atomsArr.push(new atomConstructor(particle, atomIndex, catchAllAtomTypeDef, catchAllAtomTypeId, true, def))
         return true
       }
-      atoms.push(new ParsersUnknownAtomTypeAtom(particle, atomIndex, undefined, undefined, false, def))
+      atomsArr.push(new ParsersUnknownAtomTypeAtom(particle, atomIndex, undefined, undefined, false, def))
     })
     const atomCount = atoms.length
     requiredAtomTypeDefs.forEach((atomTypeDef, index) => {
       let atomConstructor: any = atomTypeDef.getAtomConstructor()
-      atoms.push(new atomConstructor(particle, atomCount + index, atomTypeDef, atomTypeDef.id, false, def))
+      atomsArr.push(new atomConstructor(particle, atomCount + index, atomTypeDef, atomTypeDef.id, false, def))
     })
 
-    return atoms
+    return atomsArr
   }
 }
 

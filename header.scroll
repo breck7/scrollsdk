@@ -1,10 +1,10 @@
 importOnly
-import settings.scroll
+settings.scroll
 metaTags
-gazetteCss
+theme gazette
 homeButton
 leftRightButtons
 viewSourceButton
 buildTxt
 buildHtml
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+favicon images/favicon.ico

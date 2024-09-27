@@ -1,4 +1,4 @@
-import header.scroll
+header.scroll
 title Release Notes
 
 printTitle
@@ -13,8 +13,10 @@ Download as CSV | TSV | JSON
  link releaseNotes.csv CSV
  link releaseNotes.tsv TSV
  link releaseNotes.json JSON
-<br>
-import node_modules/scroll-cli/microlangs/changes.parsers
+
+br
+
+node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
@@ -1915,6 +1917,4 @@ code
 📦 1.0.2 2017-3-02
 🎉 Initial release
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-
-import footer.scroll
+footer.scroll

@@ -1,4 +1,4 @@
-import ../../header.scroll
+../../header.scroll
 permalink index.html
 copyButtons
 
@@ -102,4 +102,4 @@ thinColumns 2
  - Removed `todo` comments. Use `// todo` instead
  - Removed `tooling` keyword. Use `// tooling` instead
 
-import ../../footer.scroll
+../../footer.scroll

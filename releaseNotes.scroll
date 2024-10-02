@@ -20,6 +20,13 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 87.1.0 2024-10-02
+🎉 added `section` getter
+🎉 added `getParticles` alias to `findParticles`
+🎉 added `isLast` getter
+🎉 added `isFirst` getter
+🎉 added `isBlank` getter
+
 📦 87.0.0 2024-9-15
 🎉 Reduced 2 concepts "cells" and "words" to one concept: atoms
 ⚠️ BREAKING: MAJOR Breaks! Roughly rename Cell > Atom. cell > atom. Word > Atom. word > atom.

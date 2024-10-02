@@ -281,6 +281,10 @@ class Particle extends AbstractParticle {
     return !this.length && !this.getLine()
   }
 
+  get isBlank() {
+    return this.isBlankLine()
+  }
+
   hasDuplicateFirstAtoms(): boolean {
     return this.length ? new Set(this.getFirstAtoms()).size !== this.length : false
   }
@@ -1184,6 +1188,31 @@ class Particle extends AbstractParticle {
 
   getParticle(firstAtomPath: particlesTypes.firstAtomPath) {
     return this._getParticleByPath(firstAtomPath)
+  }
+
+  getParticles(firstAtomPath: particlesTypes.firstAtomPath) {
+    return this.findParticles(firstAtomPath)
+  }
+
+  get section() {
+    // return all particles after this one to the next blank line or end of file
+    const particles = []
+    if (this.isLast) return particles
+    let next = this.next
+    while (!next.isBlank) {
+      particles.push(next)
+      next = next.next
+      if (next.isFirst) break
+    }
+    return particles
+  }
+
+  get isLast() {
+    return this.getIndex() === this.parent.length - 1
+  }
+
+  get isFirst() {
+    return this.getIndex() === 0
   }
 
   getFrom(prefix: string) {
@@ -3042,7 +3071,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "87.0.0"
+  static getVersion = () => "87.1.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

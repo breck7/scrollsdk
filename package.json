@@ -54,7 +54,7 @@
     "express": "^4.18.2",
     "glob": "^9.3.4",
     "prettier": "^2.8.7",
-    "scroll-cli": "^136.9.0",
+    "scroll-cli": "^136.10.0",
     "superagent": "^8.0.9",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.3"

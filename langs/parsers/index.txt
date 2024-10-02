@@ -1,10 +1,11 @@
 Parsers: A language for making languages
 ========================================
 
-LeetSheet · Designer · Scroll
+LeetSheet · Designer · Scroll · Subreddit
  https://scroll.pub/parserLeetsheet.html LeetSheet
  /../designer/index.html Designer
  https://scroll.pub/ Scroll
+ https://www.reddit.com/r/WorldWideScroll/ Subreddit
 
 What is Parsers?
 ================

@@ -10,10 +10,11 @@ css html,body{background: rgb(240,240,240);}
 
 container 600px
 
-LeetSheet · Designer · Scroll
+LeetSheet · Designer · Scroll · Subreddit
  https://scroll.pub/parserLeetsheet.html LeetSheet
  link ../designer/index.html Designer
  https://scroll.pub/ Scroll
+ https://www.reddit.com/r/WorldWideScroll/ Subreddit
 
 ? What is Parsers?
 Parsers is a language for making languages.

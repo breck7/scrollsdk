@@ -2849,6 +2849,22 @@ testParticles.setContentWithSubparticlesRegression = equal => {
   // Assert
   equal(particle.asString, "hello earth")
 }
+testParticles.sections = equal => {
+  // Arrange
+  const particle = new Particle(`push
+End of post
+
+push
+footer.scroll
+// done`)
+  // Act
+  particle
+    .getParticles("push")
+    .map(particle => particle.section)
+    .map(section => section.forEach(particle => particle.destroy()))
+  // Assert
+  equal(particle.asString, "push\n\npush")
+}
 testParticles.toStringMethod = equal => {
   // Arrange
   const particle = new Particle("hello world")

@@ -158,4 +158,4 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 ❤️ Public Domain ❤️
 ===================
 
-Built with Scroll v136.10.0
+Built with Scroll v136.12.0

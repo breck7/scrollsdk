@@ -171,7 +171,7 @@ class Particle extends AbstractParticle {
 
   getOlderSiblings() {
     if (this.isRoot()) return []
-    return this.parent.slice(0, this.getIndex())
+    return this.parent.slice(0, this.index)
   }
 
   protected _getClosestOlderSibling(): Particle | undefined {
@@ -181,7 +181,7 @@ class Particle extends AbstractParticle {
 
   getYoungerSiblings() {
     if (this.isRoot()) return []
-    return this.parent.slice(this.getIndex() + 1)
+    return this.parent.slice(this.index + 1)
   }
 
   getSiblings() {
@@ -670,11 +670,11 @@ class Particle extends AbstractParticle {
   protected _getPathVector(relativeTo?: Particle): particlesTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.parent._getPathVector(relativeTo)
-    path.push(this.getIndex())
+    path.push(this.index)
     return path
   }
 
-  getIndex(): int {
+  get index(): int {
     return this.parent._indexOfParticle(this)
   }
 
@@ -1208,11 +1208,11 @@ class Particle extends AbstractParticle {
   }
 
   get isLast() {
-    return this.getIndex() === this.parent.length - 1
+    return this.index === this.parent.length - 1
   }
 
   get isFirst() {
-    return this.getIndex() === 0
+    return this.index === 0
   }
 
   getFrom(prefix: string) {
@@ -1280,7 +1280,7 @@ class Particle extends AbstractParticle {
 
   get next(): Particle {
     if (this.isRoot()) return this
-    const index = this.getIndex()
+    const index = this.index
     const parent = this.parent
     const length = parent.length
     const next = index + 1
@@ -1289,7 +1289,7 @@ class Particle extends AbstractParticle {
 
   get previous(): Particle {
     if (this.isRoot()) return this
-    const index = this.getIndex()
+    const index = this.index
     const parent = this.parent
     const length = parent.length
     const prev = index - 1
@@ -2155,11 +2155,11 @@ class Particle extends AbstractParticle {
   }
 
   prependSibling(line: string, subparticles: string) {
-    return this.parent.insertLineAndSubparticles(line, subparticles, this.getIndex())
+    return this.parent.insertLineAndSubparticles(line, subparticles, this.index)
   }
 
   appendSibling(line: string, subparticles: string) {
-    return this.parent.insertLineAndSubparticles(line, subparticles, this.getIndex() + 1)
+    return this.parent.insertLineAndSubparticles(line, subparticles, this.index + 1)
   }
 
   setContentWithSubparticles(text: string) {
@@ -2195,7 +2195,7 @@ class Particle extends AbstractParticle {
   }
 
   duplicate() {
-    return this.parent._insertLineAndSubparticles(this.getLine(), this.subparticlesToString(), this.getIndex() + 1)
+    return this.parent._insertLineAndSubparticles(this.getLine(), this.subparticlesToString(), this.index + 1)
   }
 
   trim() {
@@ -2387,7 +2387,7 @@ class Particle extends AbstractParticle {
 
   replaceParticle(fn: (thisStr: string) => string) {
     const parent = this.parent
-    const index = this.getIndex()
+    const index = this.index
     const newParticles = new Particle(fn(this.toString()))
     const returnedParticles: Particle[] = []
     newParticles.forEach((subparticle, subparticleIndex) => {
@@ -2630,7 +2630,7 @@ class Particle extends AbstractParticle {
     const grandParent = <Particle>this._getGrandParent()
     if (!grandParent) return this
 
-    const parentIndex = this.parent.getIndex()
+    const parentIndex = this.parent.index
     const newParticle = grandParent.insertLineAndSubparticles(this.getLine(), this.length ? this.subparticlesToString() : undefined, parentIndex + 1)
     this.destroy()
     return newParticle
@@ -2638,7 +2638,7 @@ class Particle extends AbstractParticle {
 
   pasteText(text: string) {
     const parent = this.parent
-    const index = this.getIndex()
+    const index = this.index
     const newParticles = new Particle(text)
     const firstParticle = newParticles.particleAt(0)
     if (firstParticle) {
@@ -3071,7 +3071,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "87.1.0"
+  static getVersion = () => "88.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+88.0.0 2024-10-08
+=================
+⚠️ BREAKING: `getIndex()` is now just `index`
+
 87.1.0 2024-10-02
 =================
 🎉 added `section` getter
@@ -2259,4 +2263,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v136.10.0
+Built with Scroll v136.12.0

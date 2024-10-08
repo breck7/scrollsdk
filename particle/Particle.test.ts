@@ -1741,8 +1741,8 @@ testParticles.getIndex = equal => {
   const subparticle1 = particle.getParticle("r2")
 
   // Act/Assert
-  equal(subparticle0.getIndex(), 0, "Has correct index")
-  equal(subparticle1.getIndex(), 1, "Has correct index")
+  equal(subparticle0.index, 0, "Has correct index")
+  equal(subparticle1.index, 1, "Has correct index")
 }
 
 testParticles.simpleParticleLanguage = equal => {

@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 88.0.0 2024-10-08
+⚠️ BREAKING: `getIndex()` is now just `index`
+
 📦 87.1.0 2024-10-02
 🎉 added `section` getter
 🎉 added `getParticles` alias to `findParticles`

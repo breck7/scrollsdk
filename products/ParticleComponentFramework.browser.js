@@ -1187,7 +1187,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
   }
   _updateHtml() {
     const stumpParticleToMountOn = this._htmlStumpParticle.parent
-    const currentIndex = this._htmlStumpParticle.getIndex()
+    const currentIndex = this._htmlStumpParticle.index
     this._removeHtml()
     this._mountHtml(stumpParticleToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
   }

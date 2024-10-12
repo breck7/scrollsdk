@@ -35,7 +35,7 @@ testParticles.all = (equal: any) => {
   // Assert
   equal(html.includes(`Hello world</h6>`), true, "hello world included")
   equal(bodyStumpParticle.findStumpParticlesByChild("class header").length, 1, "found stumpParticles")
-  equal(bodyStumpParticle.findStumpParticleByFirstAtom("h6").getLine(), "h6 Hello world")
+  equal(bodyStumpParticle.findStumpParticleByCue("h6").getLine(), "h6 Hello world")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

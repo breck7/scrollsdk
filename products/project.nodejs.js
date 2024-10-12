@@ -7,7 +7,7 @@
 
   class projectParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { file: fileParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { file: fileParser }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -179,10 +179,10 @@ fileParser
   _getDependencies() {
    return this.getSubparticles()
     .map(subparticle => {
-     const firstAtom = subparticle.firstAtom
+     const cue = subparticle.cue
      const subparticleFilePath = subparticle.filepathAtom.join(" ")
-     if (firstAtom === "external") return ""
-     if (firstAtom === "absolute") return subparticleFilePath
+     if (cue === "external") return ""
+     if (cue === "absolute") return subparticleFilePath
      const link = subparticleFilePath
      const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
@@ -224,7 +224,7 @@ fileParser
 
   class fileParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
     get fileConstantAtom() {
       return this.getAtom(0)
@@ -238,10 +238,10 @@ fileParser
     _getDependencies() {
       return this.getSubparticles()
         .map(subparticle => {
-          const firstAtom = subparticle.firstAtom
+          const cue = subparticle.cue
           const subparticleFilePath = subparticle.filepathAtom.join(" ")
-          if (firstAtom === "external") return ""
-          if (firstAtom === "absolute") return subparticleFilePath
+          if (cue === "external") return ""
+          if (cue === "absolute") return subparticleFilePath
           const link = subparticleFilePath
           const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
           const resolvedPath = require("path").resolve(folderPath + "/" + link)

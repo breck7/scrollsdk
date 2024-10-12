@@ -9,7 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -413,7 +413,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,

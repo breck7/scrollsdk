@@ -399,12 +399,12 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getParticleByBase/withBase/type/atom or something?
     const particles = this.topDownArray
-    const titleParticle = particles.find(particle => particle.firstAtom === WillowConstants.titleTag)
+    const titleParticle = particles.find(particle => particle.cue === WillowConstants.titleTag)
     return titleParticle ? titleParticle.content : ""
   }
   setWindowTitle(value) {
     const particles = this.topDownArray
-    const headParticle = particles.find(particle => particle.firstAtom === WillowConstants.tags.head)
+    const headParticle = particles.find(particle => particle.cue === WillowConstants.tags.head)
     headParticle.touchParticle(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -965,7 +965,7 @@ class AbstractParticleComponentParser extends ParserBackedParticle {
   _getHtmlOnlyParticles() {
     const particles = []
     this.willowBrowser.getHtmlStumpParticle().deepVisit(particle => {
-      if (particle.firstAtom === "styleTag" || (particle.content || "").startsWith("<svg ")) return false
+      if (particle.cue === "styleTag" || (particle.content || "").startsWith("<svg ")) return false
       particles.push(particle)
     })
     return particles
@@ -974,7 +974,7 @@ class AbstractParticleComponentParser extends ParserBackedParticle {
     // todo: cleanup. feels hacky.
     const clone = new Particle(this.willowBrowser.getHtmlStumpParticle().toString())
     clone.topDownArray.forEach(particle => {
-      if (particle.firstAtom === "styleTag" || (particle.content || "").startsWith("<svg ")) particle.destroy()
+      if (particle.cue === "styleTag" || (particle.content || "").startsWith("<svg ")) particle.destroy()
     })
     return clone.toString()
   }
@@ -1196,21 +1196,21 @@ ${new stumpParser(this.toStumpCode()).compile()}
     return this.destroy()
   }
   // todo: move to keyword particle class?
-  toggle(firstAtom, contentOptions) {
-    const currentParticle = this.getParticle(firstAtom)
-    if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(firstAtom)
+  toggle(cue, contentOptions) {
+    const currentParticle = this.getParticle(cue)
+    if (!contentOptions) return currentParticle ? currentParticle.unmountAndDestroy() : this.appendLine(cue)
     const currentContent = currentParticle === undefined ? undefined : currentParticle.content
     const index = contentOptions.indexOf(currentContent)
     const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
-    this.delete(firstAtom)
-    if (newContent) this.touchParticle(firstAtom).setContent(newContent)
+    this.delete(cue)
+    if (newContent) this.touchParticle(cue).setContent(newContent)
     return newContent
   }
   isMounted() {
     return !!this._htmlStumpParticle
   }
-  toggleAndRender(firstAtom, contentOptions) {
-    this.toggle(firstAtom, contentOptions)
+  toggleAndRender(cue, contentOptions) {
+    this.toggle(cue, contentOptions)
     this.root.renderAndGetRenderReport()
   }
   _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
@@ -1258,7 +1258,7 @@ ${new stumpParser(this.toStumpCode()).compile()}
     })
   }
   toStumpLoadingCode() {
-    return `div Loading ${this.firstAtom}...
+    return `div Loading ${this.cue}...
  class ${this.getCssClassNames().join(" ")}
  id ${this.getParticleComponentId()}`
   }

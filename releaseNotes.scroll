@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 90.0.0 2024-10-12
+⚠️ BREAKING: `firstAtom` is now called `cue` everywhere
+
 📦 89.0.0 2024-10-12
 ⚠️ BREAKING: `crux`, a "temporary" word that lasted many years, is now "cue"
 

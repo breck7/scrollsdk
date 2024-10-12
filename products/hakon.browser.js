@@ -1,7 +1,7 @@
 {
   class hakonParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { comment: commentParser }), undefined)
+      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { comment: commentParser }), undefined)
     }
     getSelector() {
       return ""
@@ -73,7 +73,7 @@ propertyParser
  catchAllParser errorParser
  javascript
   compile(spaces) {
-   return \`\${spaces}\${this.firstAtom}: \${this.content};\`
+   return \`\${spaces}\${this.cue}: \${this.content};\`
   }
  atoms propertyKeywordAtom
 variableParser
@@ -98,7 +98,7 @@ selectorParser
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
-   return this.firstAtom
+   return this.cue
     .split(",")
     .map(part => {
      if (part.startsWith("&")) return parentSelector + part.substr(1)
@@ -132,7 +132,7 @@ selectorParser
       return this.getAtomsFrom(1)
     }
     compile(spaces) {
-      return `${spaces}${this.firstAtom}: ${this.content};`
+      return `${spaces}${this.cue}: ${this.content};`
     }
   }
 
@@ -172,7 +172,7 @@ selectorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         selectorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           "border-bottom-right-radius": propertyParser,
           "transition-timing-function": propertyParser,
           "animation-iteration-count": propertyParser,
@@ -397,7 +397,7 @@ selectorParser
     }
     getSelector() {
       const parentSelector = this.parent.getSelector()
-      return this.firstAtom
+      return this.cue
         .split(",")
         .map(part => {
           if (part.startsWith("&")) return parentSelector + part.substr(1)

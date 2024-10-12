@@ -3,7 +3,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
           hue: hueParser,
           saturation: saturationParser,
@@ -210,7 +210,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { content: contentParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -231,7 +231,7 @@ scoresParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           hue: hueParser,
           saturation: saturationParser,
           constrast: constrastParser,
@@ -257,7 +257,7 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { scores: scoresParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 

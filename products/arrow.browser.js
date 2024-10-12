@@ -13,7 +13,7 @@
 
   class arrowParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
@@ -112,7 +112,7 @@ tokenParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
         undefined
       )
     }

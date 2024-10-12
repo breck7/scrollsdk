@@ -74,27 +74,27 @@ enum ParticlesConstants {
 class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
   private _catchAllParser: particlesTypes.ParticleParser
-  private _firstAtomMap: Map<string, Function>
+  private _cueMap: Map<string, Function>
   private _regexTests: particlesTypes.regexTest[]
-  constructor(catchAllParser: particlesTypes.ParticleParser, firstAtomMap: particlesTypes.firstAtomToParserMap = {}, regexTests: particlesTypes.regexTest[] = undefined) {
+  constructor(catchAllParser: particlesTypes.ParticleParser, cueMap: particlesTypes.cueToParserMap = {}, regexTests: particlesTypes.regexTest[] = undefined) {
     this._catchAllParser = catchAllParser
-    this._firstAtomMap = new Map(Object.entries(firstAtomMap))
+    this._cueMap = new Map(Object.entries(cueMap))
     this._regexTests = regexTests
   }
 
-  getFirstAtomOptions() {
-    return Array.from(this._getFirstAtomMap().keys())
+  getCueOptions() {
+    return Array.from(this._getCueMap().keys())
   }
 
   // todo: remove
-  private _getFirstAtomMap() {
-    return this._firstAtomMap
+  private _getCueMap() {
+    return this._cueMap
   }
 
   // todo: remove
-  _getFirstAtomMapAsObject() {
-    let obj: particlesTypes.firstAtomToParserMap = {}
-    const map = this._getFirstAtomMap()
+  _getCueMapAsObject() {
+    let obj: particlesTypes.cueToParserMap = {}
+    const map = this._getCueMap()
     for (let [key, val] of map.entries()) {
       obj[key] = val
     }
@@ -102,7 +102,7 @@ class ParserCombinator {
   }
 
   _getParser(line: string, contextParticle: particlesTypes.particle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
-    return this._getFirstAtomMap().get(this._getFirstAtom(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
+    return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
   _getCatchAllParser(contextParticle: particlesTypes.particle) {
@@ -122,7 +122,7 @@ class ParserCombinator {
     return undefined
   }
 
-  private _getFirstAtom(line: string, atomBreakSymbol: string) {
+  private _getCue(line: string, atomBreakSymbol: string) {
     const firstBreak = line.indexOf(atomBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
@@ -141,8 +141,8 @@ class Particle extends AbstractParticle {
   private _parent: Particle | undefined
   private _subparticles: Particle[]
   private _line: string
-  private _index: {
-    [firstAtom: string]: int
+  private _cueIndex: {
+    [cue: string]: int
   }
 
   execute() {}
@@ -285,8 +285,8 @@ class Particle extends AbstractParticle {
     return this.isBlankLine()
   }
 
-  hasDuplicateFirstAtoms(): boolean {
-    return this.length ? new Set(this.getFirstAtoms()).size !== this.length : false
+  hasDuplicateCues(): boolean {
+    return this.length ? new Set(this.getCues()).size !== this.length : false
   }
 
   isEmpty(): boolean {
@@ -361,7 +361,7 @@ class Particle extends AbstractParticle {
       particleSubparticles: "particleSubparticles"
     }
     const edge = this.edgeSymbol.repeat(indentCount)
-    // Set up the firstAtom part of the particle
+    // Set up the cue part of the particle
     const edgeHtml = `<span class="${classes.particleLine}" data-pathVector="${path}"><span class="${classes.edgeSymbol}">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const subparticlesHtml = this.length ? `<span class="${classes.particleBreakSymbol}">${this.particleBreakSymbol}</span>` + `<span class="${classes.particleSubparticles}">${this._subparticlesToHtml(indentCount + 1)}</span>` : ""
@@ -585,8 +585,12 @@ class Particle extends AbstractParticle {
     }
   }
 
-  get firstAtom(): atom {
+  get cue(): atom {
     return this.atoms[0]
+  }
+
+  set cue(atom: atom) {
+    this.setAtom(0, atom)
   }
 
   get content(): string {
@@ -644,19 +648,19 @@ class Particle extends AbstractParticle {
   }
 
   // todo: return array? getPathArray?
-  protected _getFirstAtomPath(relativeTo?: Particle): particlesTypes.firstAtomPath {
+  protected _getCuePath(relativeTo?: Particle): particlesTypes.cuePath {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.parent.isRoot(relativeTo)) return this.firstAtom
+    else if (this.parent.isRoot(relativeTo)) return this.cue
 
-    return this.parent._getFirstAtomPath(relativeTo) + this.edgeSymbol + this.firstAtom
+    return this.parent._getCuePath(relativeTo) + this.edgeSymbol + this.cue
   }
 
-  getFirstAtomPathRelativeTo(relativeTo?: Particle): particlesTypes.firstAtomPath {
-    return this._getFirstAtomPath(relativeTo)
+  getCuePathRelativeTo(relativeTo?: Particle): particlesTypes.cuePath {
+    return this._getCuePath(relativeTo)
   }
 
-  getFirstAtomPath(): particlesTypes.firstAtomPath {
-    return this._getFirstAtomPath()
+  getCuePath(): particlesTypes.cuePath {
+    return this._getCuePath()
   }
 
   getPathVector(): particlesTypes.pathVector {
@@ -693,7 +697,7 @@ class Particle extends AbstractParticle {
 
   protected _toXml(indentCount: particlesTypes.positiveInt) {
     const indent = " ".repeat(indentCount)
-    const tag = this.firstAtom
+    const tag = this.cue
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
 
@@ -705,7 +709,7 @@ class Particle extends AbstractParticle {
     // If the particle has a content and a subparticle return it as a string, as
     // Javascript object values can't be both a leaf and a particle.
     const tupleValue = hasSubparticlesNoContent ? this.toObject() : hasContentAndHasSubparticles ? this.contentWithSubparticles : content
-    return [this.firstAtom, tupleValue]
+    return [this.cue, tupleValue]
   }
 
   protected _indexOfParticle(needleParticle: Particle) {
@@ -887,12 +891,12 @@ class Particle extends AbstractParticle {
     return result
   }
 
-  with(firstAtom: string) {
-    return this.filter(particle => particle.has(firstAtom))
+  with(cue: string) {
+    return this.filter(particle => particle.has(cue))
   }
 
-  without(firstAtom: string) {
-    return this.filter(particle => !particle.has(firstAtom))
+  without(cue: string) {
+    return this.filter(particle => !particle.has(cue))
   }
 
   first(quantity = 1) {
@@ -991,7 +995,7 @@ class Particle extends AbstractParticle {
     this.forEach((subparticle: Particle, index: number) => {
       newObject[subparticle.getAtom(0)] = subparticle.content
       subparticle.topDownArray.forEach((particle: Particle) => {
-        const newColumnName = particle.getFirstAtomPathRelativeTo(this).replace(edgeSymbolRegex, delimiter)
+        const newColumnName = particle.getCuePathRelativeTo(this).replace(edgeSymbolRegex, delimiter)
         const value = particle.content
         newObject[newColumnName] = value
       })
@@ -1074,11 +1078,11 @@ class Particle extends AbstractParticle {
   _lineToYaml(indentLevel: number, listTag = "") {
     let prefix = " ".repeat(indentLevel)
     if (listTag && indentLevel > 1) prefix = " ".repeat(indentLevel - 2) + listTag + " "
-    return prefix + `${this.firstAtom}:` + (this.content ? " " + this.content : "")
+    return prefix + `${this.cue}:` + (this.content ? " " + this.content : "")
   }
 
   _isYamlList() {
-    return this.hasDuplicateFirstAtoms()
+    return this.hasDuplicateCues()
   }
 
   get asYaml() {
@@ -1152,13 +1156,13 @@ class Particle extends AbstractParticle {
     return JSON.stringify(this.asGrid, null, 2)
   }
 
-  findParticles(firstAtomPath: particlesTypes.firstAtomPath | particlesTypes.firstAtomPath[]): Particle[] {
+  findParticles(cuePath: particlesTypes.cuePath | particlesTypes.cuePath[]): Particle[] {
     // todo: can easily speed this up
     const map: any = {}
-    if (!Array.isArray(firstAtomPath)) firstAtomPath = [firstAtomPath]
-    firstAtomPath.forEach(path => (map[path] = true))
+    if (!Array.isArray(cuePath)) cuePath = [cuePath]
+    cuePath.forEach(path => (map[path] = true))
     return this.topDownArray.filter(particle => {
-      if (map[particle._getFirstAtomPath(this)]) return true
+      if (map[particle._getCuePath(this)]) return true
       return false
     })
   }
@@ -1186,12 +1190,12 @@ class Particle extends AbstractParticle {
     return clone
   }
 
-  getParticle(firstAtomPath: particlesTypes.firstAtomPath) {
-    return this._getParticleByPath(firstAtomPath)
+  getParticle(cuePath: particlesTypes.cuePath) {
+    return this._getParticleByPath(cuePath)
   }
 
-  getParticles(firstAtomPath: particlesTypes.firstAtomPath) {
-    return this.findParticles(firstAtomPath)
+  getParticles(cuePath: particlesTypes.cuePath) {
+    return this.findParticles(cuePath)
   }
 
   get section() {
@@ -1220,8 +1224,8 @@ class Particle extends AbstractParticle {
     if (hit) return hit.getLine().substr((prefix + this.atomBreakSymbol).length)
   }
 
-  get(firstAtomPath: particlesTypes.firstAtomPath) {
-    const particle = this._getParticleByPath(firstAtomPath)
+  get(cuePath: particlesTypes.cuePath) {
+    const particle = this._getParticleByPath(cuePath)
     return particle === undefined ? undefined : particle.content
   }
 
@@ -1251,13 +1255,13 @@ class Particle extends AbstractParticle {
     const edgeSymbol = this.edgeSymbol
     if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getSubparticles()
-      return this.filter(particle => particle.firstAtom === globPath)
+      return this.filter(particle => particle.cue === globPath)
     }
 
     const parts = globPath.split(edgeSymbol)
     const current = parts.shift()
     const rest = parts.join(edgeSymbol)
-    const matchingParticles = current === "*" ? this.getSubparticles() : this.filter(subparticle => subparticle.firstAtom === current)
+    const matchingParticles = current === "*" ? this.getSubparticles() : this.filter(subparticle => subparticle.cue === current)
 
     return [].concat.apply(
       [],
@@ -1265,16 +1269,16 @@ class Particle extends AbstractParticle {
     )
   }
 
-  protected _getParticleByPath(firstAtomPath: particlesTypes.firstAtomPath): Particle {
+  protected _getParticleByPath(cuePath: particlesTypes.cuePath): Particle {
     const edgeSymbol = this.edgeSymbol
-    if (!firstAtomPath.includes(edgeSymbol)) {
-      const index = this.indexOfLast(firstAtomPath)
+    if (!cuePath.includes(edgeSymbol)) {
+      const index = this.indexOfLast(cuePath)
       return index === -1 ? undefined : this._particleAt(index)
     }
 
-    const parts = firstAtomPath.split(edgeSymbol)
+    const parts = cuePath.split(edgeSymbol)
     const current = parts.shift()
-    const currentParticle = this._getSubparticlesArray()[this._getIndex()[current]]
+    const currentParticle = this._getSubparticlesArray()[this._getCueIndex()[current]]
     return currentParticle ? currentParticle._getParticleByPath(parts.join(edgeSymbol)) : undefined
   }
 
@@ -1303,7 +1307,7 @@ class Particle extends AbstractParticle {
     this.forEach((particle: Particle) => {
       if (!particle.length) return undefined
       particle.forEach(particle => {
-        obj[particle.firstAtom] = 1
+        obj[particle.cue] = 1
       })
     })
     return Object.keys(obj)
@@ -1349,13 +1353,13 @@ class Particle extends AbstractParticle {
     return ancestorParticles
   }
 
-  pathVectorToFirstAtomPath(pathVector: particlesTypes.pathVector): atom[] {
+  pathVectorToCuePath(pathVector: particlesTypes.pathVector): atom[] {
     const path = pathVector.slice() // copy array
     const names = []
     let particle: Particle = this
     while (path.length) {
       if (!particle) return names
-      names.push(particle.particleAt(path[0]).firstAtom)
+      names.push(particle.particleAt(path[0]).cue)
       particle = particle.particleAt(path.shift())
     }
     return names
@@ -1501,13 +1505,13 @@ class Particle extends AbstractParticle {
 
       if (lastStatesCopy.push([outlineParticle, last]) && lastStates.length > 0) {
         let line = ""
-        // firstAtomd on the "was last element" states of whatever we're nested within,
+        // cued on the "was last element" states of whatever we're nested within,
         // we need to append either blankness or a branch to our line
         lastStates.forEach((lastState, idx) => {
           if (idx > 0) line += lastState[1] ? " " : "│"
         })
 
-        // the prefix varies firstAtomd on whether the key contains something to show and
+        // the prefix varies cued on whether the key contains something to show and
         // whether we're dealing with the last element in this collection
         // the extra "-" just makes things stand out more.
         line += (last ? "└" : "├") + particleFn(particle)
@@ -1536,14 +1540,14 @@ class Particle extends AbstractParticle {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstAtom: particlesTypes.atom): Particle[] {
+  split(cue: particlesTypes.atom): Particle[] {
     const constructor = <any>this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const AtomBreakSymbol = this.atomBreakSymbol
 
     // todo: cleanup. the escaping is wierd.
     return this.toString()
-      .split(new RegExp(`\\${ParticleBreakSymbol}(?=${firstAtom}(?:${AtomBreakSymbol}|\\${ParticleBreakSymbol}))`, "g"))
+      .split(new RegExp(`\\${ParticleBreakSymbol}(?=${cue}(?:${AtomBreakSymbol}|\\${ParticleBreakSymbol}))`, "g"))
       .map(str => new constructor(str))
   }
 
@@ -1638,35 +1642,35 @@ class Particle extends AbstractParticle {
   }
 
   protected _setFromObject(content: any, circularCheckArray: Object[]) {
-    for (let firstAtom in content) {
-      if (!content.hasOwnProperty(firstAtom)) continue
+    for (let cue in content) {
+      if (!content.hasOwnProperty(cue)) continue
       // Branch the circularCheckArray, as we only have same branch circular arrays
-      this._appendFromJavascriptObjectTuple(firstAtom, content[firstAtom], circularCheckArray.slice(0))
+      this._appendFromJavascriptObjectTuple(cue, content[cue], circularCheckArray.slice(0))
     }
 
     return this
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstAtom: particlesTypes.atom, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(cue: particlesTypes.atom, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let subparticles
-    if (content === null) line = firstAtom + " " + null
-    else if (content === undefined) line = firstAtom
+    if (content === null) line = cue + " " + null
+    else if (content === undefined) line = cue
     else if (type === "string") {
       const tuple = this._textToContentAndSubparticlesTuple(content)
-      line = firstAtom + " " + tuple[0]
+      line = cue + " " + tuple[0]
       subparticles = tuple[1]
-    } else if (type === "function") line = firstAtom + " " + content.toString()
-    else if (type !== "object") line = firstAtom + " " + content
-    else if (content instanceof Date) line = firstAtom + " " + content.getTime().toString()
+    } else if (type === "function") line = cue + " " + content.toString()
+    else if (type !== "object") line = cue + " " + content
+    else if (content instanceof Date) line = cue + " " + content.getTime().toString()
     else if (content instanceof Particle) {
-      line = firstAtom
+      line = cue
       subparticles = new Particle(content.subparticlesToString(), content.getLine())
     } else if (circularCheckArray.indexOf(content) === -1) {
       circularCheckArray.push(content)
-      line = firstAtom
+      line = cue
       const length = content instanceof Array ? content.length : Object.keys(content).length
       if (length) subparticles = new Particle()._setSubparticles(content, circularCheckArray)
     } else {
@@ -1683,7 +1687,7 @@ class Particle extends AbstractParticle {
 
     this._getSubparticlesArray().splice(adjustedIndex, 0, newParticle)
 
-    if (this._index) this._makeIndex(adjustedIndex)
+    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
     this.clearQuickCache()
     return newParticle
   }
@@ -1713,11 +1717,11 @@ class Particle extends AbstractParticle {
     })
   }
 
-  protected _getIndex() {
-    // StringMap<int> {firstAtom: index}
-    // When there are multiple tails with the same firstAtom, _index stores the last content.
+  protected _getCueIndex() {
+    // StringMap<int> {cue: index}
+    // When there are multiple tails with the same cue, index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
-    return this._index || this._makeIndex()
+    return this._cueIndex || this._makeCueIndex()
   }
 
   getContentsArray() {
@@ -1739,20 +1743,20 @@ class Particle extends AbstractParticle {
     return this.find(subparticle => subparticle instanceof parser)
   }
 
-  indexOfLast(firstAtom: atom): int {
-    const result = this._getIndex()[firstAtom]
+  indexOfLast(cue: atom): int {
+    const result = this._getCueIndex()[cue]
     return result === undefined ? -1 : result
   }
 
   // todo: renmae to indexOfFirst?
-  indexOf(firstAtom: atom): int {
-    if (!this.has(firstAtom)) return -1
+  indexOf(cue: atom): int {
+    if (!this.has(cue)) return -1
 
     const length = this.length
     const particles = this._getSubparticlesArray()
 
     for (let index = 0; index < length; index++) {
-      if (particles[index].firstAtom === firstAtom) return index
+      if (particles[index].cue === cue) return index
     }
   }
 
@@ -1761,18 +1765,18 @@ class Particle extends AbstractParticle {
     return this._toObject()
   }
 
-  getFirstAtoms(): atom[] {
-    return this.map(particle => particle.firstAtom)
+  getCues(): atom[] {
+    return this.map(particle => particle.cue)
   }
 
-  protected _makeIndex(startAt = 0) {
-    if (!this._index || !startAt) this._index = {}
+  protected _makeCueIndex(startAt = 0) {
+    if (!this._cueIndex || !startAt) this._cueIndex = {}
     const particles = this._getSubparticlesArray()
-    const newIndex = this._index
+    const newIndex = this._cueIndex
     const length = particles.length
 
     for (let index = startAt; index < length; index++) {
-      newIndex[particles[index].firstAtom] = index
+      newIndex[particles[index].cue] = index
     }
 
     return newIndex
@@ -1795,15 +1799,15 @@ class Particle extends AbstractParticle {
     return new (<any>this.constructor)(subparticles, line)
   }
 
-  hasFirstAtom(firstAtom: atom): boolean {
-    return this._hasFirstAtom(firstAtom)
+  hasCue(cue: atom): boolean {
+    return this._hasCue(cue)
   }
 
-  has(firstAtomPath: particlesTypes.firstAtomPath): boolean {
+  has(cuePath: particlesTypes.cuePath): boolean {
     const edgeSymbol = this.edgeSymbol
-    if (!firstAtomPath.includes(edgeSymbol)) return this.hasFirstAtom(firstAtomPath)
+    if (!cuePath.includes(edgeSymbol)) return this.hasCue(cuePath)
 
-    const parts = firstAtomPath.split(edgeSymbol)
+    const parts = cuePath.split(edgeSymbol)
     const next = this.getParticle(parts.shift())
     if (!next) return false
     return next.has(parts.join(edgeSymbol))
@@ -1814,8 +1818,8 @@ class Particle extends AbstractParticle {
     return this.getSubparticles().some(particle => particle.toString() === needle)
   }
 
-  protected _hasFirstAtom(firstAtom: string) {
-    return this._getIndex()[firstAtom] !== undefined
+  protected _hasCue(cue: string) {
+    return this._getCueIndex()[cue] !== undefined
   }
 
   map(fn: mapFn) {
@@ -1865,7 +1869,7 @@ class Particle extends AbstractParticle {
     if (!this.quickCache.customIndexes) this.quickCache.customIndexes = {}
     const customIndexes = this.quickCache.customIndexes
     if (customIndexes[key]) return customIndexes[key]
-    const customIndex: { [firstAtom: string]: Particle[] } = {}
+    const customIndex: { [cue: string]: Particle[] } = {}
     customIndexes[key] = customIndex
     this.filter(file => file.has(key)).forEach(file => {
       const value = file.get(key)
@@ -1880,8 +1884,8 @@ class Particle extends AbstractParticle {
   }
 
   // todo: protected?
-  _clearIndex() {
-    delete this._index
+  _clearCueIndex() {
+    delete this._cueIndex
     this.clearQuickCache()
   }
 
@@ -2040,20 +2044,20 @@ class Particle extends AbstractParticle {
   // todo: this is slow.
   extend(particleOrStr: Particle | string | Object) {
     const particle = particleOrStr instanceof Particle ? particleOrStr : new Particle(particleOrStr)
-    const usedFirstAtoms = new Set()
+    const usedCues = new Set()
     particle.forEach(sourceParticle => {
-      const firstAtom = sourceParticle.firstAtom
+      const cue = sourceParticle.cue
       let targetParticle
-      const isAnArrayNotMap = usedFirstAtoms.has(firstAtom)
-      if (!this.has(firstAtom)) {
-        usedFirstAtoms.add(firstAtom)
+      const isAnArrayNotMap = usedCues.has(cue)
+      if (!this.has(cue)) {
+        usedCues.add(cue)
         this.appendLineAndSubparticles(sourceParticle.getLine(), sourceParticle.subparticlesToString())
         return true
       }
       if (isAnArrayNotMap) targetParticle = this.appendLine(sourceParticle.getLine())
       else {
-        targetParticle = this.touchParticle(firstAtom).setContent(sourceParticle.content)
-        usedFirstAtoms.add(firstAtom)
+        targetParticle = this.touchParticle(cue).setContent(sourceParticle.content)
+        usedCues.add(cue)
       }
       if (sourceParticle.length) targetParticle.extend(sourceParticle)
     })
@@ -2143,7 +2147,7 @@ class Particle extends AbstractParticle {
 
   setContent(content: string): Particle {
     if (content === this.content) return this
-    const newArray = [this.firstAtom]
+    const newArray = [this.cue]
     if (content !== undefined) {
       content = content.toString()
       if (content.match(this.particleBreakSymbol)) return this.setContentWithSubparticles(content)
@@ -2181,14 +2185,14 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  setFirstAtom(firstAtom: atom) {
-    return this.setAtom(0, firstAtom)
+  setCue(cue: atom) {
+    return this.setAtom(0, cue)
   }
 
   setLine(line: string) {
     if (line === this.getLine()) return this
     // todo: clear parent TMTimes
-    this.parent._clearIndex()
+    this.parent._clearCueIndex()
     this._setLine(line)
     this._updateLineModifiedTimeAndTriggerEvent()
     return this
@@ -2208,8 +2212,8 @@ class Particle extends AbstractParticle {
     ;(this.parent as Particle)._deleteParticle(this)
   }
 
-  set(firstAtomPath: particlesTypes.firstAtomPath, text: string) {
-    return this.touchParticle(firstAtomPath).setContentWithSubparticles(text)
+  set(cuePath: particlesTypes.cuePath, text: string) {
+    return this.touchParticle(cuePath).setContentWithSubparticles(text)
   }
 
   setFromText(text: string) {
@@ -2287,7 +2291,7 @@ class Particle extends AbstractParticle {
 
   protected _deleteByIndexes(indexesToDelete: int[]) {
     if (!indexesToDelete.length) return this
-    this._clearIndex()
+    this._clearCueIndex()
     // note: assumes indexesToDelete is in ascending order
     const deletedParticles = indexesToDelete.reverse().map(index => this._getSubparticlesArray().splice(index, 1)[0])
     this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
@@ -2300,7 +2304,7 @@ class Particle extends AbstractParticle {
   }
 
   reverse() {
-    this._clearIndex()
+    this._clearCueIndex()
     this._getSubparticlesArray().reverse()
     return this
   }
@@ -2313,7 +2317,7 @@ class Particle extends AbstractParticle {
 
   sort(fn: particlesTypes.sortFn) {
     this._getSubparticlesArray().sort(fn)
-    this._clearIndex()
+    this._clearCueIndex()
     return this
   }
 
@@ -2322,66 +2326,66 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  protected _rename(oldFirstAtom: particlesTypes.atom, newFirstAtom: particlesTypes.atom) {
-    const index = this.indexOf(oldFirstAtom)
+  protected _rename(oldCue: particlesTypes.atom, newCue: particlesTypes.atom) {
+    const index = this.indexOf(oldCue)
 
     if (index === -1) return this
 
     const particle = <Particle>this._getSubparticlesArray()[index]
 
-    particle.setFirstAtom(newFirstAtom)
-    this._clearIndex()
+    particle.setCue(newCue)
+    this._clearCueIndex()
     return this
   }
 
   // Does not recurse.
   remap(map: particlesTypes.stringMap) {
     this.forEach(particle => {
-      const firstAtom = particle.firstAtom
-      if (map[firstAtom] !== undefined) particle.setFirstAtom(map[firstAtom])
+      const cue = particle.cue
+      if (map[cue] !== undefined) particle.setCue(map[cue])
     })
     return this
   }
 
-  rename(oldFirstAtom: atom, newFirstAtom: atom) {
-    this._rename(oldFirstAtom, newFirstAtom)
+  rename(oldCue: atom, newCue: atom) {
+    this._rename(oldCue, newCue)
     return this
   }
 
   renameAll(oldName: atom, newName: atom) {
-    this.findParticles(oldName).forEach(particle => particle.setFirstAtom(newName))
+    this.findParticles(oldName).forEach(particle => particle.setCue(newName))
     return this
   }
 
-  protected _deleteAllChildParticlesWithFirstAtom(firstAtom: atom) {
-    if (!this.has(firstAtom)) return this
+  protected _deleteAllChildParticlesWithCue(cue: atom) {
+    if (!this.has(cue)) return this
     const allParticles = this._getSubparticlesArray()
     const indexesToDelete: int[] = []
     allParticles.forEach((particle, index) => {
-      if (particle.firstAtom === firstAtom) indexesToDelete.push(index)
+      if (particle.cue === cue) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(path: particlesTypes.firstAtomPath = "") {
+  delete(path: particlesTypes.cuePath = "") {
     const edgeSymbol = this.edgeSymbol
-    if (!path.includes(edgeSymbol)) return this._deleteAllChildParticlesWithFirstAtom(path)
+    if (!path.includes(edgeSymbol)) return this._deleteAllChildParticlesWithCue(path)
 
     const parts = path.split(edgeSymbol)
-    const nextFirstAtom = parts.pop()
+    const nextCue = parts.pop()
     const targetParticle = <Particle>this.getParticle(parts.join(edgeSymbol))
 
-    return targetParticle ? targetParticle._deleteAllChildParticlesWithFirstAtom(nextFirstAtom) : 0
+    return targetParticle ? targetParticle._deleteAllChildParticlesWithCue(nextCue) : 0
   }
 
-  deleteColumn(firstAtom = "") {
-    this.forEach(particle => particle.delete(firstAtom))
+  deleteColumn(cue = "") {
+    this.forEach(particle => particle.delete(cue))
     return this
   }
 
   protected _getNonMaps(): Particle[] {
-    const results = this.topDownArray.filter(particle => particle.hasDuplicateFirstAtoms())
-    if (this.hasDuplicateFirstAtoms()) results.unshift(this)
+    const results = this.topDownArray.filter(particle => particle.hasDuplicateCues())
+    if (this.hasDuplicateCues()) results.unshift(this)
     return results
   }
 
@@ -2429,8 +2433,8 @@ class Particle extends AbstractParticle {
 
   // todo: add "globalReplace" method? Which runs a global regex or string replace on the Particle as a string?
 
-  firstAtomSort(firstAtomOrder: particlesTypes.atom[]): this {
-    return this._firstAtomSort(firstAtomOrder)
+  cueSort(cueOrder: particlesTypes.atom[]): this {
+    return this._cueSort(cueOrder)
   }
 
   deleteAtomAt(atomIndex: particlesTypes.positiveInt): this {
@@ -2498,16 +2502,16 @@ class Particle extends AbstractParticle {
     return this.setAtoms(atoms)
   }
 
-  _firstAtomSort(firstAtomOrder: particlesTypes.atom[], secondarySortFn?: particlesTypes.sortFn): this {
+  _cueSort(cueOrder: particlesTypes.atom[], secondarySortFn?: particlesTypes.sortFn): this {
     const particleAFirst = -1
     const particleBFirst = 1
-    const map: { [firstAtom: string]: int } = {}
-    firstAtomOrder.forEach((atom, index) => {
+    const map: { [cue: string]: int } = {}
+    cueOrder.forEach((atom, index) => {
       map[atom] = index
     })
     this.sort((particleA, particleB) => {
-      const valA = map[particleA.firstAtom]
-      const valB = map[particleB.firstAtom]
+      const valA = map[particleA.cue]
+      const valB = map[particleB.cue]
       if (valA > valB) return particleBFirst
       if (valA < valB) return particleAFirst
       return secondarySortFn ? secondarySortFn(particleA, particleB) : 0
@@ -2515,10 +2519,10 @@ class Particle extends AbstractParticle {
     return this
   }
 
-  protected _touchParticle(firstAtomPathArray: particlesTypes.atom[]) {
+  protected _touchParticle(cuePathArray: particlesTypes.atom[]) {
     let contextParticle = this
-    firstAtomPathArray.forEach(firstAtom => {
-      contextParticle = contextParticle.getParticle(firstAtom) || contextParticle.appendLine(firstAtom)
+    cuePathArray.forEach(cue => {
+      contextParticle = contextParticle.getParticle(cue) || contextParticle.appendLine(cue)
     })
     return contextParticle
   }
@@ -2528,7 +2532,7 @@ class Particle extends AbstractParticle {
     return this._touchParticle(str.split(this.atomBreakSymbol))
   }
 
-  touchParticle(str: particlesTypes.firstAtomPath) {
+  touchParticle(str: particlesTypes.cuePath) {
     return this._touchParticleByString(str)
   }
 
@@ -2695,9 +2699,9 @@ class Particle extends AbstractParticle {
       else if (!particleB.length) return 1
 
       for (let index = 0; index < length; index++) {
-        const firstAtom = names[index]
-        const av = particleA.get(firstAtom)
-        const bv = particleB.get(firstAtom)
+        const cue = names[index]
+        const av = particleA.get(cue)
+        const bv = particleB.get(cue)
 
         if (av > bv) return 1
         else if (av < bv) return -1
@@ -3071,7 +3075,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "89.0.0"
+  static getVersion = () => "90.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)
@@ -3101,9 +3105,9 @@ class Particle extends AbstractParticle {
 }
 
 abstract class AbstractExtendibleParticle extends Particle {
-  _getFromExtended(firstAtomPath: particlesTypes.firstAtomPath) {
-    const hit = this._getParticleFromExtended(firstAtomPath)
-    return hit ? hit.get(firstAtomPath) : undefined
+  _getFromExtended(cuePath: particlesTypes.cuePath) {
+    const hit = this._getParticleFromExtended(cuePath)
+    return hit ? hit.get(cuePath) : undefined
   }
 
   _getLineage() {
@@ -3125,18 +3129,18 @@ abstract class AbstractExtendibleParticle extends Particle {
     return this._getAncestorsArray()[1]
   }
 
-  _hasFromExtended(firstAtomPath: particlesTypes.firstAtomPath) {
-    return !!this._getParticleFromExtended(firstAtomPath)
+  _hasFromExtended(cuePath: particlesTypes.cuePath) {
+    return !!this._getParticleFromExtended(cuePath)
   }
 
-  _getParticleFromExtended(firstAtomPath: particlesTypes.firstAtomPath) {
-    return this._getAncestorsArray().find(particle => particle.has(firstAtomPath))
+  _getParticleFromExtended(cuePath: particlesTypes.cuePath) {
+    return this._getAncestorsArray().find(particle => particle.has(cuePath))
   }
 
-  _getConcatBlockStringFromExtended(firstAtomPath: particlesTypes.firstAtomPath) {
+  _getConcatBlockStringFromExtended(cuePath: particlesTypes.cuePath) {
     return this._getAncestorsArray()
-      .filter(particle => particle.has(firstAtomPath))
-      .map(particle => particle.getParticle(firstAtomPath).subparticlesToString())
+      .filter(particle => particle.has(cuePath))
+      .map(particle => particle.getParticle(cuePath).subparticlesToString())
       .reverse()
       .join("\n")
   }

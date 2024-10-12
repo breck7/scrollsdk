@@ -1,7 +1,7 @@
 {
   class stampParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
+      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
     async executeSeries(parentDir) {
       const length = this.length
@@ -279,7 +279,7 @@ folderParser
 
   class fileParser extends ParserBackedParticle {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
     get keywordAtom() {
       return this.getAtom(0)

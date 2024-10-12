@@ -136,6 +136,10 @@ class ParserBackedParticle extends Particle {
   makeError(message) {
     return new ParserDefinedError(this, message)
   }
+  usesParser(parserId) {
+    // returns true if the provided parser ID appears anywhere in a particles subparticles
+    return !!this.particleIndex[parserId]
+  }
   get particleIndex() {
     // StringMap<int> {cue: index}
     // When there are multiple tails with the same cue, index stores the last content.

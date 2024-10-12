@@ -172,6 +172,11 @@ abstract class ParserBackedParticle extends Particle {
     return new ParserDefinedError(this, message)
   }
 
+  usesParser(parserId: string) {
+    // returns true if the provided parser ID appears anywhere in a particles subparticles
+    return !!this.particleIndex[parserId]
+  }
+
   private _particleIndex: {
     [parserId: string]: ParserBackedParticle[]
   }

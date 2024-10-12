@@ -77,7 +77,7 @@ abstractBaseClassParser
 extendsAbstractParser
  atoms topLevelPropertyAtom intAtom
  extends abstractBaseClassParser
- crux extendsAbstract
+ cue extendsAbstract
 abstractTopLevelParser
  atoms topLevelPropertyAtom
 abstractColorPropertiesParser
@@ -85,24 +85,24 @@ abstractColorPropertiesParser
  extends abstractTopLevelParser
 hueParser
  extends abstractColorPropertiesParser
- crux hue
+ cue hue
 saturationParser
  extends abstractColorPropertiesParser
- crux saturation
+ cue saturation
 constrastParser
  extends abstractColorPropertiesParser
- crux constrast
+ cue constrast
 abstractHtmlParser
  inScope contentParser
  extends abstractTopLevelParser
 h1Parser
- crux html.h1
+ cue html.h1
  extends abstractHtmlParser
 addParser
  extends abstractTopLevelParser
- crux add
+ cue add
 plusParser
- crux +
+ cue +
  extends addParser
  example Adding two numbers:
   + 1 2
@@ -111,22 +111,22 @@ plusParser
 blockParser
  inScope abstractTopLevelParser scoreBlockParser
  extends abstractTopLevelParser
- crux block
+ cue block
 scoreBlockParser
  description Test that inscope extends and does not overwrite.
  extends blockParser
  inScope scoresParser
- crux scoreBlock
+ cue scoreBlock
 toParser
  atoms topLevelPropertyAtom atomAtom
  compiler
   stringTemplate to {atom}
   closeSubparticles end
  extends blockParser
- crux to
+ cue to
 fooParser
  extends abstractTopLevelParser
- crux foo
+ cue foo
 xColumnNameParser
  description The name of the column to use for the x axis
  atoms topLevelPropertyAtom columnNameEnumAtom
@@ -136,14 +136,14 @@ xColumnNameParser
    return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
   }
  extends abstractTopLevelParser
- crux xColumnName
+ cue xColumnName
 lightbulbStateParser
  atoms topLevelPropertyAtom onoffAtom
  extends abstractTopLevelParser
- crux lightbulbState
+ cue lightbulbState
 nestedParser
  extends abstractTopLevelParser
- crux nested
+ cue nested
 particleWithConstsParser
  string greeting hello world
  string singleAtom hello
@@ -156,28 +156,28 @@ particleWithConstsParser
  float score2 3.01
  boolean win true
  extends abstractTopLevelParser
- crux particleWithConsts
+ cue particleWithConsts
 particleExpandsConstsParser
  string greeting hola
  extends particleWithConstsParser
- crux particleExpandsConsts
+ cue particleExpandsConsts
 someCodeParser
  catchAllParser lineOfCodeParser
  extends abstractTopLevelParser
- crux someCode
+ cue someCode
 typeParser
  atoms topLevelPropertyAtom atomAtom
  single
  extends abstractTopLevelParser
- crux type
+ cue type
 commentParser
  extends abstractTopLevelParser
  catchAllAtomType commentAtom
  catchAllParser commentParser
- crux comment
+ cue comment
 contentParser
  baseParser blobParser
- crux content
+ cue content
 errorParser
  catchAllAtomType errorAtom
  baseParser errorParser
@@ -186,11 +186,11 @@ lineOfCodeParser
  catchAllAtomType atomAtom
 textParser
  baseParser blobParser
- crux text
+ cue text
 scoresParser
  catchAllAtomType intAtom
  atoms topLevelPropertyAtom
- crux scores`)
+ cue scores`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

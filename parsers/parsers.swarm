@@ -11,14 +11,14 @@ test parsersSample
    atomAtom
     extends anyAtom
    baseParser
-    crux base
+    cue base
    keywordAtom
    blockParser
-    crux block
+    cue block
     extends baseParser
     inScope baseParser
    toParser
-    crux to
+    cue to
     extends blockParser
     atoms keywordAtom atomAtom
     tags test

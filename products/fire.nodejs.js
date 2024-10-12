@@ -135,9 +135,9 @@ blockParser
  compiler
   stringTemplate /* {identifierAtom} */
  extends abstractJsblockParser
- crux block
+ cue block
 functionParser
- crux function
+ cue function
  description Function Assignment
  atoms keywordAtom functionIdentifierAtom
  catchAllAtomType anyAtom
@@ -147,7 +147,7 @@ functionParser
  popularity .1
  extends abstractJsblockParser
 ifParser
- crux if
+ cue if
  description If tile
  atoms keywordAtom identifierAtom
  popularity .2
@@ -155,7 +155,7 @@ ifParser
   stringTemplate if ({identifierAtom})
  extends abstractJsblockParser
 whileParser
- crux while
+ cue while
  description While tile
  atoms keywordAtom identifierAtom
  popularity .1
@@ -178,27 +178,27 @@ divideParser
  compiler
   catchAllAtomDelimiter  / 
  extends abstractArithmeticParser
- crux divide
+ cue divide
 moduloParser
  description Modulo Numbers
  compiler
   catchAllAtomDelimiter %
  extends abstractArithmeticParser
- crux modulo
+ cue modulo
 multiplyParser
  description Multiply Numbers
  compiler
   catchAllAtomDelimiter  * 
  extends abstractArithmeticParser
- crux multiply
+ cue multiply
 substractParser
  description Subtract Numbers
  compiler
   catchAllAtomDelimiter  - 
  extends abstractArithmeticParser
- crux substract
+ cue substract
 addParser
- crux add
+ cue add
  example
   add ten 2 3 5
  description Add numbers and store result
@@ -215,7 +215,7 @@ greaterThanParser
   stringTemplate const {identifierAtom} = {leftNumberAtom} > {numberAtom}
  popularity .1
  extends abstractBooleanOperatorParser
- crux greaterThan
+ cue greaterThan
 greaterThanOrEqualParser
  description Greater than or equal to test
  atoms keywordAtom identifierAtom leftNumberAtom numberAtom
@@ -223,7 +223,7 @@ greaterThanOrEqualParser
   stringTemplate const {identifierAtom} = {leftNumberAtom} >= {numberAtom}
  popularity .1
  extends abstractBooleanOperatorParser
- crux greaterThanOrEqual
+ cue greaterThanOrEqual
 lessThanParser
  description Less than test
  atoms keywordAtom identifierAtom leftAnyAtom anyAtom
@@ -231,9 +231,9 @@ lessThanParser
   stringTemplate const {identifierAtom} = {leftAnyAtom} < {anyAtom}
  popularity .1
  extends abstractBooleanOperatorParser
- crux lessThan
+ cue lessThan
 lessThanOrEqualParser
- crux lessThanOrEqual
+ cue lessThanOrEqual
  description Less than or equal to test
  atoms keywordAtom identifierAtom leftAnyAtom anyAtom
  compiler
@@ -241,7 +241,7 @@ lessThanOrEqualParser
  popularity .1
  extends abstractBooleanOperatorParser
 sumParser
- crux sum
+ cue sum
  description Add numbers and store result
  atoms keywordAtom numberIdentifierAtom
  catchAllAtomType numberAtom
@@ -251,14 +251,14 @@ sumParser
  popularity .1
  extends abstractAssignmentParser
 booleanParser
- crux boolean
+ cue boolean
  description Boolean Assignment
  atoms keywordAtom booleanIdentifierAtom booleanAtom
  compiler
   stringTemplate const {booleanIdentifierAtom} = {booleanAtom}
  extends abstractAssignmentParser
 callFunctionAndSetParser
- crux callFunctionAndSet
+ cue callFunctionAndSet
  description Function Call
  popularity .5
  atoms keywordAtom resultIdentifierAtom functionIdentifierAtom
@@ -268,7 +268,7 @@ callFunctionAndSetParser
   catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 callMethodAndSetParser
- crux callMethodAndSet
+ cue callMethodAndSet
  description Method Call
  popularity .5
  atoms keywordAtom resultIdentifierAtom instanceIdentifierAtom methodIdentifierAtom
@@ -278,7 +278,7 @@ callMethodAndSetParser
   catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 joinParser
- crux join
+ cue join
  description Join strings to form new string
  atoms keywordAtom identifierAtom
  catchAllAtomType identifiersAtom
@@ -288,14 +288,14 @@ joinParser
  popularity .2
  extends abstractAssignmentParser
 mutableNumberParser
- crux mutableNumber
+ cue mutableNumber
  description Mutable Number Assignment
  atoms keywordAtom identifierAtom numberAtom
  compiler
   stringTemplate let {identifierAtom} = {numberAtom}
  extends abstractAssignmentParser
 numberParser
- crux number
+ cue number
  description Number Assignment
  atoms keywordAtom identifierAtom numberAtom
  compiler
@@ -303,7 +303,7 @@ numberParser
  popularity .3
  extends abstractAssignmentParser
 numbersParser
- crux numbers
+ cue numbers
  description Number Array Assignment
  atoms keywordAtom identifierAtom
  catchAllAtomType numberAtom
@@ -313,7 +313,7 @@ numbersParser
   catchAllAtomDelimiter , 
  extends abstractAssignmentParser
 stringParser
- crux string
+ cue string
  description String Assignment
  atoms keywordAtom stringIdentifierAtom
  catchAllAtomType anyAtom
@@ -322,7 +322,7 @@ stringParser
  popularity .2
  extends abstractAssignmentParser
 callFunctionParser
- crux callFunction
+ cue callFunction
  description Function call ignore result.
  popularity .1
  atoms keywordAtom functionIdentifierAtom
@@ -332,7 +332,7 @@ callFunctionParser
   catchAllAtomDelimiter , 
  extends abstractTerminalParser
 decrementParser
- crux decrement
+ cue decrement
  description Decrement
  atoms keywordAtom numberIdentifierAtom
  compiler
@@ -340,7 +340,7 @@ decrementParser
  popularity .1
  extends abstractTerminalParser
 dumpIdentifierParser
- crux dumpIdentifier
+ cue dumpIdentifier
  description Dump variable(s) to console
  catchAllAtomType identifierAtom
  compiler
@@ -349,7 +349,7 @@ dumpIdentifierParser
  popularity .5
  extends abstractTerminalParser
 exportParser
- crux export
+ cue export
  description Export This
  atoms keywordAtom identifierAtom
  compiler
@@ -357,7 +357,7 @@ exportParser
  popularity .1
  extends abstractTerminalParser
 incrementParser
- crux increment
+ cue increment
  description Increment
  popularity .3
  atoms keywordAtom numberIdentifierAtom
@@ -365,20 +365,20 @@ incrementParser
   stringTemplate {numberIdentifierAtom}++
  extends abstractTerminalParser
 printNumberParser
- crux printNumber
+ cue printNumber
  extends abstractTerminalParser
  catchAllAtomType numberIdentifierAtom
  compiler
   stringTemplate console.log({numberIdentifierAtom})
 printStringParser
- crux printString
+ cue printString
  // todo Allow printing of multiline strings
  extends abstractTerminalParser
  catchAllAtomType stringAtomsAtom
  compiler
   stringTemplate console.log("{stringAtoms}")
 requireParser
- crux require
+ cue require
  description Require Something
  atoms keywordAtom identifierAtom filepathAtom
  compiler
@@ -386,14 +386,14 @@ requireParser
  popularity .1
  extends abstractTerminalParser
 returnParser
- crux return
+ cue return
  atoms keywordAtom anyAtom
  compiler
   stringTemplate return {anyAtom}
  popularity .1
  extends abstractTerminalParser
 hashbangParser
- crux #!
+ cue #!
  description Standard bash hashbang line.
  catchAllAtomType hashBangAtom
  compiler

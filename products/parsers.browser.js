@@ -166,37 +166,37 @@ abstractCompilerRuleParser
 closeSubparticlesParser
  extends abstractCompilerRuleParser
  description When compiling a parent particle to a string, this string is appended to the compiled and joined subparticles. Default is blank.
- cruxFromId
+ cueFromId
 
 indentCharacterParser
  extends abstractCompilerRuleParser
  description You can change the indent character for compiled subparticles. Default is a space.
- cruxFromId
+ cueFromId
 
 catchAllAtomDelimiterParser
  description If a particle has a catchAllAtom, this is the string delimiter that will be used to join those atoms. Default is comma.
  extends abstractCompilerRuleParser
- cruxFromId
+ cueFromId
 
 openSubparticlesParser
  extends abstractCompilerRuleParser
  description When compiling a parent particle to a string, this string is prepended to the compiled and joined subparticles. Default is blank.
- cruxFromId
+ cueFromId
 
 stringTemplateParser
  extends abstractCompilerRuleParser
  description This template string is used to compile this line, and accepts strings of the format: const var = {someAtomId}
- cruxFromId
+ cueFromId
 
 joinSubparticlesWithParser
  description When compiling a parent particle to a string, subparticles are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleParser
- cruxFromId
+ cueFromId
 
 abstractConstantParser
  description A constant.
  atoms propertyKeywordAtom
- cruxFromId
+ cueFromId
  // todo: make tags inherit
  tags actPhase
 
@@ -235,7 +235,7 @@ compilesToParser
  description File extension for simple compilers.
  // todo: deprecate?
  // Optionally specify a file extension that will be used when compiling your language to a file. Generally used on parsers marked root.
- cruxFromId
+ cueFromId
  tags experimental
 
 extensionsParser
@@ -243,7 +243,7 @@ extensionsParser
  catchAllAtomType fileExtensionAtom
  description File extension for your dialect.
  // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root particle's parserId will be used as the default file extension.
- cruxFromId
+ cueFromId
  tags deprecate
 
 abstractNonTerminalParserRuleParser
@@ -254,7 +254,7 @@ baseParserParser
  description Set for blobs or errors. 
  // In rare cases with untyped content you can use a blobParser, for now, to skip parsing for performance gains. The base errorParser will report errors when parsed. Use that if you don't want to implement your own error parser.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 catchAllAtomTypeParser
@@ -262,7 +262,7 @@ catchAllAtomTypeParser
  description Use for lists.
  // Aka 'listAtomType'. Use this when the value in a key/value pair is a list. If there are extra atoms in the particle's line, parse these atoms as this type. Often used with \`listDelimiterParser\`.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 atomParserParser
@@ -270,7 +270,7 @@ atomParserParser
  description Set parsing strategy.
  // prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags experimental analyzePhase
 
 catchAllParserParser
@@ -278,14 +278,14 @@ catchAllParserParser
  // If a parser is not found in the inScope list, instantiate this type of particle instead.
  atoms propertyKeywordAtom parserIdAtom
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags acquirePhase
 
 atomsParser
  catchAllAtomType atomTypeIdAtom
  description Set required atomTypes.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 compilerParser
@@ -293,20 +293,20 @@ compilerParser
  description For simple compilers.
  inScope stringTemplateParser catchAllAtomDelimiterParser openSubparticlesParser closeSubparticlesParser indentCharacterParser joinSubparticlesWithParser
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags experimental
 
 parserDescriptionParser
  description Parser description.
  catchAllAtomType stringAtom
  extends abstractParserRuleParser
- crux description
+ cue description
  tags assemblePhase
 
 atomTypeDescriptionParser
  description Atom Type description.
  catchAllAtomType stringAtom
- crux description
+ cue description
  tags assemblePhase
 
 exampleParser
@@ -315,11 +315,11 @@ exampleParser
  catchAllAtomType exampleAnyAtom
  catchAllParser catchAllExampleLineParser
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags assemblePhase
 
 extendsParserParser
- crux extends
+ cue extends
  tags assemblePhase
  description Extend another parser.
  // todo: add a catchall that is used for mixins
@@ -331,14 +331,14 @@ popularityParser
  description Parser popularity.
  atoms propertyKeywordAtom floatAtom
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags assemblePhase
 
 inScopeParser
  description Parsers in scope.
  catchAllAtomType parserIdAtom
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags acquirePhase
 
 javascriptParser
@@ -362,23 +362,23 @@ javascriptParser
    }
    return this
   }
- cruxFromId
+ cueFromId
 
 abstractParseRuleParser
  // Each particle should have a pattern that it matches on unless it's a catch all particle.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
 
-cruxParser
+cueParser
  atoms propertyKeywordAtom stringAtom
  description Attach by matching first atom.
  extends abstractParseRuleParser
  tags acquirePhase
 
-cruxFromIdParser
+cueFromIdParser
  atoms propertyKeywordAtom
- description Derive crux from parserId.
- // for example 'fooParser' would have crux of 'foo'.
+ description Derive cue from parserId.
+ // for example 'fooParser' would have cue of 'foo'.
  extends abstractParseRuleParser
  tags acquirePhase
 
@@ -391,12 +391,12 @@ patternParser
 requiredParser
  description Assert is present at least once.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 abstractValidationRuleParser
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  catchAllAtomType boolAtom
 
 singleParser
@@ -420,7 +420,7 @@ uniqueFirstAtomParser
 listDelimiterParser
  description Split content by this delimiter.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  catchAllAtomType stringAtom
  tags analyzePhase
 
@@ -429,7 +429,7 @@ contentKeyParser
  description Deprecated. For to/from JSON.
  // Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the particle to an object and set a property with this key and the value set to the particle's content.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  catchAllAtomType stringAtom
  tags deprecate
 subparticlesKeyParser
@@ -437,7 +437,7 @@ subparticlesKeyParser
  description Deprecated. For to/from JSON.
  // Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the particle to an object and set a property with this key and the value set to the particle's subparticles.
  extends abstractParserRuleParser
- cruxFromId
+ cueFromId
  catchAllAtomType stringAtom
  tags deprecate
 
@@ -445,7 +445,7 @@ tagsParser
  catchAllAtomType tagAtom
  extends abstractParserRuleParser
  description Custom metadata.
- cruxFromId
+ cueFromId
  tags assemblePhase
 
 catchAllErrorParser
@@ -481,12 +481,12 @@ enumFromAtomTypesParser
  description Runtime enum options.
  catchAllAtomType atomTypeIdAtom
  atoms atomPropertyNameAtom
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 enumParser
  description Set enum options.
- cruxFromId
+ cueFromId
  catchAllAtomType enumOptionAtom
  atoms atomPropertyNameAtom
  tags analyzePhase
@@ -494,20 +494,20 @@ enumParser
 examplesParser
  description Examples for documentation and tests.
  // If the domain of possible atom values is large, such as a string type, it can help certain methods—such as program synthesis—to provide a few examples.
- cruxFromId
+ cueFromId
  catchAllAtomType atomExampleAtom
  atoms atomPropertyNameAtom
  tags assemblePhase
 
 atomMinParser
  description Specify a min if numeric.
- crux min
+ cue min
  atoms atomPropertyNameAtom numericAtom
  tags analyzePhase
 
 atomMaxParser
  description Specify a max if numeric.
- crux max
+ cue max
  atoms atomPropertyNameAtom numericAtom
  tags analyzePhase
 
@@ -515,11 +515,11 @@ paintParser
  atoms propertyKeywordAtom paintTypeAtom
  description Instructor editor how to color these.
  single
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 rootFlagParser
- crux root
+ cue root
  description Set root parser.
  // Mark a parser as root if it is the root of your language. The parserId will be the name of your language. The parserId will also serve as the default file extension, if you don't specify another. If more than 1 parser is marked as "root", the last one wins.
  atoms propertyKeywordAtom
@@ -539,7 +539,7 @@ regexParser
  description Atoms must match this.
  single
  atoms atomPropertyNameAtom
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 reservedAtomsParser
@@ -547,7 +547,7 @@ reservedAtomsParser
  description Atoms can't be any of these.
  catchAllAtomType reservedAtomAtom
  atoms atomPropertyNameAtom
- cruxFromId
+ cueFromId
  tags analyzePhase
 
 commentLineParser
@@ -556,12 +556,12 @@ commentLineParser
 slashCommentParser
  description A comment.
  catchAllAtomType commentAtom
- crux //
+ cue //
  catchAllParser commentLineParser
  tags assemblePhase
 
 extendsAtomTypeParser
- crux extends
+ cue extends
  description Extend another atomType.
  // todo Add mixin support in addition to extends?
  atoms propertyKeywordAtom atomTypeIdAtom
@@ -806,7 +806,7 @@ extendsAtomTypeParser
 
   class abstractParseRuleParser extends abstractParserRuleParser {}
 
-  class cruxParser extends abstractParseRuleParser {
+  class cueParser extends abstractParseRuleParser {
     get propertyKeywordAtom() {
       return this.getAtom(0)
     }
@@ -815,7 +815,7 @@ extendsAtomTypeParser
     }
   }
 
-  class cruxFromIdParser extends abstractParseRuleParser {
+  class cueFromIdParser extends abstractParseRuleParser {
     get propertyKeywordAtom() {
       return this.getAtom(0)
     }
@@ -1012,8 +1012,8 @@ extendsAtomTypeParser
           popularity: popularityParser,
           inScope: inScopeParser,
           javascript: javascriptParser,
-          crux: cruxParser,
-          cruxFromId: cruxFromIdParser,
+          cue: cueParser,
+          cueFromId: cueFromIdParser,
           pattern: patternParser,
           required: requiredParser,
           single: singleParser,

@@ -75,11 +75,11 @@ linkParser
  extends abstractTopLevelParser
  compiler
   stringTemplate <a href="{urlAtom}">{textAtom}</a>
- crux link
+ cue link
 paragraphParser
  catchAllParser paragraphContentParser
  extends abstractTopLevelParser
- crux paragraph
+ cue paragraph
  compiler
   openSubparticles <p>
   closeSubparticles </p>
@@ -97,7 +97,7 @@ codeParser
   compile() {
    return \`<code>\${this.indentation + this.subparticlesToString()}</code>\`
   }
- crux code
+ cue code
 listParser
  inScope dashParser
  extends abstractTopLevelParser
@@ -105,7 +105,7 @@ listParser
   stringTemplate 
   openSubparticles <ul>
   closeSubparticles </ul>
- crux list
+ cue list
 blankLineParser
  description Blank lines compile to nothing in the HTML.
  atoms blankAtom
@@ -117,7 +117,7 @@ lineOfCodeParser
  catchAllAtomType codeAtom
  catchAllParser lineOfCodeParser
 dashParser
- crux -
+ cue -
  catchAllAtomType textAtom
  compiler
   stringTemplate <li>{textAtom}</li>
@@ -127,7 +127,7 @@ titleParser
  extends abstractTopLevelParser
  compiler
   stringTemplate 
- crux title
+ cue title
  javascript
   compile(spaces) {
    const title = this.content
@@ -139,27 +139,27 @@ title2Parser
  extends abstractTopLevelParser
  compiler
   stringTemplate <h2>{textAtom}</h2>
- crux title2
+ cue title2
 title3Parser
  extends title2Parser
  compiler
   stringTemplate <h3>{textAtom}</h3>
- crux title3
+ cue title3
 title4Parser
  extends title2Parser
  compiler
   stringTemplate <h4>{textAtom}</h4>
- crux title4
+ cue title4
 title5Parser
  extends title2Parser
  compiler
   stringTemplate <h5>{textAtom}</h5>
- crux title5
+ cue title5
 title6Parser
  extends title2Parser
  compiler
   stringTemplate <h6>{textAtom}</h6>
- crux title6
+ cue title6
 quickParagraphParser
  catchAllAtomType textAtom
  compiler

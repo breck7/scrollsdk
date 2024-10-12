@@ -7,16 +7,16 @@ abstractTopLevelComponentParser
 headerComponentParser
  description Header contains basic game state
  extends abstractTopLevelComponentParser
- crux headerComponent
+ cue headerComponent
 boardComponentParser
  description Contains the main board
  extends abstractTopLevelComponentParser
- crux boardComponent
+ cue boardComponent
 controlsComponentParser
  description Contains the restart button
  extends abstractTopLevelComponentParser
- crux controlsComponent
+ cue controlsComponent
 shortcutsTableComponentParser
  description Contains help for the keyboard shortcuts
  extends abstractTopLevelComponentParser
- crux shortcutsTableComponent
+ cue shortcutsTableComponent

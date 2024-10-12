@@ -14,7 +14,7 @@ fruitParser
   apple
    banana
 abstractFruitParser
- cruxFromId
+ cueFromId
  atoms fruitNameAtom
 appleParser
  extends abstractFruitParser

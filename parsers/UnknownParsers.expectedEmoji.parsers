@@ -4,19 +4,19 @@ emojiLangParser
  inScope _9000_55357_56696_55356_57104Parser
 _9000_55357_56696_55356_57104Parser
  inScope _55357_56520Parser _55357_56521Parser
- crux ⌨🕸🌐
+ cue ⌨🕸🌐
  atoms keywordAtom
 _55357_56520Parser
  inScope _55356_57318_55357_56846Parser
- crux 📈
+ cue 📈
  atoms keywordAtom
 _55356_57318_55357_56846Parser
- crux 🏦😎
+ cue 🏦😎
  atoms keywordAtom
 _55357_56521Parser
  inScope _55357_56489Parser
- crux 📉
+ cue 📉
  atoms keywordAtom
 _55357_56489Parser
- crux 💩
+ cue 💩
  atoms keywordAtom

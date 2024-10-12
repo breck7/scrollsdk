@@ -69,7 +69,7 @@ The following major features are likely to be added to a future version of Parse
 - Sometimes a language may want to allow a number in a hole, or potentially something like an "N/A" value. Union Atom Types would be one way to do this.
 
 ## Pattern Matching
-- You might want to have parsers with the same crux but different forms (for example, different atoms). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
+- You might want to have parsers with the same cue but different forms (for example, different atoms). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
 
 ## Mixins
 - You might want to share code between parsers without creating an inheritance link. Mixins where code is copied at compile time would be a way to do this.

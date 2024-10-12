@@ -59,7 +59,7 @@ commentAtom
 commentParser
  catchAllAtomType commentAtom
  atoms commentAtom
- crux Comment
+ cue Comment
  boolean suggestInAutocomplete false
 arrowParser
  description A demonstration prefix Language showing how in the future Particles will be used for simpler and more intelligent APIs.
@@ -75,7 +75,7 @@ errorParser
 chargeParser
  inScope amountParser currencyParser descriptionParser cardNumberParser tokenParser
  description A credit card charge
- cruxFromId
+ cueFromId
  atoms keywordAtom
  javascript
   async execute() {
@@ -83,7 +83,7 @@ chargeParser
    return \`Successfully charged \${this.get("amount")} \${this.get("currency")} to card \${card.substr(card.length - 4, 4)}.\`
   }
 abstractChargeAttributeParser
- cruxFromId
+ cueFromId
  required
  single
 cardNumberParser
@@ -100,7 +100,7 @@ descriptionParser
  atoms keywordAtom
  catchAllAtomType descriptionAtom
 tokenParser
- cruxFromId
+ cueFromId
  atoms keywordAtom tokenAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot

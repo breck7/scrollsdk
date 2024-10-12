@@ -303,7 +303,7 @@ abstractTopLevelParser
 abstractHtmlParser
  extends abstractTopLevelParser
 h1Parser
- crux html.h1
+ cue html.h1
  extends abstractHtmlParser
 abstractColorPropertiesParser
  extends abstractTopLevelParser
@@ -325,7 +325,7 @@ testParticles.formatDo = equal => {
  inScope abstractTopLevelParser
 abstractTopLevelParser
 h1Parser
- crux html.h1
+ cue html.h1
  extends abstractHtmlParser
 abstractHtmlParser
  extends abstractTopLevelParser
@@ -338,7 +338,7 @@ abstractTopLevelParser
 abstractHtmlParser
  extends abstractTopLevelParser
 h1Parser
- crux html.h1
+ cue html.h1
  extends abstractHtmlParser`
   // Act/Assert
   equal(makeParsersProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
@@ -719,7 +719,7 @@ const badParsersProgram = new HandParsersProgram(
  root
  inScope addParser
 addParser
- crux +
+ cue +
  catchAllAtomType intAtom
  atoms keywordAtom
  example This is a bad example.

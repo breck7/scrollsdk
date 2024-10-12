@@ -14,13 +14,13 @@ test swarmParticlesample
    errorParser
     baseParser errorParser
    baseParser
-    crux base
+    cue base
    blockParser
-    crux block
+    cue block
     extends baseParser
     inScope baseParser
    toParser
-    crux to
+    cue to
     extends blockParser
     atoms atomAtom
     tags test

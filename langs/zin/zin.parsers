@@ -15,6 +15,6 @@ alohaParser
  description Say aloha to a person.
  catchAllAtomType nameAtom
  atoms keywordAtom
- crux aloha
+ cue aloha
 catchAllErrorParser
  baseParser errorParser

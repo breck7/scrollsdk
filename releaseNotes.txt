@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+89.0.0 2024-10-12
+=================
+⚠️ BREAKING: `crux`, a "temporary" word that lasted many years, is now "cue"
+
 88.0.0 2024-10-08
 =================
 ⚠️ BREAKING: `getIndex()` is now just `index`
@@ -245,7 +249,7 @@ This is a major release with significant name breaks. All logic is the same but 
 
 72.0.0 2023-3-31
 ================
-🎉 new `cruxPathAsColumnName` method on parser definition nodes
+🎉 new `cuePathAsColumnName` method on parser definition nodes
 ⚠️ BREAKING: downstreamed all SQLite methods to TrueBase, the only place where they were used and made sense.
 ⚠️ BREAKING: `concreteDescendantDefinitions` now recurses. use `concreteInScopeDescendantDefinitions` for old behavior.
 
@@ -583,7 +587,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 53.5.0 2022-07-12
 =================
-🎉 Grammar: add cruxFromId
+🎉 Grammar: add cueFromId
 
 53.4.0 2022-07-12
 =================
@@ -856,7 +860,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🏥 table derived tables from column filtering fix
 ⚠️ removed "dirty" methods in ParticleComponentFramework. Update the lines is a better pattern.
 ⚠️ format() is now evalTemplateString()
-⚠️ in Grammar: match is now "crux" for now
+⚠️ in Grammar: match is now "cue" for now
 ⚠️ getTopNodeTypeIds is now getTopNodeTypeDefinitions
 ⚠️ commandLineApp.prettify is now format
 ⚠️ changed getCssClassNames behavior in PCF

@@ -96,37 +96,37 @@ abstractEventParser
    return \`\${day},\${lastTime},\${this.eventType},\${this.getNotes()}\`
   }
 bowelParser
- crux 💩
+ cue 💩
  pattern 💩
  extends abstractEventParser
  description Bowel movement.
  string eventType bowelMovement
 bladderParser
- crux ✨
+ cue ✨
  pattern ✨
  description Bladder movement.
  extends abstractEventParser
  string eventType bladderMovement
 bottleParser
- crux 🍼
+ cue 🍼
  pattern 🍼
  extends abstractEventParser
  description Feeding.
  string eventType feeding
 sleep4Parser
- crux 😴
+ cue 😴
  pattern 😴
  description Sleep.
  extends abstractEventParser
  string eventType asleep
 awakeParser
- crux 😀
+ cue 😀
  pattern 😀
  description I'm awake!
  extends abstractEventParser
  string eventType awoke
 memoryParser
- crux ❤️
+ cue ❤️
  pattern ❤️
  atoms eventTypeAtom
  catchAllAtomType memoryDescriptionAtom
@@ -138,7 +138,7 @@ memoryParser
    return Utils.removeNonAscii(this.getLine()).trim()
   }
 dayParser
- crux 🌄
+ cue 🌄
  description We survived another day!
  atoms symbolAtom monthIntAtom dayIntAtom yearIntAtom
  javascript

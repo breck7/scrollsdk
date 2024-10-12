@@ -68,7 +68,7 @@ Union Atom Types
 
 Pattern Matching
 ================
-- You might want to have parsers with the same crux but different forms (for example, different atoms). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
+- You might want to have parsers with the same cue but different forms (for example, different atoms). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
 
 Mixins
 ======

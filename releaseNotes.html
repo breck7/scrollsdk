@@ -27,12 +27,15 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">88.0.0 2024-10-08</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">89.0.0 2024-10-12</h1>
 <ul class="breakingChangeParser"><style>
 .breakingChangeParser li::marker {content: "⚠️ ";}
 </style>
 
-<li >BREAKING: <code>getIndex()</code> is now just <code>index</code></li></ul>
+<li >BREAKING: <code>crux</code>, a "temporary" word that lasted many years, is now "cue"</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">88.0.0 2024-10-08</h1>
+<ul class="breakingChangeParser"><li >BREAKING: <code>getIndex()</code> is now just <code>index</code></li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">87.1.0 2024-10-02</h1>
 <ul class="newFeatureParser"><style>
@@ -224,7 +227,7 @@
 <ul class="newFeatureParser"><li >work on <code>sortTemplate</code>.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">72.0.0 2023-3-31</h1>
-<ul class="newFeatureParser"><li >new <code>cruxPathAsColumnName</code> method on parser definition nodes</li></ul>
+<ul class="newFeatureParser"><li >new <code>cuePathAsColumnName</code> method on parser definition nodes</li></ul>
 <ul class="breakingChangeParser"><li >BREAKING: downstreamed all SQLite methods to TrueBase, the only place where they were used and made sense.</li>
 <li >BREAKING: <code>concreteDescendantDefinitions</code> now recurses. use <code>concreteInScopeDescendantDefinitions</code> for old behavior.</li></ul>
 </div>
@@ -508,7 +511,7 @@ const tree = new Particle("hello world")</code>
 <ul class="bugFixParser"><li >Grammar: ship latest version</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">53.5.0 2022-07-12</h1>
-<ul class="newFeatureParser"><li >Grammar: add cruxFromId</li></ul>
+<ul class="newFeatureParser"><li >Grammar: add cueFromId</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">53.4.0 2022-07-12</h1>
 <ul class="newFeatureParser"><li >Core: add param to use toDelimited without escaping <code>tree.toDelimited("|", undefined, false)</code></li></ul>
@@ -736,7 +739,7 @@ const tree = new Particle("hello world")</code>
 <li >table derived tables from column filtering fix</li></ul>
 <ul class="breakingChangeParser"><li >removed "dirty" methods in ParticleComponentFramework. Update the lines is a better pattern.</li>
 <li >format() is now evalTemplateString()</li>
-<li >in Grammar: match is now "crux" for now</li>
+<li >in Grammar: match is now "cue" for now</li>
 <li >getTopNodeTypeIds is now getTopNodeTypeDefinitions</li>
 <li >commandLineApp.prettify is now format</li>
 <li >changed getCssClassNames behavior in PCF</li>

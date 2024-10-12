@@ -8,4 +8,4 @@ commentNode
  extends topLevelNode
  catchAllAtomType commentAtom
  catchAllParser commentNode
- crux comment
+ cue comment

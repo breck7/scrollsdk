@@ -47,14 +47,14 @@ psuedoCode
   description {thisIsALangageToHelpYouDoX}
 
 ## Step 5
-[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cruxFromId`. Most Languages are keyword based. Because the atom `keyword` is currently a reserved language in many programming languages, we currently use the atom `crux` to refer to the same concept. The line `cruxFromId` instructs the Parser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Parsers.
+[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cueFromId`. Most Languages are keyword based. Because the atom `keyword` is currently a reserved language in many programming languages, we currently use the atom `cue` to refer to the same concept. The line `cueFromId` instructs the Parser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Parsers.
 parsersCode
  birthdaysParser
   root
   description A language for storing your friend's birthdays.
  friendParser
   description Store information about a friend.
-  cruxFromId
+  cueFromId
 
 ## Step 6
 [] Now let's add an `inScope` line to the root Parser so that the friend Parser is in scope:
@@ -65,7 +65,7 @@ parsersCode
   inScope friendParser
  friendParser
   description Store information about a friend.
-  cruxFromId
+  cueFromId
 
 ## Step 7
 [] Now the following is a valid program in your language:
@@ -80,7 +80,7 @@ psuedoCode
  ...
  friendParser
   description Store information about a friend.
-  cruxFromId
+  cueFromId
   inScope nameParser
  nameParser
 

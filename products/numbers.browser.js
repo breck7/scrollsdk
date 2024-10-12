@@ -62,23 +62,23 @@ abstractArithmeticReducerParser
  catchAllAtomType numbersAtom
 
 modParser
- crux %
+ cue %
  extends abstractArithmeticReducerParser
  string operator %
 timesParser
- crux *
+ cue *
  extends abstractArithmeticReducerParser
  string operator *
 addParser
- crux +
+ cue +
  extends abstractArithmeticReducerParser
  string operator +
 substractParser
- crux -
+ cue -
  extends abstractArithmeticReducerParser
  string operator -
 divideParser
- crux /
+ cue /
  extends abstractArithmeticReducerParser
  string operator /
 
@@ -92,7 +92,7 @@ commentContentParser
  catchAllParser commentContentParser
 
 hashBangParser
- crux #!
+ cue #!
  atoms hashBangKeywordAtom
  catchAllAtomType commentAtom
 

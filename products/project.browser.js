@@ -154,13 +154,13 @@ abstractTermParser
  atoms termAtom
 absoluteParser
  extends abstractTermParser
- crux absolute
+ cue absolute
 externalParser
  extends abstractTermParser
- crux external
+ cue external
 relativeParser
  extends abstractTermParser
- crux relative
+ cue relative
 errorParser
  baseParser errorParser
 fileParser
@@ -188,7 +188,7 @@ fileParser
    return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
  atoms fileConstantAtom
- crux file`)
+ cue file`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

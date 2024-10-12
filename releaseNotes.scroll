@@ -20,6 +20,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 90.1.0 2024-10-12
+🎉 added `parserIdIndex`
+🎉 `usesParser` now recurses
+
 📦 90.0.0 2024-10-12
 🎉 added `cue` setter
 🎉 added `usesParser` method

@@ -139,8 +139,19 @@ class ParserBackedParticle extends Particle {
     return new ParserDefinedError(this, message)
   }
   usesParser(parserId) {
-    // returns true if the provided parser ID appears anywhere in a particles subparticles
-    return !!this.particleIndex[parserId]
+    return !!this.parserIdIndex[parserId]
+  }
+  get parserIdIndex() {
+    if (this._parserIdIndex) return this._parserIdIndex
+    const index = {}
+    this._parserIdIndex = index
+    for (let particle of this.getTopDownArrayIterator()) {
+      Array.from(particle.definition._getAncestorSet()).forEach(id => {
+        if (!index[id]) index[id] = []
+        index[id].push(particle)
+      })
+    }
+    return index
   }
   get particleIndex() {
     // StringMap<int> {cue: index}

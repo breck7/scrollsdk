@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+90.1.0 2024-10-12
+=================
+🎉 added `parserIdIndex`
+🎉 `usesParser` now recurses
+
 90.0.0 2024-10-12
 =================
 🎉 added `cue` setter

@@ -299,6 +299,11 @@ testParticles.exponentialNotation = equal => {
   equal(makeNumbersProgram(`+ 2e3`).particleAt(0).getErrors().length, 0)
 }
 
+testParticles.usesParser = equal => {
+  // Act/Assert
+  equal(makeNumbersProgram(`+ 2\n - 2`).usesParser("substractParser"), true)
+}
+
 testParticles.format = equal => {
   // Arrange
   const normalCode = `someLangParser

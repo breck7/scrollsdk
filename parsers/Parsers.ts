@@ -173,8 +173,24 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   usesParser(parserId: string) {
-    // returns true if the provided parser ID appears anywhere in a particles subparticles
-    return !!this.particleIndex[parserId]
+    return !!this.parserIdIndex[parserId]
+  }
+
+  private _parserIdIndex: {
+    [parserId: string]: ParserBackedParticle[]
+  }
+  get parserIdIndex() {
+    if (this._parserIdIndex)
+      return this._parserIdIndex
+    const index = {}
+    this._parserIdIndex = index
+    for (let particle of this.getTopDownArrayIterator()) {
+      Array.from(particle.definition._getAncestorSet()).forEach(id => {
+        if (!index[id]) index[id] = []
+        index[id].push(particle)
+      })
+    }
+    return index
   }
 
   private _particleIndex: {

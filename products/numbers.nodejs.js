@@ -9,15 +9,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
-          "%": modParser,
-          "*": timesParser,
-          "+": addParser,
-          "-": substractParser,
-          "/": divideParser,
-          comment: commentParser,
-          "#!": hashBangParser
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser, "#!": hashBangParser }),
         undefined
       )
     }
@@ -116,7 +108,7 @@ errorParser
     createParserCombinator() {
       return new Particle.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
         undefined
       )
     }

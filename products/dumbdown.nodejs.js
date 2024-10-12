@@ -15,7 +15,7 @@
     createParserCombinator() {
       return new Particle.ParserCombinator(
         quickParagraphParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
           link: linkParser,
           paragraph: paragraphParser,
           code: codeParser,
@@ -211,7 +211,7 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), { "-": dashParser }), undefined)
+      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 

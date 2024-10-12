@@ -257,6 +257,10 @@ testParticles.atomTypeParticles = equal => {
 
   const a = (<any>someJibberishProgram.particleAt(1)).definition
 
+  equal(someJibberishProgram.usesParser("fooParser"), true)
+  equal(someJibberishProgram.usesParser("abstractTopLevelParser"), true)
+  equal(someJibberishProgram.usesParser("foobar"), false)
+
   // Assert
   equal(
     someJibberishProgram.toAtomTypeParticles(),

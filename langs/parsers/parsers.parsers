@@ -401,7 +401,7 @@ uniqueLineParser
  extends abstractValidationRuleParser
  tags analyzePhase
 
-uniqueFirstAtomParser
+uniqueCueParser
  description Assert unique first atoms. For pattern parsers.
  // For catch all parsers or pattern particles, use this to indicate the 
  extends abstractValidationRuleParser

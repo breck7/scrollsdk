@@ -7,7 +7,7 @@ interface AbstractRuntimeProgramConstructorInterface {
   new (code?: string): ParserBackedParticle
 }
 
-declare type parserInfo = { firstAtomMap: { [firstAtom: string]: parserDefinitionParser }; regexTests: particlesTypes.regexTestDef[] }
+declare type parserInfo = { cueMap: { [cue: string]: parserDefinitionParser }; regexTests: particlesTypes.regexTestDef[] }
 
 // Compiled language parsers will include these files:
 const GlobalNamespaceAdditions: particlesTypes.stringMap = {
@@ -106,7 +106,7 @@ enum ParsersConstants {
   listDelimiter = "listDelimiter",
   contentKey = "contentKey",
   subparticlesKey = "subparticlesKey",
-  uniqueFirstAtom = "uniqueFirstAtom",
+  uniqueCue = "uniqueCue",
   catchAllAtomType = "catchAllAtomType",
   atomParser = "atomParser",
   catchAllParser = "catchAllParser",
@@ -165,11 +165,16 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   getAutocompleteResults(partialAtom: string, atomIndex: particlesTypes.positiveInt) {
-    return atomIndex === 0 ? this._getAutocompleteResultsForFirstAtom(partialAtom) : this._getAutocompleteResultsForAtom(partialAtom, atomIndex)
+    return atomIndex === 0 ? this._getAutocompleteResultsForCue(partialAtom) : this._getAutocompleteResultsForAtom(partialAtom, atomIndex)
   }
 
   makeError(message: string) {
     return new ParserDefinedError(this, message)
+  }
+
+  usesParser(parserId: string) {
+    // returns true if the provided parser ID appears anywhere in a particles subparticles
+    return !!this.particleIndex[parserId]
   }
 
   private _particleIndex: {
@@ -177,20 +182,20 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   protected get particleIndex() {
-    // StringMap<int> {firstAtom: index}
-    // When there are multiple tails with the same firstAtom, _index stores the last content.
+    // StringMap<int> {cue: index}
+    // When there are multiple tails with the same cue, index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
     return this._particleIndex || this._makeParticleIndex()
   }
 
-  _clearIndex() {
+  _clearCueIndex() {
     delete this._particleIndex
-    return super._clearIndex()
+    return super._clearCueIndex()
   }
 
-  protected _makeIndex(startAt = 0) {
+  protected _makeCueIndex(startAt = 0) {
     if (this._particleIndex) this._makeParticleIndex(startAt)
-    return super._makeIndex(startAt)
+    return super._makeCueIndex(startAt)
   }
 
   protected _makeParticleIndex(startAt = 0) {
@@ -219,15 +224,15 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   _getErrorParserErrors() {
-    return [this.firstAtom ? new UnknownParserError(this) : new BlankLineError(this)]
+    return [this.cue ? new UnknownParserError(this) : new BlankLineError(this)]
   }
 
   _getBlobParserCatchAllParser() {
     return BlobParser
   }
 
-  private _getAutocompleteResultsForFirstAtom(partialAtom: string) {
-    const keywordMap = this.definition.firstAtomMapWithDefinitions
+  private _getAutocompleteResultsForCue(partialAtom: string) {
+    const keywordMap = this.definition.cueMapWithDefinitions
     let keywords: string[] = Object.keys(keywordMap)
 
     if (partialAtom) keywords = keywords.filter(keyword => keyword.includes(partialAtom))
@@ -277,7 +282,7 @@ abstract class ParserBackedParticle extends Particle {
 
   protected get requiredParticleErrors() {
     const errors: particlesTypes.ParticleError[] = []
-    Object.values(this.definition.firstAtomMapWithDefinitions).forEach(def => {
+    Object.values(this.definition.cueMapWithDefinitions).forEach(def => {
       if (def.isRequired() && !this.particleIndex[def.id]) errors.push(new MissingRequiredParserError(this, def.id))
     })
     return errors
@@ -344,7 +349,7 @@ abstract class ParserBackedParticle extends Particle {
       new Set(
         this.getAllErrors()
           .filter(err => err instanceof UnknownParserError)
-          .map(err => err.getParticle().firstAtom)
+          .map(err => err.getParticle().cue)
       )
     )
   }
@@ -614,7 +619,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   protected get isArrayElement() {
-    return this.definition._hasFromExtended(ParsersConstants.uniqueFirstAtom) ? false : !this.definition.isSingle
+    return this.definition._hasFromExtended(ParsersConstants.uniqueCue) ? false : !this.definition.isSingle
   }
 
   get list() {
@@ -632,7 +637,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get typedTuple() {
-    const key = this.firstAtom
+    const key = this.cue
     if (this.subparticlesAreTextBlob) return [key, this.subparticlesToString()]
 
     const { typedContent, contentKey, subparticlesKey } = this
@@ -1173,7 +1178,7 @@ abstract class AbstractParticleError implements particlesTypes.ParticleError {
       line: this.lineNumber,
       atom: this.atomIndex,
       suggestion: this.suggestionMessage,
-      path: this.getParticle().getFirstAtomPath(),
+      path: this.getParticle().getCuePath(),
       message: this.message
     }
   }
@@ -1225,15 +1230,15 @@ class UnknownParserError extends AbstractParticleError {
   get message(): string {
     const particle = this.getParticle()
     const parentParticle = particle.parent
-    const options = parentParticle._getParser().getFirstAtomOptions()
-    return super.message + ` Invalid parser "${particle.firstAtom}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
+    const options = parentParticle._getParser().getCueOptions()
+    return super.message + ` Invalid parser "${particle.cue}". Valid parsers are: ${Utils._listToEnglishText(options, 7)}.`
   }
 
   protected get atomSuggestion() {
     const particle = this.getParticle()
     const parentParticle = particle.parent
     return Utils.didYouMean(
-      particle.firstAtom,
+      particle.cue,
       (<ParserBackedParticle>parentParticle).getAutocompleteResults("", 0).map(option => option.text)
     )
   }
@@ -1242,7 +1247,7 @@ class UnknownParserError extends AbstractParticleError {
     const suggestion = this.atomSuggestion
     const particle = this.getParticle()
 
-    if (suggestion) return `Change "${particle.firstAtom}" to "${suggestion}"`
+    if (suggestion) return `Change "${particle.cue}" to "${suggestion}"`
 
     return ""
   }
@@ -1287,7 +1292,7 @@ class BlankLineError extends UnknownParserError {
 }
 
 class MissingRequiredParserError extends AbstractParticleError {
-  constructor(particle: ParserBackedParticle, missingParserId: particlesTypes.firstAtom) {
+  constructor(particle: ParserBackedParticle, missingParserId: particlesTypes.cue) {
     super(particle)
     this._missingParserId = missingParserId
   }
@@ -1301,7 +1306,7 @@ class MissingRequiredParserError extends AbstractParticleError {
 
 class ParserUsedMultipleTimesError extends AbstractParticleError {
   get message(): string {
-    return super.message + ` Multiple "${this.getParticle().firstAtom}" found.`
+    return super.message + ` Multiple "${this.getParticle().cue}" found.`
   }
 
   get suggestionMessage() {
@@ -1688,7 +1693,7 @@ class ParsersCompilerParser extends Particle {
       ParsersConstantsCompiler.openSubparticles,
       ParsersConstantsCompiler.closeSubparticles
     ]
-    const map: particlesTypes.firstAtomToParserMap = {}
+    const map: particlesTypes.cueToParserMap = {}
     types.forEach(type => {
       map[type] = Particle
     })
@@ -1752,7 +1757,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.listDelimiter,
       ParsersConstants.contentKey,
       ParsersConstants.subparticlesKey,
-      ParsersConstants.uniqueFirstAtom,
+      ParsersConstants.uniqueCue,
       ParsersConstants.uniqueLine,
       ParsersConstants.pattern,
       ParsersConstants.baseParser,
@@ -1766,7 +1771,7 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.comment
     ]
 
-    const map: particlesTypes.firstAtomToParserMap = {}
+    const map: particlesTypes.cueToParserMap = {}
     types.forEach(type => {
       map[type] = Particle
     })
@@ -1782,13 +1787,13 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
   toTypeScriptInterface(used = new Set<string>()) {
     let subparticlesInterfaces: string[] = []
     let properties: string[] = []
-    const inScope = this.firstAtomMapWithDefinitions
+    const inScope = this.cueMapWithDefinitions
     const thisId = this.id
 
     used.add(thisId)
     Object.keys(inScope).forEach(key => {
       const def = inScope[key]
-      const map = def.firstAtomMapWithDefinitions
+      const map = def.cueMapWithDefinitions
       const id = def.id
       const optionalTag = def.isRequired() ? "" : "?"
       const escapedKey = key.match(/\?/) ? `"${key}"` : key
@@ -1861,9 +1866,9 @@ ${properties.join("\n")}
     return this.get(ParsersConstants.pattern)
   }
 
-  get firstAtomEnumOptions() {
-    const firstAtomDef = this._getMyAtomTypeDefs()[0]
-    return firstAtomDef ? firstAtomDef._getEnumOptions() : undefined
+  get cueEnumOptions() {
+    const cueDef = this._getMyAtomTypeDefs()[0]
+    return cueDef ? cueDef._getEnumOptions() : undefined
   }
 
   get languageDefinitionProgram(): HandParsersProgram {
@@ -1875,16 +1880,16 @@ ${properties.join("\n")}
     return hasJsCode ? this.getParticle(ParsersConstants.javascript).subparticlesToString() : ""
   }
 
-  private _cache_firstAtomToParticleDefMap: { [firstAtom: string]: parserDefinitionParser }
+  private _cache_cueToParticleDefMap: { [cue: string]: parserDefinitionParser }
 
-  get firstAtomMapWithDefinitions() {
-    if (!this._cache_firstAtomToParticleDefMap) this._cache_firstAtomToParticleDefMap = this._createParserInfo(this._getInScopeParserIds()).firstAtomMap
-    return this._cache_firstAtomToParticleDefMap
+  get cueMapWithDefinitions() {
+    if (!this._cache_cueToParticleDefMap) this._cache_cueToParticleDefMap = this._createParserInfo(this._getInScopeParserIds()).cueMap
+    return this._cache_cueToParticleDefMap
   }
 
   // todo: remove
-  get runTimeFirstAtomsInScope(): particlesTypes.parserId[] {
-    return this._getParser().getFirstAtomOptions()
+  get runTimeCuesInScope(): particlesTypes.parserId[] {
+    return this._getParser().getCueOptions()
   }
 
   private _getMyAtomTypeDefs() {
@@ -1915,7 +1920,7 @@ ${properties.join("\n")}
 
   protected _createParserInfo(parserIdsInScope: particlesTypes.parserId[]): parserInfo {
     const result: parserInfo = {
-      firstAtomMap: {},
+      cueMap: {},
       regexTests: []
     }
 
@@ -1931,18 +1936,18 @@ ${properties.join("\n")}
         const def = allProgramParserDefinitionsMap[parserId]
         const regex = def.regexMatch
         const cue = def.cueIfAny
-        const enumOptions = def.firstAtomEnumOptions
+        const enumOptions = def.cueEnumOptions
         if (regex) result.regexTests.push({ regex: regex, parser: def.parserIdFromDefinition })
-        else if (cue) result.firstAtomMap[cue] = def
+        else if (cue) result.cueMap[cue] = def
         else if (enumOptions) {
-          enumOptions.forEach(option => (result.firstAtomMap[option] = def))
+          enumOptions.forEach(option => (result.cueMap[option] = def))
         }
       })
     return result
   }
 
   get topParserDefinitions(): parserDefinitionParser[] {
-    const arr = Object.values(this.firstAtomMapWithDefinitions)
+    const arr = Object.values(this.cueMapWithDefinitions)
     arr.sort(Utils.makeSortByFn((definition: parserDefinitionParser) => definition.popularity))
     arr.reverse()
     return arr
@@ -2024,18 +2029,18 @@ ${properties.join("\n")}
       // todo: do we need this?
       return "createParserCombinator() { return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())}"
     const parserInfo = this._createParserInfo(this._getMyInScopeParserIds())
-    const myFirstAtomMap = parserInfo.firstAtomMap
+    const myCueMap = parserInfo.cueMap
     const regexRules = parserInfo.regexTests
 
     // todo: use constants in first atom maps?
     // todo: cache the super extending?
-    const firstAtoms = Object.keys(myFirstAtomMap)
-    const hasFirstAtoms = firstAtoms.length
+    const cues = Object.keys(myCueMap)
+    const hasCues = cues.length
     const catchAllParser = this.catchAllParserToJavascript
-    if (!hasFirstAtoms && !catchAllParser && !regexRules.length) return ""
+    if (!hasCues && !catchAllParser && !regexRules.length) return ""
 
-    const firstAtomsStr = hasFirstAtoms
-      ? `Object.assign(Object.assign({}, super.createParserCombinator()._getFirstAtomMapAsObject()), {` + firstAtoms.map(firstAtom => `"${firstAtom}" : ${myFirstAtomMap[firstAtom].parserIdFromDefinition}`).join(",\n") + "})"
+    const cuesStr = hasCues
+      ? `Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {` + cues.map(cue => `"${cue}" : ${myCueMap[cue].parserIdFromDefinition}`).join(",\n") + "})"
       : "undefined"
 
     const regexStr = regexRules.length
@@ -2051,7 +2056,7 @@ ${properties.join("\n")}
     const scopedParserJavascript = this.myScopedParserDefinitions.map(def => def.asJavascriptClass).join("\n\n")
 
     return `createParserCombinator() {${scopedParserJavascript}
-  return new Particle.ParserCombinator(${catchAllStr}, ${firstAtomsStr}, ${regexStr})
+  return new Particle.ParserCombinator(${catchAllStr}, ${cuesStr}, ${regexStr})
   }`
   }
 
@@ -2105,9 +2110,9 @@ ${properties.join("\n")}
     return this.atomParser.lineHints
   }
 
-  isOrExtendsAParserInScope(firstAtomsInScope: string[]): boolean {
+  isOrExtendsAParserInScope(cuesInScope: string[]): boolean {
     const chain = this._getParserInheritanceSet()
-    return firstAtomsInScope.some(firstAtom => chain.has(firstAtom))
+    return cuesInScope.some(cue => chain.has(cue))
   }
 
   isTerminalParser() {
@@ -2119,7 +2124,7 @@ ${properties.join("\n")}
     if (regexMatch) return `'${regexMatch}'`
     const cueMatch = this.cueIfAny
     if (cueMatch) return `'^ *${Utils.escapeRegExp(cueMatch)}(?: |$)'`
-    const enumOptions = this.firstAtomEnumOptions
+    const enumOptions = this.cueEnumOptions
     if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
   }
 
@@ -2130,11 +2135,11 @@ ${properties.join("\n")}
     const atomParser = this.atomParser
     const requiredAtomTypeIds = atomParser.getRequiredAtomTypeIds()
     const catchAllAtomTypeId = atomParser.catchAllAtomTypeId
-    const firstAtomTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
-    const firstAtomPaint = (firstAtomTypeDef ? firstAtomTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
+    const cueTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
+    const cuePaint = (cueTypeDef ? cueTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
     const topHalf = ` '${this.parserIdFromDefinition}':
   - match: ${this.sublimeMatchLine}
-    scope: ${firstAtomPaint}`
+    scope: ${cuePaint}`
     if (catchAllAtomTypeId) requiredAtomTypeIds.push(catchAllAtomTypeId)
     if (!requiredAtomTypeIds.length) return topHalf
     const captures = requiredAtomTypeIds
@@ -2759,7 +2764,7 @@ class UnknownParsersProgram extends Particle {
  ${ParsersConstants.root}`)
 
     // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-    const rootParticleNames = this.getFirstAtoms()
+    const rootParticleNames = this.getCues()
       .filter(identity => identity)
       .map(atom => HandParsersProgram.makeParserId(atom))
     rootParticle
@@ -2775,30 +2780,30 @@ class UnknownParsersProgram extends Particle {
   private _renameIntegerKeywords(clone: UnknownParsersProgram) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
-      const firstAtomIsAnInteger = !!particle.firstAtom.match(/^\d+$/)
-      const parentFirstAtom = particle.parent.firstAtom
-      if (firstAtomIsAnInteger && parentFirstAtom) particle.setFirstAtom(HandParsersProgram.makeParserId(parentFirstAtom + UnknownParsersProgram._subparticleSuffix))
+      const cueIsAnInteger = !!particle.cue.match(/^\d+$/)
+      const parentCue = particle.parent.cue
+      if (cueIsAnInteger && parentCue) particle.setCue(HandParsersProgram.makeParserId(parentCue + UnknownParsersProgram._subparticleSuffix))
     }
   }
 
   private _getKeywordMaps(clone: UnknownParsersProgram) {
-    const keywordsToChildKeywords: { [firstAtom: string]: particlesTypes.stringMap } = {}
-    const keywordsToParticleInstances: { [firstAtom: string]: Particle[] } = {}
+    const keywordsToChildKeywords: { [cue: string]: particlesTypes.stringMap } = {}
+    const keywordsToParticleInstances: { [cue: string]: Particle[] } = {}
     for (let particle of clone.getTopDownArrayIterator()) {
-      const firstAtom = particle.firstAtom
-      if (!keywordsToChildKeywords[firstAtom]) keywordsToChildKeywords[firstAtom] = {}
-      if (!keywordsToParticleInstances[firstAtom]) keywordsToParticleInstances[firstAtom] = []
-      keywordsToParticleInstances[firstAtom].push(particle)
-      particle.forEach((subparticle: Particle) => (keywordsToChildKeywords[firstAtom][subparticle.firstAtom] = true))
+      const cue = particle.cue
+      if (!keywordsToChildKeywords[cue]) keywordsToChildKeywords[cue] = {}
+      if (!keywordsToParticleInstances[cue]) keywordsToParticleInstances[cue] = []
+      keywordsToParticleInstances[cue].push(particle)
+      particle.forEach((subparticle: Particle) => (keywordsToChildKeywords[cue][subparticle.cue] = true))
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
   }
 
-  private _inferParserDef(firstAtom: string, globalAtomTypeMap: Map<string, string>, subparticleFirstAtoms: string[], instances: Particle[]) {
+  private _inferParserDef(cue: string, globalAtomTypeMap: Map<string, string>, subparticleCues: string[], instances: Particle[]) {
     const edgeSymbol = this.edgeSymbol
-    const parserId = HandParsersProgram.makeParserId(firstAtom)
+    const parserId = HandParsersProgram.makeParserId(cue)
     const particleDefParticle = <Particle>new Particle(parserId).particleAt(0)
-    const subparticleParserIds = subparticleFirstAtoms.map(atom => HandParsersProgram.makeParserId(atom))
+    const subparticleParserIds = subparticleCues.map(atom => HandParsersProgram.makeParserId(atom))
     if (subparticleParserIds.length) particleDefParticle.touchParticle(ParsersConstants.inScope).setAtomsFrom(1, subparticleParserIds)
 
     const atomsForAllInstances = instances
@@ -2812,7 +2817,7 @@ class UnknownParsersProgram extends Particle {
     let atomTypeIds = []
     for (let atomIndex = 0; atomIndex < maxAtomsOnLine; atomIndex++) {
       const atomType = this._getBestAtomType(
-        firstAtom,
+        cue,
         instances.length,
         maxAtomsOnLine,
         atomsForAllInstances.map(atoms => atoms[atomIndex])
@@ -2829,8 +2834,8 @@ class UnknownParsersProgram extends Particle {
       }
     }
 
-    const needsCueProperty = !firstAtom.endsWith(UnknownParsersProgram._subparticleSuffix + ParsersConstants.parserSuffix) // todo: cleanup
-    if (needsCueProperty) particleDefParticle.set(ParsersConstants.cue, firstAtom)
+    const needsCueProperty = !cue.endsWith(UnknownParsersProgram._subparticleSuffix + ParsersConstants.parserSuffix) // todo: cleanup
+    if (needsCueProperty) particleDefParticle.set(ParsersConstants.cue, cue)
 
     if (catchAllAtomType) particleDefParticle.set(ParsersConstants.catchAllAtomType, catchAllAtomType)
 
@@ -2850,7 +2855,7 @@ class UnknownParsersProgram extends Particle {
   // ${ParsersConstants.root}`)
 
   //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-  //    const rootParticleNames = this.getFirstAtoms().map(atom => HandParsersProgram.makeParserId(atom))
+  //    const rootParticleNames = this.getCues().map(atom => HandParsersProgram.makeParserId(atom))
   //    rootParticle
   //      .particleAt(0)
   //      .touchParticle(ParsersConstants.inScope)
@@ -2869,7 +2874,7 @@ class UnknownParsersProgram extends Particle {
     globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
     const parserDefs = Object.keys(keywordsToChildKeywords)
       .filter(identity => identity)
-      .map(firstAtom => this._inferParserDef(firstAtom, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[firstAtom]), keywordsToParticleInstances[firstAtom]))
+      .map(cue => this._inferParserDef(cue, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[cue]), keywordsToParticleInstances[cue]))
 
     const atomTypeDefs: string[] = []
     globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))
@@ -2888,7 +2893,7 @@ class UnknownParsersProgram extends Particle {
     return program.format().toString()
   }
 
-  private _getBestAtomType(firstAtom: string, instanceCount: particlesTypes.int, maxAtomsOnLine: particlesTypes.int, allValues: any[]): { atomTypeId: string; atomTypeDefinition?: string } {
+  private _getBestAtomType(cue: string, instanceCount: particlesTypes.int, maxAtomsOnLine: particlesTypes.int, allValues: any[]): { atomTypeId: string; atomTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const edgeSymbol = this.edgeSymbol
     const values = Array.from(asSet).filter(identity => identity)
@@ -2919,8 +2924,8 @@ class UnknownParsersProgram extends Particle {
     const enumLimit = 30
     if (instanceCount > 1 && maxAtomsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
-        atomTypeId: HandParsersProgram.makeAtomTypeId(firstAtom),
-        atomTypeDefinition: `${HandParsersProgram.makeAtomTypeId(firstAtom)}
+        atomTypeId: HandParsersProgram.makeAtomTypeId(cue),
+        atomTypeDefinition: `${HandParsersProgram.makeAtomTypeId(cue)}
  enum ${values.join(edgeSymbol)}`
       }
 

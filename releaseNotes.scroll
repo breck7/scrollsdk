@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 91.0.0 2024-10-21
+🎉 add support for gracefully handling importing non-existant files
+
 📦 90.1.0 2024-10-12
 🎉 added `parserIdIndex`
 🎉 `usesParser` now recurses

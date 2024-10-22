@@ -25,6 +25,18 @@ testParticles.inMemory = equal => {
   equal(tfs.dirname("/"), "/")
   equal(tfs.assembleFile("/main").afterImportPass, "world\nciao")
   equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
+  equal(tfs.assembleFile("/main").exists, true)
+}
+
+testParticles.nonExistant = equal => {
+  // Arrange/Act/Assert
+  const files = {
+    "/main": "import env"
+  }
+  const tfs = new ParticleFileSystem(files)
+  const result = tfs.assembleFile("/main")
+  equal(result.afterImportPass, "")
+  equal(result.exists, false)
 }
 
 testParticles.quickImports = equal => {

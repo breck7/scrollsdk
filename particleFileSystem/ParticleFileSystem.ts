@@ -38,7 +38,7 @@ interface Storage {
   join(...absolutePath: string[]): string
 }
 
-const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
+const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
 // A regex to check if a multiline string has an import line.
 const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
@@ -49,15 +49,13 @@ class DiskWriter implements Storage {
     const { fileCache } = this
     if (!fileCache[absolutePath]) {
       const exists = fs.existsSync(absolutePath)
-      if (exists)
-        fileCache[absolutePath] = { absolutePath, exists: true, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
-      else
-        fileCache[absolutePath] = { absolutePath, exists: false, content: "", stats: {mtimeMs : 0, ctimeMs: 0} }
+      if (exists) fileCache[absolutePath] = { absolutePath, exists: true, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
+      else fileCache[absolutePath] = { absolutePath, exists: false, content: "", stats: { mtimeMs: 0, ctimeMs: 0 } }
     }
     return fileCache[absolutePath]
   }
 
-  exists(absolutePath: string){
+  exists(absolutePath: string) {
     return this._read(absolutePath).exists
   }
 
@@ -105,7 +103,7 @@ class MemoryWriter implements Storage {
     return value
   }
 
-  exists(absolutePath: string){
+  exists(absolutePath: string) {
     return this.inMemoryFiles[absolutePath] !== undefined
   }
 
@@ -260,7 +258,7 @@ class ParticleFileSystem implements Storage {
   }
 
   private _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
-    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const asOneFile = filePaths
       .map(filePath => {

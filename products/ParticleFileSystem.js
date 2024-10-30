@@ -7,7 +7,7 @@ const { HandParsersProgram } = require("../products/Parsers.js")
 const parsersParser = require("../products/parsers.nodejs.js")
 const { posix } = require("../products/Path.js")
 const PARSERS_EXTENSION = ".parsers"
-const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
+const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
 // A regex to check if a multiline string has an import line.
 const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
@@ -182,7 +182,7 @@ class ParticleFileSystem {
     return _parsersExpandersCache[absoluteFilePath]
   }
   _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
-    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const asOneFile = filePaths
       .map(filePath => {

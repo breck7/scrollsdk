@@ -14,6 +14,7 @@ const PARSERS_EXTENSION = ".parsers"
 interface OpenedFile {
   absolutePath: particlesTypes.filepath
   content: string
+  exists: boolean
   stats: any // https://nodejs.org/api/fs.html#class-fsstats
 }
 
@@ -23,10 +24,12 @@ interface AssembledFile {
   isImportOnly: boolean
   parser?: particlesTypes.particle
   filepathsWithParserDefinitions: string[]
+  exists: boolean
 }
 
 interface Storage {
   read(absolutePath: string): string
+  exists(absolutePath: string): boolean
   list(absolutePath: string): string[]
   write(absolutePath: string, content: string): void
   getMTime(absolutePath: string): number
@@ -35,7 +38,7 @@ interface Storage {
   join(...absolutePath: string[]): string
 }
 
-const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
+const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
 // A regex to check if a multiline string has an import line.
 const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
@@ -44,8 +47,16 @@ class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
   _read(absolutePath: particlesTypes.filepath) {
     const { fileCache } = this
-    if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
+    if (!fileCache[absolutePath]) {
+      const exists = fs.existsSync(absolutePath)
+      if (exists) fileCache[absolutePath] = { absolutePath, exists: true, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
+      else fileCache[absolutePath] = { absolutePath, exists: false, content: "", stats: { mtimeMs: 0, ctimeMs: 0 } }
+    }
     return fileCache[absolutePath]
+  }
+
+  exists(absolutePath: string) {
+    return this._read(absolutePath).exists
   }
 
   read(absolutePath: string) {
@@ -86,8 +97,14 @@ class MemoryWriter implements Storage {
 
   read(absolutePath: particlesTypes.filepath) {
     const value = this.inMemoryFiles[absolutePath]
-    if (value === undefined) throw new Error(`File '${absolutePath}' not found.`)
+    if (value === undefined) {
+      return ""
+    }
     return value
+  }
+
+  exists(absolutePath: string) {
+    return this.inMemoryFiles[absolutePath] !== undefined
   }
 
   write(absolutePath: particlesTypes.filepath, content: string) {
@@ -123,6 +140,10 @@ class ParticleFileSystem implements Storage {
 
   read(absolutePath: particlesTypes.filepath) {
     return this._storage.read(absolutePath)
+  }
+
+  exists(absolutePath: particlesTypes.filepath) {
+    return this._storage.exists(absolutePath)
   }
 
   write(absolutePath: particlesTypes.filepath, content: string) {
@@ -168,6 +189,7 @@ class ParticleFileSystem implements Storage {
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
 
     let code = this.read(absoluteFilePath)
+    const exists = this.exists(absoluteFilePath)
 
     const isImportOnly = importOnlyRegex.test(code)
 
@@ -189,7 +211,8 @@ class ParticleFileSystem implements Storage {
         afterImportPass: code,
         isImportOnly,
         importFilePaths: [],
-        filepathsWithParserDefinitions
+        filepathsWithParserDefinitions,
+        exists
       }
 
     let importFilePaths: string[] = []
@@ -219,6 +242,7 @@ class ParticleFileSystem implements Storage {
       importFilePaths,
       isImportOnly,
       afterImportPass: combinedLines,
+      exists: !importFilePaths.some(file => !this.exists(file)),
       filepathsWithParserDefinitions: importFilePaths.filter((filename: string) => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
 
@@ -234,7 +258,7 @@ class ParticleFileSystem implements Storage {
   }
 
   private _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
-    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const asOneFile = filePaths
       .map(filePath => {

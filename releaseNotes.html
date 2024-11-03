@@ -27,12 +27,22 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">90.1.0 2024-10-12</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">91.0.1 2024-10-30</h1>
+<ul class="bugFixParser"><style>
+.bugFixParser li::marker {content: "🏥 ";}
+</style>
+
+<li >fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">91.0.0 2024-10-21</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
 </style>
 
-<li >added <code>parserIdIndex</code></li>
+<li >add support for gracefully handling importing non-existant files</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">90.1.0 2024-10-12</h1>
+<ul class="newFeatureParser"><li >added <code>parserIdIndex</code></li>
 <li ><code>usesParser</code> now recurses</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">90.0.0 2024-10-12</h1>
@@ -85,11 +95,7 @@
 <ul class="newFeatureParser"><li >Add underlying support for quickImports in Scroll/Parsers.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">85.0.0 2024-9-1</h1>
-<ul class="bugFixParser"><style>
-.bugFixParser li::marker {content: "🏥 ";}
-</style>
-
-<li >renamed a few remaining uses of "ScrollNotation" to Particles.</li></ul>
+<ul class="bugFixParser"><li >renamed a few remaining uses of "ScrollNotation" to Particles.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">84.0.0 2024-8-29</h1>
 <ul class="breakingChangeParser"><li >BREAKING: This is a MAJOR rewrite of the ScrollSDK.</li>

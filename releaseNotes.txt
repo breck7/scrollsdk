@@ -7,6 +7,14 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+91.0.1 2024-10-30
+=================
+🏥 fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes
+
+91.0.0 2024-10-21
+=================
+🎉 add support for gracefully handling importing non-existant files
+
 90.1.0 2024-10-12
 =================
 🎉 added `parserIdIndex`

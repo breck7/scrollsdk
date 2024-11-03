@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+93.0.0 2024-11-02
+=================
+🎉 import now replaced "import" particles with "imported" particles which includes subparticle on results
+⚠️ BREAKING: if using import, you will now get imported particles inserted
+
 92.0.0 2024-11-02
 =================
 🎉 changed import behavior for better source maps

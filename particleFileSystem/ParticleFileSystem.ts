@@ -226,14 +226,14 @@ class ParticleFileSystem implements Storage {
         const expandedFile = this._assembleFile(absoluteImportFilePath)
         importFilePaths.push(absoluteImportFilePath)
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
-
-        replacements.push({ lineNumber, code: expandedFile.afterImportPass })
+        const exists = this.exists(absoluteImportFilePath)
+        replacements.push({ lineNumber, code: expandedFile.afterImportPass, relativeFilePath, absoluteImportFilePath, exists })
       }
     })
 
     replacements.forEach(replacement => {
-      const { lineNumber, code } = replacement
-      lines[lineNumber] = "// imported " + lines[lineNumber] + "\n" + code
+      const { lineNumber, code, relativeFilePath, exists } = replacement
+      lines[lineNumber] = `imported ${relativeFilePath}\n exists ${exists}\n` + code
     })
 
     const combinedLines = lines.join("\n")

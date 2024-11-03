@@ -20,6 +20,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 93.0.0 2024-11-02
+🎉 import now replaced "import" particles with "imported" particles which includes subparticle on results
+⚠️ BREAKING: if using import, you will now get imported particles inserted
+
 📦 92.0.0 2024-11-02
 🎉 changed import behavior for better source maps
 ⚠️ BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.

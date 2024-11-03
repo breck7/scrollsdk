@@ -27,17 +27,21 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">92.0.0 2024-11-02</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">93.0.0 2024-11-02</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
 </style>
 
-<li >changed import behavior for better source maps</li></ul>
+<li >import now replaced "import" particles with "imported" particles which includes subparticle on results</li></ul>
 <ul class="breakingChangeParser"><style>
 .breakingChangeParser li::marker {content: "⚠️ ";}
 </style>
 
-<li >BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.</li></ul>
+<li >BREAKING: if using import, you will now get imported particles inserted</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">92.0.0 2024-11-02</h1>
+<ul class="newFeatureParser"><li >changed import behavior for better source maps</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">91.0.1 2024-10-30</h1>
 <ul class="bugFixParser"><style>

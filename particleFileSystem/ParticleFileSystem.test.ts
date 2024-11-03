@@ -1,5 +1,6 @@
 #!/usr/bin/env ts-node
 
+const { Particle } = require("../products/Particle.js")
 const { ParticleFileSystem } = require("../products/ParticleFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
@@ -13,7 +14,11 @@ testParticles.disk = equal => {
   equal(tfs.assembleFile(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
 }
 
-const stripComments = (str: string) => str.replace(/\/\/ imported .+\n/g, "")
+const stripImported = (str: string) => {
+  const particle = new Particle(str)
+  particle.getParticles("imported").forEach((particle: any) => particle.destroy())
+  return particle.toString()
+}
 
 testParticles.inMemory = equal => {
   // Arrange/Act/Assert
@@ -25,8 +30,8 @@ testParticles.inMemory = equal => {
   }
   const tfs = new ParticleFileSystem(files)
   equal(tfs.dirname("/"), "/")
-  equal(stripComments(tfs.assembleFile("/main").afterImportPass), "world\nciao")
-  equal(stripComments(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
+  equal(stripImported(tfs.assembleFile("/main").afterImportPass), "world\nciao")
+  equal(stripImported(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
   equal(tfs.assembleFile("/main").exists, true)
 }
 
@@ -37,7 +42,7 @@ testParticles.nonExistant = equal => {
   }
   const tfs = new ParticleFileSystem(files)
   const result = tfs.assembleFile("/main")
-  equal(stripComments(result.afterImportPass), "")
+  equal(stripImported(result.afterImportPass), "")
   equal(result.exists, false)
 }
 
@@ -52,9 +57,9 @@ testParticles.quickImports = equal => {
   }
   const tfs = new ParticleFileSystem(files)
   equal(tfs.dirname("/"), "/")
-  equal(stripComments(tfs.assembleFile("/nested/a").afterImportPass), "ciao")
-  equal(stripComments(tfs.assembleFile("/main").afterImportPass), "world\nciao")
-  equal(stripComments(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
+  equal(stripImported(tfs.assembleFile("/nested/a").afterImportPass), "ciao")
+  equal(stripImported(tfs.assembleFile("/main").afterImportPass), "world\nciao")
+  equal(stripImported(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

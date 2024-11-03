@@ -27,6 +27,18 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
+<div class="scrollSection"><h1 class="scrollParagraph">92.0.0 2024-11-02</h1>
+<ul class="newFeatureParser"><style>
+.newFeatureParser li::marker {content: "🎉 ";}
+</style>
+
+<li >changed import behavior for better source maps</li></ul>
+<ul class="breakingChangeParser"><style>
+.breakingChangeParser li::marker {content: "⚠️ ";}
+</style>
+
+<li >BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.</li></ul>
+</div>
 <div class="scrollSection"><h1 class="scrollParagraph">91.0.1 2024-10-30</h1>
 <ul class="bugFixParser"><style>
 .bugFixParser li::marker {content: "🏥 ";}
@@ -35,11 +47,7 @@
 <li >fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">91.0.0 2024-10-21</h1>
-<ul class="newFeatureParser"><style>
-.newFeatureParser li::marker {content: "🎉 ";}
-</style>
-
-<li >add support for gracefully handling importing non-existant files</li></ul>
+<ul class="newFeatureParser"><li >add support for gracefully handling importing non-existant files</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">90.1.0 2024-10-12</h1>
 <ul class="newFeatureParser"><li >added <code>parserIdIndex</code></li>
@@ -48,11 +56,7 @@
 <div class="scrollSection"><h1 class="scrollParagraph">90.0.0 2024-10-12</h1>
 <ul class="newFeatureParser"><li >added <code>cue</code> setter</li>
 <li >added <code>usesParser</code> method</li></ul>
-<ul class="breakingChangeParser"><style>
-.breakingChangeParser li::marker {content: "⚠️ ";}
-</style>
-
-<li >BREAKING: <code>firstAtom</code> is now called <code>cue</code> everywhere</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: <code>firstAtom</code> is now called <code>cue</code> everywhere</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">89.0.0 2024-10-12</h1>
 <ul class="breakingChangeParser"><li >BREAKING: <code>crux</code>, a "temporary" word that lasted many years, is now "cue"</li></ul>

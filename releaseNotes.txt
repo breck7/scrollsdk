@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+92.0.0 2024-11-02
+=================
+🎉 changed import behavior for better source maps
+⚠️ BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.
+
 91.0.1 2024-10-30
 =================
 🏥 fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes

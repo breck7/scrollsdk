@@ -233,7 +233,7 @@ class ParticleFileSystem implements Storage {
 
     replacements.forEach(replacement => {
       const { lineNumber, code } = replacement
-      lines[lineNumber] = code
+      lines[lineNumber] = "// imported " + lines[lineNumber] + "\n" + code
     })
 
     const combinedLines = lines.join("\n")

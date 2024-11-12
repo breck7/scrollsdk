@@ -1,0 +1,7 @@
+Below is the contents of this project/repo.
+
+Generate a beautiful readme.md file from this.
+
+codeFromFile readme.scroll
+codeFromFile releaseNotes.scroll
+codeFromFile products.scroll

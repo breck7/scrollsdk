@@ -43,8 +43,8 @@ enum PreludeAtomTypeIds {
   floatAtom = "floatAtom",
   numberAtom = "numberAtom",
   bitAtom = "bitAtom",
-  boolAtom = "boolAtom",
-  intAtom = "intAtom"
+  booleanAtom = "booleanAtom",
+  integerAtom = "integerAtom"
 }
 
 enum ParsersConstantsConstantTypes {
@@ -180,8 +180,7 @@ abstract class ParserBackedParticle extends Particle {
     [parserId: string]: ParserBackedParticle[]
   }
   get parserIdIndex() {
-    if (this._parserIdIndex)
-      return this._parserIdIndex
+    if (this._parserIdIndex) return this._parserIdIndex
     const index = {}
     this._parserIdIndex = index
     for (let particle of this.getTopDownArrayIterator()) {
@@ -928,7 +927,7 @@ class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
   }
 }
 
-abstract class ParsersNumericAtom extends AbstractParsersBackedAtom<number> {
+abstract class ParsersNumberAtom extends AbstractParsersBackedAtom<number> {
   _toStumpInput(cue: string): string {
     return `input
  name ${cue}
@@ -939,7 +938,7 @@ abstract class ParsersNumericAtom extends AbstractParsersBackedAtom<number> {
   }
 }
 
-class ParsersIntAtom extends ParsersNumericAtom {
+class ParsersIntegerAtom extends ParsersNumberAtom {
   _isValid() {
     const atom = this.getAtom()
     const num = parseInt(atom)
@@ -965,7 +964,7 @@ class ParsersIntAtom extends ParsersNumericAtom {
   static parserFunctionName = "parseInt"
 }
 
-class ParsersFloatAtom extends ParsersNumericAtom {
+class ParsersFloatAtom extends ParsersNumberAtom {
   _isValid() {
     const atom = this.getAtom()
     const num = parseFloat(atom)
@@ -992,7 +991,7 @@ class ParsersFloatAtom extends ParsersNumericAtom {
 
 // ErrorAtomType => parsers asks for a '' atom type here but the parsers does not specify a '' atom type. (todo: bring in didyoumean?)
 
-class ParsersBoolAtom extends AbstractParsersBackedAtom<boolean> {
+class ParsersBooleanAtom extends AbstractParsersBackedAtom<boolean> {
   private _trues = new Set(["1", "true", "t", "yes"])
   private _falses = new Set(["0", "false", "f", "no"])
 
@@ -1002,7 +1001,7 @@ class ParsersBoolAtom extends AbstractParsersBackedAtom<boolean> {
     return this._trues.has(str) || this._falses.has(str)
   }
 
-  static defaultPaint = "constant.numeric"
+  static defaultPaint = "constant.language"
 
   _synthesizeAtom() {
     return Utils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
@@ -2055,9 +2054,7 @@ ${properties.join("\n")}
     const catchAllParser = this.catchAllParserToJavascript
     if (!hasCues && !catchAllParser && !regexRules.length) return ""
 
-    const cuesStr = hasCues
-      ? `Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {` + cues.map(cue => `"${cue}" : ${myCueMap[cue].parserIdFromDefinition}`).join(",\n") + "})"
-      : "undefined"
+    const cuesStr = hasCues ? `Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {` + cues.map(cue => `"${cue}" : ${myCueMap[cue].parserIdFromDefinition}`).join(",\n") + "})" : "undefined"
 
     const regexStr = regexRules.length
       ? `[${regexRules
@@ -2770,8 +2767,8 @@ PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
 PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
-PreludeKinds[PreludeAtomTypeIds.boolAtom] = ParsersBoolAtom
-PreludeKinds[PreludeAtomTypeIds.intAtom] = ParsersIntAtom
+PreludeKinds[PreludeAtomTypeIds.booleanAtom] = ParsersBooleanAtom
+PreludeKinds[PreludeAtomTypeIds.integerAtom] = ParsersIntegerAtom
 
 class UnknownParsersProgram extends Particle {
   private _inferRootParticleForAPrefixLanguage(parsersName: string): Particle {
@@ -2928,13 +2925,13 @@ class UnknownParsersProgram extends Particle {
         return num.toString() === str
       })
     ) {
-      return { atomTypeId: PreludeAtomTypeIds.intAtom }
+      return { atomTypeId: PreludeAtomTypeIds.integerAtom }
     }
 
     if (every((str: string) => str.match(/^-?\d*.?\d+$/))) return { atomTypeId: PreludeAtomTypeIds.floatAtom }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (every((str: string) => bools.has(str.toLowerCase()))) return { atomTypeId: PreludeAtomTypeIds.boolAtom }
+    if (every((str: string) => bools.has(str.toLowerCase()))) return { atomTypeId: PreludeAtomTypeIds.booleanAtom }
 
     // todo: cleanup
     const enumLimit = 30

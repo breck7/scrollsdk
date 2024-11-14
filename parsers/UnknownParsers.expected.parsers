@@ -1,7 +1,7 @@
 keywordAtom
 anyAtom
-intAtom
-boolAtom
+integerAtom
+booleanAtom
 floatAtom
 foobarParser
  root
@@ -12,13 +12,13 @@ fileParser
  atoms keywordAtom anyAtom
 sizeParser
  cue size
- atoms keywordAtom intAtom
+ atoms keywordAtom integerAtom
 digitsParser
  cue digits
- atoms keywordAtom intAtom intAtom
+ atoms keywordAtom integerAtom integerAtom
 openParser
  cue open
- atoms keywordAtom boolAtom
+ atoms keywordAtom booleanAtom
 tempParser
  cue temp
  atoms keywordAtom floatAtom
@@ -45,7 +45,7 @@ balanceParser
  atoms keywordAtom floatAtom
 transactionsParser
  cue transactions
- atoms keywordAtom intAtom
+ atoms keywordAtom integerAtom
 sourceParser
  cue source
- atoms keywordAtom boolAtom anyAtom intAtom
+ atoms keywordAtom booleanAtom anyAtom integerAtom

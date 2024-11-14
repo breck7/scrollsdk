@@ -36,7 +36,7 @@ dateIntAtom
  paint constant.numeric.integer
 monthIntAtom
  extends dateIntAtom
-intAtom
+integerAtom
  regex \\d+
 yearIntAtom
  extends dateIntAtom
@@ -44,7 +44,7 @@ dayIntAtom
  extends dateIntAtom
 timeIntAtom
  paint constant.numeric.integer
- extends intAtom
+ extends integerAtom
 anyAtom
 symbolAtom
 memoryDescriptionAtom

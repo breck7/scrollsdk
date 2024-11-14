@@ -36,7 +36,7 @@ columnNameEnumAtom
 columnNameAtom
 errorAtom
  paint invalid
-intAtom
+integerAtom
  paint constant.numeric
 onoffAtom
  enum on off
@@ -59,13 +59,13 @@ jibberishParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 abstractBaseClassParser
 extendsAbstractParser
- atoms topLevelPropertyAtom intAtom
+ atoms topLevelPropertyAtom integerAtom
  extends abstractBaseClassParser
  cue extendsAbstract
 abstractTopLevelParser
  atoms topLevelPropertyAtom
 abstractColorPropertiesParser
- atoms topLevelPropertyAtom intAtom
+ atoms topLevelPropertyAtom integerAtom
  extends abstractTopLevelParser
 hueParser
  extends abstractColorPropertiesParser
@@ -90,7 +90,7 @@ plusParser
  extends addParser
  example Adding two numbers:
   + 1 2
- catchAllAtomType intAtom
+ catchAllAtomType integerAtom
  atoms opSymbolAtom
 blockParser
  inScope abstractTopLevelParser scoreBlockParser
@@ -167,7 +167,7 @@ textParser
  baseParser blobParser
  cue text
 scoresParser
- catchAllAtomType intAtom
+ catchAllAtomType integerAtom
  atoms topLevelPropertyAtom
  cue scores`)
     get handParsersProgram() {
@@ -182,7 +182,7 @@ scoresParser
     get topLevelPropertyAtom() {
       return this.getAtom(0)
     }
-    get intAtom() {
+    get integerAtom() {
       return parseInt(this.getAtom(1))
     }
   }
@@ -197,7 +197,7 @@ scoresParser
     get topLevelPropertyAtom() {
       return this.getAtom(0)
     }
-    get intAtom() {
+    get integerAtom() {
       return parseInt(this.getAtom(1))
     }
   }
@@ -222,7 +222,7 @@ scoresParser
     get opSymbolAtom() {
       return this.getAtom(0)
     }
-    get intAtom() {
+    get integerAtom() {
       return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }
@@ -384,7 +384,7 @@ world`
     get topLevelPropertyAtom() {
       return this.getAtom(0)
     }
-    get intAtom() {
+    get integerAtom() {
       return this.getAtomsFrom(1).map(val => parseInt(val))
     }
   }

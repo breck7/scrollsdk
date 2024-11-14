@@ -3075,7 +3075,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "93.0.0"
+  static getVersion = () => "94.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

@@ -2,7 +2,7 @@
 anyAtom
 floatAtom
  paint constant.numeric.float
-intAtom
+integerAtom
 keywordAtom
 commentKeywordAtom
  extends keywordAtom

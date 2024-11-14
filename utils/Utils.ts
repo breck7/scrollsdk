@@ -572,7 +572,7 @@ class Utils {
   static formatStr(str: string, catchAllAtomDelimiter = " ", parameterMap: particlesTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
-      if (!val) return ""
+      if (val === undefined) return ""
       return Array.isArray(val) ? val.join(catchAllAtomDelimiter) : val
     })
   }

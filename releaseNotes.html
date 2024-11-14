@@ -27,17 +27,21 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">93.0.0 2024-11-02</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">94.0.0 2024-11-13</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
 </style>
 
-<li >import now replaced "import" particles with "imported" particles which includes subparticle on results</li></ul>
+<li >renamed parsers in <code>parsers.parsers</code> to clean up namespace for users</li></ul>
 <ul class="breakingChangeParser"><style>
 .breakingChangeParser li::marker {content: "⚠️ ";}
 </style>
 
-<li >BREAKING: if using import, you will now get imported particles inserted</li></ul>
+<li >BREAKING: some parsers in <code>parsers.parsers</code> have been renamed</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">93.0.0 2024-11-02</h1>
+<ul class="newFeatureParser"><li >import now replaced "import" particles with "imported" particles which includes subparticle on results</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: if using import, you will now get imported particles inserted</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">92.0.0 2024-11-02</h1>
 <ul class="newFeatureParser"><li >changed import behavior for better source maps</li></ul>
@@ -948,7 +952,7 @@ const tree = new Particle("hello world")</code>
 <ul class="newFeatureParser"><li >"pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.</li>
 <li >polymorphism and symbol tables via enumFromAtomTypes</li>
 <li >Grammar Language now uses suffix notation instead of prefix notation for root node types.</li>
-<li >in Grammar Language instead of <code>nodeType person</code> now do <code>personNode</code> and instead of <code>atomType int</code> do <code>intAtom</code></li>
+<li >in Grammar Language instead of <code>nodeType person</code> now do <code>personNode</code> and instead of <code>atomType int</code> do <code>integerAtom</code></li>
 <li >findAllAtomsWithAtomType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"</li>
 <li >getAllTypedAtoms method in Grammar Programs</li></ul>
 <ul class="bugFixParser"><li >removed all "parsersPath" 2nd params to new jtree.ParsersProgram(grammarCode, gammarPath), since it is no longer used.</li></ul>
@@ -1134,7 +1138,7 @@ const tree = new Particle("hello world")</code>
 <li >getCompiledIndentation, getCompiledLine, getCompilerNode are now protected</li>
 <li >removed "nodeType constructors javascript" in Parsers. Use "nodeType javascript" directly.</li>
 <li >no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.</li>
-<li >in Parsers, use "stringAtom" instead of "string", "intAtom" instead of "int", "floatAtom" instead of "float"</li>
+<li >in Parsers, use "stringAtom" instead of "string", "integerAtom" instead of "int", "floatAtom" instead of "float"</li>
 <li >no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.</li>
 <li >the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.</li></ul>
 </div>

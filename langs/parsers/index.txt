@@ -22,10 +22,10 @@ pandaParser
  catchAllParser expressionParser
 operatorAtom
  enum + -
-intAtom
+integerAtom
 expressionParser
  atoms operatorAtom
- catchAllAtomType intAtom
+ catchAllAtomType integerAtom
 
 The Parsers program above can generate a parser that parses statements like `+ 1 2 5 10` and `- 10 2`.
 

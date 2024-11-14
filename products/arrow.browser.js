@@ -22,7 +22,7 @@
 keywordAtom
  enum charge cardNumber amount currency description token
 floatAtom
-intAtom
+integerAtom
 anyAtom
 cardNumberAtom
  description The credit card number

@@ -265,10 +265,10 @@ testParticles.atomTypeParticles = equal => {
   equal(
     someJibberishProgram.toAtomTypeParticles(),
     `topLevelPropertyAtom
-opSymbolAtom intAtom intAtom intAtom`,
+opSymbolAtom integerAtom integerAtom integerAtom`,
     "atom types should match"
   )
-  equal(someJibberishProgram.findAllAtomsWithAtomType("intAtom").length, 3)
+  equal(someJibberishProgram.findAllAtomsWithAtomType("integerAtom").length, 3)
 
   // Act
   const parsers = someJibberishProgram.asAtomTypeParticlesWithParserIds
@@ -278,7 +278,7 @@ opSymbolAtom intAtom intAtom intAtom`,
   equal(
     parsers,
     `fooParser topLevelPropertyAtom
-plusParser opSymbolAtom intAtom intAtom intAtom`,
+plusParser opSymbolAtom integerAtom integerAtom integerAtom`,
     "parsers atom types should match"
   )
   equal(
@@ -338,8 +338,8 @@ h1Parser
  extends abstractHtmlParser
 abstractHtmlParser
  extends abstractTopLevelParser
-intAtom`
-  const sortedCode = `intAtom
+integerAtom`
+  const sortedCode = `integerAtom
 someLangParser
  root
  inScope abstractTopLevelParser
@@ -358,12 +358,12 @@ testParticles.cokeRegression = equal => {
   const lang = `cokeParser
  root
  inScope cokesParser
-intAtom
+integerAtom
  paint constant.numeric.integer
 anyAtom
 cokesParser
  atoms anyAtom
- catchAllAtomType intAtom`
+ catchAllAtomType integerAtom`
   const code = `
 cokes 22 11`
 
@@ -448,7 +448,7 @@ testParticles.extraAtom = equal => {
   equal(
     program.toAtomTypeParticles(),
     `parserIdAtom
- propertyKeywordAtom extraAtomAtom`
+ cueAtom extraAtomAtom`
   )
 }
 
@@ -677,7 +677,7 @@ foobarAtom
  regex test`)
 
   // Assert
-  anyProgram.findAllParticlesWithParser("regexParser").forEach((particle: any) => {
+  anyProgram.findAllParticlesWithParser("parsersRegexParser").forEach((particle: any) => {
     particle.setAtom(0, "regexString")
   })
   equal(
@@ -729,14 +729,14 @@ const badParsersProgram = new HandParsersProgram(
  inScope addParser
 addParser
  cue +
- catchAllAtomType intAtom
+ catchAllAtomType integerAtom
  atoms keywordAtom
  example This is a bad example.
   + 1 B
 keywordAtom
-intAtom`
+integerAtom`
 )
-Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidAtom at line 9 atom 2. "B" does not fit in atomType "intAtom".`))
+Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidAtom at line 9 atom 2. "B" does not fit in atomType "integerAtom".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)
 

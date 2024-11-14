@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+94.0.0 2024-11-13
+=================
+🎉 renamed parsers in `parsers.parsers` to clean up namespace for users
+⚠️ BREAKING: some parsers in `parsers.parsers` have been renamed
+
 93.0.0 2024-11-02
 =================
 🎉 import now replaced "import" particles with "imported" particles which includes subparticle on results
@@ -1107,7 +1112,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 🎉 "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
 🎉 polymorphism and symbol tables via enumFromAtomTypes
 🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.
-🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `atomType int` do `intAtom`
+🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `atomType int` do `integerAtom`
 🎉 findAllAtomsWithAtomType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
 🎉 getAllTypedAtoms method in Grammar Programs
 🏥 removed all "parsersPath" 2nd params to new jtree.ParsersProgram(grammarCode, gammarPath), since it is no longer used.
@@ -1316,7 +1321,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 ⚠️ getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 ⚠️ removed "nodeType constructors javascript" in Parsers. Use "nodeType javascript" directly.
 ⚠️ no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
-⚠️ in Parsers, use "stringAtom" instead of "string", "intAtom" instead of "int", "floatAtom" instead of "float"
+⚠️ in Parsers, use "stringAtom" instead of "string", "integerAtom" instead of "int", "floatAtom" instead of "float"
 ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 

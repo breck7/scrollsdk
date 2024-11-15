@@ -3,7 +3,7 @@ Parsers: A language for making languages
 
 LeetSheet · Designer · Scroll · Subreddit
  https://scroll.pub/parserLeetsheet.html LeetSheet
- /../designer/index.html Designer
+ /../../designer/index.html Designer
  https://scroll.pub/ Scroll
  https://www.reddit.com/r/WorldWideScroll/ Subreddit
 
@@ -42,7 +42,7 @@ Many things are built on Parsers including Scroll and PLDB.
 Can I try it online?
 ====================
 Yes! The Parser Designer is an online tool for writing Parsers code to build languages right in your browser.
- /../designer/index.html Parser Designer
+ /../../designer/index.html Parser Designer
 
 *
 

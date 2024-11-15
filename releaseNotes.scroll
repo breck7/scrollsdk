@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 94.1.0 2024-11-15
+🎉 upgraded `parsers.parsers` for latest scroll
+
 📦 94.0.0 2024-11-13
 🎉 renamed parsers in `parsers.parsers` to clean up namespace for users
 ⚠️ BREAKING: some parsers in `parsers.parsers` have been renamed

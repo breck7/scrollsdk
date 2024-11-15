@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+94.1.0 2024-11-15
+=================
+🎉 upgraded `parsers.parsers` for latest scroll
+
 94.0.0 2024-11-13
 =================
 🎉 renamed parsers in `parsers.parsers` to clean up namespace for users

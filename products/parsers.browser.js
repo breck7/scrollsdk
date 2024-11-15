@@ -324,8 +324,6 @@ atomTypeDescriptionParser
  catchAllAtomType stringAtom
  cue description
  tags assemblePhase
- javascript
-  compile() { return ""}
 
 parsersExampleParser
  // todo Should this just be a "string" constant on particles?
@@ -496,6 +494,8 @@ atomTypeDefinitionParser
  inScope parsersPaintParser parsersRegexParser reservedAtomsParser enumFromAtomTypesParser atomTypeDescriptionParser parsersEnumParser slashCommentParser extendsAtomTypeParser parsersExamplesParser atomMinParser atomMaxParser
  atoms atomTypeIdAtom
  tags assemblePhase
+ javascript
+  buildHtml() {return ""}
 
 // Enums
 enumFromAtomTypesParser
@@ -555,7 +555,7 @@ parserDefinitionParser
  atoms parserIdAtom
  tags assemblePhase
  javascript
-  compile() { return ""}
+  buildHtml() { return ""}
 
 parsersRegexParser
  catchAllAtomType regexAtom
@@ -772,9 +772,6 @@ extendsAtomTypeParser
     get stringAtom() {
       return this.getAtomsFrom(0)
     }
-    compile() {
-      return ""
-    }
   }
 
   class parsersExampleParser extends abstractParserRuleParser {
@@ -953,6 +950,9 @@ extendsAtomTypeParser
     get atomTypeIdAtom() {
       return this.getAtom(0)
     }
+    buildHtml() {
+      return ""
+    }
   }
 
   class enumFromAtomTypesParser extends ParserBackedParticle {
@@ -1058,7 +1058,7 @@ extendsAtomTypeParser
     get parserIdAtom() {
       return this.getAtom(0)
     }
-    compile() {
+    buildHtml() {
       return ""
     }
   }

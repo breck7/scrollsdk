@@ -2272,6 +2272,18 @@ testParticles.insert = equal => {
   equal(particle.particleAt(3).content, "dad")
 }
 
+testParticles.insertLinesAfter = equal => {
+  // Arrange
+  const particle = new Particle("hello world")
+
+  // Act
+  particle.getParticle("hello").insertLinesAfter(`config
+ score 2`)
+
+  // Assert
+  equal(particle.get("config score"), "2", "Expected 2")
+}
+
 testParticles.last = equal => {
   // Arrange
   const value = new Particle("hello world\nhi mom")

@@ -1692,6 +1692,20 @@ class Particle extends AbstractParticle {
     return newParticle
   }
 
+  protected _insertLines(lines: string, index = this.length) {
+    const parser: any = this.constructor
+    const newParticle = new parser(lines)
+    const adjustedIndex = index < 0 ? this.length + index : index
+    this._getSubparticlesArray().splice(adjustedIndex, 0, ...newParticle.getSubparticles())
+    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
+    this.clearQuickCache()
+    return this.getSubparticles().slice(index, index + newParticle.length)
+  }
+
+  insertLinesAfter(lines: string) {
+    return this.parent._insertLines(lines, this.index + 1)
+  }
+
   protected _appendSubparticlesFromString(str: string) {
     const lines = str.split(this.particleBreakSymbolRegex)
     const parentStack: Particle[] = []
@@ -2410,6 +2424,11 @@ class Particle extends AbstractParticle {
     return this._insertLineAndSubparticles(line, undefined, index)
   }
 
+  insertSection(lines: string, index: int) {
+    const particle = new Particle(lines)
+    this._insertLineAndSubparticles(line, subparticles)
+  }
+
   prependLine(line: string) {
     return this.insertLine(line, 0)
   }
@@ -3075,7 +3094,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "94.1.0"
+  static getVersion = () => "94.2.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

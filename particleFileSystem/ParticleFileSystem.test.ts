@@ -46,6 +46,26 @@ testParticles.nonExistant = equal => {
   equal(result.exists, false)
 }
 
+testParticles.footers = equal => {
+  // Arrange/Act/Assert
+  const files = {
+    "/hello.scroll": `headerAndFooter.scroll
+
+title Hello world
+
+This is my content
+`,
+    "/headerAndFooter.scroll": "header.scroll\nfooter.scroll\n footer",
+    "/header.scroll": "printTitle",
+    "/footer.scroll": "The end."
+  }
+  const tfs = new ParticleFileSystem(files)
+  const result = tfs.assembleFile("/hello.scroll")
+  equal(result.afterImportPass.includes("This is my content"), true)
+  equal(result.afterImportPass.includes("The end"), false)
+  equal(result.footers[0], "The end.")
+}
+
 testParticles.quickImports = equal => {
   // Arrange/Act/Assert
   const files = {

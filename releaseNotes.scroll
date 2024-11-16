@@ -20,6 +20,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 94.2.0 2024-11-16
+🎉 added support to import content to footer.
+🎉 refactored import code to enable future advanced functionality. may cause temporary perf regression.
+
 📦 94.1.0 2024-11-15
 🎉 upgraded `parsers.parsers` for latest scroll
 

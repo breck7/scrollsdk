@@ -5,7 +5,6 @@ test swarmParticlesample
   constructWithParagraph
    testlangParser
     root
-    compilesTo txt
     inScope baseParser
     catchAllParser errorParser
    anyAtom

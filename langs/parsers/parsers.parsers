@@ -235,15 +235,6 @@ abstractParserRuleParser
  single
  atoms cueAtom
 
-parsersCompilesToParser
- cue compilesTo
- atoms cueAtom fileExtensionAtom
- extends abstractParserRuleParser
- description File extension for simple compilers.
- // todo: deprecate?
- // Optionally specify a file extension that will be used when compiling your language to a file. Generally used on parsers marked root.
- tags experimental
-
 parsersExtensionsParser
  extends abstractParserRuleParser
  catchAllAtomType fileExtensionAtom

@@ -127,7 +127,6 @@ enum ParsersConstants {
 
   // compile time
   compilerParser = "compiler",
-  compilesTo = "compilesTo",
 
   // develop time
   description = "description",
@@ -1780,7 +1779,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.root,
       ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
-      ParsersConstants.compilesTo,
       ParsersConstants.javascript,
       ParsersConstants.single,
       ParsersConstants.comment
@@ -2567,10 +2565,6 @@ ${testCode}
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`
     return files
-  }
-
-  get targetExtension() {
-    return this.rootParserDefinition.get(ParsersConstants.compilesTo)
   }
 
   private _cache_atomTypes: {

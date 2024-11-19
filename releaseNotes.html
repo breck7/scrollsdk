@@ -27,12 +27,20 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">94.2.0 2024-11-16</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">95.0.0 2024-11-19</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
 </style>
 
-<li >added support to import content to footer.</li>
+<li >Parsers autocomplete cleanup</li></ul>
+<ul class="breakingChangeParser"><style>
+.breakingChangeParser li::marker {content: "⚠️ ";}
+</style>
+
+<li >BREAKING: (no one should be affected) removed unused extensions and compilesTo parsers in Parsers</li></ul>
+</div>
+<div class="scrollSection"><h1 class="scrollParagraph">94.2.0 2024-11-16</h1>
+<ul class="newFeatureParser"><li >added support to import content to footer.</li>
 <li >refactored import code to enable future advanced functionality. may cause temporary perf regression.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">94.1.0 2024-11-15</h1>
@@ -40,11 +48,7 @@
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">94.0.0 2024-11-13</h1>
 <ul class="newFeatureParser"><li >renamed parsers in <code>parsers.parsers</code> to clean up namespace for users</li></ul>
-<ul class="breakingChangeParser"><style>
-.breakingChangeParser li::marker {content: "⚠️ ";}
-</style>
-
-<li >BREAKING: some parsers in <code>parsers.parsers</code> have been renamed</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: some parsers in <code>parsers.parsers</code> have been renamed</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">93.0.0 2024-11-02</h1>
 <ul class="newFeatureParser"><li >import now replaced "import" particles with "imported" particles which includes subparticle on results</li></ul>

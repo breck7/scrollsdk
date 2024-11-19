@@ -106,7 +106,6 @@ leftAnyAtom
 fireParser
  root
  description A useless prefix Language that compiles to Javascript for testing Particles features.
- compilesTo js
  inScope hashbangParser abstractTerminalParser abstractNonTerminalParser
  catchAllParser errorParser
  javascript

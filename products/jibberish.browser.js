@@ -54,7 +54,6 @@ jibberishParser
   execute() {
    return 42
   }
- compilesTo txt
  catchAllParser errorParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 abstractBaseClassParser

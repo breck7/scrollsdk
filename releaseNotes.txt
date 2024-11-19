@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+95.0.0 2024-11-19
+=================
+🎉 Parsers autocomplete cleanup
+⚠️ BREAKING: (no one should be affected) removed unused extensions and compilesTo parsers in Parsers
+
 94.2.0 2024-11-16
 =================
 🎉 added support to import content to footer.

@@ -57,7 +57,6 @@ poopParser
  description POOP is the Programming Option for Overtired Parents. It is a Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events and compile them to CSV. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
  root
  tags nonPrefixParsers
- compilesTo csv
  javascript
   compile() {
    let day = ""

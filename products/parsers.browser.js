@@ -288,11 +288,12 @@ parsersAtomsParser
 
 parsersCompilerParser
  // todo Remove this and its subparticles?
- description For simple compilers.
+ description Deprecated. For simple compilers.
  inScope stringTemplateParser catchAllAtomDelimiterParser openSubparticlesParser closeSubparticlesParser indentCharacterParser joinSubparticlesWithParser
  extends abstractParserRuleParser
  cue compiler
- tags experimental
+ tags deprecate
+ boolean suggestInAutocomplete false
 
 parserDescriptionParser
  description Parser description.
@@ -433,6 +434,7 @@ contentKeyParser
  cueFromId
  catchAllAtomType stringAtom
  tags deprecate
+ boolean suggestInAutocomplete false
 subparticlesKeyParser
  // todo: deprecate?
  description Deprecated. For to/from JSON.
@@ -441,6 +443,7 @@ subparticlesKeyParser
  cueFromId
  catchAllAtomType stringAtom
  tags deprecate
+ boolean suggestInAutocomplete false
 
 parsersTagsParser
  catchAllAtomType stringAtom
@@ -727,6 +730,9 @@ extendsAtomTypeParser
         undefined
       )
     }
+    get suggestInAutocomplete() {
+      return false
+    }
   }
 
   class parserDescriptionParser extends abstractParserRuleParser {
@@ -841,11 +847,17 @@ extendsAtomTypeParser
     get stringAtom() {
       return this.getAtomsFrom(0)
     }
+    get suggestInAutocomplete() {
+      return false
+    }
   }
 
   class subparticlesKeyParser extends abstractParserRuleParser {
     get stringAtom() {
       return this.getAtomsFrom(0)
+    }
+    get suggestInAutocomplete() {
+      return false
     }
   }
 

@@ -21,7 +21,6 @@ testStrings.webpageTrimmed = `body
   content hi
 `
 testStrings.lime = `name cref
-file_extensions c
 scope source.c
 contexts
  main
@@ -42,7 +41,6 @@ contexts
 testStrings.limeToYaml = `%YAML 1.2
 ---
 name: cref
-file_extensions: c
 scope: source.c
 contexts:
  main:

@@ -156,7 +156,6 @@ parsersParser
  description A programming language for making languages.
  // Parsers is a language for creating new languages on top of Particles. By creating a parsers file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Parsers uses both postfix and prefix language features.
  catchAllParser catchAllErrorParser
- extensions parsers gram
  example A parsers that parses anything:
   latinParser
    root
@@ -244,14 +243,6 @@ parsersStringParser
 abstractParserRuleParser
  single
  atoms cueAtom
-
-parsersExtensionsParser
- extends abstractParserRuleParser
- catchAllAtomType fileExtensionAtom
- description File extension for your dialect.
- // File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root particle's parserId will be used as the default file extension.
- cue extensions
- tags deprecate
 
 abstractNonTerminalParserRuleParser
  extends abstractParserRuleParser
@@ -677,12 +668,6 @@ extendsAtomTypeParser
     }
   }
 
-  class parsersExtensionsParser extends abstractParserRuleParser {
-    get fileExtensionAtom() {
-      return this.getAtomsFrom(0)
-    }
-  }
-
   class abstractNonTerminalParserRuleParser extends abstractParserRuleParser {}
 
   class parsersBaseParserParser extends abstractParserRuleParser {
@@ -1006,7 +991,6 @@ extendsAtomTypeParser
           float: parsersFloatParser,
           int: parsersIntParser,
           string: parsersStringParser,
-          extensions: parsersExtensionsParser,
           baseParser: parsersBaseParserParser,
           catchAllAtomType: catchAllAtomTypeParser,
           atomParser: atomParserParser,

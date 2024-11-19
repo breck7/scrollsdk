@@ -42,7 +42,6 @@ urlAtom
 errorParser
  baseParser errorParser
 dumbdownParser
- extensions dd dumbdown
  description A Language that compiles to HTML. An alternative to Markdown.
  root
  inScope abstractTopLevelParser blankLineParser

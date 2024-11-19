@@ -161,7 +161,6 @@ stumpParser
  example
   div
    h1 hello world
- compilesTo html
  javascript
   compile() {
    return this.asHtml

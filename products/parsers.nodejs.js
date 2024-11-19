@@ -251,15 +251,6 @@ abstractParserRuleParser
  single
  atoms cueAtom
 
-parsersCompilesToParser
- cue compilesTo
- atoms cueAtom fileExtensionAtom
- extends abstractParserRuleParser
- description File extension for simple compilers.
- // todo: deprecate?
- // Optionally specify a file extension that will be used when compiling your language to a file. Generally used on parsers marked root.
- tags experimental
-
 parsersExtensionsParser
  extends abstractParserRuleParser
  catchAllAtomType fileExtensionAtom
@@ -692,15 +683,6 @@ extendsAtomTypeParser
     }
   }
 
-  class parsersCompilesToParser extends abstractParserRuleParser {
-    get cueAtom() {
-      return this.getAtom(0)
-    }
-    get fileExtensionAtom() {
-      return this.getAtom(1)
-    }
-  }
-
   class parsersExtensionsParser extends abstractParserRuleParser {
     get fileExtensionAtom() {
       return this.getAtomsFrom(0)
@@ -1030,7 +1012,6 @@ extendsAtomTypeParser
           float: parsersFloatParser,
           int: parsersIntParser,
           string: parsersStringParser,
-          compilesTo: parsersCompilesToParser,
           extensions: parsersExtensionsParser,
           baseParser: parsersBaseParserParser,
           catchAllAtomType: catchAllAtomTypeParser,

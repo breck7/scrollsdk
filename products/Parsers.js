@@ -103,7 +103,6 @@ var ParsersConstants
   ParsersConstants["javascript"] = "javascript"
   // compile time
   ParsersConstants["compilerParser"] = "compiler"
-  ParsersConstants["compilesTo"] = "compilesTo"
   // develop time
   ParsersConstants["description"] = "description"
   ParsersConstants["example"] = "example"
@@ -1426,7 +1425,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
       ParsersConstants.root,
       ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
-      ParsersConstants.compilesTo,
       ParsersConstants.javascript,
       ParsersConstants.single,
       ParsersConstants.comment
@@ -2081,9 +2079,6 @@ ${testCode}
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`
     return files
-  }
-  get targetExtension() {
-    return this.rootParserDefinition.get(ParsersConstants.compilesTo)
   }
   get atomTypeDefinitions() {
     if (this._cache_atomTypes) return this._cache_atomTypes

@@ -47,7 +47,6 @@ dumbdownParser
  root
  inScope abstractTopLevelParser blankLineParser
  catchAllParser quickParagraphParser
- compilesTo html
  example
   title Hello world
   title2 This is Dumbdown

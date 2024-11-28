@@ -7,6 +7,17 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+96.0.0 2024-11-28
+=================
+Fusion v1 Release
+=================
+🎉 added Fusion console to sandbox
+🎉 basics of Fusion working in browser (async/url imports coming in next release)
+⚠️ BREAKING: renamed ParticleFileSystem to Fusion
+⚠️ BREAKING: assembleFile is now fuseFile
+⚠️ BREAKING: assembledFile is now fusedFile
+⚠️ BREAKING: afterImportPass is now fused
+
 95.0.1 2024-11-21
 =================
 🏥 don't crash codemirror if error in parsers

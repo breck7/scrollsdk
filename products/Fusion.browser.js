@@ -1,52 +1,13 @@
-const fs = require("fs")
-const path = require("path")
-
-import { particlesTypes } from "../products/particlesTypes"
-const { Disk } = require("../products/Disk.node.js")
-const { Utils } = require("../products/Utils.js")
-const { Particle } = require("../products/Particle.js")
-const { HandParsersProgram } = require("../products/Parsers.js")
-const parsersParser = require("../products/parsers.nodejs.js")
-const { posix } = require("../products/Path.js")
-
 const PARSERS_EXTENSION = ".parsers"
-
-interface OpenedFile {
-  absolutePath: particlesTypes.filepath
-  content: string
-  exists: boolean
-  stats: any // https://nodejs.org/api/fs.html#class-fsstats
-}
-
-interface AssembledFile {
-  afterImportPass: string // codeWithoutImportsNorParserDefinitions
-  footers: string[]
-  importFilePaths: string[]
-  isImportOnly: boolean
-  parser?: particlesTypes.particle
-  filepathsWithParserDefinitions: string[]
-  exists: boolean
-}
-
-interface Storage {
-  read(absolutePath: string): string
-  exists(absolutePath: string): boolean
-  list(absolutePath: string): string[]
-  write(absolutePath: string, content: string): void
-  getMTime(absolutePath: string): number
-  getCTime(absolutePath: string): number
-  dirname(absolutePath: string): string
-  join(...absolutePath: string[]): string
-}
-
 const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
 // A regex to check if a multiline string has an import line.
 const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
-
-class DiskWriter implements Storage {
-  fileCache: { [filepath: string]: OpenedFile } = {}
-  _read(absolutePath: particlesTypes.filepath) {
+class DiskWriter {
+  constructor() {
+    this.fileCache = {}
+  }
+  _read(absolutePath) {
     const { fileCache } = this
     if (!fileCache[absolutePath]) {
       const exists = fs.existsSync(absolutePath)
@@ -55,145 +16,110 @@ class DiskWriter implements Storage {
     }
     return fileCache[absolutePath]
   }
-
-  exists(absolutePath: string) {
+  exists(absolutePath) {
     return this._read(absolutePath).exists
   }
-
-  read(absolutePath: string) {
+  read(absolutePath) {
     return this._read(absolutePath).content
   }
-
-  list(folder: string) {
+  list(folder) {
     return Disk.getFiles(folder)
   }
-
-  write(fullPath: string, content: string) {
+  write(fullPath, content) {
     Disk.writeIfChanged(fullPath, content)
   }
-
-  getMTime(absolutePath: string) {
+  getMTime(absolutePath) {
     return this._read(absolutePath).stats.mtimeMs
   }
-
-  getCTime(absolutePath: string) {
+  getCTime(absolutePath) {
     return this._read(absolutePath).stats.ctimeMs
   }
-
-  dirname(absolutePath: string) {
+  dirname(absolutePath) {
     return path.dirname(absolutePath)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return path.join(...arguments)
   }
 }
-
-class MemoryWriter implements Storage {
-  constructor(inMemoryFiles: particlesTypes.diskMap) {
+class MemoryWriter {
+  constructor(inMemoryFiles) {
     this.inMemoryFiles = inMemoryFiles
   }
-
-  inMemoryFiles: particlesTypes.diskMap
-
-  read(absolutePath: particlesTypes.filepath) {
+  read(absolutePath) {
     const value = this.inMemoryFiles[absolutePath]
     if (value === undefined) {
       return ""
     }
     return value
   }
-
-  exists(absolutePath: string) {
+  exists(absolutePath) {
     return this.inMemoryFiles[absolutePath] !== undefined
   }
-
-  write(absolutePath: particlesTypes.filepath, content: string) {
+  write(absolutePath, content) {
     this.inMemoryFiles[absolutePath] = content
   }
-
-  list(absolutePath: particlesTypes.filepath) {
+  list(absolutePath) {
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
-
   getMTime() {
     return 1
   }
-
   getCTime() {
     return 1
   }
-
-  dirname(path: string) {
+  dirname(path) {
     return posix.dirname(path)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return posix.join(...arguments)
   }
 }
-
-class ParticleFileSystem implements Storage {
-  constructor(inMemoryFiles: particlesTypes.diskMap) {
+class Fusion {
+  constructor(inMemoryFiles) {
+    this._particleCache = {}
+    this._parserCache = {}
+    this._expandedImportCache = {}
+    this._parsersExpandersCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
   }
-
-  read(absolutePath: particlesTypes.filepath) {
+  read(absolutePath) {
     return this._storage.read(absolutePath)
   }
-
-  exists(absolutePath: particlesTypes.filepath) {
+  exists(absolutePath) {
     return this._storage.exists(absolutePath)
   }
-
-  write(absolutePath: particlesTypes.filepath, content: string) {
+  write(absolutePath, content) {
     return this._storage.write(absolutePath, content)
   }
-
-  list(absolutePath: particlesTypes.filepath) {
+  list(absolutePath) {
     return this._storage.list(absolutePath)
   }
-
-  dirname(absolutePath: string) {
+  dirname(absolutePath) {
     return this._storage.dirname(absolutePath)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return this._storage.join(...segments)
   }
-
-  getMTime(absolutePath: string) {
+  getMTime(absolutePath) {
     return this._storage.getMTime(absolutePath)
   }
-
-  getCTime(absolutePath: string) {
+  getCTime(absolutePath) {
     return this._storage.getMTime(absolutePath)
   }
-
-  private _storage: Storage
-  private _particleCache: { [filepath: string]: typeof Particle } = {}
-  private _parserCache: { [concatenatedFilepaths: string]: any } = {}
-  private _expandedImportCache: { [filepath: string]: AssembledFile } = {}
-  private _parsersExpandersCache: { [filepath: string]: boolean } = {}
-
-  private _getFileAsParticles(absoluteFilePath: string) {
+  _getFileAsParticles(absoluteFilePath) {
     const { _particleCache } = this
     if (_particleCache[absoluteFilePath] === undefined) {
       _particleCache[absoluteFilePath] = new Particle(this._storage.read(absoluteFilePath))
     }
     return _particleCache[absoluteFilePath]
   }
-
-  private _assembleFile(absoluteFilePath: string) {
+  _fuseFile(absoluteFilePath) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
-
     let code = this.read(absoluteFilePath)
     const exists = this.exists(absoluteFilePath)
-
     const isImportOnly = importOnlyRegex.test(code)
-
     // Perf hack
     // If its a parsers file, it will have no content, just parsers (and maybe imports).
     // The parsers will already have been processed. We can skip them
@@ -203,22 +129,19 @@ class ParticleFileSystem implements Storage {
         .split("\n")
         .filter(line => importRegex.test(line))
         .join("\n")
-
     const filepathsWithParserDefinitions = []
     if (this._doesFileHaveParsersDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
-
     if (!importRegex.test(code))
-      return <AssembledFile>{
-        afterImportPass: code,
+      return {
+        fused: code,
         footers: [],
         isImportOnly,
         importFilePaths: [],
         filepathsWithParserDefinitions,
         exists
       }
-
-    let importFilePaths: string[] = []
-    let footers: string[] = []
+    let importFilePaths = []
+    let footers = []
     const particle = new Particle(code)
     const folder = this.dirname(absoluteFilePath)
     particle
@@ -226,38 +149,33 @@ class ParticleFileSystem implements Storage {
       .forEach(importParticle => {
         const relativeFilePath = importParticle.getLine().replace("import ", "")
         const absoluteImportFilePath = this.join(folder, relativeFilePath)
-        const expandedFile = this._assembleFile(absoluteImportFilePath)
+        const expandedFile = this._fuseFile(absoluteImportFilePath)
         importFilePaths.push(absoluteImportFilePath)
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
         const exists = this.exists(absoluteImportFilePath)
         importParticle.setLine("imported " + relativeFilePath)
         importParticle.set("exists", `${exists}`)
         footers = footers.concat(expandedFile.footers)
-        if (importParticle.has("footer")) footers.push(expandedFile.afterImportPass)
-        else importParticle.insertLinesAfter(expandedFile.afterImportPass)
+        if (importParticle.has("footer")) footers.push(expandedFile.fused)
+        else importParticle.insertLinesAfter(expandedFile.fused)
       })
-
     _expandedImportCache[absoluteFilePath] = {
       importFilePaths,
       isImportOnly,
-      afterImportPass: particle.toString(),
+      fused: particle.toString(),
       footers,
       exists: !importFilePaths.some(file => !this.exists(file)),
-      filepathsWithParserDefinitions: importFilePaths.filter((filename: string) => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
+      filepathsWithParserDefinitions: importFilePaths.filter(filename => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
-
     return _expandedImportCache[absoluteFilePath]
   }
-
-  private _doesFileHaveParsersDefinitions(absoluteFilePath: particlesTypes.filepath) {
+  _doesFileHaveParsersDefinitions(absoluteFilePath) {
     if (!absoluteFilePath) return false
     const { _parsersExpandersCache } = this
     if (_parsersExpandersCache[absoluteFilePath] === undefined) _parsersExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
-
     return _parsersExpandersCache[absoluteFilePath]
   }
-
-  private _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
+  _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const asOneFile = filePaths
@@ -266,22 +184,19 @@ class ParticleFileSystem implements Storage {
         if (filePath.endsWith(PARSERS_EXTENSION)) return content
         // Strip scroll content
         return new Particle(content)
-          .filter((particle: particlesTypes.particle) => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(atomDefinitionRegex))
-          .map((particle: particlesTypes.particle) => particle.asString)
+          .filter(particle => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(atomDefinitionRegex))
+          .map(particle => particle.asString)
           .join("\n")
       })
       .join("\n")
       .trim()
-
     // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js particles)
     return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
   }
-
   get parsers() {
     return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
-
-  getParser(filePaths: string[], baseParsersCode = "") {
+  getParser(filePaths, baseParsersCode = "") {
     const { _parserCache } = this
     const key = filePaths
       .filter(fp => fp)
@@ -298,16 +213,12 @@ class ParticleFileSystem implements Storage {
     }
     return _parserCache[key]
   }
-
-  assembleFile(absoluteFilePath: string, defaultParserCode?: string): AssembledFile {
-    const assembledFile = this._assembleFile(absoluteFilePath)
-
-    if (!defaultParserCode) return assembledFile
-
+  fuseFile(absoluteFilePath, defaultParserCode) {
+    const fusedFile = this._fuseFile(absoluteFilePath)
+    if (!defaultParserCode) return fusedFile
     // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM PARSERS NODES DEFINED
-    if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
-    return assembledFile
+    if (fusedFile.filepathsWithParserDefinitions.length) fusedFile.parser = this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode).parser
+    return fusedFile
   }
 }
-
-export { ParticleFileSystem }
+window.Fusion = Fusion

@@ -27,6 +27,23 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
+<div class="scrollSection"><h1 class="scrollParagraph">96.0.0 2024-11-28</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">Fusion v1 Release</h1>
+<ul class="newFeatureParser"><style>
+.newFeatureParser li::marker {content: "🎉 ";}
+</style>
+
+<li >added Fusion console to sandbox</li>
+<li >basics of Fusion working in browser (async/url imports coming in next release)</li></ul>
+<ul class="breakingChangeParser"><style>
+.breakingChangeParser li::marker {content: "⚠️ ";}
+</style>
+
+<li >BREAKING: renamed ParticleFileSystem to Fusion</li>
+<li >BREAKING: assembleFile is now fuseFile</li>
+<li >BREAKING: assembledFile is now fusedFile</li>
+<li >BREAKING: afterImportPass is now fused</li></ul>
+</div></div>
 <div class="scrollSection"><h1 class="scrollParagraph">95.0.1 2024-11-21</h1>
 <ul class="bugFixParser"><style>
 .bugFixParser li::marker {content: "🏥 ";}
@@ -35,16 +52,8 @@
 <li >don't crash codemirror if error in parsers</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">95.0.0 2024-11-19</h1>
-<ul class="newFeatureParser"><style>
-.newFeatureParser li::marker {content: "🎉 ";}
-</style>
-
-<li >Parsers autocomplete cleanup</li></ul>
-<ul class="breakingChangeParser"><style>
-.breakingChangeParser li::marker {content: "⚠️ ";}
-</style>
-
-<li >BREAKING: (no one should be affected) removed unused extensions and compilesTo parsers in Parsers</li></ul>
+<ul class="newFeatureParser"><li >Parsers autocomplete cleanup</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: (no one should be affected) removed unused extensions and compilesTo parsers in Parsers</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">94.2.0 2024-11-16</h1>
 <ul class="newFeatureParser"><li >added support to import content to footer.</li>

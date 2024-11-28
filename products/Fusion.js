@@ -1,3 +1,11 @@
+const fs = require("fs")
+const path = require("path")
+const { Disk } = require("../products/Disk.node.js")
+const { Utils } = require("../products/Utils.js")
+const { Particle } = require("../products/Particle.js")
+const { HandParsersProgram } = require("../products/Parsers.js")
+const parsersParser = require("../products/parsers.nodejs.js")
+const { posix } = require("../products/Path.js")
 const PARSERS_EXTENSION = ".parsers"
 const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
 // A regex to check if a multiline string has an import line.
@@ -74,7 +82,7 @@ class MemoryWriter {
     return posix.join(...arguments)
   }
 }
-class ParticleFileSystem {
+class Fusion {
   constructor(inMemoryFiles) {
     this._particleCache = {}
     this._parserCache = {}
@@ -114,7 +122,7 @@ class ParticleFileSystem {
     }
     return _particleCache[absoluteFilePath]
   }
-  _assembleFile(absoluteFilePath) {
+  _fuseFile(absoluteFilePath) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
     let code = this.read(absoluteFilePath)
@@ -133,7 +141,7 @@ class ParticleFileSystem {
     if (this._doesFileHaveParsersDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
     if (!importRegex.test(code))
       return {
-        afterImportPass: code,
+        fused: code,
         footers: [],
         isImportOnly,
         importFilePaths: [],
@@ -149,20 +157,20 @@ class ParticleFileSystem {
       .forEach(importParticle => {
         const relativeFilePath = importParticle.getLine().replace("import ", "")
         const absoluteImportFilePath = this.join(folder, relativeFilePath)
-        const expandedFile = this._assembleFile(absoluteImportFilePath)
+        const expandedFile = this._fuseFile(absoluteImportFilePath)
         importFilePaths.push(absoluteImportFilePath)
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
         const exists = this.exists(absoluteImportFilePath)
         importParticle.setLine("imported " + relativeFilePath)
         importParticle.set("exists", `${exists}`)
         footers = footers.concat(expandedFile.footers)
-        if (importParticle.has("footer")) footers.push(expandedFile.afterImportPass)
-        else importParticle.insertLinesAfter(expandedFile.afterImportPass)
+        if (importParticle.has("footer")) footers.push(expandedFile.fused)
+        else importParticle.insertLinesAfter(expandedFile.fused)
       })
     _expandedImportCache[absoluteFilePath] = {
       importFilePaths,
       isImportOnly,
-      afterImportPass: particle.toString(),
+      fused: particle.toString(),
       footers,
       exists: !importFilePaths.some(file => !this.exists(file)),
       filepathsWithParserDefinitions: importFilePaths.filter(filename => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
@@ -213,12 +221,13 @@ class ParticleFileSystem {
     }
     return _parserCache[key]
   }
-  assembleFile(absoluteFilePath, defaultParserCode) {
-    const assembledFile = this._assembleFile(absoluteFilePath)
-    if (!defaultParserCode) return assembledFile
+  fuseFile(absoluteFilePath, defaultParserCode) {
+    const fusedFile = this._fuseFile(absoluteFilePath)
+    if (!defaultParserCode) return fusedFile
     // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM PARSERS NODES DEFINED
-    if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
-    return assembledFile
+    if (fusedFile.filepathsWithParserDefinitions.length) fusedFile.parser = this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode).parser
+    return fusedFile
   }
 }
-window.ParticleFileSystem = ParticleFileSystem
+
+module.exports = { Fusion }

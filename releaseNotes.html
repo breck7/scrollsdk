@@ -27,6 +27,13 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
+<div class="scrollSection"><h1 class="scrollParagraph">95.0.1 2024-11-21</h1>
+<ul class="bugFixParser"><style>
+.bugFixParser li::marker {content: "🏥 ";}
+</style>
+
+<li >don't crash codemirror if error in parsers</li></ul>
+</div>
 <div class="scrollSection"><h1 class="scrollParagraph">95.0.0 2024-11-19</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
@@ -59,11 +66,7 @@
 <ul class="breakingChangeParser"><li >BREAKING: (no one should be affected) instead of stripping the import line, import now prepends "// imported " and keeps original import line.</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">91.0.1 2024-10-30</h1>
-<ul class="bugFixParser"><style>
-.bugFixParser li::marker {content: "🏥 ";}
-</style>
-
-<li >fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes</li></ul>
+<ul class="bugFixParser"><li >fixed regex in PFS that was matching Parsers in the middle of the line, not just suffixes</li></ul>
 </div>
 <div class="scrollSection"><h1 class="scrollParagraph">91.0.0 2024-10-21</h1>
 <ul class="newFeatureParser"><li >add support for gracefully handling importing non-existant files</li></ul>

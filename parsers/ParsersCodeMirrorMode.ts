@@ -360,14 +360,19 @@ class ParsersCodeMirrorMode {
   }
 
   private _getAtomStyle(lineIndex: particlesTypes.int, atomIndex: particlesTypes.int): string {
-    const program = this._getParsedProgram()
+    try {
+      const program = this._getParsedProgram()
 
-    // todo: if the current atom is an error, don't show red?
-    if (!program.getAtomPaintAtPosition) console.log(program)
-    const paint = program.getAtomPaintAtPosition(lineIndex, atomIndex)
-    const style = paint ? <string>textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined
+      // todo: if the current atom is an error, don't show red?
+      if (!program.getAtomPaintAtPosition) console.log(program)
+      const paint = program.getAtomPaintAtPosition(lineIndex, atomIndex)
+      const style = paint ? <string>textMateScopeToCodeMirrorStyle(paint.split(".")) : undefined
 
-    return style || "noPaintDefinedInParsers"
+      return style || "noPaintDefinedInParsers"
+    } catch (err) {
+      console.error(err)
+      return "noPaintDefinedInParsers"
+    }
   }
 
   // todo: remove.

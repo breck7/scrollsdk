@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 95.0.1 2024-11-21
+🏥 don't crash codemirror if error in parsers
+
 📦 95.0.0 2024-11-19
 🎉 Parsers autocomplete cleanup
 ⚠️ BREAKING: (no one should be affected) removed unused extensions and compilesTo parsers in Parsers

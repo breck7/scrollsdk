@@ -55,11 +55,31 @@ class SandboxApp extends AbstractParticleComponentParser {
     if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", particle.asHtml)
     if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", particle.asTable)
     if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", particle.asHtmlCube)
+    if (eventSource !== "fusionConsole") this.updateFusion(particle)
     if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", particle.asYaml)
     let win = window
     win.particle = particle
     localStorage.setItem("particle", particle.toString())
     this._updateShareLink() // todo: where to put this?
+  }
+  async updateFusion(particle) {
+    const { willowBrowser } = this
+    const files = {
+      "/hello.scroll": `headerAndFooter.scroll
+
+title Hello world
+
+This is my content
+`,
+      "/headerAndFooter.scroll": "header.scroll\nfooter.scroll\n footer",
+      "/header.scroll": "printTitle",
+      "/footer.scroll": "The end.",
+      "/main": particle.toString()
+    }
+    const fusion = new Fusion(files)
+    const result = fusion.fuseFile("/main")
+    this.fused = result
+    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", result.fused)
   }
   async particleComponentDidMount() {
     // todo: refactor!!! split these into components
@@ -273,7 +293,11 @@ class tableComponent extends AbstractParticleComponentParser {
     title Experimental. This is a very specific kind of Language.
    div
     id htmlCubeConsole
-    style position:relative;`
+    style position:relative;
+  td
+   div Fusion
+   pre
+    id fusionConsole`
   }
 }
 window.SandboxApp = SandboxApp

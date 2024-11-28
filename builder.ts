@@ -313,7 +313,7 @@ kitchen
 particle
 swim
 testRacer
-particleFileSystem
+fusion
 parsers
 utils
 particleComponentFramework`.split("\n")

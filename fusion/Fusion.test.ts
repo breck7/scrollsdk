@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 const { Particle } = require("../products/Particle.js")
-const { ParticleFileSystem } = require("../products/ParticleFileSystem.js")
+const { Fusion } = require("../products/Fusion.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
 import { particlesTypes } from "../products/particlesTypes"
@@ -9,9 +9,9 @@ import { particlesTypes } from "../products/particlesTypes"
 const testParticles: particlesTypes.testParticles = {}
 
 testParticles.disk = equal => {
-  const tfs = new ParticleFileSystem()
+  const tfs = new Fusion()
   // Arrange/Act/Assert
-  equal(tfs.assembleFile(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
+  equal(tfs.fuseFile(path.join(__dirname, "..", "readme.scroll")).fused.length > 0, true)
 }
 
 const stripImported = (str: string) => {
@@ -28,11 +28,11 @@ testParticles.inMemory = equal => {
     "/nested/test": "ciao",
     "/nested/deep/relative": "import ../../hello\nimport ../test"
   }
-  const tfs = new ParticleFileSystem(files)
+  const tfs = new Fusion(files)
   equal(tfs.dirname("/"), "/")
-  equal(stripImported(tfs.assembleFile("/main").afterImportPass), "world\nciao")
-  equal(stripImported(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
-  equal(tfs.assembleFile("/main").exists, true)
+  equal(stripImported(tfs.fuseFile("/main").fused), "world\nciao")
+  equal(stripImported(tfs.fuseFile("/nested/deep/relative").fused), "world\nciao")
+  equal(tfs.fuseFile("/main").exists, true)
 }
 
 testParticles.nonExistant = equal => {
@@ -40,9 +40,9 @@ testParticles.nonExistant = equal => {
   const files = {
     "/main": "import env"
   }
-  const tfs = new ParticleFileSystem(files)
-  const result = tfs.assembleFile("/main")
-  equal(stripImported(result.afterImportPass), "")
+  const tfs = new Fusion(files)
+  const result = tfs.fuseFile("/main")
+  equal(stripImported(result.fused), "")
   equal(result.exists, false)
 }
 
@@ -59,10 +59,10 @@ This is my content
     "/header.scroll": "printTitle",
     "/footer.scroll": "The end."
   }
-  const tfs = new ParticleFileSystem(files)
-  const result = tfs.assembleFile("/hello.scroll")
-  equal(result.afterImportPass.includes("This is my content"), true)
-  equal(result.afterImportPass.includes("The end"), false)
+  const tfs = new Fusion(files)
+  const result = tfs.fuseFile("/hello.scroll")
+  equal(result.fused.includes("This is my content"), true)
+  equal(result.fused.includes("The end"), false)
   equal(result.footers[0], "The end.")
 }
 
@@ -75,11 +75,11 @@ testParticles.quickImports = equal => {
     "/nested/a": "test.scroll",
     "/nested/deep/relative": "../../hello.scroll\n../test.scroll"
   }
-  const tfs = new ParticleFileSystem(files)
+  const tfs = new Fusion(files)
   equal(tfs.dirname("/"), "/")
-  equal(stripImported(tfs.assembleFile("/nested/a").afterImportPass), "ciao")
-  equal(stripImported(tfs.assembleFile("/main").afterImportPass), "world\nciao")
-  equal(stripImported(tfs.assembleFile("/nested/deep/relative").afterImportPass), "world\nciao")
+  equal(stripImported(tfs.fuseFile("/nested/a").fused), "ciao")
+  equal(stripImported(tfs.fuseFile("/main").fused), "world\nciao")
+  equal(stripImported(tfs.fuseFile("/nested/deep/relative").fused), "world\nciao")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testParticles)

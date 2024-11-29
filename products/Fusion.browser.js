@@ -297,7 +297,7 @@ class Fusion {
     _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
     return _parserCache[key]
   }
-  static combineParsers(filePaths, fileContents, baseParsersCode) {
+  static combineParsers(filePaths, fileContents, baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const mapped = fileContents.map((content, index) => {

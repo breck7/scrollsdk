@@ -396,7 +396,7 @@ class Fusion implements Storage {
     return _parserCache[key]
   }
 
-  static combineParsers(filePaths: string[], fileContents: string[], baseParsersCode: string) {
+  static combineParsers(filePaths: string[], fileContents: string[], baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
 

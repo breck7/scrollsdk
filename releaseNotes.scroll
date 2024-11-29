@@ -20,8 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
-📦 97.0.0 2024-11-28
+📦 97.0.0 2024-11-29
 # Fusion v2 Release
+🎉 Fusion is now async. Needed to support in-browser imports.
 🎉 new FusionFile class
 ⚠️ BREAKING: fusion API is now async. update all fuseFile to await fuseFile.
 

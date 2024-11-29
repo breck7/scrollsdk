@@ -74,6 +74,7 @@ class Patch {
 
 class TableSearchApp {
   constructor() {
+    this.processTableHeaders()
     this.createDatatable()
     this.bindToHashChange()
   }
@@ -95,8 +96,48 @@ class TableSearchApp {
     if (this.windowHash !== newHash) window.location.hash = newHash
   }
 
+  processTableHeaders() {
+    // Store date column information
+    this.dateColumns = new Map()
+
+    // Process table headers
+    const table = document.querySelector("table.scrollTable")
+    const headers = table.querySelectorAll("th")
+
+    headers.forEach((header, index) => {
+      const originalText = header.textContent
+      if (originalText.startsWith("last")) {
+        // Store the column index and the new name (without 'last')
+        const newName = originalText.slice(4) // Remove 'last' prefix
+        this.dateColumns.set(index, newName)
+        header.textContent = newName
+      }
+    })
+  }
+
+  createColumnDefs() {
+    const columnDefs = []
+    this.dateColumns.forEach((newName, index) => {
+      columnDefs.push({
+        targets: index,
+        render: (data, type) => {
+          if (type === "display") {
+            // Parse the date and return relative time
+            const timestamp = /^\d+$/.test(data) ? (String(data).length < 9 ? parseInt(data) * 1000 : parseInt(data)) : data
+            const date = dayjs(timestamp)
+            if (date.isValid()) {
+              return `<span title="${date.toLocaleString()}">${date.fromNow()}</span>`
+            }
+          }
+          // Return original data for sorting/filtering
+          return data
+        }
+      })
+    })
+    return columnDefs
+  }
+
   bindToHashChange() {
-    // Listen for hash changes to update the DataTable search
     window.addEventListener("hashchange", () => {
       this.dataTables.search(this.searchFromHash).order(this.orderFromHash).draw(false)
     })
@@ -106,13 +147,13 @@ class TableSearchApp {
     this.dataTables = jQuery("table.scrollTable").DataTable({
       paging: false,
       stateSave: true,
+      columnDefs: this.createColumnDefs(),
       stateSaveCallback: (settings, data) => {
         const order = data.order.map(([column, direction]) => `${column}.${direction}`).join(this.columnDelimiter)
         const patch = {
           q: data.search.search,
           order
         }
-
         this.setObjectOnHash(patch)
       },
       layout: {
@@ -125,7 +166,6 @@ class TableSearchApp {
           }
         }
       },
-      // Set the search input to the initial value extracted from the URL
       search: { search: this.searchFromHash },
       order: this.orderFromHash,
       stateLoadCallback: settings => {
@@ -149,10 +189,8 @@ class TableSearchApp {
 
       button.insertAdjacentHTML("afterend", newHTML)
 
-      // Get the newly added element by ID
       let newButton = document.getElementById(`expandToggle${ariaControls}`)
 
-      // Add an onclick handler (in case you want to do more complex actions)
       newButton.onclick = function () {
         this.innerHTML = this.innerHTML.includes("Expand") ? "Collapse" : "Expand"
         document.querySelector("#" + ariaControls).classList.toggle("expandedTable")

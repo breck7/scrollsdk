@@ -1,4 +1,4 @@
-Name	Values	Coverage	Question	Example	Type	Source	SortIndex	IsComputed	IsRequired	IsConceptDelimiter	Crux
+Name	Values	Coverage	Question	Example	Type	Source	SortIndex	IsComputed	IsRequired	IsConceptDelimiter	Cue
 version	390	100%	What is the semantic version number?	98.0.0	string		1		true	true	📦
 releaseDate	390	100%		2024-11-29	string		1.1	true	true		
 bugFixes	390	100%	How many bug fixes in this release?	0	number		1.2	true			

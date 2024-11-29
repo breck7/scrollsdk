@@ -1,6 +1,3 @@
-editBaseUrl https://github.com/breck7/scrollsdk/blob/main/
-
-editButton
 ScrollSDK
 =========
 Particles, Parsers, and other code for building Scroll
@@ -75,24 +72,33 @@ The ScrollSDK currently includes a number of libraries and apps to use (scripts 
 
 Basic Particles library for npm projects:
 =========================================
+```
 const {Particle} = require("scrollsdk/products/Particle.js")
 const particle = new Particle("hello world")
 console.log(particle.asString)
+```
 
 Basic Particles Library + Parsers for the browser:
 ==================================================
+```
+
+```
 
 Particles Sandbox web app for exploring base Particles
 ======================================================
+```
 npm install .
 npm run local
 open http://localhost:3333/
+```
 
 Parser Designer web app for building new Parsers
 ================================================
+```
 npm install .
 npm run local
 open http://localhost:3333/designer
+```
 
  Build Tools
 ============
@@ -100,8 +106,10 @@ If you look at the source, you will also see a set of build tools (such as Build
 
 Building all tools and running tests
 ====================================
+```
 npm run build
 npm test
+```
 
 *
 
@@ -137,7 +145,9 @@ If you are working on a Particles library in a new host language, feel free to p
 
 How to bump versions
 ====================
+```
 npm run updateVersion NEW_NUMBER
+```
 
 *
 
@@ -161,5 +171,4 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 ❤️ Public Domain ❤️
 ===================
 
-editButton
-Built with Scroll v136.12.0
+Built with Scroll v157.0.0

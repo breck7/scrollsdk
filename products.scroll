@@ -32,7 +32,7 @@ nodeProduct
  combineTypeScriptFiles utils/Utils.ts
 nodeProduct
  outputFileName Fusion.js
- insertLastLine module.exports = {Fusion}
+ insertLastLine module.exports = {Fusion, FusionFile}
  combineTypeScriptFiles fusion/Fusion.ts
 nodeProduct
  outputFileName Kitchen.node.js

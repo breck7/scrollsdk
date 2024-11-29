@@ -7,6 +7,14 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+97.0.0 2024-11-29
+=================
+Fusion v2 Release
+=================
+🎉 Fusion is now async. Needed to support in-browser imports.
+🎉 new FusionFile class
+⚠️ BREAKING: fusion API is now async. update all fuseFile to await fuseFile.
+
 96.0.0 2024-11-28
 =================
 Fusion v1 Release

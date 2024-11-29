@@ -27,19 +27,25 @@
 <p style="text-align: center;" class="scrollParagraph">Download as <a href="releaseNotes.csv">CSV</a> | <a href="releaseNotes.tsv">TSV</a> | <a href="releaseNotes.json">JSON</a></p>
 <br>
 <div class="scrollColumns" style="column-width:35ch;column-count:4;max-width:200ch;">
-<div class="scrollSection"><h1 class="scrollParagraph">96.0.0 2024-11-28</h1>
-<div class="scrollSection"><h1 class="scrollParagraph">Fusion v1 Release</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">97.0.0 2024-11-29</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">Fusion v2 Release</h1>
 <ul class="newFeatureParser"><style>
 .newFeatureParser li::marker {content: "🎉 ";}
 </style>
 
-<li >added Fusion console to sandbox</li>
-<li >basics of Fusion working in browser (async/url imports coming in next release)</li></ul>
+<li >Fusion is now async. Needed to support in-browser imports.</li>
+<li >new FusionFile class</li></ul>
 <ul class="breakingChangeParser"><style>
 .breakingChangeParser li::marker {content: "⚠️ ";}
 </style>
 
-<li >BREAKING: renamed ParticleFileSystem to Fusion</li>
+<li >BREAKING: fusion API is now async. update all fuseFile to await fuseFile.</li></ul>
+</div></div>
+<div class="scrollSection"><h1 class="scrollParagraph">96.0.0 2024-11-28</h1>
+<div class="scrollSection"><h1 class="scrollParagraph">Fusion v1 Release</h1>
+<ul class="newFeatureParser"><li >added Fusion console to sandbox</li>
+<li >basics of Fusion working in browser (async/url imports coming in next release)</li></ul>
+<ul class="breakingChangeParser"><li >BREAKING: renamed ParticleFileSystem to Fusion</li>
 <li >BREAKING: assembleFile is now fuseFile</li>
 <li >BREAKING: assembledFile is now fusedFile</li>
 <li >BREAKING: afterImportPass is now fused</li></ul>

@@ -76,10 +76,11 @@ This is my content
       "/footer.scroll": "The end.",
       "/main": particle.toString()
     }
-    const fusion = new Fusion(files)
-    const result = fusion.fuseFile("/main")
-    this.fused = result
-    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", result.fused)
+    const fs = new Fusion(files)
+    const file = new FusionFile(particle.toString(), "/main", fs)
+    await file.fuse()
+    this.file = file
+    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", file.fusedCode)
   }
   async particleComponentDidMount() {
     // todo: refactor!!! split these into components

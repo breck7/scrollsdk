@@ -2,7 +2,7 @@
 
 const { AbstractParticleComponentParser, ParticleComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/ParticleComponentFramework.node.js")
 const { Particle } = require("../products/Particle.js")
-const { Fusion } = require("../products/Fusion.js")
+const { Fusion, FusionFile } = require("../products/Fusion.js")
 
 // Todo: add inputs at the top to change the edge, particle, and atom delimiters.
 
@@ -94,10 +94,11 @@ This is my content
       "/footer.scroll": "The end.",
       "/main": particle.toString()
     }
-    const fusion = new Fusion(files)
-    const result = fusion.fuseFile("/main")
-    this.fused = result
-    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", result.fused)
+    const fs = new Fusion(files)
+    const file = new FusionFile(particle.toString(), "/main", fs)
+    await file.fuse()
+    this.file = file
+    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", file.fusedCode)
   }
 
   async particleComponentDidMount() {

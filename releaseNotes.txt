@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+98.0.0 2024-11-29
+=================
+🎉 Fusion now supports URL imports
+⚠️ BREAKING: (no one should be affected). Lines that are just a URL to a Scroll file now will attempt an import.
+
 97.0.0 2024-11-29
 =================
 Fusion v2 Release

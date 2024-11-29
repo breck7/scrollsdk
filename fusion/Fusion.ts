@@ -1,4 +1,4 @@
-const fs = require("fs").promises // Change to use promises version
+const fs = require("fs").promises
 const path = require("path")
 
 import { particlesTypes } from "../products/particlesTypes"
@@ -10,6 +10,7 @@ const parsersParser = require("../products/parsers.nodejs.js")
 const { posix } = require("../products/Path.js")
 
 const PARSERS_EXTENSION = ".parsers"
+const SCROLL_EXTENSION = ".scroll"
 
 interface OpenedFile {
   absolutePath: particlesTypes.filepath
@@ -39,16 +40,59 @@ interface Storage {
   join(...absolutePath: string[]): string
 }
 
+// Add URL regex pattern
+const urlRegex = /^https?:\/\/[^ ]+$/i
 const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
-// A regex to check if a multiline string has an import line.
-const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$)/gm
+const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$|https?:\/\/.+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
+
+const isUrl = (path: string) => urlRegex.test(path)
+
+// URL content cache
+const urlCache: { [url: string]: { content: string; timestamp: number } } = {}
+
+async function fetchWithCache(url: string) {
+  const now = Date.now()
+  const cached = urlCache[url]
+
+  if (cached) return cached
+
+  try {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+    const content = await response.text()
+
+    urlCache[url] = {
+      content,
+      timestamp: now,
+      exists: true
+    }
+  } catch (error) {
+    console.error(`Error fetching ${url}:`, error)
+    urlCache[url] = {
+      content: "",
+      timestamp: now,
+      exists: false
+    }
+  }
+  return urlCache[url]
+}
 
 class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
 
   async _read(absolutePath: particlesTypes.filepath) {
     const { fileCache } = this
+    if (isUrl(absolutePath)) {
+      const result = await fetchWithCache(absolutePath)
+      return {
+        absolutePath,
+        exists: result.exists,
+        content: result.content,
+        stats: { mtimeMs: Date.now(), ctimeMs: Date.now() }
+      }
+    }
+
     if (!fileCache[absolutePath]) {
       const exists = await fs
         .access(absolutePath)
@@ -65,6 +109,10 @@ class DiskWriter implements Storage {
   }
 
   async exists(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const result = await fetchWithCache(absolutePath)
+      return result.exists
+    }
     const file = await this._read(absolutePath)
     return file.exists
   }
@@ -75,32 +123,56 @@ class DiskWriter implements Storage {
   }
 
   async list(folder: string) {
+    if (isUrl(folder)) {
+      return [] // URLs don't support directory listing
+    }
     return Disk.getFiles(folder)
   }
 
   async write(fullPath: string, content: string) {
+    if (isUrl(fullPath)) {
+      throw new Error("Cannot write to URL")
+    }
     Disk.writeIfChanged(fullPath, content)
   }
 
   async getMTime(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const cached = urlCache[absolutePath]
+      return cached ? cached.timestamp : Date.now()
+    }
     const file = await this._read(absolutePath)
     return file.stats.mtimeMs
   }
 
   async getCTime(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const cached = urlCache[absolutePath]
+      return cached ? cached.timestamp : Date.now()
+    }
     const file = await this._read(absolutePath)
     return file.stats.ctimeMs
   }
 
   dirname(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      return absolutePath.substring(0, absolutePath.lastIndexOf("/"))
+    }
     return path.dirname(absolutePath)
   }
 
   join(...segments: string[]) {
-    return path.join(...arguments)
+    const firstSegment = segments[0]
+    if (isUrl(firstSegment)) {
+      // For URLs, we need to handle joining differently
+      const baseUrl = firstSegment.endsWith("/") ? firstSegment : firstSegment + "/"
+      return new URL(segments.slice(1).join("/"), baseUrl).toString()
+    }
+    return path.join(...segments)
   }
 }
 
+// Update MemoryWriter to support URLs
 class MemoryWriter implements Storage {
   constructor(inMemoryFiles: particlesTypes.diskMap) {
     this.inMemoryFiles = inMemoryFiles
@@ -109,6 +181,10 @@ class MemoryWriter implements Storage {
   inMemoryFiles: particlesTypes.diskMap
 
   async read(absolutePath: particlesTypes.filepath) {
+    if (isUrl(absolutePath)) {
+      const result = await fetchWithCache(absolutePath)
+      return result.content
+    }
     const value = this.inMemoryFiles[absolutePath]
     if (value === undefined) {
       return ""
@@ -117,31 +193,57 @@ class MemoryWriter implements Storage {
   }
 
   async exists(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const result = await fetchWithCache(absolutePath)
+      return result.exists
+    }
     return this.inMemoryFiles[absolutePath] !== undefined
   }
 
   async write(absolutePath: particlesTypes.filepath, content: string) {
+    if (isUrl(absolutePath)) {
+      throw new Error("Cannot write to URL")
+    }
     this.inMemoryFiles[absolutePath] = content
   }
 
   async list(absolutePath: particlesTypes.filepath) {
+    if (isUrl(absolutePath)) {
+      return []
+    }
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
 
-  async getMTime() {
+  async getMTime(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const cached = urlCache[absolutePath]
+      return cached ? cached.timestamp : Date.now()
+    }
     return 1
   }
 
-  async getCTime() {
+  async getCTime(absolutePath: string) {
+    if (isUrl(absolutePath)) {
+      const cached = urlCache[absolutePath]
+      return cached ? cached.timestamp : Date.now()
+    }
     return 1
   }
 
   dirname(path: string) {
+    if (isUrl(path)) {
+      return path.substring(0, path.lastIndexOf("/"))
+    }
     return posix.dirname(path)
   }
 
   join(...segments: string[]) {
-    return posix.join(...arguments)
+    const firstSegment = segments[0]
+    if (isUrl(firstSegment)) {
+      const baseUrl = firstSegment.endsWith("/") ? firstSegment : firstSegment + "/"
+      return new URL(segments.slice(1).join("/"), baseUrl).toString()
+    }
+    return posix.join(...segments)
   }
 }
 
@@ -259,27 +361,27 @@ class Fusion implements Storage {
   private _expandedImportCache: { [filepath: string]: FusedFile } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
-  private async _getFileAsParticles(absoluteFilePath: string) {
+  private async _getFileAsParticles(absoluteFilePathOrUrl: string) {
     const { _particleCache } = this
-    if (_particleCache[absoluteFilePath] === undefined) {
-      const content = await this._storage.read(absoluteFilePath)
-      _particleCache[absoluteFilePath] = new Particle(content)
+    if (_particleCache[absoluteFilePathOrUrl] === undefined) {
+      const content = await this._storage.read(absoluteFilePathOrUrl)
+      _particleCache[absoluteFilePathOrUrl] = new Particle(content)
     }
-    return _particleCache[absoluteFilePath]
+    return _particleCache[absoluteFilePathOrUrl]
   }
 
-  private async _fuseFile(absoluteFilePath: string): Promise<FusedFile> {
+  private async _fuseFile(absoluteFilePathOrUrl: string): Promise<FusedFile> {
     const { _expandedImportCache } = this
-    if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
+    if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
 
-    const [code, exists] = await Promise.all([this.read(absoluteFilePath), this.exists(absoluteFilePath)])
+    const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
 
     const isImportOnly = importOnlyRegex.test(code)
 
     // Perf hack
     // If its a parsers file, it will have no content, just parsers (and maybe imports).
     // The parsers will already have been processed. We can skip them
-    const stripParsers = absoluteFilePath.endsWith(PARSERS_EXTENSION)
+    const stripParsers = absoluteFilePathOrUrl.endsWith(PARSERS_EXTENSION)
     const processedCode = stripParsers
       ? code
           .split("\n")
@@ -288,8 +390,8 @@ class Fusion implements Storage {
       : code
 
     const filepathsWithParserDefinitions = []
-    if (await this._doesFileHaveParsersDefinitions(absoluteFilePath)) {
-      filepathsWithParserDefinitions.push(absoluteFilePath)
+    if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
+      filepathsWithParserDefinitions.push(absoluteFilePathOrUrl)
     }
 
     if (!importRegex.test(processedCode)) {
@@ -304,20 +406,21 @@ class Fusion implements Storage {
     }
 
     const particle = new Particle(processedCode)
-    const folder = this.dirname(absoluteFilePath)
+    const folder = this.dirname(absoluteFilePathOrUrl)
 
     // Fetch all imports in parallel
     const importParticles = particle.filter(particle => particle.getLine().match(importRegex))
     const importResults = importParticles.map(async importParticle => {
-      const relativeFilePath = importParticle.getLine().replace("import ", "")
-      const absoluteImportFilePath = this.join(folder, relativeFilePath)
+      const rawPath = importParticle.getLine().replace("import ", "")
+      let absoluteImportFilePath = this.join(folder, rawPath)
+      if (isUrl(rawPath)) absoluteImportFilePath = rawPath
+      else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
 
       // todo: race conditions
       const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath), this.exists(absoluteImportFilePath)])
       return {
         expandedFile,
         exists,
-        relativeFilePath,
         absoluteImportFilePath,
         importParticle
       }
@@ -329,11 +432,11 @@ class Fusion implements Storage {
     let importFilePaths: string[] = []
     let footers: string[] = []
     imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, relativeFilePath, exists } = importResults
+      const { importParticle, absoluteImportFilePath, expandedFile, exists } = importResults
       importFilePaths.push(absoluteImportFilePath)
       importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
 
-      importParticle.setLine("imported " + relativeFilePath)
+      importParticle.setLine("imported " + absoluteImportFilePath)
       importParticle.set("exists", `${exists}`)
 
       footers = footers.concat(expandedFile.footers)
@@ -345,7 +448,7 @@ class Fusion implements Storage {
 
     const allImportsExist = !existStates.some(exists => !exists)
 
-    _expandedImportCache[absoluteFilePath] = {
+    _expandedImportCache[absoluteFilePathOrUrl] = {
       importFilePaths,
       isImportOnly,
       fused: particle.toString(),
@@ -364,17 +467,17 @@ class Fusion implements Storage {
         .concat(filepathsWithParserDefinitions)
     }
 
-    return _expandedImportCache[absoluteFilePath]
+    return _expandedImportCache[absoluteFilePathOrUrl]
   }
 
-  private async _doesFileHaveParsersDefinitions(absoluteFilePath: particlesTypes.filepath) {
-    if (!absoluteFilePath) return false
+  private async _doesFileHaveParsersDefinitions(absoluteFilePathOrUrl: particlesTypes.filepath) {
+    if (!absoluteFilePathOrUrl) return false
     const { _parsersExpandersCache } = this
-    if (_parsersExpandersCache[absoluteFilePath] === undefined) {
-      const content = await this._storage.read(absoluteFilePath)
-      _parsersExpandersCache[absoluteFilePath] = !!content.match(parserRegex)
+    if (_parsersExpandersCache[absoluteFilePathOrUrl] === undefined) {
+      const content = await this._storage.read(absoluteFilePathOrUrl)
+      _parsersExpandersCache[absoluteFilePathOrUrl] = !!content.match(parserRegex)
     }
-    return _parsersExpandersCache[absoluteFilePath]
+    return _parsersExpandersCache[absoluteFilePathOrUrl]
   }
 
   private async _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
@@ -424,8 +527,8 @@ class Fusion implements Storage {
     return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
 
-  async fuseFile(absoluteFilePath: string, defaultParserCode?: string): Promise<FusedFile> {
-    const fusedFile = await this._fuseFile(absoluteFilePath)
+  async fuseFile(absoluteFilePathOrUrl: string, defaultParserCode?: string): Promise<FusedFile> {
+    const fusedFile = await this._fuseFile(absoluteFilePathOrUrl)
 
     if (!defaultParserCode) return fusedFile
 

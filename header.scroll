@@ -4,7 +4,7 @@ metaTags
 theme gazette
 homeButton
 leftRightButtons
-viewSourceButton
+editButton
 buildTxt
 buildHtml
 favicon images/favicon.ico

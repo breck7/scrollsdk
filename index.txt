@@ -1,3 +1,6 @@
+editBaseUrl https://github.com/breck7/scrollsdk/blob/main/
+
+editButton
 ScrollSDK
 =========
 Particles, Parsers, and other code for building Scroll
@@ -158,4 +161,5 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 ❤️ Public Domain ❤️
 ===================
 
+editButton
 Built with Scroll v136.12.0

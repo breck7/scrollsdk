@@ -3,5 +3,5 @@ endColumns
 center
 emailButton sdk@scroll.pub
 downloadButton
-viewSourceButton
+editButton
 scrollVersionLink

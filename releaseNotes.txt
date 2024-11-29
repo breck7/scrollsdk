@@ -1,3 +1,7 @@
+editBaseUrl https://github.com/breck7/scrollsdk/blob/main/
+
+editButton
+
 Release Notes
 =============
 
@@ -2343,4 +2347,5 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
+editButton
 Built with Scroll v136.12.0

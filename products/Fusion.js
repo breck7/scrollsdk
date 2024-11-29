@@ -105,23 +105,21 @@ class FusionFile {
     this.timestamp = 0
     this.importOnly = false
   }
-  async loadCodeAtStart() {
+  async readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
     const { filePath } = this
     if (!filePath) {
       this.codeAtStart = ""
       return this
     }
-    // PASS 1: READ FULL FILE
     this.codeAtStart = await this.fileSystem.read(filePath)
   }
   get isFused() {
     return this.fusedCode !== undefined
   }
-  async loadDefaultParser() {}
   async fuse() {
-    await this.loadCodeAtStart()
-    await this.loadDefaultParser()
+    // PASS 1: READ FULL FILE
+    await this.readCodeFromStorage()
     const { codeAtStart, fileSystem, filePath, defaultParserCode } = this
     // PASS 2: READ AND REPLACE IMPORTs
     let fusedCode = codeAtStart
@@ -149,6 +147,7 @@ class FusionFile {
     return true
   }
 }
+let fusionIdNumber = 0
 class Fusion {
   constructor(inMemoryFiles) {
     this.productCache = {}
@@ -161,6 +160,8 @@ class Fusion {
     this.folderCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
+    fusionIdNumber = fusionIdNumber + 1
+    this.fusionId = fusionIdNumber
   }
   async read(absolutePath) {
     return await this._storage.read(absolutePath)
@@ -290,23 +291,8 @@ class Fusion {
     return _parsersExpandersCache[absoluteFilePath]
   }
   async _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
-    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
-    const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
-    const fileContents = await Promise.all(
-      filePaths.map(async filePath => {
-        const content = await this._storage.read(filePath)
-        if (filePath.endsWith(PARSERS_EXTENSION)) return content
-        return new Particle(content)
-          .filter(particle => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(atomDefinitionRegex))
-          .map(particle => particle.asString)
-          .join("\n")
-      })
-    )
-    const asOneFile = fileContents.join("\n").trim()
-    return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
-  }
-  get parsers() {
-    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+    const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
+    return Fusion.combineParsers(filePaths, fileContents, baseParsersCode)
   }
   async getParser(filePaths, baseParsersCode = "") {
     const { _parserCache } = this
@@ -316,14 +302,31 @@ class Fusion {
       .join("\n")
     const hit = _parserCache[key]
     if (hit) return hit
-    const parsersParser = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    const parsersCode = parsersParser.asString
-    _parserCache[key] = {
-      parsersParser,
+    _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    return _parserCache[key]
+  }
+  static combineParsers(filePaths, fileContents, baseParsersCode) {
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
+    const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
+    const mapped = fileContents.map((content, index) => {
+      const filePath = filePaths[index]
+      if (filePath.endsWith(PARSERS_EXTENSION)) return content
+      return new Particle(content)
+        .filter(particle => particle.getLine().match(parserDefinitionRegex) || particle.getLine().match(atomDefinitionRegex))
+        .map(particle => particle.asString)
+        .join("\n")
+    })
+    const asOneFile = mapped.join("\n").trim()
+    const sorted = new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
+    const parsersCode = sorted.asString
+    return {
+      parsersParser: sorted,
       parsersCode,
       parser: new HandParsersProgram(parsersCode).compileAndReturnRootParser()
     }
-    return _parserCache[key]
+  }
+  get parsers() {
+    return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
   async fuseFile(absoluteFilePath, defaultParserCode) {
     const fusedFile = await this._fuseFile(absoluteFilePath)
@@ -344,14 +347,13 @@ class Fusion {
     this.parsedFiles[absolutePath] = file
     return file
   }
-  async getLoadedFilesInFolder(folderPath, extension) {
-    return await this._getLoadedFilesInFolder(folderPath, extension)
-  }
-  getCachedLoadedFilesInFolder(folderPath, extension) {
+  getCachedLoadedFilesInFolder(folderPath, requester) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
-    return this.folderCache[folderPath] || []
+    const hit = this.folderCache[folderPath]
+    if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.fusionId}'. Requested by '${requester.filePath}'`)
+    return hit || []
   }
-  async _getLoadedFilesInFolder(folderPath, extension) {
+  async getLoadedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
     if (this.folderCache[folderPath]) return this.folderCache[folderPath]
     const allFiles = await this.list(folderPath)

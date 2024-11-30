@@ -247,6 +247,15 @@ class MemoryWriter implements Storage {
   }
 }
 
+class EmptyScrollParser extends Particle {
+  evalMacros(fusionFile: any) {
+    return fusionFile.fusedCode
+  }
+  setFile(fusionFile: any) {
+    this.file = fusionFile
+  }
+}
+
 class FusionFile {
   constructor(codeAtStart: string, absoluteFilePath = "", fileSystem = new Fusion({})) {
     this.fileSystem = fileSystem
@@ -276,12 +285,13 @@ class FusionFile {
   async fuse() {
     // PASS 1: READ FULL FILE
     await this.readCodeFromStorage()
-    const { codeAtStart, fileSystem, filePath, defaultParserCode } = this
+    const { codeAtStart, fileSystem, filePath, defaultParserCode, defaultParser } = this
     // PASS 2: READ AND REPLACE IMPORTs
     let fusedCode = codeAtStart
+    let fusedFile
     if (filePath) {
       this.timestamp = await fileSystem.getCTime(filePath)
-      const fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
+      fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
       this.importOnly = fusedFile.isImportOnly
       fusedCode = fusedFile.fused
       if (fusedFile.footers.length) fusedCode += "\n" + fusedFile.footers.join("\n")
@@ -289,11 +299,17 @@ class FusionFile {
       this.fusedFile = fusedFile
     }
     this.fusedCode = fusedCode
-    this.parseCode()
+
+    const tempProgram = new defaultParser()
+    // PASS 3: READ AND REPLACE MACROS. PARSE AND REMOVE MACROS DEFINITIONS THEN REPLACE REFERENCES.
+    const codeAfterMacroPass = tempProgram.evalMacros(this)
+    this.codeAfterMacroPass = codeAfterMacroPass
+    this.parser = fusedFile?.parser || defaultParser
+    // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
+    this.scrollProgram = new this.parser(codeAfterMacroPass)
+    this.scrollProgram.setFile(this)
     return this
   }
-
-  parseCode() {}
 
   get formatted() {
     return this.codeAtStart
@@ -307,6 +323,7 @@ class FusionFile {
   }
 
   defaultParserCode = ""
+  defaultParser = EmptyScrollParser
 }
 let fusionIdNumber = 0
 class Fusion implements Storage {

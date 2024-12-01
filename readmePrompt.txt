@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 99.1.0 2024-12-01
+🎉 new `bitsRequired` method
+🎉 started adding infra for built-in complexity measurements
+
 📦 99.0.0 2024-11-30
 🎉 Fusion now handles all 4 parser passes
 ⚠️ BREAKING: (no one should be affected). Fusion API changed. No longer any `parseCode` method.

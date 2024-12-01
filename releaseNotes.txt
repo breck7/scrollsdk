@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+99.1.0 2024-12-01
+=================
+🎉 new `bitsRequired` method
+🎉 started adding infra for built-in complexity measurements
+
 99.0.0 2024-11-30
 =================
 🎉 Fusion now handles all 4 parser passes

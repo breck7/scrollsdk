@@ -41,8 +41,10 @@ integerAtom
 onoffAtom
  enum on off
 atomAtom
+keywordAtom
 topLevelPropertyAtom
  paint constant.language
+ extends keywordAtom
 opSymbolAtom
  paint keyword.operator.arithmetic
 

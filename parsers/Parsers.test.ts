@@ -651,6 +651,16 @@ anyAtom`
   }
 }
 
+testParticles.informationContent = equal => {
+  // Test bit atom
+  const bitProgram = makeJibberishProgram("lightbulbState on")
+  const bitParticle = bitProgram.particleAt(0)
+  const atom = bitParticle.parsedAtoms[1]
+  equal(atom.bitsRequired, 1, "bit atom should have 1 bit of information")
+  equal(bitParticle.parsedAtoms[0].bitsRequired, 0, "cue word should have 0 bits of information. particle is fixed.")
+  equal(bitParticle.bitsRequired, 1, "bit particle should have 1 bit of information")
+}
+
 testParticles.duplicateParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`type foo

@@ -228,6 +228,22 @@ abstract class ParserBackedParticle extends Particle {
     return newIndex
   }
 
+  /**
+   * Returns the total information bits required to represent this particle and all its subparticles.
+   * This is calculated as the sum of:
+   * 1. Information bits of all atoms in this particle
+   * 2. Information bits of all subparticles (recursive)
+   */
+  get bitsRequired(): number {
+    // Get information bits for all atoms in this particle
+    const atomBits = this.parsedAtoms.map(atom => atom.bitsRequired).reduce((sum, bits) => sum + bits, 0)
+
+    // Recursively get information bits from all subparticles
+    const subparticleBits = this.map(child => (<ParserBackedParticle>child).bitsRequired).reduce((sum, bits) => sum + bits, 0)
+
+    return atomBits + subparticleBits
+  }
+
   getSubparticleInstancesOfParserId(parserId: particlesTypes.parserId): ParserBackedParticle[] {
     return this.particleIndex[parserId] || []
   }
@@ -773,6 +789,13 @@ abstract class AbstractParsersBackedAtom<T> {
     this._parserDefinitionParser = parserDefinitionParser
   }
 
+  get optionCount() {
+    return this._typeDef.optionCount
+  }
+  get bitsRequired() {
+    return Math.log2(this.optionCount)
+  }
+
   getAtom() {
     return this._particle.getAtom(this._index)
   }
@@ -909,6 +932,10 @@ class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
     return atom === "0" || atom === "1"
   }
 
+  get optionCount() {
+    return 2
+  }
+
   static defaultPaint = "constant.numeric"
 
   _synthesizeAtom() {
@@ -944,6 +971,12 @@ class ParsersIntegerAtom extends ParsersNumberAtom {
     return num.toString() === atom
   }
 
+  get optionCount() {
+    const minVal = parseInt(this.min) || -Infinity
+    const maxVal = parseInt(this.max) || Infinity
+    return maxVal - minVal + 1
+  }
+
   static defaultPaint = "constant.numeric.integer"
 
   _synthesizeAtom(seed: number) {
@@ -967,6 +1000,14 @@ class ParsersFloatAtom extends ParsersNumberAtom {
     const atom = this.getAtom()
     const num = parseFloat(atom)
     return !isNaN(num) && /^-?\d*(\.\d+)?([eE][+-]?\d+)?$/.test(atom)
+  }
+
+  get optionCount() {
+    // For floats, we'll estimate based on typical float32 precision
+    // ~7 decimal digits of precision
+    const minVal = parseInt(this.min) || -Infinity
+    const maxVal = parseInt(this.max) || Infinity
+    return (maxVal - minVal) * Math.pow(10, 7)
   }
 
   static defaultPaint = "constant.numeric.float"
@@ -997,6 +1038,10 @@ class ParsersBooleanAtom extends AbstractParsersBackedAtom<boolean> {
     const atom = this.getAtom()
     const str = atom.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
+  }
+
+  get optionCount() {
+    return 2
   }
 
   static defaultPaint = "constant.language"
@@ -1044,6 +1089,10 @@ class ParsersKeywordAtom extends ParsersAnyAtom {
 
   _synthesizeAtom() {
     return this._parserDefinitionParser.cueIfAny
+  }
+
+  get optionCount() {
+    return 1
   }
 }
 
@@ -1540,6 +1589,12 @@ class atomTypeDefinitionParser extends AbstractExtendibleParticle {
     options.sort((a, b) => b.length - a.length)
 
     return options
+  }
+
+  get optionCount() {
+    const enumOptions = this._getEnumOptions()
+    if (enumOptions) return enumOptions.length
+    return Infinity
   }
 
   private _getEnumFromAtomTypeOptions(program: ParserBackedParticle) {

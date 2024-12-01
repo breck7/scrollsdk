@@ -1,5 +1,12 @@
 [
   {
+    "version": "99.1.0",
+    "releaseDate": "2024-12-01",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
     "version": "99.0.0",
     "releaseDate": "2024-11-30",
     "bugFixes": 0,

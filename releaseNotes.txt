@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+99.0.0 2024-11-30
+=================
+🎉 Fusion now handles all 4 parser passes
+⚠️ BREAKING: (no one should be affected). Fusion API changed. No longer any `parseCode` method.
+
 98.0.0 2024-11-29
 =================
 🎉 Fusion now supports URL imports

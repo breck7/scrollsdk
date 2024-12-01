@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 99.0.0 2024-11-30
+🎉 Fusion now handles all 4 parser passes
+⚠️ BREAKING: (no one should be affected). Fusion API changed. No longer any `parseCode` method.
+
 📦 98.0.0 2024-11-29
 🎉 Fusion now supports URL imports
 ⚠️ BREAKING: (no one should be affected). Lines that are just a URL to a Scroll file now will attempt an import.

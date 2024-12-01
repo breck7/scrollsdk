@@ -2,6 +2,7 @@
 
 var GetIntrinsic = require('get-intrinsic');
 
+/** @type {import('.')} */
 var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 
 if ($gOPD) {

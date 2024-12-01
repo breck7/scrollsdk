@@ -5,15 +5,22 @@ var gPO = require('reflect.getprototypeof/polyfill')();
 var gOPD = require('gopd');
 
 var hasProto = require('../');
+var hasProtoMutator = require('../mutator');
 
 var getter = require('../helpers/getDunder');
 
-test('hasProto', function (t) {
-	var result = hasProto();
+test('hasProtoMutator', function (t) {
+	var result = hasProtoMutator();
 	t.equal(typeof result, 'boolean', 'returns a boolean (' + result + ')');
 
 	var obj = { __proto__: null };
 	if (result) {
+		t.notOk('toString' in obj, 'null object lacks toString');
+		t.equal(gPO(obj), null);
+		if (gOPD && getter) {
+			t.equal(getter(obj), null);
+		}
+	} else if (hasProto()) {
 		t.notOk('toString' in obj, 'null object lacks toString');
 		if (gOPD && getter) {
 			t.equal(getter(obj), null);
@@ -25,4 +32,3 @@ test('hasProto', function (t) {
 
 	t.end();
 });
-

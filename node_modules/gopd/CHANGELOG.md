@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.0](https://github.com/ljharb/gopd/compare/v1.1.0...v1.2.0) - 2024-12-03
+
+### Commits
+
+- [New] add `gOPD` entry point; remove `get-intrinsic` [`5b61232`](https://github.com/ljharb/gopd/commit/5b61232dedea4591a314bcf16101b1961cee024e)
+
 ## [v1.1.0](https://github.com/ljharb/gopd/compare/v1.0.1...v1.1.0) - 2024-11-29
 
 ### Commits

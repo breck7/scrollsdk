@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+99.2.0 2024-12-04
+=================
+🎉 Fusion now makes max 1 request per url
+
 99.1.0 2024-12-01
 =================
 🎉 new `bitsRequired` method

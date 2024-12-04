@@ -48,8 +48,9 @@ const importOnlyRegex = /^importOnly/
 
 const isUrl = (path: string) => urlRegex.test(path)
 
-// URL content cache
-const urlCache: { [url: string]: { content: string; timestamp: number } } = {}
+// URL content cache with pending requests tracking
+const urlCache: { [url: string]: { content: string; timestamp: number; exists: boolean } } = {}
+const pendingRequests: { [url: string]: Promise<{ content: string; timestamp: number; exists: boolean }> } = {}
 
 async function fetchWithCache(url: string) {
   const now = Date.now()
@@ -57,25 +58,42 @@ async function fetchWithCache(url: string) {
 
   if (cached) return cached
 
-  try {
-    const response = await fetch(url)
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-    const content = await response.text()
-
-    urlCache[url] = {
-      content,
-      timestamp: now,
-      exists: true
-    }
-  } catch (error) {
-    console.error(`Error fetching ${url}:`, error)
-    urlCache[url] = {
-      content: "",
-      timestamp: now,
-      exists: false
-    }
+  // If there's already a pending request for this URL, return that promise
+  if (pendingRequests[url]) {
+    return pendingRequests[url]
   }
-  return urlCache[url]
+
+  // Create new request and store in pending
+  const requestPromise = (async () => {
+    try {
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+      const content = await response.text()
+
+      const result = {
+        content,
+        timestamp: now,
+        exists: true
+      }
+
+      urlCache[url] = result
+      return result
+    } catch (error) {
+      console.error(`Error fetching ${url}:`, error)
+      const result = {
+        content: "",
+        timestamp: now,
+        exists: false
+      }
+      urlCache[url] = result
+      return result
+    } finally {
+      delete pendingRequests[url]
+    }
+  })()
+
+  pendingRequests[url] = requestPromise
+  return requestPromise
 }
 
 class DiskWriter implements Storage {

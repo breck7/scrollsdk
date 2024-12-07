@@ -2241,9 +2241,18 @@ ${captures}
     return this._cache_ancestorParserIdsArray
   }
 
+  _isLooping = false
   protected _cache_parserDefinitionParsers: { [parserId: string]: parserDefinitionParser }
   get programParserDefinitionCache() {
-    if (!this._cache_parserDefinitionParsers) this._cache_parserDefinitionParsers = this.isRoot || this.hasParserDefinitions ? this.makeProgramParserDefinitionCache() : this.parent.programParserDefinitionCache
+    if (!this._cache_parserDefinitionParsers) {
+      if (this._isLooping) throw new Error(`Loop detected in ${this.id}`)
+      this._isLooping = true
+      this._cache_parserDefinitionParsers =
+        this.isRoot() || this.hasParserDefinitions
+          ? this.makeProgramParserDefinitionCache()
+          : this.parent.programParserDefinitionCache[this.get(ParsersConstants.extends)]?.programParserDefinitionCache || this.parent.programParserDefinitionCache
+      this._isLooping = false
+    }
     return this._cache_parserDefinitionParsers
   }
 

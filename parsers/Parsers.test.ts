@@ -670,6 +670,37 @@ type bar`)
   equal(anyProgram.getAllErrors().length, 2)
 }
 
+testParticles.extendsScope = equal => {
+  // Arange
+  const rootParser = new HandParsersProgram(`cueAtom
+newlangParser
+ root
+ catchAllParser catchAllErrorParser
+ inScope rootParser
+rootParser
+videoParser
+ extends rootParser
+ atoms cueAtom
+ cueFromId
+ widthParser
+  cueFromId
+  atoms cueAtom
+quickVideoParser
+ cue qv
+ extends videoParser
+catchAllErrorParser
+ baseParser errorParser`).compileAndReturnRootParser()
+  const program = `video
+ width
+qv
+ width`
+
+  //  console.log(new rootParser(program).definition.toBrowserJavascript())
+
+  // Act
+  equal(new rootParser(program).getAllErrors().length, 0)
+}
+
 testParticles.abstractParsers = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`someAbstractClass

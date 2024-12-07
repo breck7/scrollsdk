@@ -1443,6 +1443,10 @@ class ParsersParserConstantString extends AbstractParserConstantParser {
 class ParsersParserConstantFloat extends AbstractParserConstantParser {}
 class ParsersParserConstantBoolean extends AbstractParserConstantParser {}
 class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
+  constructor() {
+    super(...arguments)
+    this._isLooping = false
+  }
   createParserCombinator() {
     // todo: some of these should just be on nonRootParticles
     const types = [
@@ -1803,9 +1807,19 @@ ${captures}
     return this._cache_ancestorParserIdsArray
   }
   get programParserDefinitionCache() {
-    if (!this._cache_parserDefinitionParsers) this._cache_parserDefinitionParsers = this.isRoot || this.hasParserDefinitions ? this.makeProgramParserDefinitionCache() : this.parent.programParserDefinitionCache
+    var _a
+    if (!this._cache_parserDefinitionParsers) {
+      if (this._isLooping) throw new Error(`Loop detected in ${this.id}`)
+      this._isLooping = true
+      this._cache_parserDefinitionParsers =
+        this.isRoot() || this.hasParserDefinitions
+          ? this.makeProgramParserDefinitionCache()
+          : ((_a = this.parent.programParserDefinitionCache[this.get(ParsersConstants.extends)]) === null || _a === void 0 ? void 0 : _a.programParserDefinitionCache) || this.parent.programParserDefinitionCache
+      this._isLooping = false
+    }
     return this._cache_parserDefinitionParsers
   }
+  get extendedDef() {}
   get hasParserDefinitions() {
     return !!this.getSubparticlesByParser(parserDefinitionParser).length
   }

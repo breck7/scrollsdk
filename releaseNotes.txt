@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+100.0.1 2024-12-07
+==================
+🏥 fixed bug in Parsers where inline Parsers were not in scope in child Parsers
+
 100.0.0 2024-12-07
 ==================
 🎉 Finished migrating "keywordAtom" to "cueAtom"

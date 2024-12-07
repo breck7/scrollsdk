@@ -16,7 +16,7 @@
 
 // Atom Parsers
 anyAtom
-keywordAtom
+cueAtom
  paint keyword
 stringAtom
  paint string
@@ -38,7 +38,7 @@ dugParser
    return JSON.stringify(JSON.parse(res), null, 2)
   }
 abstractValueParser
- atoms keywordAtom
+ atoms cueAtom
  cueFromId
 nullParser
  compiler
@@ -46,7 +46,7 @@ nullParser
  extends abstractValueParser
 numberParser
  extends abstractValueParser
- atoms keywordAtom numberAtom
+ atoms cueAtom numberAtom
  compiler
   stringTemplate {numberAtom}
 stringParser
@@ -56,7 +56,7 @@ stringParser
  extends abstractValueParser
 booleanParser
  extends abstractValueParser
- atoms keywordAtom booleanAtom
+ atoms cueAtom booleanAtom
  compiler
   stringTemplate {booleanAtom}
 objectParser
@@ -89,7 +89,7 @@ errorParser
   }
 
   class abstractValueParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
@@ -97,7 +97,7 @@ errorParser
   class nullParser extends abstractValueParser {}
 
   class numberParser extends abstractValueParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get numberAtom() {
@@ -112,7 +112,7 @@ errorParser
   }
 
   class booleanParser extends abstractValueParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get booleanAtom() {

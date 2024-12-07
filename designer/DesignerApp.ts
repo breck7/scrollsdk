@@ -50,7 +50,7 @@ class DesignerApp extends AbstractParticleComponentParser {
   }
 
   inferPrefixParsersCommand() {
-    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
+    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForACueLanguage("inferredLanguage"))
     this._onParsersKeyup()
   }
 
@@ -535,7 +535,7 @@ class tableComponent extends AbstractParticleComponentParser {
  tr
   td
    span Your Parsers &nbsp;
-   a Infer Prefix Parsers
+   a Infer Cue Parsers
     clickCommand inferPrefixParsersCommand
    span  | &nbsp;
    a Synthesize Program

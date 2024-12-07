@@ -21,7 +21,7 @@ var ParsersConstantsMisc
 var PreludeAtomTypeIds
 ;(function (PreludeAtomTypeIds) {
   PreludeAtomTypeIds["anyAtom"] = "anyAtom"
-  PreludeAtomTypeIds["keywordAtom"] = "keywordAtom"
+  PreludeAtomTypeIds["cueAtom"] = "cueAtom"
   PreludeAtomTypeIds["extraAtomAtom"] = "extraAtomAtom"
   PreludeAtomTypeIds["floatAtom"] = "floatAtom"
   PreludeAtomTypeIds["numberAtom"] = "numberAtom"
@@ -203,17 +203,17 @@ class ParserBackedParticle extends Particle {
     return BlobParser
   }
   _getAutocompleteResultsForCue(partialAtom) {
-    const keywordMap = this.definition.cueMapWithDefinitions
-    let keywords = Object.keys(keywordMap)
-    if (partialAtom) keywords = keywords.filter(keyword => keyword.includes(partialAtom))
-    return keywords
-      .map(keyword => {
-        const def = keywordMap[keyword]
+    const cueMap = this.definition.cueMapWithDefinitions
+    let cues = Object.keys(cueMap)
+    if (partialAtom) cues = cues.filter(cue => cue.includes(partialAtom))
+    return cues
+      .map(cue => {
+        const def = cueMap[cue]
         if (def.suggestInAutocomplete === false) return false
         const description = def.description
         return {
-          text: keyword,
-          displayText: keyword + (description ? " " + description : "")
+          text: cue,
+          displayText: cue + (description ? " " + description : "")
         }
       })
       .filter(i => i)
@@ -867,7 +867,7 @@ class ParsersAnyAtom extends AbstractParsersBackedAtom {
     return this.getAtom()
   }
 }
-class ParsersKeywordAtom extends ParsersAnyAtom {
+class ParsersCueAtom extends ParsersAnyAtom {
   _synthesizeAtom() {
     return this._parserDefinitionParser.cueIfAny
   }
@@ -875,7 +875,7 @@ class ParsersKeywordAtom extends ParsersAnyAtom {
     return 1
   }
 }
-ParsersKeywordAtom.defaultPaint = "keyword"
+ParsersCueAtom.defaultPaint = "keyword"
 class ParsersExtraAtomAtomTypeAtom extends AbstractParsersBackedAtom {
   _isValid() {
     return false
@@ -1826,7 +1826,7 @@ ${captures}
   }
   _toStumpString() {
     const cue = this.cueIfAny
-    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for keyword langs
+    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for cue langs
     if (!atomArray.length)
       // todo: remove this! just doing it for now until we refactor getAtomArray to handle catchAlls better.
       return ""
@@ -2275,7 +2275,7 @@ HandParsersProgram._languages = {}
 HandParsersProgram._parsers = {}
 const PreludeKinds = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
-PreludeKinds[PreludeAtomTypeIds.keywordAtom] = ParsersKeywordAtom
+PreludeKinds[PreludeAtomTypeIds.cueAtom] = ParsersCueAtom
 PreludeKinds[PreludeAtomTypeIds.floatAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.numberAtom] = ParsersFloatAtom
 PreludeKinds[PreludeAtomTypeIds.bitAtom] = ParsersBitAtom
@@ -2296,7 +2296,7 @@ class UnknownParsersProgram extends Particle {
       .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
     return rootParticle
   }
-  _renameIntegerKeywords(clone) {
+  _renameIntegerCues(clone) {
     // todo: why are we doing this?
     for (let particle of clone.getTopDownArrayIterator()) {
       const cueIsAnInteger = !!particle.cue.match(/^\d+$/)
@@ -2304,17 +2304,17 @@ class UnknownParsersProgram extends Particle {
       if (cueIsAnInteger && parentCue) particle.setCue(HandParsersProgram.makeParserId(parentCue + UnknownParsersProgram._subparticleSuffix))
     }
   }
-  _getKeywordMaps(clone) {
-    const keywordsToChildKeywords = {}
-    const keywordsToParticleInstances = {}
+  _getCueMaps(clone) {
+    const cuesToChildCues = {}
+    const cuesToParticleInstances = {}
     for (let particle of clone.getTopDownArrayIterator()) {
       const cue = particle.cue
-      if (!keywordsToChildKeywords[cue]) keywordsToChildKeywords[cue] = {}
-      if (!keywordsToParticleInstances[cue]) keywordsToParticleInstances[cue] = []
-      keywordsToParticleInstances[cue].push(particle)
-      particle.forEach(subparticle => (keywordsToChildKeywords[cue][subparticle.cue] = true))
+      if (!cuesToChildCues[cue]) cuesToChildCues[cue] = {}
+      if (!cuesToParticleInstances[cue]) cuesToParticleInstances[cue] = []
+      cuesToParticleInstances[cue].push(particle)
+      particle.forEach(subparticle => (cuesToChildCues[cue][subparticle.cue] = true))
     }
-    return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToParticleInstances: keywordsToParticleInstances }
+    return { cuesToChildCues, cuesToParticleInstances }
   }
   _inferParserDef(cue, globalAtomTypeMap, subparticleCues, instances) {
     const edgeSymbol = this.edgeSymbol
@@ -2352,7 +2352,7 @@ class UnknownParsersProgram extends Particle {
     if (needsCueProperty) particleDefParticle.set(ParsersConstants.cue, cue)
     if (catchAllAtomType) particleDefParticle.set(ParsersConstants.catchAllAtomType, catchAllAtomType)
     const atomLine = atomTypeIds.slice()
-    atomLine.unshift(PreludeAtomTypeIds.keywordAtom)
+    atomLine.unshift(PreludeAtomTypeIds.cueAtom)
     if (atomLine.length > 0) particleDefParticle.set(ParsersConstants.atoms, atomLine.join(edgeSymbol))
     //if (!catchAllAtomType && atomTypeIds.length === 1) particleDefParticle.set(ParsersConstants.atoms, atomTypeIds[0])
     // Todo: add conditional frequencies
@@ -2370,15 +2370,15 @@ class UnknownParsersProgram extends Particle {
   //      .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
   //    return rootParticle
   //  }
-  inferParsersFileForAKeywordLanguage(parsersName) {
+  inferParsersFileForACueLanguage(parsersName) {
     const clone = this.clone()
-    this._renameIntegerKeywords(clone)
-    const { keywordsToChildKeywords, keywordsToParticleInstances } = this._getKeywordMaps(clone)
+    this._renameIntegerCues(clone)
+    const { cuesToChildCues, cuesToParticleInstances } = this._getCueMaps(clone)
     const globalAtomTypeMap = new Map()
-    globalAtomTypeMap.set(PreludeAtomTypeIds.keywordAtom, undefined)
-    const parserDefs = Object.keys(keywordsToChildKeywords)
+    globalAtomTypeMap.set(PreludeAtomTypeIds.cueAtom, undefined)
+    const parserDefs = Object.keys(cuesToChildCues)
       .filter(identity => identity)
-      .map(cue => this._inferParserDef(cue, globalAtomTypeMap, Object.keys(keywordsToChildKeywords[cue]), keywordsToParticleInstances[cue]))
+      .map(cue => this._inferParserDef(cue, globalAtomTypeMap, Object.keys(cuesToChildCues[cue]), cuesToParticleInstances[cue]))
     const atomTypeDefs = []
     globalAtomTypeMap.forEach((def, id) => atomTypeDefs.push(def ? def : id))
     const particleBreakSymbol = this.particleBreakSymbol

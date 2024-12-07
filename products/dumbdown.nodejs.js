@@ -37,7 +37,7 @@ dashAtom
  paint constant.language
 codeAtom
  paint comment
-keywordAtom
+cueAtom
  paint keyword
 textAtom
  paint string
@@ -66,9 +66,9 @@ dumbdownParser
    // You can add code as well.
    print("Hello world")
 abstractTopLevelParser
- atoms keywordAtom
+ atoms cueAtom
 linkParser
- atoms keywordAtom urlAtom
+ atoms cueAtom urlAtom
  catchAllAtomType textAtom
  extends abstractTopLevelParser
  compiler
@@ -169,13 +169,13 @@ quickParagraphParser
   }
 
   class abstractTopLevelParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
 
   class linkParser extends abstractTopLevelParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get urlAtom() {

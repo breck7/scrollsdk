@@ -2,12 +2,12 @@
 floatAtom
 commentAtom
  paint comment
-keywordAtom
+cueAtom
 hashBangKeywordAtom
- extends keywordAtom
+ extends cueAtom
  paint comment
 commentKeywordAtom
- extends keywordAtom
+ extends cueAtom
  paint comment
  enum comment
 errorAtom

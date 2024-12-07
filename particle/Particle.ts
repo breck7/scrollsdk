@@ -1313,7 +1313,7 @@ class Particle extends AbstractParticle {
     return Object.keys(obj)
   }
 
-  getAncestorParticlesByInheritanceViaExtendsKeyword(key: atom): Particle[] {
+  getAncestorParticlesByInheritanceViaExtendsCue(key: atom): Particle[] {
     const ancestorParticles = this._getAncestorParticles(
       (particle, id) => particle._getParticlesByColumn(0, id),
       particle => particle.get(key),
@@ -3094,7 +3094,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "99.2.0"
+  static getVersion = () => "100.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

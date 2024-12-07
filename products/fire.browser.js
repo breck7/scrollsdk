@@ -85,7 +85,7 @@ methodIdentifierAtom
  extends identifierAtom
 resultIdentifierAtom
  extends identifierAtom
-keywordAtom
+cueAtom
  paint keyword
 stringIdentifierAtom
  extends identifierAtom
@@ -116,7 +116,7 @@ fireParser
   }
 abstractNonTerminalParser
  inScope abstractTerminalParser abstractNonTerminalParser
- atoms keywordAtom
+ atoms cueAtom
 abstractJsblockParser
  compiler
   openSubparticles  {
@@ -132,7 +132,7 @@ blockParser
 functionParser
  cue function
  description Function Assignment
- atoms keywordAtom functionIdentifierAtom
+ atoms cueAtom functionIdentifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {functionIdentifierAtom} = ({anyAtom}) =>
@@ -142,7 +142,7 @@ functionParser
 ifParser
  cue if
  description If tile
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  popularity .2
  compiler
   stringTemplate if ({identifierAtom})
@@ -150,17 +150,17 @@ ifParser
 whileParser
  cue while
  description While tile
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  popularity .1
  compiler
   stringTemplate while ({identifierAtom})
  extends abstractJsblockParser
 abstractTerminalParser
- atoms keywordAtom
+ atoms cueAtom
 abstractAssignmentParser
  extends abstractTerminalParser
 abstractArithmeticParser
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {identifierAtom} = {anyAtom}
@@ -203,7 +203,7 @@ abstractBooleanOperatorParser
  extends abstractAssignmentParser
 greaterThanParser
  description Greater than test
- atoms keywordAtom identifierAtom leftNumberAtom numberAtom
+ atoms cueAtom identifierAtom leftNumberAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {leftNumberAtom} > {numberAtom}
  popularity .1
@@ -211,7 +211,7 @@ greaterThanParser
  cue greaterThan
 greaterThanOrEqualParser
  description Greater than or equal to test
- atoms keywordAtom identifierAtom leftNumberAtom numberAtom
+ atoms cueAtom identifierAtom leftNumberAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {leftNumberAtom} >= {numberAtom}
  popularity .1
@@ -219,7 +219,7 @@ greaterThanOrEqualParser
  cue greaterThanOrEqual
 lessThanParser
  description Less than test
- atoms keywordAtom identifierAtom leftAnyAtom anyAtom
+ atoms cueAtom identifierAtom leftAnyAtom anyAtom
  compiler
   stringTemplate const {identifierAtom} = {leftAnyAtom} < {anyAtom}
  popularity .1
@@ -228,7 +228,7 @@ lessThanParser
 lessThanOrEqualParser
  cue lessThanOrEqual
  description Less than or equal to test
- atoms keywordAtom identifierAtom leftAnyAtom anyAtom
+ atoms cueAtom identifierAtom leftAnyAtom anyAtom
  compiler
   stringTemplate const {identifierAtom} = {leftAnyAtom} <= {anyAtom}
  popularity .1
@@ -236,7 +236,7 @@ lessThanOrEqualParser
 sumParser
  cue sum
  description Add numbers and store result
- atoms keywordAtom numberIdentifierAtom
+ atoms cueAtom numberIdentifierAtom
  catchAllAtomType numberAtom
  compiler
   stringTemplate const {numberIdentifierAtom} = [{numberAtom}].reduce((sum, num) => sum + num)
@@ -246,7 +246,7 @@ sumParser
 booleanParser
  cue boolean
  description Boolean Assignment
- atoms keywordAtom booleanIdentifierAtom booleanAtom
+ atoms cueAtom booleanIdentifierAtom booleanAtom
  compiler
   stringTemplate const {booleanIdentifierAtom} = {booleanAtom}
  extends abstractAssignmentParser
@@ -254,7 +254,7 @@ callFunctionAndSetParser
  cue callFunctionAndSet
  description Function Call
  popularity .5
- atoms keywordAtom resultIdentifierAtom functionIdentifierAtom
+ atoms cueAtom resultIdentifierAtom functionIdentifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {resultIdentifierAtom} = {functionIdentifierAtom}({anyAtom})
@@ -264,7 +264,7 @@ callMethodAndSetParser
  cue callMethodAndSet
  description Method Call
  popularity .5
- atoms keywordAtom resultIdentifierAtom instanceIdentifierAtom methodIdentifierAtom
+ atoms cueAtom resultIdentifierAtom instanceIdentifierAtom methodIdentifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {resultIdentifierAtom} = {instanceIdentifierAtom}.{methodIdentifierAtom}({anyAtom})
@@ -273,7 +273,7 @@ callMethodAndSetParser
 joinParser
  cue join
  description Join strings to form new string
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  catchAllAtomType identifiersAtom
  compiler
   stringTemplate const {identifierAtom} = [{identifiersAtom}].join("")
@@ -283,14 +283,14 @@ joinParser
 mutableNumberParser
  cue mutableNumber
  description Mutable Number Assignment
- atoms keywordAtom identifierAtom numberAtom
+ atoms cueAtom identifierAtom numberAtom
  compiler
   stringTemplate let {identifierAtom} = {numberAtom}
  extends abstractAssignmentParser
 numberParser
  cue number
  description Number Assignment
- atoms keywordAtom identifierAtom numberAtom
+ atoms cueAtom identifierAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {numberAtom}
  popularity .3
@@ -298,7 +298,7 @@ numberParser
 numbersParser
  cue numbers
  description Number Array Assignment
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  catchAllAtomType numberAtom
  popularity .4
  compiler
@@ -308,7 +308,7 @@ numbersParser
 stringParser
  cue string
  description String Assignment
- atoms keywordAtom stringIdentifierAtom
+ atoms cueAtom stringIdentifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {stringIdentifierAtom} = "{anyAtom}"
@@ -318,7 +318,7 @@ callFunctionParser
  cue callFunction
  description Function call ignore result.
  popularity .1
- atoms keywordAtom functionIdentifierAtom
+ atoms cueAtom functionIdentifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate {functionIdentifierAtom}({anyAtom})
@@ -327,7 +327,7 @@ callFunctionParser
 decrementParser
  cue decrement
  description Decrement
- atoms keywordAtom numberIdentifierAtom
+ atoms cueAtom numberIdentifierAtom
  compiler
   stringTemplate {numberIdentifierAtom}--
  popularity .1
@@ -344,7 +344,7 @@ dumpIdentifierParser
 exportParser
  cue export
  description Export This
- atoms keywordAtom identifierAtom
+ atoms cueAtom identifierAtom
  compiler
   stringTemplate module.exports = {identifierAtom}
  popularity .1
@@ -353,7 +353,7 @@ incrementParser
  cue increment
  description Increment
  popularity .3
- atoms keywordAtom numberIdentifierAtom
+ atoms cueAtom numberIdentifierAtom
  compiler
   stringTemplate {numberIdentifierAtom}++
  extends abstractTerminalParser
@@ -373,14 +373,14 @@ printStringParser
 requireParser
  cue require
  description Require Something
- atoms keywordAtom identifierAtom filepathAtom
+ atoms cueAtom identifierAtom filepathAtom
  compiler
   stringTemplate const {identifierAtom} = require("{filepathAtom}")
  popularity .1
  extends abstractTerminalParser
 returnParser
  cue return
- atoms keywordAtom anyAtom
+ atoms cueAtom anyAtom
  compiler
   stringTemplate return {anyAtom}
  popularity .1
@@ -442,7 +442,7 @@ errorParser
         undefined
       )
     }
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
@@ -452,7 +452,7 @@ errorParser
   class blockParser extends abstractJsblockParser {}
 
   class functionParser extends abstractJsblockParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get functionIdentifierAtom() {
@@ -464,7 +464,7 @@ errorParser
   }
 
   class ifParser extends abstractJsblockParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -473,7 +473,7 @@ errorParser
   }
 
   class whileParser extends abstractJsblockParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -482,7 +482,7 @@ errorParser
   }
 
   class abstractTerminalParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
@@ -490,7 +490,7 @@ errorParser
   class abstractAssignmentParser extends abstractTerminalParser {}
 
   class abstractArithmeticParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -514,7 +514,7 @@ errorParser
   class abstractBooleanOperatorParser extends abstractAssignmentParser {}
 
   class greaterThanParser extends abstractBooleanOperatorParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -529,7 +529,7 @@ errorParser
   }
 
   class greaterThanOrEqualParser extends abstractBooleanOperatorParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -544,7 +544,7 @@ errorParser
   }
 
   class lessThanParser extends abstractBooleanOperatorParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -559,7 +559,7 @@ errorParser
   }
 
   class lessThanOrEqualParser extends abstractBooleanOperatorParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -574,7 +574,7 @@ errorParser
   }
 
   class sumParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get numberIdentifierAtom() {
@@ -586,7 +586,7 @@ errorParser
   }
 
   class booleanParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get booleanIdentifierAtom() {
@@ -598,7 +598,7 @@ errorParser
   }
 
   class callFunctionAndSetParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get resultIdentifierAtom() {
@@ -613,7 +613,7 @@ errorParser
   }
 
   class callMethodAndSetParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get resultIdentifierAtom() {
@@ -631,7 +631,7 @@ errorParser
   }
 
   class joinParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -643,7 +643,7 @@ errorParser
   }
 
   class mutableNumberParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -655,7 +655,7 @@ errorParser
   }
 
   class numberParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -667,7 +667,7 @@ errorParser
   }
 
   class numbersParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -679,7 +679,7 @@ errorParser
   }
 
   class stringParser extends abstractAssignmentParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get stringIdentifierAtom() {
@@ -691,7 +691,7 @@ errorParser
   }
 
   class callFunctionParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get functionIdentifierAtom() {
@@ -703,7 +703,7 @@ errorParser
   }
 
   class decrementParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get numberIdentifierAtom() {
@@ -718,7 +718,7 @@ errorParser
   }
 
   class exportParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -727,7 +727,7 @@ errorParser
   }
 
   class incrementParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get numberIdentifierAtom() {
@@ -748,7 +748,7 @@ errorParser
   }
 
   class requireParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get identifierAtom() {
@@ -760,7 +760,7 @@ errorParser
   }
 
   class returnParser extends abstractTerminalParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get anyAtom() {

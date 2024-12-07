@@ -39,7 +39,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
   }
   inferPrefixParsersCommand() {
-    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
+    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForACueLanguage("inferredLanguage"))
     this._onParsersKeyup()
   }
   synthesizeProgramCommand() {
@@ -449,7 +449,7 @@ class tableComponent extends AbstractParticleComponentParser {
  tr
   td
    span Your Parsers &nbsp;
-   a Infer Prefix Parsers
+   a Infer Cue Parsers
     clickCommand inferPrefixParsersCommand
    span  | &nbsp;
    a Synthesize Program

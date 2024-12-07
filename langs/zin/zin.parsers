@@ -2,7 +2,7 @@
 nameAtom
  description A person's name
  paint string
-keywordAtom
+cueAtom
  paint keyword
 
 // Line parsers
@@ -14,7 +14,7 @@ zinParser
 alohaParser
  description Say aloha to a person.
  catchAllAtomType nameAtom
- atoms keywordAtom
+ atoms cueAtom
  cue aloha
 catchAllErrorParser
  baseParser errorParser

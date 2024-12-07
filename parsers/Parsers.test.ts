@@ -740,10 +740,10 @@ const badParsersProgram = new HandParsersProgram(
 addParser
  cue +
  catchAllAtomType integerAtom
- atoms keywordAtom
+ atoms cueAtom
  example This is a bad example.
   + 1 B
-keywordAtom
+cueAtom
 integerAtom`
 )
 Object.assign(testParticles, badParsersProgram.examplesToTestBlocks(undefined, `InvalidAtom at line 9 atom 2. "B" does not fit in atomType "integerAtom".`))

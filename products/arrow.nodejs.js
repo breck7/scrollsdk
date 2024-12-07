@@ -25,7 +25,7 @@
       return this.asJsonSubset
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
-keywordAtom
+cueAtom
  enum charge cardNumber amount currency description token
 floatAtom
 integerAtom
@@ -76,7 +76,7 @@ chargeParser
  inScope amountParser currencyParser descriptionParser cardNumberParser tokenParser
  description A credit card charge
  cueFromId
- atoms keywordAtom
+ atoms cueAtom
  javascript
   async execute() {
    const card = this.get("cardNumber")
@@ -88,20 +88,20 @@ abstractChargeAttributeParser
  single
 cardNumberParser
  extends abstractChargeAttributeParser
- atoms keywordAtom cardNumberAtom
+ atoms cueAtom cardNumberAtom
 amountParser
  extends abstractChargeAttributeParser
- atoms keywordAtom amountAtom
+ atoms cueAtom amountAtom
 currencyParser
  extends abstractChargeAttributeParser
- atoms keywordAtom currencyAtom
+ atoms cueAtom currencyAtom
 descriptionParser
  extends abstractChargeAttributeParser
- atoms keywordAtom
+ atoms cueAtom
  catchAllAtomType descriptionAtom
 tokenParser
  cueFromId
- atoms keywordAtom tokenAtom`)
+ atoms cueAtom tokenAtom`)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -122,7 +122,7 @@ tokenParser
         undefined
       )
     }
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     async execute() {
@@ -134,7 +134,7 @@ tokenParser
   class abstractChargeAttributeParser extends ParserBackedParticle {}
 
   class cardNumberParser extends abstractChargeAttributeParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get cardNumberAtom() {
@@ -143,7 +143,7 @@ tokenParser
   }
 
   class amountParser extends abstractChargeAttributeParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get amountAtom() {
@@ -152,7 +152,7 @@ tokenParser
   }
 
   class currencyParser extends abstractChargeAttributeParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get currencyAtom() {
@@ -161,7 +161,7 @@ tokenParser
   }
 
   class descriptionParser extends abstractChargeAttributeParser {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get descriptionAtom() {
@@ -170,7 +170,7 @@ tokenParser
   }
 
   class tokenParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get tokenAtom() {

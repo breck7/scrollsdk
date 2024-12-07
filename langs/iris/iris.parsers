@@ -3,9 +3,9 @@ anyAtom
 floatAtom
  paint constant.numeric.float
 integerAtom
-keywordAtom
+cueAtom
 commentKeywordAtom
- extends keywordAtom
+ extends cueAtom
  paint comment
  enum comment
 headerAtom

@@ -3,14 +3,14 @@
 An exploration of different kinds of particles.
 
 code
- keywordParsers
-  description A parser where each node type is determined by the presence of a keyword
+ cueParsers
+  description A parser where each node type is determined by the presence of a cue
   prefixKeywordParsers
-   keyword 1 2 3 foo
+   cue 1 2 3 foo
   postfixKeywordParsers
-   1 2 keyword
+   1 2 cue
   omnifixKeywordParsers
-   1 keyword 2
+   1 cue 2
  flatParsers
   description A parser that has only 1 scope
   example

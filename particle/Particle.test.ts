@@ -1930,9 +1930,9 @@ Mammal
  milk`
   )
   // Act/Assert
-  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 4)
-  equal(particle.getParticle("Thing").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 1)
-  equal(particle.getParticle("Animal").getAncestorParticlesByInheritanceViaExtendsKeyword("extends").length, 2)
+  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 4)
+  equal(particle.getParticle("Thing").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 1)
+  equal(particle.getParticle("Animal").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 2)
 }
 
 testParticles.getGraphConventional = equal => {

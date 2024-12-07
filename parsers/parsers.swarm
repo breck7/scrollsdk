@@ -11,7 +11,7 @@ test parsersSample
     extends anyAtom
    baseParser
     cue base
-   keywordAtom
+   cueAtom
    blockParser
     cue block
     extends baseParser
@@ -19,7 +19,7 @@ test parsersSample
    toParser
     cue to
     extends blockParser
-    atoms keywordAtom atomAtom
+    atoms cueAtom atomAtom
     tags test
     compiler
      stringTemplate to {atomAtom}

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.5](https://github.com/ljharb/get-intrinsic/compare/v1.2.4...v1.2.5) - 2024-12-06
+
+### Commits
+
+- [actions] split out node 10-20, and 20+ [`6e2b9dd`](https://github.com/ljharb/get-intrinsic/commit/6e2b9dd23902665681ebe453256ccfe21d7966f0)
+- [Refactor] use `dunder-proto` and `call-bind-apply-helpers` instead of `has-proto` [`c095d17`](https://github.com/ljharb/get-intrinsic/commit/c095d179ad0f4fbfff20c8a3e0cb4fe668018998)
+- [Refactor] use `gopd` [`9841d5b`](https://github.com/ljharb/get-intrinsic/commit/9841d5b35f7ab4fd2d193f0c741a50a077920e90)
+- [Dev Deps] update `@ljharb/eslint-config`, `auto-changelog`, `es-abstract`, `es-value-fixtures`, `gopd`, `mock-property`, `object-inspect`, `tape` [`2d07e01`](https://github.com/ljharb/get-intrinsic/commit/2d07e01310cee2cbaedfead6903df128b1f5d425)
+- [Deps] update `gopd`, `has-proto`, `has-symbols`, `hasown` [`974d8bf`](https://github.com/ljharb/get-intrinsic/commit/974d8bf5baad7939eef35c25cc1dd88c10a30fa6)
+- [Dev Deps] update `call-bind`, `es-abstract`, `tape` [`df9dde1`](https://github.com/ljharb/get-intrinsic/commit/df9dde178186631ab8a3165ede056549918ce4bc)
+- [Refactor] cache `es-define-property` as well [`43ef543`](https://github.com/ljharb/get-intrinsic/commit/43ef543cb02194401420e3a914a4ca9168691926)
+- [Deps] update `has-proto`, `has-symbols`, `hasown` [`ad4949d`](https://github.com/ljharb/get-intrinsic/commit/ad4949d5467316505aad89bf75f9417ed782f7af)
+- [Tests] use `call-bound` directly [`ad5c406`](https://github.com/ljharb/get-intrinsic/commit/ad5c4069774bfe90e520a35eead5fe5ca9d69e80)
+- [Deps] update `has-proto`, `hasown` [`45414ca`](https://github.com/ljharb/get-intrinsic/commit/45414caa312333a2798953682c68f85c550627dd)
+- [Tests] replace `aud` with `npm audit` [`18d3509`](https://github.com/ljharb/get-intrinsic/commit/18d3509f79460e7924da70409ee81e5053087523)
+- [Deps] update `es-define-property` [`aadaa3b`](https://github.com/ljharb/get-intrinsic/commit/aadaa3b2188d77ad9bff394ce5d4249c49eb21f5)
+- [Dev Deps] add missing peer dep [`c296a16`](https://github.com/ljharb/get-intrinsic/commit/c296a16246d0c9a5981944f4cc5cf61fbda0cf6a)
+
 ## [v1.2.4](https://github.com/ljharb/get-intrinsic/compare/v1.2.3...v1.2.4) - 2024-02-05
 
 ### Commits

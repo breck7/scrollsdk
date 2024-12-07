@@ -2,7 +2,7 @@
 nameAtom
  description A person's name
  paint string
-keywordAtom
+cueAtom
  paint keyword
 
 // Line Parsers
@@ -13,7 +13,7 @@ newlangParser
  inScope helloParser
 helloParser
  catchAllAtomType nameAtom
- atoms keywordAtom
+ atoms cueAtom
  cue hello
 catchAllErrorParser
  baseParser errorParser

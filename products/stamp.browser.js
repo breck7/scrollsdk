@@ -91,7 +91,7 @@ commentAtom
  paint comment
 inputTypeAtom
  enum string int any lowercase
-keywordAtom
+cueAtom
  paint keyword.control
 
 // Line parsers
@@ -183,15 +183,15 @@ catchAllAnyLineParser
  atoms anyAtom
 dataParser
  catchAllParser catchAllAnyLineParser
- atoms keywordAtom
+ atoms cueAtom
  cue data
 errorParser
  baseParser errorParser
 executableParser
- atoms keywordAtom
+ atoms cueAtom
  cue executable
 fileParser
- atoms keywordAtom filepathAtom
+ atoms cueAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    const filePath = this._getAbsolutePath(parentDir)
@@ -214,7 +214,7 @@ fileParser
  inScope dataParser executableParser
  cue file
 folderParser
- atoms keywordAtom filepathAtom
+ atoms cueAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    return \`mkdir \${this._getAbsolutePath(parentDir)}\`
@@ -260,7 +260,7 @@ folderParser
     createParserCombinator() {
       return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
@@ -272,7 +272,7 @@ folderParser
   }
 
   class executableParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
   }
@@ -281,7 +281,7 @@ folderParser
     createParserCombinator() {
       return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get filepathAtom() {
@@ -308,7 +308,7 @@ folderParser
   }
 
   class folderParser extends ParserBackedParticle {
-    get keywordAtom() {
+    get cueAtom() {
       return this.getAtom(0)
     }
     get filepathAtom() {

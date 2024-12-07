@@ -1,4 +1,4 @@
-keywordAtom
+cueAtom
 anyAtom
 integerAtom
 booleanAtom
@@ -9,43 +9,43 @@ foobarParser
 fileParser
  inScope sizeParser digitsParser openParser tempParser descriptionParser editsParser accountParser
  cue file
- atoms keywordAtom anyAtom
+ atoms cueAtom anyAtom
 sizeParser
  cue size
- atoms keywordAtom integerAtom
+ atoms cueAtom integerAtom
 digitsParser
  cue digits
- atoms keywordAtom integerAtom integerAtom
+ atoms cueAtom integerAtom integerAtom
 openParser
  cue open
- atoms keywordAtom booleanAtom
+ atoms cueAtom booleanAtom
 tempParser
  cue temp
- atoms keywordAtom floatAtom
+ atoms cueAtom floatAtom
 descriptionParser
  cue description
  catchAllAtomType anyAtom
- atoms keywordAtom
+ atoms cueAtom
 editsParser
  inScope editsSubparticleParser
  cue edits
- atoms keywordAtom
+ atoms cueAtom
 editsSubparticleParser
  inScope dataParser
- atoms keywordAtom
+ atoms cueAtom
 dataParser
  cue data
- atoms keywordAtom anyAtom
+ atoms cueAtom anyAtom
 accountParser
  inScope balanceParser transactionsParser sourceParser
  cue account
- atoms keywordAtom
+ atoms cueAtom
 balanceParser
  cue balance
- atoms keywordAtom floatAtom
+ atoms cueAtom floatAtom
 transactionsParser
  cue transactions
- atoms keywordAtom integerAtom
+ atoms cueAtom integerAtom
 sourceParser
  cue source
- atoms keywordAtom booleanAtom anyAtom integerAtom
+ atoms cueAtom booleanAtom anyAtom integerAtom

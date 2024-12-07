@@ -3,7 +3,7 @@ anyAtom
 valueAtom
  paint string
  description Any character is valid in a value.
-keywordAtom
+cueAtom
  description Allows any character except a space.
  paint keyword
 
@@ -15,4 +15,4 @@ configParser
 pairParser
  description Holds a key/value pair
  catchAllAtomType valueAtom
- atoms keywordAtom
+ atoms cueAtom

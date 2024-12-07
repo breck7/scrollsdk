@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+100.0.0 2024-12-07
+==================
+🎉 Finished migrating "keywordAtom" to "cueAtom"
+⚠️ BREAKING: every `keywordAtom` is now `cueAtom`
+
 99.2.0 2024-12-04
 =================
 🎉 Fusion now makes max 1 request per url

@@ -15,7 +15,7 @@ commentAtom
  paint comment
 inputTypeAtom
  enum string int any lowercase
-keywordAtom
+cueAtom
  paint keyword.control
 
 // Line parsers
@@ -107,15 +107,15 @@ catchAllAnyLineParser
  atoms anyAtom
 dataParser
  catchAllParser catchAllAnyLineParser
- atoms keywordAtom
+ atoms cueAtom
  cue data
 errorParser
  baseParser errorParser
 executableParser
- atoms keywordAtom
+ atoms cueAtom
  cue executable
 fileParser
- atoms keywordAtom filepathAtom
+ atoms cueAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    const filePath = this._getAbsolutePath(parentDir)
@@ -138,7 +138,7 @@ fileParser
  inScope dataParser executableParser
  cue file
 folderParser
- atoms keywordAtom filepathAtom
+ atoms cueAtom filepathAtom
  javascript
   compileToBash(parentDir) {
    return `mkdir ${this._getAbsolutePath(parentDir)}`

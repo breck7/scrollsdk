@@ -5,7 +5,7 @@ dashAtom
  paint constant.language
 codeAtom
  paint comment
-keywordAtom
+cueAtom
  paint keyword
 textAtom
  paint string
@@ -34,9 +34,9 @@ dumbdownParser
    // You can add code as well.
    print("Hello world")
 abstractTopLevelParser
- atoms keywordAtom
+ atoms cueAtom
 linkParser
- atoms keywordAtom urlAtom
+ atoms cueAtom urlAtom
  catchAllAtomType textAtom
  extends abstractTopLevelParser
  compiler

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.6](https://github.com/ljharb/get-intrinsic/compare/v1.2.5...v1.2.6) - 2024-12-11
+
+### Commits
+
+- [Refactor] use `math-intrinsics` [`841be86`](https://github.com/ljharb/get-intrinsic/commit/841be8641a9254c4c75483b30c8871b5d5065926)
+- [Refactor] use `es-object-atoms` [`42057df`](https://github.com/ljharb/get-intrinsic/commit/42057dfa16f66f64787e66482af381cc6f31d2c1)
+- [Deps] update `call-bind-apply-helpers` [`45afa24`](https://github.com/ljharb/get-intrinsic/commit/45afa24a9ee4d6d3c172db1f555b16cb27843ef4)
+- [Dev Deps] update `call-bound` [`9cba9c6`](https://github.com/ljharb/get-intrinsic/commit/9cba9c6e70212bc163b7a5529cb25df46071646f)
+
 ## [v1.2.5](https://github.com/ljharb/get-intrinsic/compare/v1.2.4...v1.2.5) - 2024-12-06
 
 ### Commits

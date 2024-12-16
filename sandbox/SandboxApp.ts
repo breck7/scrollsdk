@@ -69,6 +69,7 @@ class SandboxApp extends AbstractParticleComponentParser {
     if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", particle.asOutline)
     if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", particle.asHtml)
     if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", particle.asTable)
+    if (eventSource !== "sExpressionConsole") willowBrowser.setValueOfElementWithIdHack("sExpressionConsole", particle.asSExpression)
     if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", particle.asHtmlCube)
     if (eventSource !== "fusionConsole") this.updateFusion(particle)
     if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", particle.asYaml)
@@ -321,15 +322,20 @@ class tableComponent extends AbstractParticleComponentParser {
     id yamlConsole
  tr
   td
+   div asSExpression
+   textarea
+    id sExpressionConsole
+  td
+   div Fusion
+   pre
+    id fusionConsole
+ tr
+  td
    div asHtmlCube
     title Experimental. This is a very specific kind of Language.
    div
     id htmlCubeConsole
-    style position:relative;
-  td
-   div Fusion
-   pre
-    id fusionConsole`
+    style position:relative;`
   }
 }
 

@@ -1817,7 +1817,6 @@ ${captures}
     }
     return this._cache_parserDefinitionParsers
   }
-  get extendedDef() {}
   get hasParserDefinitions() {
     return !!this.getSubparticlesByParser(parserDefinitionParser).length
   }

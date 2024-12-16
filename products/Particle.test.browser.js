@@ -3317,6 +3317,37 @@ testParticles.asyncUndoRedo = async equal => {
   // Assert
   equal(particle.get("hello"), "earth")
 }
+testParticles.asSExpression = equal => {
+  // Test basic nodes with just cue and content
+  equal(new Particle("foo 1").asSExpression, "((foo 1))", "basic node conversion")
+  // Test nodes with single child
+  equal(new Particle("foo 1\n bar 2").asSExpression, "((foo 1 (bar 2)))", "node with single child")
+  // Test nodes with multiple children
+  equal(new Particle("foo\n bar 1\n baz 2").asSExpression, "((foo (bar 1) (baz 2)))", "node with multiple children")
+  // Test deep nesting
+  equal(new Particle("foo\n bar\n  baz 3").asSExpression, "((foo (bar (baz 3))))", "deeply nested nodes")
+  // Test nodes without content
+  equal(new Particle("foo\n bar").asSExpression, "((foo (bar)))", "nodes without content")
+  // Test complex mixed case
+  equal(new Particle("root 1\n first 2\n  inner 3\n  other 4\n second 5").asSExpression, "((root 1 (first 2 (inner 3) (other 4)) (second 5)))", "complex mixed nesting")
+  // Test empty particle
+  equal(new Particle("").asSExpression, "()", "empty particle")
+  // Test node with content containing spaces
+  equal(new Particle("title Hello World").asSExpression, "((title Hello World))", "content with spaces")
+  // Test realistic example with mixed content types
+  const webpage = new Particle(`html
+ head
+  title My Page
+ body
+  div
+   class main
+   content Hello world`)
+  equal(webpage.asSExpression, "((html (head (title My Page)) (body (div (class main) (content Hello world)))))", "realistic webpage example")
+  // Test a node with blank/empty children
+  equal(new Particle("parent\n child1\n child2 \n child3").asSExpression, "((parent (child1) (child2 ) (child3)))", "handling empty/blank child nodes")
+  // Test numbers and special characters in content
+  equal(new Particle("math\n sum 2+2=4\n pi 3.14159").asSExpression, "((math (sum 2+2=4) (pi 3.14159)))", "handling numbers and special characters")
+}
 testParticles.trim = equal => {
   // Arrange/Act/Assert
   const particle = new Particle("\n\n\n")

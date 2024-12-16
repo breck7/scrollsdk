@@ -945,6 +945,18 @@ class Particle extends AbstractParticle {
           atoms: this.atoms
         }
   }
+  get asSExpression() {
+    return this._toSExpression()
+  }
+  _toSExpression() {
+    const thisAtoms = this.atoms.join(" ")
+    if (!this.length)
+      // For leaf nodes, just return (cue content) or (cue) if no content
+      return `(${thisAtoms})`
+    // For nodes with children, recursively process each child
+    const children = this.map(particle => particle._toSExpression()).join(" ")
+    return thisAtoms ? `(${thisAtoms} ${children})` : `(${children})`
+  }
   get asJson() {
     return JSON.stringify({ subparticles: this.map(subparticle => subparticle._toObjectForSerialization()) }, null, " ")
   }
@@ -2588,7 +2600,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "100.0.1"
+Particle.getVersion = () => "100.1.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)

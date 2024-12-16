@@ -1141,6 +1141,21 @@ class Particle extends AbstractParticle {
         }
   }
 
+  get asSExpression(): string {
+    return this._toSExpression()
+  }
+
+  protected _toSExpression(): string {
+    const thisAtoms = this.atoms.join(" ")
+    if (!this.length)
+      // For leaf nodes, just return (cue content) or (cue) if no content
+      return `(${thisAtoms})`
+
+    // For nodes with children, recursively process each child
+    const children = this.map(particle => particle._toSExpression()).join(" ")
+    return thisAtoms ? `(${thisAtoms} ${children})` : `(${children})`
+  }
+
   get asJson(): string {
     return JSON.stringify({ subparticles: this.map(subparticle => subparticle._toObjectForSerialization()) }, null, " ")
   }
@@ -3094,7 +3109,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "100.0.1"
+  static getVersion = () => "100.1.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

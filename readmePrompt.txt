@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 100.1.0 2024-12-16
+🎉 add `asSExpression` getter
+
 📦 100.0.1 2024-12-07
 🏥 fixed bug in Parsers where inline Parsers were not in scope in child Parsers
 

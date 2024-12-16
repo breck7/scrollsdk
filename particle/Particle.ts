@@ -1018,7 +1018,7 @@ class Particle extends AbstractParticle {
 
   protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): particlesTypes.htmlString {
     const getLine = (atomIndex: number, atom = "") =>
-      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--atomWidth) * ${atomIndex});">${atom}</span>`
+      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--atomWidth) * ${atomIndex});">${atom.replace(/</g, "&lt;")}</span>`
     let atoms: string[] = []
     this.atoms.forEach((atom, index) => (atom ? atoms.push(getLine(index + indents, atom)) : ""))
     return atoms.join("")
@@ -3109,7 +3109,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "100.1.0"
+  static getVersion = () => "100.1.1"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

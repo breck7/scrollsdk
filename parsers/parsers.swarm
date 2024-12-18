@@ -7,18 +7,15 @@ test parsersSample
     root
     inScope baseParser
    anyAtom
-   atomAtom
-    extends anyAtom
+   atomAtom anyAtom
    baseParser
     cue base
    cueAtom
-   blockParser
+   blockParser baseParser
     cue block
-    extends baseParser
     inScope baseParser
-   toParser
+   toParser blockParser
     cue to
-    extends blockParser
     atoms cueAtom atomAtom
     tags test
     compiler

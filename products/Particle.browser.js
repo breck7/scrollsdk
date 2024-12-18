@@ -61,10 +61,6 @@ var WhereOperators
   WhereOperators["empty"] = "empty"
   WhereOperators["notEmpty"] = "notEmpty"
 })(WhereOperators || (WhereOperators = {}))
-var ParticlesConstants
-;(function (ParticlesConstants) {
-  ParticlesConstants["extends"] = "extends"
-})(ParticlesConstants || (ParticlesConstants = {}))
 class ParserCombinator {
   constructor(catchAllParser, cueMap = {}, regexTests = undefined) {
     this._catchAllParser = catchAllParser
@@ -1114,12 +1110,8 @@ class Particle extends AbstractParticle {
     })
     return Object.keys(obj)
   }
-  getAncestorParticlesByInheritanceViaExtendsCue(key) {
-    const ancestorParticles = this._getAncestorParticles(
-      (particle, id) => particle._getParticlesByColumn(0, id),
-      particle => particle.get(key),
-      this
-    )
+  getAncestorParticlesByInheritance(keyFn) {
+    const ancestorParticles = this._getAncestorParticles((particle, id) => particle._getParticlesByColumn(0, id), keyFn, this)
     ancestorParticles.push(this)
     return ancestorParticles
   }
@@ -2661,7 +2653,7 @@ class AbstractExtendibleParticle extends Particle {
     return this._cache_ancestorsArray
   }
   get idThatThisExtends() {
-    return this.get(ParticlesConstants.extends)
+    return this.atoms[1]
   }
   _initAncestorsArrayCache(cannotContainParticles) {
     if (this._cache_ancestorsArray) return undefined

@@ -1,11 +1,9 @@
-jibjabNode
+jibjabNode jibberishNode
  root
  description Adds a comment node to Jibberish
- extends jibberishNode
 commentAtom
  paint comment
-commentNode
- extends topLevelNode
+commentNode topLevelNode
  catchAllAtomType commentAtom
  catchAllParser commentNode
  cue comment

@@ -25,14 +25,11 @@ abstractOperatorParser
  catchAllAtomType floatAtom
  atoms operatorAtom
  atomParser postfix
-addParser
- extends abstractOperatorParser
+addParser abstractOperatorParser
  pattern \\+
-multiplyParser
- extends abstractOperatorParser
+multiplyParser abstractOperatorParser
  pattern \\*
-printParser
- extends abstractOperatorParser
+printParser abstractOperatorParser
  pattern print
 onlyNumbersParser
  catchAllAtomType floatAtom

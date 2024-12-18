@@ -42,9 +42,8 @@ onoffAtom
  enum on off
 atomAtom
 cueAtom
-topLevelPropertyAtom
+topLevelPropertyAtom cueAtom
  paint constant.language
- extends cueAtom
 opSymbolAtom
  paint keyword.operator.arithmetic
 
@@ -59,60 +58,47 @@ jibberishParser
  catchAllParser errorParser
  inScope abstractTopLevelParser textParser abstractBaseClassParser
 abstractBaseClassParser
-extendsAbstractParser
+extendsAbstractParser abstractBaseClassParser
  atoms topLevelPropertyAtom integerAtom
- extends abstractBaseClassParser
  cue extendsAbstract
 abstractTopLevelParser
  atoms topLevelPropertyAtom
-abstractColorPropertiesParser
+abstractColorPropertiesParser abstractTopLevelParser
  atoms topLevelPropertyAtom integerAtom
- extends abstractTopLevelParser
-hueParser
- extends abstractColorPropertiesParser
+hueParser abstractColorPropertiesParser
  cue hue
-saturationParser
- extends abstractColorPropertiesParser
+saturationParser abstractColorPropertiesParser
  cue saturation
-constrastParser
- extends abstractColorPropertiesParser
+constrastParser abstractColorPropertiesParser
  cue constrast
-abstractHtmlParser
+abstractHtmlParser abstractTopLevelParser
  inScope contentParser
- extends abstractTopLevelParser
-h1Parser
+h1Parser abstractHtmlParser
  cue html.h1
- extends abstractHtmlParser
-addParser
- extends abstractTopLevelParser
+addParser abstractTopLevelParser
  cue add
-plusParser
+plusParser addParser
  cue +
- extends addParser
  example Adding two numbers:
   + 1 2
  catchAllAtomType integerAtom
  atoms opSymbolAtom
-blockParser
+blockParser abstractTopLevelParser
  inScope abstractTopLevelParser scoreBlockParser
- extends abstractTopLevelParser
  cue block
-scoreBlockParser
+scoreBlockParser blockParser
  description Test that inscope extends and does not overwrite.
- extends blockParser
  inScope scoresParser
  cue scoreBlock
-toParser
+toParser blockParser
  atoms topLevelPropertyAtom atomAtom
  compiler
   stringTemplate to {atom}
   closeSubparticles end
- extends blockParser
  cue to
-fooParser
- extends abstractTopLevelParser
+fooParser abstractTopLevelParser
  cue foo
-xColumnNameParser
+xColumnNameParser abstractTopLevelParser
  description The name of the column to use for the x axis
  atoms topLevelPropertyAtom columnNameEnumAtom
  tags doNotSynthesize
@@ -120,16 +106,13 @@ xColumnNameParser
   getRunTimeEnumOptions(atom) {
    return atom.atomTypeId === "columnNameEnumAtom" ? ["gender", "height", "weight"] : undefined
   }
- extends abstractTopLevelParser
  cue xColumnName
-lightbulbStateParser
+lightbulbStateParser abstractTopLevelParser
  atoms topLevelPropertyAtom onoffAtom
- extends abstractTopLevelParser
  cue lightbulbState
-nestedParser
- extends abstractTopLevelParser
+nestedParser abstractTopLevelParser
  cue nested
-particleWithConstsParser
+particleWithConstsParser abstractTopLevelParser
  string greeting hello world
  string singleAtom hello
  string thisHasQuotes "'\`
@@ -140,20 +123,16 @@ particleWithConstsParser
  int anArray 2 3 4
  float score2 3.01
  boolean win true
- extends abstractTopLevelParser
  cue particleWithConsts
-particleExpandsConstsParser
+particleExpandsConstsParser particleWithConstsParser
  string greeting hola
- extends particleWithConstsParser
  cue particleExpandsConsts
-someCodeParser
+someCodeParser abstractTopLevelParser
  catchAllParser lineOfCodeParser
- extends abstractTopLevelParser
  cue someCode
-typeParser
+typeParser abstractTopLevelParser
  atoms topLevelPropertyAtom atomAtom
  single
- extends abstractTopLevelParser
  cue type
 contentParser
  baseParser blobParser

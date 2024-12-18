@@ -6,11 +6,9 @@
 anyAtom
  paint string
  examples lorem ipsum
-assertionKeywordAtom
+assertionKeywordAtom cueAtom
  paint keyword.operator
- extends cueAtom
-commandAtom
- extends cueAtom
+commandAtom cueAtom
  paint variable.function
  examples someCommand
 extraAtom
@@ -19,8 +17,7 @@ filepathAtom
  examples foobar.foo someFile.foo
  paint string
 cueAtom
-hashBangKeywordAtom
- extends cueAtom
+hashBangKeywordAtom cueAtom
  paint comment
  enum #!
 hashBangAtom
@@ -28,13 +25,11 @@ hashBangAtom
 integerAtom
  regex \-?[0-9]+
  paint constant.numeric.integer
-parameterKeywordAtom
- extends cueAtom
+parameterKeywordAtom cueAtom
  paint variable.parameter
 todoAtom
  paint comment
-todoKeywordAtom
- extends cueAtom
+todoKeywordAtom cueAtom
  paint comment
 typeOfOptionAtom
  description The 6 possible results for Javascript's typeof.
@@ -104,7 +99,7 @@ abstractAssertionParser
    return this.content
   }
  atoms assertionKeywordAtom
-assertParagraphIsParser
+assertParagraphIsParser abstractAssertionParser
  cue assertParagraphIs
  description When your expected value is a multiline string.
  catchAllParser paragraphLineParser
@@ -115,8 +110,7 @@ assertParagraphIsParser
   getSyncExpected() {
    return this.subparticlesToString()
   }
- extends abstractAssertionParser
-assertLengthIsParser
+assertLengthIsParser abstractAssertionParser
  cue assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
  atoms assertionKeywordAtom integerAtom
@@ -124,8 +118,7 @@ assertLengthIsParser
   parseActual(actual) {
    return actual.length
   }
- extends abstractAssertionParser
-assertStringExcludesParser
+assertStringExcludesParser abstractAssertionParser
  cue assertStringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllAtomType anyAtom
@@ -140,8 +133,7 @@ assertStringExcludesParser
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionParser
-assertStringIncludesParser
+assertStringIncludesParser abstractAssertionParser
  cue assertStringIncludes
  catchAllAtomType anyAtom
  description Converts the input to string and see if the string contains the provided string
@@ -151,13 +143,11 @@ assertStringIncludesParser
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionParser
-assertStringIsParser
+assertStringIsParser abstractAssertionParser
  cue assertStringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllAtomType anyAtom
- extends abstractAssertionParser
-assertTypeIsParser
+assertTypeIsParser abstractAssertionParser
  cue assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
  atoms assertionKeywordAtom typeOfOptionAtom
@@ -165,22 +155,19 @@ assertTypeIsParser
   parseActual(actual) {
    return typeof actual
   }
- extends abstractAssertionParser
 abstractArrangeFlagParser
  atoms cueAtom
-arrangeAsyncParser
+arrangeAsyncParser abstractArrangeFlagParser
  description Add this flag in the arrange particle to test async methods.
- extends abstractArrangeFlagParser
  cue async
 arrangeRequireParser
  description Pass in the filename to require for nodejs tests.
  cue require
  atoms cueAtom filepathAtom
  catchAllAtomType anyAtom
-arrangeStaticParser
+arrangeStaticParser abstractArrangeFlagParser
  cue static
  description Add this to the arrange particle to import class directly without initiating it for static method testing.
- extends abstractArrangeFlagParser
 abstractTestBlockParser
  catchAllAtomType anyAtom
  javascript
@@ -213,18 +200,15 @@ abstractTestBlockParser
  inScope arrangeParser
  catchAllParser actParser
  atoms cueAtom
-testParser
+testParser abstractTestBlockParser
  description Basic test block.
- extends abstractTestBlockParser
  cue test
-testOnlyParser
+testOnlyParser abstractTestBlockParser
  description If set, only this test block will be run.
- extends abstractTestBlockParser
  string racerPrefix _
  cue testOnly
-skipTestParser
+skipTestParser abstractTestBlockParser
  description If you want to skip running a test.
- extends abstractTestBlockParser
  string racerPrefix $
  cue skipTest
 hashbangParser

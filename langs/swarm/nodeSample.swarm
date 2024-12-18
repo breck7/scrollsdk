@@ -8,19 +8,16 @@ test swarmParticlesample
     inScope baseParser
     catchAllParser errorParser
    anyAtom
-   atomAtom
-    extends anyAtom
+   atomAtom anyAtom
    errorParser
     baseParser errorParser
    baseParser
     cue base
-   blockParser
+   blockParser baseParser
     cue block
-    extends baseParser
     inScope baseParser
-   toParser
+   toParser blockParser
     cue to
-    extends blockParser
     atoms atomAtom
     tags test
     compiler

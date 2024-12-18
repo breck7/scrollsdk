@@ -21,20 +21,16 @@ floatAtom
 commentAtom
  paint comment
 cueAtom
-hashBangKeywordAtom
- extends cueAtom
+hashBangKeywordAtom cueAtom
  paint comment
-commentKeywordAtom
- extends cueAtom
+commentKeywordAtom cueAtom
  paint comment
  enum comment
 errorAtom
  paint invalid
-numberAtom
+numberAtom floatAtom
  paint constant.numeric
- extends floatAtom
-numbersAtom
- extends numberAtom
+numbersAtom numberAtom
 operatorAtom
  paint keyword.operator.arithmetic
 
@@ -59,25 +55,20 @@ abstractArithmeticReducerParser
  atoms operatorAtom
  catchAllAtomType numbersAtom
 
-modParser
+modParser abstractArithmeticReducerParser
  cue %
- extends abstractArithmeticReducerParser
  string operator %
-timesParser
+timesParser abstractArithmeticReducerParser
  cue *
- extends abstractArithmeticReducerParser
  string operator *
-addParser
+addParser abstractArithmeticReducerParser
  cue +
- extends abstractArithmeticReducerParser
  string operator +
-substractParser
+substractParser abstractArithmeticReducerParser
  cue -
- extends abstractArithmeticReducerParser
  string operator -
-divideParser
+divideParser abstractArithmeticReducerParser
  cue /
- extends abstractArithmeticReducerParser
  string operator /
 
 commentParser

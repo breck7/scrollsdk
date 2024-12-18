@@ -309,19 +309,13 @@ testParticles.format = equal => {
   const normalCode = `someLangParser
  root
 abstractTopLevelParser
-abstractHtmlParser
- extends abstractTopLevelParser
-h1Parser
+abstractHtmlParser abstractTopLevelParser
+h1Parser abstractHtmlParser
  cue html.h1
- extends abstractHtmlParser
-abstractColorPropertiesParser
- extends abstractTopLevelParser
-constrastParser
- extends abstractColorPropertiesParser
-hueParser
- extends abstractColorPropertiesParser
-saturationParser
- extends abstractColorPropertiesParser`
+abstractColorPropertiesParser abstractTopLevelParser
+constrastParser abstractColorPropertiesParser
+hueParser abstractColorPropertiesParser
+saturationParser abstractColorPropertiesParser`
   const parsersProgram = makeParsersProgram(normalCode)
   const formatted = parsersProgram.format().toString()
   equal(formatted, normalCode, "code is already in formatted form")
@@ -333,22 +327,18 @@ testParticles.formatDo = equal => {
  root
  inScope abstractTopLevelParser
 abstractTopLevelParser
-h1Parser
+h1Parser abstractHtmlParser
  cue html.h1
- extends abstractHtmlParser
-abstractHtmlParser
- extends abstractTopLevelParser
+abstractHtmlParser abstractTopLevelParser
 integerAtom`
   const sortedCode = `integerAtom
 someLangParser
  root
  inScope abstractTopLevelParser
 abstractTopLevelParser
-abstractHtmlParser
- extends abstractTopLevelParser
-h1Parser
- cue html.h1
- extends abstractHtmlParser`
+abstractHtmlParser abstractTopLevelParser
+h1Parser abstractHtmlParser
+ cue html.h1`
   // Act/Assert
   equal(makeParsersProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
 }
@@ -634,13 +624,10 @@ testParticles.parsersWithLoop = equal => {
       `langWithLoopParser
  root
  catchAllParser particleAParser
-particleAParser
- extends particleCParser
+particleAParser particleCParser
  catchAllAtomType anyAtom
-particleBParser
- extends particleAParser
-particleCParser
- extends particleBParser
+particleBParser particleAParser
+particleCParser particleBParser
 anyAtom`
     ).compileAndReturnRootParser()
 
@@ -678,16 +665,14 @@ newlangParser
  catchAllParser catchAllErrorParser
  inScope rootParser
 rootParser
-videoParser
- extends rootParser
+videoParser rootParser
  atoms cueAtom
  cueFromId
  widthParser
   cueFromId
   atoms cueAtom
-quickVideoParser
+quickVideoParser videoParser
  cue qv
- extends videoParser
 catchAllErrorParser
  baseParser errorParser`).compileAndReturnRootParser()
   const program = `video

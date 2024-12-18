@@ -22,11 +22,9 @@ fruitParser
 abstractFruitParser
  cueFromId
  atoms fruitNameAtom
-appleParser
- extends abstractFruitParser
+appleParser abstractFruitParser
  inScope appleParser
- bananaParser
-  extends abstractFruitParser
+ bananaParser abstractFruitParser
 errorParser
  baseParser errorParser`)
     get handParsersProgram() {

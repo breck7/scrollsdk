@@ -35,16 +35,14 @@ dumbdownParser
    print("Hello world")
 abstractTopLevelParser
  atoms cueAtom
-linkParser
+linkParser abstractTopLevelParser
  atoms cueAtom urlAtom
  catchAllAtomType textAtom
- extends abstractTopLevelParser
  compiler
   stringTemplate <a href="{urlAtom}">{textAtom}</a>
  cue link
-paragraphParser
+paragraphParser abstractTopLevelParser
  catchAllParser paragraphContentParser
- extends abstractTopLevelParser
  cue paragraph
  compiler
   openSubparticles <p>
@@ -55,18 +53,16 @@ paragraphContentParser
  catchAllAtomType textAtom
  compiler
   stringTemplate {textAtom}
-codeParser
+codeParser abstractTopLevelParser
  description A code block.
  catchAllParser lineOfCodeParser
- extends abstractTopLevelParser
  javascript
   compile() {
    return `<code>${this.indentation + this.subparticlesToString()}</code>`
   }
  cue code
-listParser
+listParser abstractTopLevelParser
  inScope dashParser
- extends abstractTopLevelParser
  compiler
   stringTemplate 
   openSubparticles <ul>
@@ -88,9 +84,8 @@ dashParser
  compiler
   stringTemplate <li>{textAtom}</li>
  atoms dashAtom
-titleParser
+titleParser abstractTopLevelParser
  catchAllAtomType textAtom
- extends abstractTopLevelParser
  compiler
   stringTemplate 
  cue title
@@ -100,29 +95,24 @@ titleParser
    const permalink = Utils.stringToPermalink(this.content)
    return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
   }
-title2Parser
+title2Parser abstractTopLevelParser
  catchAllAtomType textAtom
- extends abstractTopLevelParser
  compiler
   stringTemplate <h2>{textAtom}</h2>
  cue title2
-title3Parser
- extends title2Parser
+title3Parser title2Parser
  compiler
   stringTemplate <h3>{textAtom}</h3>
  cue title3
-title4Parser
- extends title2Parser
+title4Parser title2Parser
  compiler
   stringTemplate <h4>{textAtom}</h4>
  cue title4
-title5Parser
- extends title2Parser
+title5Parser title2Parser
  compiler
   stringTemplate <h5>{textAtom}</h5>
  cue title5
-title6Parser
- extends title2Parser
+title6Parser title2Parser
  compiler
   stringTemplate <h6>{textAtom}</h6>
  cue title6

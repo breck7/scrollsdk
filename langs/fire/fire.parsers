@@ -12,36 +12,25 @@ identifierAtom
 numberAtom
  regex \-?[0-9]*\.?[0-9]*
  paint constant.numeric
-numberIdentifierAtom
- extends identifierAtom
+numberIdentifierAtom identifierAtom
 hashBangAtom
  paint comment
 hashBangKeywordAtom
  paint comment
 stringAtom
  paint string
-booleanIdentifierAtom
- extends identifierAtom
-functionIdentifierAtom
- extends identifierAtom
-identifiersAtom
- extends identifierAtom
-instanceIdentifierAtom
- extends identifierAtom
-methodIdentifierAtom
- extends identifierAtom
-resultIdentifierAtom
- extends identifierAtom
+booleanIdentifierAtom identifierAtom
+functionIdentifierAtom identifierAtom
+identifiersAtom identifierAtom
+instanceIdentifierAtom identifierAtom
+methodIdentifierAtom identifierAtom
+resultIdentifierAtom identifierAtom
 cueAtom
  paint keyword
-stringIdentifierAtom
- extends identifierAtom
-stringAtomsAtom
- extends stringAtom
-leftNumberAtom
- extends numberAtom
-leftAnyAtom
- extends anyAtom
+stringIdentifierAtom identifierAtom
+stringAtomsAtom stringAtom
+leftNumberAtom numberAtom
+leftAnyAtom anyAtom
 
 // Line Parsers
 fireParser
@@ -64,19 +53,17 @@ fireParser
 abstractNonTerminalParser
  inScope abstractTerminalParser abstractNonTerminalParser
  atoms cueAtom
-abstractJsblockParser
+abstractJsblockParser abstractNonTerminalParser
  compiler
   openSubparticles  {
   closeSubparticles }
- extends abstractNonTerminalParser
-blockParser
+blockParser abstractJsblockParser
  description block of code
  popularity .2
  compiler
   stringTemplate /* {identifierAtom} */
- extends abstractJsblockParser
  cue block
-functionParser
+functionParser abstractJsblockParser
  cue function
  description Function Assignment
  atoms cueAtom functionIdentifierAtom
@@ -85,102 +72,87 @@ functionParser
   stringTemplate const {functionIdentifierAtom} = ({anyAtom}) =>
   catchAllAtomDelimiter , 
  popularity .1
- extends abstractJsblockParser
-ifParser
+ifParser abstractJsblockParser
  cue if
  description If tile
  atoms cueAtom identifierAtom
  popularity .2
  compiler
   stringTemplate if ({identifierAtom})
- extends abstractJsblockParser
-whileParser
+whileParser abstractJsblockParser
  cue while
  description While tile
  atoms cueAtom identifierAtom
  popularity .1
  compiler
   stringTemplate while ({identifierAtom})
- extends abstractJsblockParser
 abstractTerminalParser
  atoms cueAtom
-abstractAssignmentParser
- extends abstractTerminalParser
-abstractArithmeticParser
+abstractAssignmentParser abstractTerminalParser
+abstractArithmeticParser abstractAssignmentParser
  atoms cueAtom identifierAtom
  catchAllAtomType anyAtom
  compiler
   stringTemplate const {identifierAtom} = {anyAtom}
  popularity .2
- extends abstractAssignmentParser
-divideParser
+divideParser abstractArithmeticParser
  description Divide Numbers
  compiler
   catchAllAtomDelimiter  / 
- extends abstractArithmeticParser
  cue divide
-moduloParser
+moduloParser abstractArithmeticParser
  description Modulo Numbers
  compiler
   catchAllAtomDelimiter %
- extends abstractArithmeticParser
  cue modulo
-multiplyParser
+multiplyParser abstractArithmeticParser
  description Multiply Numbers
  compiler
   catchAllAtomDelimiter  * 
- extends abstractArithmeticParser
  cue multiply
-substractParser
+substractParser abstractArithmeticParser
  description Subtract Numbers
  compiler
   catchAllAtomDelimiter  - 
- extends abstractArithmeticParser
  cue substract
-addParser
+addParser abstractArithmeticParser
  cue add
  example
   add ten 2 3 5
  description Add numbers and store result
  compiler
   catchAllAtomDelimiter  + 
- extends abstractArithmeticParser
-abstractBooleanOperatorParser
+abstractBooleanOperatorParser abstractAssignmentParser
  description Runs a boolean test and saves result.
- extends abstractAssignmentParser
-greaterThanParser
+greaterThanParser abstractBooleanOperatorParser
  description Greater than test
  atoms cueAtom identifierAtom leftNumberAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {leftNumberAtom} > {numberAtom}
  popularity .1
- extends abstractBooleanOperatorParser
  cue greaterThan
-greaterThanOrEqualParser
+greaterThanOrEqualParser abstractBooleanOperatorParser
  description Greater than or equal to test
  atoms cueAtom identifierAtom leftNumberAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {leftNumberAtom} >= {numberAtom}
  popularity .1
- extends abstractBooleanOperatorParser
  cue greaterThanOrEqual
-lessThanParser
+lessThanParser abstractBooleanOperatorParser
  description Less than test
  atoms cueAtom identifierAtom leftAnyAtom anyAtom
  compiler
   stringTemplate const {identifierAtom} = {leftAnyAtom} < {anyAtom}
  popularity .1
- extends abstractBooleanOperatorParser
  cue lessThan
-lessThanOrEqualParser
+lessThanOrEqualParser abstractBooleanOperatorParser
  cue lessThanOrEqual
  description Less than or equal to test
  atoms cueAtom identifierAtom leftAnyAtom anyAtom
  compiler
   stringTemplate const {identifierAtom} = {leftAnyAtom} <= {anyAtom}
  popularity .1
- extends abstractBooleanOperatorParser
-sumParser
+sumParser abstractAssignmentParser
  cue sum
  description Add numbers and store result
  atoms cueAtom numberIdentifierAtom
@@ -189,15 +161,13 @@ sumParser
   stringTemplate const {numberIdentifierAtom} = [{numberAtom}].reduce((sum, num) => sum + num)
   catchAllAtomDelimiter , 
  popularity .1
- extends abstractAssignmentParser
-booleanParser
+booleanParser abstractAssignmentParser
  cue boolean
  description Boolean Assignment
  atoms cueAtom booleanIdentifierAtom booleanAtom
  compiler
   stringTemplate const {booleanIdentifierAtom} = {booleanAtom}
- extends abstractAssignmentParser
-callFunctionAndSetParser
+callFunctionAndSetParser abstractAssignmentParser
  cue callFunctionAndSet
  description Function Call
  popularity .5
@@ -206,8 +176,7 @@ callFunctionAndSetParser
  compiler
   stringTemplate const {resultIdentifierAtom} = {functionIdentifierAtom}({anyAtom})
   catchAllAtomDelimiter , 
- extends abstractAssignmentParser
-callMethodAndSetParser
+callMethodAndSetParser abstractAssignmentParser
  cue callMethodAndSet
  description Method Call
  popularity .5
@@ -216,8 +185,7 @@ callMethodAndSetParser
  compiler
   stringTemplate const {resultIdentifierAtom} = {instanceIdentifierAtom}.{methodIdentifierAtom}({anyAtom})
   catchAllAtomDelimiter , 
- extends abstractAssignmentParser
-joinParser
+joinParser abstractAssignmentParser
  cue join
  description Join strings to form new string
  atoms cueAtom identifierAtom
@@ -226,23 +194,20 @@ joinParser
   stringTemplate const {identifierAtom} = [{identifiersAtom}].join("")
   catchAllAtomDelimiter , 
  popularity .2
- extends abstractAssignmentParser
-mutableNumberParser
+mutableNumberParser abstractAssignmentParser
  cue mutableNumber
  description Mutable Number Assignment
  atoms cueAtom identifierAtom numberAtom
  compiler
   stringTemplate let {identifierAtom} = {numberAtom}
- extends abstractAssignmentParser
-numberParser
+numberParser abstractAssignmentParser
  cue number
  description Number Assignment
  atoms cueAtom identifierAtom numberAtom
  compiler
   stringTemplate const {identifierAtom} = {numberAtom}
  popularity .3
- extends abstractAssignmentParser
-numbersParser
+numbersParser abstractAssignmentParser
  cue numbers
  description Number Array Assignment
  atoms cueAtom identifierAtom
@@ -251,8 +216,7 @@ numbersParser
  compiler
   stringTemplate const {identifierAtom} = [{numberAtom}]
   catchAllAtomDelimiter , 
- extends abstractAssignmentParser
-stringParser
+stringParser abstractAssignmentParser
  cue string
  description String Assignment
  atoms cueAtom stringIdentifierAtom
@@ -260,8 +224,7 @@ stringParser
  compiler
   stringTemplate const {stringIdentifierAtom} = "{anyAtom}"
  popularity .2
- extends abstractAssignmentParser
-callFunctionParser
+callFunctionParser abstractTerminalParser
  cue callFunction
  description Function call ignore result.
  popularity .1
@@ -270,16 +233,14 @@ callFunctionParser
  compiler
   stringTemplate {functionIdentifierAtom}({anyAtom})
   catchAllAtomDelimiter , 
- extends abstractTerminalParser
-decrementParser
+decrementParser abstractTerminalParser
  cue decrement
  description Decrement
  atoms cueAtom numberIdentifierAtom
  compiler
   stringTemplate {numberIdentifierAtom}--
  popularity .1
- extends abstractTerminalParser
-dumpIdentifierParser
+dumpIdentifierParser abstractTerminalParser
  cue dumpIdentifier
  description Dump variable(s) to console
  catchAllAtomType identifierAtom
@@ -287,51 +248,44 @@ dumpIdentifierParser
   stringTemplate console.log({identifierAtom})
   catchAllAtomDelimiter , 
  popularity .5
- extends abstractTerminalParser
-exportParser
+exportParser abstractTerminalParser
  cue export
  description Export This
  atoms cueAtom identifierAtom
  compiler
   stringTemplate module.exports = {identifierAtom}
  popularity .1
- extends abstractTerminalParser
-incrementParser
+incrementParser abstractTerminalParser
  cue increment
  description Increment
  popularity .3
  atoms cueAtom numberIdentifierAtom
  compiler
   stringTemplate {numberIdentifierAtom}++
- extends abstractTerminalParser
-printNumberParser
+printNumberParser abstractTerminalParser
  cue printNumber
- extends abstractTerminalParser
  catchAllAtomType numberIdentifierAtom
  compiler
   stringTemplate console.log({numberIdentifierAtom})
-printStringParser
+printStringParser abstractTerminalParser
  cue printString
  // todo Allow printing of multiline strings
- extends abstractTerminalParser
  catchAllAtomType stringAtomsAtom
  compiler
   stringTemplate console.log("{stringAtoms}")
-requireParser
+requireParser abstractTerminalParser
  cue require
  description Require Something
  atoms cueAtom identifierAtom filepathAtom
  compiler
   stringTemplate const {identifierAtom} = require("{filepathAtom}")
  popularity .1
- extends abstractTerminalParser
-returnParser
+returnParser abstractTerminalParser
  cue return
  atoms cueAtom anyAtom
  compiler
   stringTemplate return {anyAtom}
  popularity .1
- extends abstractTerminalParser
 hashbangParser
  cue #!
  description Standard bash hashbang line.

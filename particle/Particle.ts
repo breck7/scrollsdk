@@ -67,10 +67,6 @@ enum WhereOperators {
   notEmpty = "notEmpty"
 }
 
-enum ParticlesConstants {
-  extends = "extends"
-}
-
 class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
   private _catchAllParser: particlesTypes.ParticleParser
@@ -1328,12 +1324,8 @@ class Particle extends AbstractParticle {
     return Object.keys(obj)
   }
 
-  getAncestorParticlesByInheritanceViaExtendsCue(key: atom): Particle[] {
-    const ancestorParticles = this._getAncestorParticles(
-      (particle, id) => particle._getParticlesByColumn(0, id),
-      particle => particle.get(key),
-      this
-    )
+  getAncestorParticlesByInheritance(keyFn: fn): Particle[] {
+    const ancestorParticles = this._getAncestorParticles((particle, id) => particle._getParticlesByColumn(0, id), keyFn, this)
     ancestorParticles.push(this)
     return ancestorParticles
   }
@@ -3200,7 +3192,7 @@ abstract class AbstractExtendibleParticle extends Particle {
   }
 
   private get idThatThisExtends() {
-    return this.get(ParticlesConstants.extends)
+    return this.atoms[1]
   }
 
   abstract get idToParticleMap(): { [id: string]: AbstractExtendibleParticle }

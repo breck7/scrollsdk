@@ -4,19 +4,15 @@ SweeperCraftAppParser
  description SweeperCraft let's you design your own Minesweeper boards. SweeperCraft is a demonstration app for the ParticleComponentFramework.
  inScope abstractTopLevelComponentParser
 abstractTopLevelComponentParser
-headerComponentParser
+headerComponentParser abstractTopLevelComponentParser
  description Header contains basic game state
- extends abstractTopLevelComponentParser
  cue headerComponent
-boardComponentParser
+boardComponentParser abstractTopLevelComponentParser
  description Contains the main board
- extends abstractTopLevelComponentParser
  cue boardComponent
-controlsComponentParser
+controlsComponentParser abstractTopLevelComponentParser
  description Contains the restart button
- extends abstractTopLevelComponentParser
  cue controlsComponent
-shortcutsTableComponentParser
+shortcutsTableComponentParser abstractTopLevelComponentParser
  description Contains help for the keyboard shortcuts
- extends abstractTopLevelComponentParser
  cue shortcutsTableComponent

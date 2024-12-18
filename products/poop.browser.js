@@ -28,17 +28,13 @@
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
 dateIntAtom
  paint constant.numeric.integer
-monthIntAtom
- extends dateIntAtom
+monthIntAtom dateIntAtom
 integerAtom
  regex \\d+
-yearIntAtom
- extends dateIntAtom
-dayIntAtom
- extends dateIntAtom
-timeIntAtom
+yearIntAtom dateIntAtom
+dayIntAtom dateIntAtom
+timeIntAtom integerAtom
  paint constant.numeric.integer
- extends integerAtom
 anyAtom
 symbolAtom
 memoryDescriptionAtom
@@ -88,43 +84,37 @@ abstractEventParser
   compile(day, lastTime) {
    return \`\${day},\${lastTime},\${this.eventType},\${this.getNotes()}\`
   }
-bowelParser
+bowelParser abstractEventParser
  cue 💩
  pattern 💩
- extends abstractEventParser
  description Bowel movement.
  string eventType bowelMovement
-bladderParser
+bladderParser abstractEventParser
  cue ✨
  pattern ✨
  description Bladder movement.
- extends abstractEventParser
  string eventType bladderMovement
-bottleParser
+bottleParser abstractEventParser
  cue 🍼
  pattern 🍼
- extends abstractEventParser
  description Feeding.
  string eventType feeding
-sleep4Parser
+sleep4Parser abstractEventParser
  cue 😴
  pattern 😴
  description Sleep.
- extends abstractEventParser
  string eventType asleep
-awakeParser
+awakeParser abstractEventParser
  cue 😀
  pattern 😀
  description I'm awake!
- extends abstractEventParser
  string eventType awoke
-memoryParser
+memoryParser abstractEventParser
  cue ❤️
  pattern ❤️
  atoms eventTypeAtom
  catchAllAtomType memoryDescriptionAtom
  description Special memory.
- extends abstractEventParser
  string eventType memory
  javascript
   getNotes() {

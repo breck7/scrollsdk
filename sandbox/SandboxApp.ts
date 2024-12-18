@@ -18,7 +18,7 @@ class SandboxApp extends AbstractParticleComponentParser {
   }
 
   static browserStart() {
-    const app = new SandboxApp(`headerComponent
+    const app = new (<any>SandboxApp)(`headerComponent
 shareComponent
 tableComponent
 githubTriangleComponent`)

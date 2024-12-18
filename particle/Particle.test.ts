@@ -1919,20 +1919,18 @@ testParticles.getGraph = equal => {
   const particle = new Particle(
     `Thing
  color
-Animal
+Animal Thing
  dna
- extends Thing
-Monkey
- extends Mammal
+Monkey Mammal
  oohoohahah
-Mammal
- extends Animal
+Mammal Animal
  milk`
   )
   // Act/Assert
-  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 4)
-  equal(particle.getParticle("Thing").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 1)
-  equal(particle.getParticle("Animal").getAncestorParticlesByInheritanceViaExtendsCue("extends").length, 2)
+  const keyFn = (particle: any) => particle.atoms[1]
+  equal(particle.getParticle("Monkey").getAncestorParticlesByInheritance(keyFn).length, 4)
+  equal(particle.getParticle("Thing").getAncestorParticlesByInheritance(keyFn).length, 1)
+  equal(particle.getParticle("Animal").getAncestorParticlesByInheritance(keyFn).length, 2)
 }
 
 testParticles.getGraphConventional = equal => {
@@ -3886,8 +3884,7 @@ testParticles.extendible = equal => {
   // Arrange
   const a = new ExtendibleParticle(`a
  color red
-b
- extends a`)
+b a`)
   // Assert
   equal(
     a._getLineage().asString,

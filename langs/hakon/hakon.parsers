@@ -1,8 +1,7 @@
 // Atom Parsers
 anyAtom
 cueAtom
-commentKeywordAtom
- extends cueAtom
+commentKeywordAtom cueAtom
  paint comment
  enum comment
 extraAtom
@@ -13,10 +12,9 @@ selectorAtom
  paint keyword.control
  examples body h1
  // todo add html tags, css and ids selector regexes, etc
-vendorPrefixCueAtom
+vendorPrefixCueAtom cueAtom
  description Properties like -moz-column-fill
  paint variable.function
- extends cueAtom
 propertyNameAtom
  paint variable.function
  // todo Where are these coming from? Can we add a url link
@@ -60,11 +58,9 @@ propertyParser
    return `${spaces}${this.cue}: ${this.content};`
   }
  atoms propertyNameAtom
-variableParser
- extends propertyParser
+variableParser propertyParser
  pattern --
-browserPrefixPropertyParser
- extends propertyParser
+browserPrefixPropertyParser propertyParser
  pattern ^\-\w.+
  atoms vendorPrefixCueAtom
 errorParser

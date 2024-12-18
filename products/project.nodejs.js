@@ -158,14 +158,11 @@ projectParser
 abstractTermParser
  catchAllAtomType filepathAtom
  atoms termAtom
-absoluteParser
- extends abstractTermParser
+absoluteParser abstractTermParser
  cue absolute
-externalParser
- extends abstractTermParser
+externalParser abstractTermParser
  cue external
-relativeParser
- extends abstractTermParser
+relativeParser abstractTermParser
  cue relative
 errorParser
  baseParser errorParser

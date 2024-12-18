@@ -4,22 +4,17 @@ floatAtom
  paint constant.numeric.float
 integerAtom
 cueAtom
-commentKeywordAtom
- extends cueAtom
+commentKeywordAtom cueAtom
  paint comment
  enum comment
 headerAtom
  paint string
 commentAtom
  paint comment
-sepalLengthAtom
- extends floatAtom
-sepalWidthAtom
- extends floatAtom
-petalLengthAtom
- extends floatAtom
-petalWidthAtom
- extends floatAtom
+sepalLengthAtom floatAtom
+sepalWidthAtom floatAtom
+petalLengthAtom floatAtom
+petalWidthAtom floatAtom
 speciesAtom
  enum virginica versicolor setosa
  paint constant.language

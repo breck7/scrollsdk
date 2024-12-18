@@ -95,7 +95,6 @@ enum ParsersConstants {
   errorParser = "errorParser",
 
   // parse time
-  extends = "extends",
   root = "root",
   cue = "cue",
   cueFromId = "cueFromId",
@@ -1525,7 +1524,6 @@ class atomTypeDefinitionParser extends AbstractExtendibleParticle {
     types[ParsersConstants.min] = Particle
     types[ParsersConstants.max] = Particle
     types[ParsersConstants.description] = Particle
-    types[ParsersConstants.extends] = Particle
     return new Particle.ParserCombinator(undefined, types)
   }
 
@@ -1813,7 +1811,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.popularity,
       ParsersConstants.inScope,
       ParsersConstants.atoms,
-      ParsersConstants.extends,
       ParsersConstants.description,
       ParsersConstants.catchAllParser,
       ParsersConstants.catchAllAtomType,
@@ -2003,7 +2000,7 @@ ${properties.join("\n")}
         const regex = def.regexMatch
         const cue = def.cueIfAny
         const enumOptions = def.cueEnumOptions
-        if (regex) result.regexTests.push({ regex: regex, parser: def.parserIdFromDefinition })
+        if (regex) result.regexTests.push({ regex, parser: def.parserIdFromDefinition })
         else if (cue) result.cueMap[cue] = def
         else if (enumOptions) {
           enumOptions.forEach(option => (result.cueMap[option] = def))
@@ -2247,10 +2244,9 @@ ${captures}
     if (!this._cache_parserDefinitionParsers) {
       if (this._isLooping) throw new Error(`Loop detected in ${this.id}`)
       this._isLooping = true
+      const extendsParser = this.atoms[1]
       this._cache_parserDefinitionParsers =
-        this.isRoot() || this.hasParserDefinitions
-          ? this.makeProgramParserDefinitionCache()
-          : this.parent.programParserDefinitionCache[this.get(ParsersConstants.extends)]?.programParserDefinitionCache || this.parent.programParserDefinitionCache
+        this.isRoot() || this.hasParserDefinitions ? this.makeProgramParserDefinitionCache() : this.parent.programParserDefinitionCache[extendsParser]?.programParserDefinitionCache || this.parent.programParserDefinitionCache
       this._isLooping = false
     }
     return this._cache_parserDefinitionParsers
@@ -2420,12 +2416,12 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
   static makeParserId = (str: string) => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.parserSuffixRegex, "") + ParsersConstants.parserSuffix
   static makeAtomTypeId = (str: string) => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.atomTypeSuffixRegex, "") + ParsersConstants.atomTypeSuffix
 
-  static parserSuffixRegex = new RegExp(ParsersConstants.parserSuffix + "$")
-  static parserFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.parserSuffix + "$")
+  static parserSuffixRegex = new RegExp(ParsersConstants.parserSuffix + "\\b")
+  static parserFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.parserSuffix + "\\b")
   static blankLineRegex = new RegExp("^$")
 
-  static atomTypeSuffixRegex = new RegExp(ParsersConstants.atomTypeSuffix + "$")
-  static atomTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.atomTypeSuffix + "$")
+  static atomTypeSuffixRegex = new RegExp(ParsersConstants.atomTypeSuffix + "\\b")
+  static atomTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.atomTypeSuffix + "\\b")
 
   private _cache_rootParser: any
   // rootParser

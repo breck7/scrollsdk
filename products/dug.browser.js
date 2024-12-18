@@ -40,35 +40,29 @@ dugParser
 abstractValueParser
  atoms cueAtom
  cueFromId
-nullParser
+nullParser abstractValueParser
  compiler
   stringTemplate null
- extends abstractValueParser
-numberParser
- extends abstractValueParser
+numberParser abstractValueParser
  atoms cueAtom numberAtom
  compiler
   stringTemplate {numberAtom}
-stringParser
+stringParser abstractValueParser
  catchAllAtomType stringAtom
  compiler
   stringTemplate "{stringAtom}"
- extends abstractValueParser
-booleanParser
- extends abstractValueParser
+booleanParser abstractValueParser
  atoms cueAtom booleanAtom
  compiler
   stringTemplate {booleanAtom}
-objectParser
+objectParser abstractValueParser
  catchAllParser memberParser
- extends abstractValueParser
  compiler
   stringTemplate  
   joinSubparticlesWith , 
   openSubparticles {
   closeSubparticles }
-arrayParser
- extends abstractValueParser
+arrayParser abstractValueParser
  inScope abstractValueParser
  compiler
   stringTemplate  

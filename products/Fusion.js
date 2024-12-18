@@ -10,7 +10,7 @@ const PARSERS_EXTENSION = ".parsers"
 const SCROLL_EXTENSION = ".scroll"
 // Add URL regex pattern
 const urlRegex = /^https?:\/\/[^ ]+$/i
-const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
+const parserRegex = /^[a-zA-Z0-9_]+Parser\b/gm
 const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$|https?:\/\/.+\.(scroll|parsers)$)/gm
 const importOnlyRegex = /^importOnly/
 const isUrl = path => urlRegex.test(path)
@@ -433,7 +433,7 @@ class Fusion {
     return _parserCache[key]
   }
   static combineParsers(filePaths, fileContents, baseParsersCode = "") {
-    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser\b/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const mapped = fileContents.map((content, index) => {
       const filePath = filePaths[index]

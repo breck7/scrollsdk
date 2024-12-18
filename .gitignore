@@ -19,3 +19,4 @@ sublime/
 *.tsv
 package-lock.json
 *.css
+*.js

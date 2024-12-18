@@ -1,0 +1,7 @@
+buildHtml
+title Particles Sandbox
+metaTags
+favicon ../images/favicon.ico
+libs.js
+../products/SandboxApp.browser.js
+script SandboxApp.browserStart()

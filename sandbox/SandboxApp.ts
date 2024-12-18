@@ -17,6 +17,15 @@ class SandboxApp extends AbstractParticleComponentParser {
     })
   }
 
+  static browserStart() {
+    const app = new SandboxApp(`headerComponent
+shareComponent
+tableComponent
+githubTriangleComponent`)
+    window.app = app
+    app.startWhenReady()
+  }
+
   loadJsonSampleCommand() {
     this.willowBrowser.setValueOfElementWithIdHack(
       "toJsonSubset",

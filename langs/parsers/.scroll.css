@@ -1,22 +1,4 @@
 :root {
-  /* Base Colors */
-  --scrollPrimaryRgb: 10, 92, 202; /* Base primary button */
-  --scrollSurfaceRgb: 204, 204, 204; /* Base surface */
-  --scrollTextBase: 0, 0, 0;
-  --scrollLinkBase: 51, 102, 204;
-
-  /* Semantic Colors */
-  --scrollColorBackground: rgb(244, 244, 244);
-  --scrollColorText: rgba(var(--scrollTextBase), 1);
-  --scrollColorLink: rgb(var(--scrollLinkBase), 1);
-  --scrollColorSubdued: rgb(150, 150, 150);
-
-  /* Typography */
-  --scrollFontPrimary: Exchange, Georgia, serif;
-  --scrollFontUi: "SF Pro", "Helvetica Neue", "Segoe UI", "Arial";
-  --scrollFontMono: monospace;
-  --scrollBaseFontSize: 16px;
-
   /* Derived Colors */
   --scrollColorPrimary: rgba(var(--scrollPrimaryRgb), 0.8);
   --scrollColorPrimaryHover: rgba(var(--scrollPrimaryRgb), 0.9);
@@ -50,15 +32,7 @@ html {
   color: var(--scrollColorText);
   font-size: var(--scrollBaseFontSize);
   hyphens: auto;
-}
-
-html {
   height: 100%;
-}
-
-figure {
-  margin: 0;
-  padding: 0;
 }
 
 .dropcap:first-letter {
@@ -69,12 +43,12 @@ figure {
   float: left;
 }
 
-.dinkus {
+.abstractDinkusParser {
   text-align: center;
   padding: 1rem;
 }
 
-.dinkus span {
+.abstractDinkusParser span {
   vertical-align: sub;
 }
 
@@ -313,7 +287,7 @@ h4 {
   font-size: 1rem;
 }
 
-h1.scrollTitle {
+h1.printTitleParser {
   text-align: center;
   margin: auto;
   margin-bottom: 0.15625rem;
@@ -322,11 +296,15 @@ h1.scrollTitle {
   max-width: calc(100vw - 2 * (1.5625rem + 1.875rem));
 }
 
-h1.scrollTitle a {
+h1.printTitleParser a {
   color: var(--scrollColorText);
 }
 
-.scrollDateline {
+.printDateParser {
+  text-align: center;
+}
+.scrollDateline,
+.printDateParser {
   font-style: italic;
   line-height: 1.4rem;
   font-size: 0.75rem;
@@ -435,7 +413,7 @@ h4.scrollQuestion {
   white-space: unset;
 }
 
-.scrollByLine {
+.printAuthorsParser {
   font-size: 0.875rem;
   font-style: italic;
   margin: 0.25rem 0;

@@ -6,7 +6,13 @@ var $TypeError = require('es-errors/type');
 
 /** @type {{ __proto__?: object | null }} */
 var obj = {};
-obj.__proto__ = null; // eslint-disable-line no-proto
+try {
+	obj.__proto__ = null; // eslint-disable-line no-proto
+} catch (e) {
+	if (!e || typeof e !== 'object' || !('code' in e) || e.code !== 'ERR_PROTO_ACCESS') {
+		throw e;
+	}
+}
 
 var hasProtoMutator = !('toString' in obj);
 

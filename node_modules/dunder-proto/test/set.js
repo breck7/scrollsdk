@@ -35,7 +35,16 @@ test('setDunderProto', { skip: !setDunderProto }, function (t) {
 });
 
 test('no dunder proto', { skip: !!setDunderProto }, function (t) {
-	t.notOk('__proto__' in Object.prototype, 'no __proto__ in Object.prototype');
+	if ('__proto__' in Object.prototype) {
+		t['throws'](
+			// @ts-expect-error
+			function () { ({}).__proto__ = null; }, // eslint-disable-line no-proto
+			Error,
+			'throws when setting Object.prototype.__proto__'
+		);
+	} else {
+		t.notOk('__proto__' in Object.prototype, 'no __proto__ in Object.prototype');
+	}
 
 	t.end();
 });

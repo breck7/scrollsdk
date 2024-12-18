@@ -15,7 +15,8 @@ class SandboxApp extends AbstractParticleComponentParser {
 shareComponent
 tableComponent
 githubTriangleComponent`)
-    window.app = app
+    const win = window
+    win.app = app
     app.startWhenReady()
   }
   loadJsonSampleCommand() {

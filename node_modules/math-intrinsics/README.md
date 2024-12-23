@@ -19,6 +19,7 @@ ES Math-related intrinsics and helpers, robustly cached.
  - `min`
  - `mod`
  - `pow`
+ - `round`
  - `sign`
  - `constants/maxArrayLength`
  - `constants/maxSafeInteger`

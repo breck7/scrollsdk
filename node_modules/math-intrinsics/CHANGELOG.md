@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0](https://github.com/es-shims/math-intrinsics/compare/v1.0.0...v1.1.0) - 2024-12-18
+
+### Commits
+
+- [New] add `round` [`7cfb044`](https://github.com/es-shims/math-intrinsics/commit/7cfb04460c0fbdf1ca101eecbac3f59d11994130)
+- [Tests] add attw [`e96be8f`](https://github.com/es-shims/math-intrinsics/commit/e96be8fbf58449eafe976446a0470e6ea561ad8d)
+- [Dev Deps] update `@types/tape` [`30d0023`](https://github.com/es-shims/math-intrinsics/commit/30d00234ce8a3fa0094a61cd55d6686eb91e36ec)
+
 ## v1.0.0 - 2024-12-11
 
 ### Commits

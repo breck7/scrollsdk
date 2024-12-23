@@ -1,4 +1,4 @@
 'use strict';
 
-/** @type {import('./abs')} */
+/** @type {import('./floor')} */
 module.exports = Math.floor;

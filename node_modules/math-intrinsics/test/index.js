@@ -15,6 +15,7 @@ var max = require('../max');
 var min = require('../min');
 var mod = require('../mod');
 var pow = require('../pow');
+var round = require('../round');
 var sign = require('../sign');
 
 var maxArrayLength = require('../constants/maxArrayLength');
@@ -156,6 +157,14 @@ test('pow', function (t) {
 	t.equal(pow(2, 8), 256, 'pow(2, 8) === 256');
 	t.equal(pow(2, 9), 512, 'pow(2, 9) === 512');
 	t.equal(pow(2, 10), 1024, 'pow(2, 10) === 1024');
+
+	t.end();
+});
+
+test('round', function (t) {
+	t.equal(round(1.1), 1, 'round(1.1) === 1');
+	t.equal(round(1.5), 2, 'round(1.5) === 2');
+	t.equal(round(1.9), 2, 'round(1.9) === 2');
 
 	t.end();
 });

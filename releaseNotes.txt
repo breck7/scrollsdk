@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+100.2.0 2024-12-23
+==================
+🎉 added murmurHash for cache use
+
 100.1.1 2024-12-16
 ==================
 🏥 escape left bracket in htmlCube
@@ -2398,4 +2402,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v164.4.0
+Built with Scroll v164.7.0

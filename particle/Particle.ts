@@ -1045,6 +1045,16 @@ class Particle extends AbstractParticle {
     return this._subparticlesToString(indentCount)
   }
 
+  get murmurHash(): string {
+    const str = this.toString()
+    let h1 = 0xdeadbeef
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i)
+      h1 = Math.imul(h1 ^ char, 0x5bd1e995)
+    }
+    return (h1 >>> 0).toString(16)
+  }
+
   // todo: implement
   protected _getChildJoinCharacter() {
     return "\n"
@@ -3109,7 +3119,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "100.1.1"
+  static getVersion = () => "100.2.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

@@ -3367,6 +3367,11 @@ testParticles.nest = equal => {
   equal(new Particle(`${Particle.nest("foo bar", 2)}`).particleAt([0, 0]).content, "foo bar")
 }
 
+testParticles.hashes = equal => {
+  // Arrange/Act/Assert
+  equal(typeof new Particle("hi").murmurHash, "string")
+}
+
 testParticles.toDataTable = equal => {
   // Arrange
   const data = [

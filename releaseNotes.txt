@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+100.3.0 2025-01-24
+==================
+🏥 catch circular import errors in Fusion
+
 100.2.0 2024-12-23
 ==================
 🎉 added murmurHash for cache use
@@ -2402,4 +2406,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v164.7.0
+Built with Scroll v164.12.0

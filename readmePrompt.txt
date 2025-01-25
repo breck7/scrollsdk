@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 100.3.0 2025-01-24
+🏥 catch circular import errors in Fusion
+
 📦 100.2.0 2024-12-23
 🎉 added murmurHash for cache use
 

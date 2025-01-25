@@ -27,6 +27,7 @@ interface FusedFile {
   parser?: particlesTypes.particle
   filepathsWithParserDefinitions: string[]
   exists: boolean
+  circularImportError?: boolean
 }
 
 interface Storage {
@@ -405,7 +406,7 @@ class Fusion implements Storage {
     return _particleCache[absoluteFilePathOrUrl]
   }
 
-  private async _fuseFile(absoluteFilePathOrUrl: string): Promise<FusedFile> {
+  private async _fuseFile(absoluteFilePathOrUrl: string, importStack: string[] = []): Promise<FusedFile> {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
 
@@ -451,8 +452,19 @@ class Fusion implements Storage {
       if (isUrl(rawPath)) absoluteImportFilePath = rawPath
       else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
 
+      if (importStack.includes(absoluteFilePathOrUrl)) {
+        const circularImportError = `Circular import detected: ${[...importStack, absoluteFilePathOrUrl].join(" -> ")}`
+        return {
+          expandedFile: circularImportError,
+          exists: true,
+          absoluteImportFilePath,
+          importParticle,
+          circularImportError
+        }
+      }
+
       // todo: race conditions
-      const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath), this.exists(absoluteImportFilePath)])
+      const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl]), this.exists(absoluteImportFilePath)])
       return {
         expandedFile,
         exists,
@@ -466,13 +478,18 @@ class Fusion implements Storage {
     // Assemble all imports
     let importFilePaths: string[] = []
     let footers: string[] = []
+    let hasCircularImportError = false
     imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, exists } = importResults
+      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError } = importResults
       importFilePaths.push(absoluteImportFilePath)
       importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
 
       importParticle.setLine("imported " + absoluteImportFilePath)
       importParticle.set("exists", `${exists}`)
+      if (circularImportError) {
+        hasCircularImportError = true
+        importParticle.set("circularImportError", circularImportError)
+      }
 
       footers = footers.concat(expandedFile.footers)
       if (importParticle.has("footer")) footers.push(expandedFile.fused)
@@ -488,6 +505,7 @@ class Fusion implements Storage {
       isImportOnly,
       fused: particle.toString(),
       footers,
+      circularImportError: hasCircularImportError,
       exists: allImportsExist,
       filepathsWithParserDefinitions: (
         await Promise.all(

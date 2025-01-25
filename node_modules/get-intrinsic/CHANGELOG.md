@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.7](https://github.com/ljharb/get-intrinsic/compare/v1.2.6...v1.2.7) - 2025-01-02
+
+### Commits
+
+- [Refactor] use `get-proto` directly [`00ab955`](https://github.com/ljharb/get-intrinsic/commit/00ab95546a0980c8ad42a84253daaa8d2adcedf9)
+- [Deps] update `math-intrinsics` [`c716cdd`](https://github.com/ljharb/get-intrinsic/commit/c716cdd6bbe36b438057025561b8bb5a879ac8a0)
+- [Dev Deps] update `call-bound`, `es-abstract` [`dc648a6`](https://github.com/ljharb/get-intrinsic/commit/dc648a67eb359037dff8d8619bfa71d86debccb1)
+
 ## [v1.2.6](https://github.com/ljharb/get-intrinsic/compare/v1.2.5...v1.2.6) - 2024-12-11
 
 ### Commits

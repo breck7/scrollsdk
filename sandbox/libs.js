@@ -3278,7 +3278,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "100.2.0"
+Particle.getVersion = () => "100.3.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -6631,7 +6631,7 @@ class Fusion {
     }
     return _particleCache[absoluteFilePathOrUrl]
   }
-  async _fuseFile(absoluteFilePathOrUrl) {
+  async _fuseFile(absoluteFilePathOrUrl, importStack = []) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
     const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
@@ -6669,8 +6669,18 @@ class Fusion {
       let absoluteImportFilePath = this.join(folder, rawPath)
       if (isUrl(rawPath)) absoluteImportFilePath = rawPath
       else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
+      if (importStack.includes(absoluteFilePathOrUrl)) {
+        const circularImportError = `Circular import detected: ${[...importStack, absoluteFilePathOrUrl].join(" -> ")}`
+        return {
+          expandedFile: circularImportError,
+          exists: true,
+          absoluteImportFilePath,
+          importParticle,
+          circularImportError
+        }
+      }
       // todo: race conditions
-      const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath), this.exists(absoluteImportFilePath)])
+      const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl]), this.exists(absoluteImportFilePath)])
       return {
         expandedFile,
         exists,
@@ -6682,12 +6692,17 @@ class Fusion {
     // Assemble all imports
     let importFilePaths = []
     let footers = []
+    let hasCircularImportError = false
     imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, exists } = importResults
+      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError } = importResults
       importFilePaths.push(absoluteImportFilePath)
       importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
       importParticle.setLine("imported " + absoluteImportFilePath)
       importParticle.set("exists", `${exists}`)
+      if (circularImportError) {
+        hasCircularImportError = true
+        importParticle.set("circularImportError", circularImportError)
+      }
       footers = footers.concat(expandedFile.footers)
       if (importParticle.has("footer")) footers.push(expandedFile.fused)
       else importParticle.insertLinesAfter(expandedFile.fused)
@@ -6699,6 +6714,7 @@ class Fusion {
       isImportOnly,
       fused: particle.toString(),
       footers,
+      circularImportError: hasCircularImportError,
       exists: allImportsExist,
       filepathsWithParserDefinitions: (
         await Promise.all(

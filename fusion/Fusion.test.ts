@@ -67,6 +67,25 @@ This is my content
   equal(result.footers[0], "The end.")
 }
 
+testParticles.circularImports = async equal => {
+  const files = {
+    "/a.scroll": "b.scroll",
+    "/b.scroll": "a.scroll",
+    "/c.scroll": "c.scroll",
+    "/d.scroll": "e.scroll\nf.scroll",
+    "/e.scroll": "f.scroll",
+    "/f.scroll": "g.scroll",
+    "/g.scroll": ""
+  }
+  const tfs = new Fusion(files)
+  const result = await tfs.fuseFile("/a.scroll")
+  equal(result.fused.includes("Circular import detected"), true, "Should have detected circularImports")
+  const result2 = await tfs.fuseFile("/c.scroll")
+  equal(result2.fused.includes("Circular import detected"), true, "Should have detected circularImports")
+  const result3 = await tfs.fuseFile("/d.scroll")
+  equal(result3.fused.includes("Circular import detected"), false, "No circularImports detected")
+}
+
 testParticles.quickImports = async equal => {
   // Arrange/Act/Assert
   const files = {

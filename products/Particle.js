@@ -55,7 +55,7 @@ var ParticlesConstants
 ;(function (ParticlesConstants) {
   ParticlesConstants["extends"] = "extends"
 })(ParticlesConstants || (ParticlesConstants = {}))
-class ParserCombinator {
+class ParserPool {
   constructor(catchAllParser, cueMap = {}, regexTests = undefined) {
     this._catchAllParser = catchAllParser
     this._cueMap = new Map(Object.entries(cueMap))
@@ -77,13 +77,13 @@ class ParserCombinator {
     }
     return obj
   }
-  _getParser(line, contextParticle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL) {
+  _getMatchingParser(line, contextParticle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL) {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
   _getCatchAllParser(contextParticle) {
     if (this._catchAllParser) return this._catchAllParser
     const parent = contextParticle.parent
-    if (parent) return parent._getParser()._getCatchAllParser(parent)
+    if (parent) return parent._getParserPool()._getCatchAllParser(parent)
     return contextParticle.constructor
   }
   _getParserFromRegexTests(line) {
@@ -1425,7 +1425,7 @@ class Particle extends AbstractParticle {
     this._insertLineAndSubparticles(line, subparticles)
   }
   _insertLineAndSubparticles(line, subparticles, index = this.length) {
-    const parser = this._getParser()._getParser(line, this)
+    const parser = this._getParserPool()._getMatchingParser(line, this)
     const newParticle = new parser(subparticles, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getSubparticlesArray().splice(adjustedIndex, 0, newParticle)
@@ -1464,7 +1464,7 @@ class Particle extends AbstractParticle {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const parser = parent._getParser()._getParser(lineContent, parent)
+      const parser = parent._getParserPool()._getMatchingParser(lineContent, parent)
       lastParticle = new parser(undefined, lineContent, parent)
       parent._getSubparticlesArray().push(lastParticle)
     })
@@ -1626,12 +1626,12 @@ class Particle extends AbstractParticle {
   _getGrandParent() {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
-  _getParser() {
-    if (!Particle._parserCombinators.has(this.constructor)) Particle._parserCombinators.set(this.constructor, this.createParserCombinator())
-    return Particle._parserCombinators.get(this.constructor)
+  _getParserPool() {
+    if (!Particle._parserPools.has(this.constructor)) Particle._parserPools.set(this.constructor, this.createParserPool())
+    return Particle._parserPools.get(this.constructor)
   }
-  createParserCombinator() {
-    return new ParserCombinator(this.constructor)
+  createParserPool() {
+    return new ParserPool(this.constructor)
   }
   static _makeUniqueId() {
     if (this._uniqueId === undefined) this._uniqueId = 0
@@ -2599,8 +2599,8 @@ class Particle extends AbstractParticle {
     return particle
   }
 }
-Particle._parserCombinators = new Map()
-Particle.ParserCombinator = ParserCombinator
+Particle._parserPools = new Map()
+Particle.ParserPool = ParserPool
 Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
 5.6,2.7,4.2,1.3,versicolor
@@ -2612,7 +2612,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "100.3.0"
+Particle.getVersion = () => "101.0.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)

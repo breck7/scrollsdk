@@ -6,8 +6,8 @@
   const { ParserBackedParticle } = require("./Parsers.js")
 
   class poopParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "🌄": dayParser }), [
+    createParserPool() {
+      return new Particle.ParserPool(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
         { regex: /✨/, parser: bladderParser },
         { regex: /🍼/, parser: bottleParser },

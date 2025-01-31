@@ -9,8 +9,8 @@ class DesignerApp extends AbstractParticleComponentParser {
     }
     this.codeWidgets = []
   }
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       githubTriangleComponent,
       samplesComponent,
       tableComponent,
@@ -432,8 +432,8 @@ class explainResultsComponent extends AbstractParticleComponentParser {
   }
 }
 class tableComponent extends AbstractParticleComponentParser {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       compiledResultsComponent: compiledResultsComponent,
       executionResultsComponent: executionResultsComponent,
       explainResultsComponent: explainResultsComponent

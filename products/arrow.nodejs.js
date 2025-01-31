@@ -18,8 +18,8 @@
   }
 
   class arrowParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(errorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
@@ -115,10 +115,10 @@ tokenParser
   }
 
   class chargeParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
         undefined
       )
     }

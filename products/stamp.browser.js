@@ -1,7 +1,7 @@
 {
   class stampParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(errorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
     async executeSeries(parentDir) {
       const length = this.length
@@ -245,8 +245,8 @@ folderParser
   }
 
   class catchAllAnyLineParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllAnyLineParser, undefined, undefined)
     }
     get anyAtom() {
       return this.getAtom(0)
@@ -257,8 +257,8 @@ folderParser
   }
 
   class dataParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllAnyLineParser, undefined, undefined)
     }
     get cueAtom() {
       return this.getAtom(0)
@@ -278,8 +278,8 @@ folderParser
   }
 
   class fileParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(undefined, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
     get cueAtom() {
       return this.getAtom(0)

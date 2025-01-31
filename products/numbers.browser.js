@@ -1,9 +1,9 @@
 {
   class numbersParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser, "#!": hashBangParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser, "#!": hashBangParser }),
         undefined
       )
     }
@@ -99,10 +99,10 @@ errorParser
   }
 
   class abstractArithmeticReducerParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "%": modParser, "*": timesParser, "+": addParser, "-": substractParser, "/": divideParser, comment: commentParser }),
         undefined
       )
     }
@@ -148,8 +148,8 @@ errorParser
   }
 
   class commentParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(commentContentParser, undefined, undefined)
     }
     get commentKeywordAtom() {
       return this.getAtom(0)
@@ -160,8 +160,8 @@ errorParser
   }
 
   class commentContentParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(commentContentParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(commentContentParser, undefined, undefined)
     }
     get commentAtom() {
       return this.getAtomsFrom(0)

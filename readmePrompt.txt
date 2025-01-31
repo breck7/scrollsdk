@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 101.0.0 2025-01-31
+⚠️ BREAKING: (no one should be affected) renamed ParserCombinator to ParserPool
+⚠️ BREAKING: (no one should be affected) renamed internal methods: _getParser > _getMatchingParser; _getParser > _getParserPool
+
 📦 100.3.0 2025-01-24
 🏥 catch circular import errors in Fusion
 

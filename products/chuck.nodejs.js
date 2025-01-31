@@ -6,8 +6,8 @@
   const { ParserBackedParticle } = require("./Parsers.js")
 
   class chuckParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
+    createParserPool() {
+      return new Particle.ParserPool(this._getBlobParserCatchAllParser(), undefined, [
         { regex: /\+/, parser: addParser },
         { regex: /\*/, parser: multiplyParser },
         { regex: /print/, parser: printParser },

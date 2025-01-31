@@ -1,7 +1,7 @@
 {
   class hakonParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(selectorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { comment: commentParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(selectorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { comment: commentParser }), undefined)
     }
     getSelector() {
       return ""
@@ -120,8 +120,8 @@ selectorParser
   }
 
   class propertyParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(errorParser, undefined, undefined)
     }
     get propertyNameAtom() {
       return this.getAtom(0)
@@ -143,8 +143,8 @@ selectorParser
   }
 
   class errorParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(errorParser, undefined, undefined)
     }
     getErrors() {
       return this._getErrorParserErrors()
@@ -155,8 +155,8 @@ selectorParser
   }
 
   class commentParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(commentParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(commentParser, undefined, undefined)
     }
     get commentKeywordAtom() {
       return this.getAtom(0)
@@ -167,10 +167,10 @@ selectorParser
   }
 
   class selectorParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         selectorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           "border-bottom-right-radius": propertyParser,
           "transition-timing-function": propertyParser,
           "animation-iteration-count": propertyParser,

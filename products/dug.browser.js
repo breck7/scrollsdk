@@ -1,9 +1,9 @@
 {
   class dugParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -121,26 +121,26 @@ errorParser
   }
 
   class objectParser extends abstractValueParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(memberParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(memberParser, undefined, undefined)
     }
   }
 
   class arrayParser extends abstractValueParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
   }
 
   class memberParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }

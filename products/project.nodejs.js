@@ -6,8 +6,8 @@
   const { ParserBackedParticle } = require("./Parsers.js")
 
   class projectParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { file: fileParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(errorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { file: fileParser }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -223,8 +223,8 @@ fileParser
   }
 
   class fileParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(undefined, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
     get fileConstantAtom() {
       return this.getAtom(0)

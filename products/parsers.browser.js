@@ -1,7 +1,7 @@
 {
   class parsersParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "//": slashCommentParser }), [
+    createParserPool() {
+      return new Particle.ParserPool(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
         { regex: /^[a-zA-Z0-9_]+Atom$/, parser: atomTypeDefinitionParser },
         { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
@@ -651,8 +651,8 @@ extendsAtomTypeParser
   }
 
   class parsersStringParser extends abstractConstantParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get cueAtom() {
       return this.getAtom(0)
@@ -716,10 +716,10 @@ extendsAtomTypeParser
   }
 
   class parsersCompilerParser extends abstractParserRuleParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           closeSubparticles: closeSubparticlesParser,
           indentCharacter: indentCharacterParser,
           catchAllAtomDelimiter: catchAllAtomDelimiterParser,
@@ -748,8 +748,8 @@ extendsAtomTypeParser
   }
 
   class parsersExampleParser extends abstractParserRuleParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyAtom() {
       return this.getAtomsFrom(0)
@@ -781,8 +781,8 @@ extendsAtomTypeParser
   }
 
   class parsersJavascriptParser extends abstractParserRuleParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     format() {
       if (this.isNodeJs()) {
@@ -874,8 +874,8 @@ extendsAtomTypeParser
   }
 
   class catchAllExampleLineParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyAtom() {
       return this.getAtom(0)
@@ -886,8 +886,8 @@ extendsAtomTypeParser
   }
 
   class catchAllJavascriptCodeLineParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     get javascriptCodeAtom() {
       return this.getAtomsFrom(0)
@@ -895,8 +895,8 @@ extendsAtomTypeParser
   }
 
   class catchAllMultilineStringConstantParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get stringAtom() {
       return this.getAtom(0)
@@ -907,10 +907,10 @@ extendsAtomTypeParser
   }
 
   class atomTypeDefinitionParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           description: atomTypeDescriptionParser,
           enumFromAtomTypes: enumFromAtomTypesParser,
           enum: parsersEnumParser,
@@ -995,10 +995,10 @@ extendsAtomTypeParser
   }
 
   class parserDefinitionParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         catchAllErrorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           boolean: parsersBooleanParser,
           float: parsersFloatParser,
           int: parsersIntParser,
@@ -1065,8 +1065,8 @@ extendsAtomTypeParser
   }
 
   class slashCommentParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(commentLineParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(commentLineParser, undefined, undefined)
     }
     get commentAtom() {
       return this.getAtomsFrom(0)

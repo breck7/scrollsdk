@@ -6,10 +6,10 @@
   const { ParserBackedParticle } = require("./Parsers.js")
 
   class jibberishParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           extendsAbstract: extendsAbstractParser,
           hue: hueParser,
           saturation: saturationParser,
@@ -216,8 +216,8 @@ scoresParser
   class constrastParser extends abstractColorPropertiesParser {}
 
   class abstractHtmlParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { content: contentParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(undefined, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -235,10 +235,10 @@ scoresParser
   }
 
   class blockParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           hue: hueParser,
           saturation: saturationParser,
           constrast: constrastParser,
@@ -263,8 +263,8 @@ scoresParser
   }
 
   class scoreBlockParser extends blockParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { scores: scoresParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(undefined, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
@@ -337,8 +337,8 @@ world`
   }
 
   class someCodeParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(lineOfCodeParser, undefined, undefined)
     }
   }
 
@@ -352,8 +352,8 @@ world`
   }
 
   class contentParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
+    createParserPool() {
+      return new Particle.ParserPool(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
@@ -379,8 +379,8 @@ world`
   }
 
   class textParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(this._getBlobParserCatchAllParser())
+    createParserPool() {
+      return new Particle.ParserPool(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []

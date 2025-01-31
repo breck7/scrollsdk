@@ -1,9 +1,9 @@
 {
   class fireParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,
@@ -403,10 +403,10 @@ errorParser
   }
 
   class abstractNonTerminalParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           block: blockParser,
           function: functionParser,
           if: ifParser,

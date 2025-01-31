@@ -6,10 +6,10 @@
   }
 
   class dumbdownParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(
+    createParserPool() {
+      return new Particle.ParserPool(
         quickParagraphParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), {
+        Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), {
           link: linkParser,
           paragraph: paragraphParser,
           code: codeParser,
@@ -181,8 +181,8 @@ quickParagraphParser
   }
 
   class paragraphParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(paragraphContentParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(paragraphContentParser, undefined, undefined)
     }
   }
 
@@ -193,8 +193,8 @@ quickParagraphParser
   }
 
   class codeParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(lineOfCodeParser, undefined, undefined)
     }
     compile() {
       return `<code>${this.indentation + this.subparticlesToString()}</code>`
@@ -202,8 +202,8 @@ quickParagraphParser
   }
 
   class listParser extends abstractTopLevelParser {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getCueMapAsObject()), { "-": dashParser }), undefined)
+    createParserPool() {
+      return new Particle.ParserPool(undefined, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 
@@ -214,8 +214,8 @@ quickParagraphParser
   }
 
   class lineOfCodeParser extends ParserBackedParticle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(lineOfCodeParser, undefined, undefined)
+    createParserPool() {
+      return new Particle.ParserPool(lineOfCodeParser, undefined, undefined)
     }
     get codeAtom() {
       return this.getAtomsFrom(0)

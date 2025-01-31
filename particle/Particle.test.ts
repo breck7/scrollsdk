@@ -1747,8 +1747,8 @@ testParticles.simpleParticleLanguage = equal => {
   // Arrange
   class MathProgramParser extends Particle {
     // Look! You created a top down parser!
-    createParserCombinator() {
-      return new Particle.ParserCombinator(undefined, { "+": AdditionParticleParser, "-": SubstractionParticleParser })
+    createParserPool() {
+      return new Particle.ParserPool(undefined, { "+": AdditionParticleParser, "-": SubstractionParticleParser })
     }
 
     execute() {
@@ -2607,14 +2607,14 @@ testParticles.setAtom = equal => {
 testParticles.particleLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnParticle extends Particle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(Particle, {})
+    createParserPool() {
+      return new Particle.ParserPool(Particle, {})
     }
   }
 
   class TestLanguage extends Particle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(ReverseEtnParticle, {})
+    createParserPool() {
+      return new Particle.ParserPool(ReverseEtnParticle, {})
     }
   }
 
@@ -2712,13 +2712,13 @@ testParticles.parseParticle = equal => {
   // Arrange
   class LeafParticle extends Particle {}
   class SubclassParticle extends Particle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(SubclassParticle, {}, [{ regex: /^leaf/, parser: LeafParticle }])
+    createParserPool() {
+      return new Particle.ParserPool(SubclassParticle, {}, [{ regex: /^leaf/, parser: LeafParticle }])
     }
   }
   class TestLanguageParticle extends Particle {
-    createParserCombinator() {
-      return new Particle.ParserCombinator(TestLanguageParticle, {}, [
+    createParserPool() {
+      return new Particle.ParserPool(TestLanguageParticle, {}, [
         { regex: /^particle/, parser: Particle },
         { regex: /^sub/, parser: SubclassParticle }
       ])

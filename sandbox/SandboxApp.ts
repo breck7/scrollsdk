@@ -7,8 +7,8 @@ const { Fusion, FusionFile } = require("../products/Fusion.js")
 // Todo: add inputs at the top to change the edge, particle, and atom delimiters.
 
 class SandboxApp extends AbstractParticleComponentParser {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,

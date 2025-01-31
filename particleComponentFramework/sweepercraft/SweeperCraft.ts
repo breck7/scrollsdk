@@ -462,8 +462,8 @@ const linkToObject = (link: string): Object => {
 }
 
 class SweeperCraftApp extends AbstractParticleComponentParser {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
@@ -835,8 +835,8 @@ class headerComponent extends AbstractSweeperCraftComponent {
 }
 
 class boardComponent extends AbstractSweeperCraftComponent {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -855,8 +855,8 @@ class boardComponent extends AbstractSweeperCraftComponent {
 }
 
 class rowComponent extends AbstractParticleComponentParser {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       squareComponent: squareComponent
     })
   }

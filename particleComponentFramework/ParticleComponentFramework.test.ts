@@ -7,8 +7,8 @@ const { TestRacer } = require("../products/TestRacer.js")
 const testParticles: any = {}
 
 class TestApp extends AbstractParticleComponentParser {
-  createParserCombinator() {
-    return new Particle.ParserCombinator(undefined, {
+  createParserPool() {
+    return new Particle.ParserPool(undefined, {
       headerComponent: headerComponent
     })
   }

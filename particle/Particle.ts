@@ -71,7 +71,7 @@ enum ParticlesConstants {
   extends = "extends"
 }
 
-class ParserCombinator {
+class ParserPool {
   // todo: should getErrors be under here? At least for certain types of errors?
   private _catchAllParser: particlesTypes.ParticleParser
   private _cueMap: Map<string, Function>
@@ -101,7 +101,7 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextParticle: particlesTypes.particle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
+  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
@@ -110,7 +110,7 @@ class ParserCombinator {
 
     const parent = contextParticle.parent
 
-    if (parent) return parent._getParser()._getCatchAllParser(parent)
+    if (parent) return parent._getParserPool()._getCatchAllParser(parent)
 
     return contextParticle.constructor
   }
@@ -1706,7 +1706,7 @@ class Particle extends AbstractParticle {
   }
 
   protected _insertLineAndSubparticles(line: string, subparticles?: particlesTypes.subparticles, index = this.length) {
-    const parser: any = this._getParser()._getParser(line, this)
+    const parser: any = this._getParserPool()._getMatchingParser(line, this)
     const newParticle = new parser(subparticles, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
@@ -1750,7 +1750,7 @@ class Particle extends AbstractParticle {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const parser: any = parent._getParser()._getParser(lineContent, parent)
+      const parser: any = parent._getParserPool()._getMatchingParser(lineContent, parent)
       lastParticle = new parser(undefined, lineContent, parent)
       parent._getSubparticlesArray().push(lastParticle)
     })
@@ -1950,15 +1950,15 @@ class Particle extends AbstractParticle {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
 
-  private static _parserCombinators = new Map<any, ParserCombinator>()
+  private static _parserPools = new Map<any, ParserPool>()
 
-  _getParser() {
-    if (!Particle._parserCombinators.has(this.constructor)) Particle._parserCombinators.set(this.constructor, this.createParserCombinator())
-    return Particle._parserCombinators.get(this.constructor)
+  _getParserPool() {
+    if (!Particle._parserPools.has(this.constructor)) Particle._parserPools.set(this.constructor, this.createParserPool())
+    return Particle._parserPools.get(this.constructor)
   }
 
-  createParserCombinator(): ParserCombinator {
-    return new ParserCombinator(this.constructor)
+  createParserPool(): ParserPool {
+    return new ParserPool(this.constructor)
   }
 
   private static _uniqueId: int
@@ -1974,7 +1974,7 @@ class Particle extends AbstractParticle {
     return (<any>FileFormat)[format] ? format : FileFormat.particles
   }
 
-  static ParserCombinator = ParserCombinator
+  static ParserPool = ParserPool
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica

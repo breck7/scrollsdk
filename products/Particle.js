@@ -77,7 +77,7 @@ class ParserPool {
     }
     return obj
   }
-  _getMatchingParser(line, contextParticle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL) {
+  _getMatchingParser(line, contextParticle, lineNumber, atomBreakSymbol = TN_WORD_BREAK_SYMBOL) {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
   _getCatchAllParser(contextParticle) {
@@ -1425,7 +1425,7 @@ class Particle extends AbstractParticle {
     this._insertLineAndSubparticles(line, subparticles)
   }
   _insertLineAndSubparticles(line, subparticles, index = this.length) {
-    const parser = this._getParserPool()._getMatchingParser(line, this)
+    const parser = this._getParserPool()._getMatchingParser(line, this, index)
     const newParticle = new parser(subparticles, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getSubparticlesArray().splice(adjustedIndex, 0, newParticle)
@@ -1464,9 +1464,10 @@ class Particle extends AbstractParticle {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const parser = parent._getParserPool()._getMatchingParser(lineContent, parent)
+      const subparticles = parent._getSubparticlesArray()
+      const parser = parent._getParserPool()._getMatchingParser(lineContent, parent, subparticles.length)
       lastParticle = new parser(undefined, lineContent, parent)
-      parent._getSubparticlesArray().push(lastParticle)
+      subparticles.push(lastParticle)
     })
   }
   _getCueIndex() {

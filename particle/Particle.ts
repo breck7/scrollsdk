@@ -101,7 +101,7 @@ class ParserPool {
     return obj
   }
 
-  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
+  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
@@ -1706,7 +1706,7 @@ class Particle extends AbstractParticle {
   }
 
   protected _insertLineAndSubparticles(line: string, subparticles?: particlesTypes.subparticles, index = this.length) {
-    const parser: any = this._getParserPool()._getMatchingParser(line, this)
+    const parser: any = this._getParserPool()._getMatchingParser(line, this, index)
     const newParticle = new parser(subparticles, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
@@ -1750,9 +1750,10 @@ class Particle extends AbstractParticle {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const parser: any = parent._getParserPool()._getMatchingParser(lineContent, parent)
+      const subparticles = parent._getSubparticlesArray()
+      const parser: any = parent._getParserPool()._getMatchingParser(lineContent, parent, subparticles.length)
       lastParticle = new parser(undefined, lineContent, parent)
-      parent._getSubparticlesArray().push(lastParticle)
+      subparticles.push(lastParticle)
     })
   }
 

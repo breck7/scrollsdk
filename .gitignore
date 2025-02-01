@@ -20,3 +20,4 @@ sublime/
 package-lock.json
 *.css
 *.js
+.*

@@ -1890,11 +1890,18 @@ testParticles.insert = equal => {
 testParticles.insertLinesAfter = equal => {
   // Arrange
   const particle = new Particle("hello world")
+  // Assert
+  equal(particle.length, 1)
   // Act
   particle.getParticle("hello").insertLinesAfter(`config
  score 2`)
   // Assert
   equal(particle.get("config score"), "2", "Expected 2")
+  equal(particle.length, 2)
+  // Empty
+  // Act
+  particle.getParticle("hello").insertLinesAfter(``)
+  equal(particle.length, 3)
 }
 testParticles.last = equal => {
   // Arrange

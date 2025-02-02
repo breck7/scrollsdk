@@ -20,6 +20,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 101.1.0 2025-02-01
+🎉 Fusion: added makeSourceMap method
+
 📦 101.0.0 2025-01-31
 ⚠️ BREAKING: (no one should be affected) renamed ParserCombinator to ParserPool
 ⚠️ BREAKING: (no one should be affected) renamed internal methods: _getParser > _getMatchingParser; _getParser > _getParserPool

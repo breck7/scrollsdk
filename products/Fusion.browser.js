@@ -322,6 +322,7 @@ class Fusion {
     if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
     const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
     const isImportOnly = importOnlyRegex.test(code)
+    const lineCount = code.split("\n").length
     // Perf hack
     // If its a parsers file, it will have no content, just parsers (and maybe imports).
     // The parsers will already have been processed. We can skip them
@@ -343,7 +344,8 @@ class Fusion {
         isImportOnly,
         importFilePaths: [],
         filepathsWithParserDefinitions,
-        exists
+        exists,
+        lineCount
       }
     }
     const particle = new Particle(processedCode)
@@ -362,7 +364,8 @@ class Fusion {
           exists: true,
           absoluteImportFilePath,
           importParticle,
-          circularImportError
+          circularImportError,
+          lineCount
         }
       }
       // todo: race conditions
@@ -371,7 +374,8 @@ class Fusion {
         expandedFile,
         exists,
         absoluteImportFilePath,
-        importParticle
+        importParticle,
+        lineCount: expandedFile.lineCount
       }
     })
     const imported = await Promise.all(importResults)
@@ -380,11 +384,14 @@ class Fusion {
     let footers = []
     let hasCircularImportError = false
     imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError } = importResults
+      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError, lineCount } = importResults
       importFilePaths.push(absoluteImportFilePath)
       importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
+      const originalLine = importParticle.getLine()
       importParticle.setLine("imported " + absoluteImportFilePath)
       importParticle.set("exists", `${exists}`)
+      importParticle.set("original", `${originalLine}`)
+      importParticle.set("lines", `${lineCount}`)
       if (circularImportError) {
         hasCircularImportError = true
         importParticle.set("circularImportError", circularImportError)
@@ -487,6 +494,34 @@ class Fusion {
     const hit = this.folderCache[folderPath]
     if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.fusionId}'. Requested by '${requester.filePath}'`)
     return hit || []
+  }
+  makeSourceMap(fileName, fusedCode) {
+    const fileStack = [{ fileName, lineNumber: 0, linesLeft: fusedCode.split("\n").length }]
+    return new Particle(fusedCode)
+      .map(particle => {
+        const currentFile = fileStack[fileStack.length - 1]
+        currentFile.lineNumber++
+        currentFile.linesLeft--
+        if (particle.cue === "imported") {
+          const linesLeft = parseInt(particle.get("lines"))
+          const original = particle.get("original")
+          fileStack.push({ fileName: particle.atoms[1], lineNumber: 0, linesLeft })
+          return `${currentFile.fileName}:${currentFile.lineNumber} ${original}\n` + particle.map(line => `${currentFile.fileName}:${currentFile.lineNumber}  ${line}`).join("\n")
+        }
+        if (!currentFile.linesLeft) fileStack.pop()
+        return particle
+          .toString()
+          .split("\n")
+          .map((line, index) => {
+            if (index) {
+              currentFile.lineNumber++
+              currentFile.linesLeft--
+            }
+            return `${currentFile.fileName}:${currentFile.lineNumber} ${line}`
+          })
+          .join("\n")
+      })
+      .join("\n")
   }
   async getLoadedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)

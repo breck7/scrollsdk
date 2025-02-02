@@ -413,18 +413,19 @@ class Fusion implements Storage {
     const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
 
     const isImportOnly = importOnlyRegex.test(code)
-    const lineCount = code.split("\n").length
 
     // Perf hack
     // If its a parsers file, it will have no content, just parsers (and maybe imports).
     // The parsers will already have been processed. We can skip them
     const stripParsers = absoluteFilePathOrUrl.endsWith(PARSERS_EXTENSION)
-    const processedCode = stripParsers
+    let processedCode = stripParsers
       ? code
           .split("\n")
           .filter(line => importRegex.test(line))
           .join("\n")
       : code
+
+    const lineCount = processedCode.split("\n").length
 
     const filepathsWithParserDefinitions = []
     if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
@@ -511,6 +512,7 @@ class Fusion implements Storage {
       importFilePaths,
       isImportOnly,
       fused: particle.toString(),
+      lineCount,
       footers,
       circularImportError: hasCircularImportError,
       exists: allImportsExist,

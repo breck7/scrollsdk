@@ -1646,6 +1646,7 @@ class Particle extends AbstractParticle {
 
   protected _setSubparticles(content: any, circularCheckArray?: any[]) {
     this._clearSubparticles()
+    // todo: is this correct? seems like `new Particle("").length` should be 1, not 0.
     if (!content) return this
 
     // set from string
@@ -1719,7 +1720,8 @@ class Particle extends AbstractParticle {
 
   protected _insertLines(lines: string, index = this.length) {
     const parser: any = this.constructor
-    const newParticle = new parser(lines)
+    const newParticle = new parser()
+    if (typeof lines === "string") newParticle._appendSubparticlesFromString(lines)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getSubparticlesArray().splice(adjustedIndex, 0, ...newParticle.getSubparticles())
     if (this._cueIndex) this._makeCueIndex(adjustedIndex)
@@ -3120,7 +3122,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "101.1.0"
+  static getVersion = () => "101.1.1"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

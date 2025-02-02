@@ -2039,6 +2039,7 @@ class Particle extends AbstractParticle {
   }
   _setSubparticles(content, circularCheckArray) {
     this._clearSubparticles()
+    // todo: is this correct? seems like `new Particle("").length` should be 1, not 0.
     if (!content) return this
     // set from string
     if (typeof content === "string") {
@@ -2101,7 +2102,8 @@ class Particle extends AbstractParticle {
   }
   _insertLines(lines, index = this.length) {
     const parser = this.constructor
-    const newParticle = new parser(lines)
+    const newParticle = new parser()
+    if (typeof lines === "string") newParticle._appendSubparticlesFromString(lines)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getSubparticlesArray().splice(adjustedIndex, 0, ...newParticle.getSubparticles())
     if (this._cueIndex) this._makeCueIndex(adjustedIndex)
@@ -3279,7 +3281,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "101.1.0"
+Particle.getVersion = () => "101.1.1"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -6637,17 +6639,17 @@ class Fusion {
     if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
     const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
     const isImportOnly = importOnlyRegex.test(code)
-    const lineCount = code.split("\n").length
     // Perf hack
     // If its a parsers file, it will have no content, just parsers (and maybe imports).
     // The parsers will already have been processed. We can skip them
     const stripParsers = absoluteFilePathOrUrl.endsWith(PARSERS_EXTENSION)
-    const processedCode = stripParsers
+    let processedCode = stripParsers
       ? code
           .split("\n")
           .filter(line => importRegex.test(line))
           .join("\n")
       : code
+    const lineCount = processedCode.split("\n").length
     const filepathsWithParserDefinitions = []
     if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
       filepathsWithParserDefinitions.push(absoluteFilePathOrUrl)
@@ -6721,6 +6723,7 @@ class Fusion {
       importFilePaths,
       isImportOnly,
       fused: particle.toString(),
+      lineCount,
       footers,
       circularImportError: hasCircularImportError,
       exists: allImportsExist,

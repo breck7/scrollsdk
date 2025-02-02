@@ -1383,6 +1383,7 @@ class Particle extends AbstractParticle {
   }
   _setSubparticles(content, circularCheckArray) {
     this._clearSubparticles()
+    // todo: is this correct? seems like `new Particle("").length` should be 1, not 0.
     if (!content) return this
     // set from string
     if (typeof content === "string") {
@@ -1445,7 +1446,8 @@ class Particle extends AbstractParticle {
   }
   _insertLines(lines, index = this.length) {
     const parser = this.constructor
-    const newParticle = new parser(lines)
+    const newParticle = new parser()
+    if (typeof lines === "string") newParticle._appendSubparticlesFromString(lines)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getSubparticlesArray().splice(adjustedIndex, 0, ...newParticle.getSubparticles())
     if (this._cueIndex) this._makeCueIndex(adjustedIndex)
@@ -2623,7 +2625,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "101.1.0"
+Particle.getVersion = () => "101.1.1"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)

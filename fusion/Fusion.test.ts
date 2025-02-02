@@ -45,12 +45,25 @@ testParticles.sourceMaps = async equal => {
     "/main": "hello\nimport hello"
   }
   const tfs = new Fusion(files)
-  const mainResult = await tfs.fuseFile("/main")
   // Act
+  const mainResult = await tfs.fuseFile("/main")
   const sourceMap = tfs.makeSourceMap("/main", mainResult.fused)
   // Assert
   equal(sourceMap.includes(`/hello:1 world`), true)
   equal(sourceMap.includes(`/main:1 hello`), true)
+}
+
+testParticles.empty = async equal => {
+  // Arrange
+  const files = {
+    "/hello": "",
+    "/main": "import hello\nhi"
+  }
+  const tfs = new Fusion(files)
+  // Act
+  const mainResult = await tfs.fuseFile("/main")
+  // Assert
+  equal(stripImported(mainResult.fused), `\nhi`)
 }
 
 testParticles.nonExistant = async equal => {

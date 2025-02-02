@@ -38,6 +38,21 @@ testParticles.inMemory = async equal => {
   equal(mainResult.exists, true)
 }
 
+testParticles.sourceMaps = async equal => {
+  // Arrange
+  const files = {
+    "/hello": "world",
+    "/main": "hello\nimport hello"
+  }
+  const tfs = new Fusion(files)
+  const mainResult = await tfs.fuseFile("/main")
+  // Act
+  const sourceMap = tfs.makeSourceMap("/main", mainResult.fused)
+  // Assert
+  equal(sourceMap.includes(`/hello:1 world`), true)
+  equal(sourceMap.includes(`/main:1 hello`), true)
+}
+
 testParticles.nonExistant = async equal => {
   // Arrange/Act/Assert
   const files = {

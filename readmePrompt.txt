@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 101.2.0 2025-02-11
+🎉 Fusion: better perf
+
 📦 101.1.1 2025-02-01
 🏥 fix lineCount bug in sourcemaps
 🏥 fix bug where calling insertLinesAfter with empty string wasnt inserting a line

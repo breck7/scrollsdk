@@ -3281,7 +3281,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "101.1.1"
+Particle.getVersion = () => "101.2.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -6368,7 +6368,6 @@ class DiskWriter {
     this.fileCache = {}
   }
   async _read(absolutePath) {
-    const { fileCache } = this
     if (isUrl(absolutePath)) {
       const result = await fetchWithCache(absolutePath)
       return {
@@ -6378,16 +6377,27 @@ class DiskWriter {
         stats: { mtimeMs: Date.now(), ctimeMs: Date.now() }
       }
     }
-    if (!fileCache[absolutePath]) {
-      const exists = await fs
-        .access(absolutePath)
-        .then(() => true)
-        .catch(() => false)
-      if (exists) {
-        const [content, stats] = await Promise.all([fs.readFile(absolutePath, "utf8").then(content => content.replace(/\r/g, "")), fs.stat(absolutePath)])
-        fileCache[absolutePath] = { absolutePath, exists: true, content, stats }
-      } else {
-        fileCache[absolutePath] = { absolutePath, exists: false, content: "", stats: { mtimeMs: 0, ctimeMs: 0 } }
+    const { fileCache } = this
+    if (fileCache[absolutePath]) return fileCache[absolutePath]
+    try {
+      const stats = await fs.stat(absolutePath)
+      const content = await fs.readFile(absolutePath, {
+        encoding: "utf8",
+        flag: "r" // explicit read flag
+      })
+      const normalizedContent = content.includes("\r") ? content.replace(/\r/g, "") : content
+      fileCache[absolutePath] = {
+        absolutePath,
+        exists: true,
+        content: normalizedContent,
+        stats
+      }
+    } catch (error) {
+      fileCache[absolutePath] = {
+        absolutePath,
+        exists: false,
+        content: "",
+        stats: { mtimeMs: 0, ctimeMs: 0 }
       }
     }
     return fileCache[absolutePath]
@@ -6557,7 +6567,7 @@ class FusionFile {
       fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
       this.importOnly = fusedFile.isImportOnly
       fusedCode = fusedFile.fused
-      if (fusedFile.footers.length) fusedCode += "\n" + fusedFile.footers.join("\n")
+      if (fusedFile.footers) fusedCode += "\n" + fusedFile.footers.join("\n")
       this.dependencies = fusedFile.importFilePaths
       this.fusedFile = fusedFile
     }
@@ -6588,8 +6598,8 @@ class Fusion {
     this.productCache = {}
     this._particleCache = {}
     this._parserCache = {}
-    this._expandedImportCache = {}
     this._parsersExpandersCache = {}
+    this._pendingFuseRequests = {}
     this.defaultFileClass = FusionFile
     this.parsedFiles = {}
     this.folderCache = {}
@@ -6634,9 +6644,45 @@ class Fusion {
     }
     return _particleCache[absoluteFilePathOrUrl]
   }
-  async _fuseFile(absoluteFilePathOrUrl, importStack = []) {
-    const { _expandedImportCache } = this
-    if (_expandedImportCache[absoluteFilePathOrUrl]) return _expandedImportCache[absoluteFilePathOrUrl]
+  getImports(particle, absoluteFilePathOrUrl, importStack) {
+    const folder = this.dirname(absoluteFilePathOrUrl)
+    const results = particle
+      .filter(particle => particle.getLine().match(importRegex))
+      .map(async importParticle => {
+        const rawPath = importParticle.getLine().replace("import ", "")
+        let absoluteImportFilePath = this.join(folder, rawPath)
+        if (isUrl(rawPath)) absoluteImportFilePath = rawPath
+        else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
+        if (importStack.includes(absoluteImportFilePath) || absoluteImportFilePath === absoluteFilePathOrUrl) {
+          const circularImportError = `Circular import detected: ${[...importStack, absoluteImportFilePath].join(" -> ")}`
+          return {
+            expandedFile: circularImportError,
+            exists: true,
+            absoluteImportFilePath,
+            importParticle,
+            circularImportError,
+            lineCount: particle.numberOfLines
+          }
+        }
+        const expandedFile = await this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl])
+        const exists = await this.exists(absoluteImportFilePath)
+        return {
+          expandedFile,
+          exists,
+          absoluteImportFilePath,
+          importParticle,
+          lineCount: expandedFile.lineCount
+        }
+      })
+    return Promise.all(results)
+  }
+  async _fuseFile(absoluteFilePathOrUrl, importStack) {
+    const { _pendingFuseRequests } = this
+    if (_pendingFuseRequests[absoluteFilePathOrUrl]) return _pendingFuseRequests[absoluteFilePathOrUrl]
+    _pendingFuseRequests[absoluteFilePathOrUrl] = this._fuseFile2(absoluteFilePathOrUrl, importStack)
+    return _pendingFuseRequests[absoluteFilePathOrUrl]
+  }
+  async _fuseFile2(absoluteFilePathOrUrl, importStack) {
     const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
     const isImportOnly = importOnlyRegex.test(code)
     // Perf hack
@@ -6649,61 +6695,31 @@ class Fusion {
           .filter(line => importRegex.test(line))
           .join("\n")
       : code
-    const lineCount = processedCode.split("\n").length
-    const filepathsWithParserDefinitions = []
+    const lineCount = (processedCode.match(/\n/g) || []).length + 1
+    let filepathsWithParserDefinitions
     if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
-      filepathsWithParserDefinitions.push(absoluteFilePathOrUrl)
+      filepathsWithParserDefinitions = [absoluteFilePathOrUrl]
     }
     if (!importRegex.test(processedCode)) {
       return {
         fused: processedCode,
-        footers: [],
         isImportOnly,
-        importFilePaths: [],
         filepathsWithParserDefinitions,
         exists,
         lineCount
       }
     }
     const particle = new Particle(processedCode)
-    const folder = this.dirname(absoluteFilePathOrUrl)
     // Fetch all imports in parallel
-    const importParticles = particle.filter(particle => particle.getLine().match(importRegex))
-    const importResults = importParticles.map(async importParticle => {
-      const rawPath = importParticle.getLine().replace("import ", "")
-      let absoluteImportFilePath = this.join(folder, rawPath)
-      if (isUrl(rawPath)) absoluteImportFilePath = rawPath
-      else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
-      if (importStack.includes(absoluteFilePathOrUrl)) {
-        const circularImportError = `Circular import detected: ${[...importStack, absoluteFilePathOrUrl].join(" -> ")}`
-        return {
-          expandedFile: circularImportError,
-          exists: true,
-          absoluteImportFilePath,
-          importParticle,
-          circularImportError,
-          lineCount
-        }
-      }
-      // todo: race conditions
-      const [expandedFile, exists] = await Promise.all([this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl]), this.exists(absoluteImportFilePath)])
-      return {
-        expandedFile,
-        exists,
-        absoluteImportFilePath,
-        importParticle,
-        lineCount: expandedFile.lineCount
-      }
-    })
-    const imported = await Promise.all(importResults)
+    const imported = await this.getImports(particle, absoluteFilePathOrUrl, importStack)
     // Assemble all imports
     let importFilePaths = []
-    let footers = []
+    let footers
     let hasCircularImportError = false
     imported.forEach(importResults => {
       const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError, lineCount } = importResults
       importFilePaths.push(absoluteImportFilePath)
-      importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
+      if (expandedFile.importFilePaths) importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
       const originalLine = importParticle.getLine()
       importParticle.setLine("imported " + absoluteImportFilePath)
       importParticle.set("exists", `${exists}`)
@@ -6713,13 +6729,29 @@ class Fusion {
         hasCircularImportError = true
         importParticle.set("circularImportError", circularImportError)
       }
-      footers = footers.concat(expandedFile.footers)
-      if (importParticle.has("footer")) footers.push(expandedFile.fused)
-      else importParticle.insertLinesAfter(expandedFile.fused)
+      if (expandedFile.footers) footers = (footers || []).concat(expandedFile.footers)
+      if (importParticle.has("footer")) {
+        footers = footers || []
+        footers.push(expandedFile.fused)
+      } else importParticle.insertLinesAfter(expandedFile.fused)
     })
     const existStates = await Promise.all(importFilePaths.map(file => this.exists(file)))
     const allImportsExist = !existStates.some(exists => !exists)
-    _expandedImportCache[absoluteFilePathOrUrl] = {
+    const importFilepathsWithParserDefinitions = (
+      await Promise.all(
+        importFilePaths.map(async filename => ({
+          filename,
+          hasParser: await this._doesFileHaveParsersDefinitions(filename)
+        }))
+      )
+    )
+      .filter(result => result.hasParser)
+      .map(result => result.filename)
+    if (importFilepathsWithParserDefinitions.length) {
+      filepathsWithParserDefinitions = filepathsWithParserDefinitions || []
+      filepathsWithParserDefinitions.concat(importFilepathsWithParserDefinitions)
+    }
+    return {
       importFilePaths,
       isImportOnly,
       fused: particle.toString(),
@@ -6727,19 +6759,8 @@ class Fusion {
       footers,
       circularImportError: hasCircularImportError,
       exists: allImportsExist,
-      filepathsWithParserDefinitions: (
-        await Promise.all(
-          importFilePaths.map(async filename => ({
-            filename,
-            hasParser: await this._doesFileHaveParsersDefinitions(filename)
-          }))
-        )
-      )
-        .filter(result => result.hasParser)
-        .map(result => result.filename)
-        .concat(filepathsWithParserDefinitions)
+      filepathsWithParserDefinitions
     }
-    return _expandedImportCache[absoluteFilePathOrUrl]
   }
   async _doesFileHaveParsersDefinitions(absoluteFilePathOrUrl) {
     if (!absoluteFilePathOrUrl) return false
@@ -6789,9 +6810,9 @@ class Fusion {
     return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
   async fuseFile(absoluteFilePathOrUrl, defaultParserCode) {
-    const fusedFile = await this._fuseFile(absoluteFilePathOrUrl)
+    const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
     if (!defaultParserCode) return fusedFile
-    if (fusedFile.filepathsWithParserDefinitions.length) {
+    if (fusedFile.filepathsWithParserDefinitions) {
       const parser = await this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
       fusedFile.parser = parser.parser
     }
@@ -6841,6 +6862,7 @@ class Fusion {
       })
       .join("\n")
   }
+  // todo: this is weird. i know we evolved our way here but we should step back and clean this up.
   async getLoadedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
     if (this.folderCache[folderPath]) return this.folderCache[folderPath]

@@ -106,10 +106,10 @@ testParticles.circularImports = async equal => {
     "/g.scroll": ""
   }
   const tfs = new Fusion(files)
-  const result = await tfs.fuseFile("/a.scroll")
-  equal(result.fused.includes("Circular import detected"), true, "Should have detected circularImports")
   const result2 = await tfs.fuseFile("/c.scroll")
   equal(result2.fused.includes("Circular import detected"), true, "Should have detected circularImports")
+  const result = await tfs.fuseFile("/a.scroll")
+  equal(result.fused.includes("Circular import detected"), true, "Should have detected circularImports")
   const result3 = await tfs.fuseFile("/d.scroll")
   equal(result3.fused.includes("Circular import detected"), false, "No circularImports detected")
 }

@@ -6666,7 +6666,7 @@ stamp
       if (hasHeaders) {
         // Strip any AtomBreakSymbols from column names in the header row.
         // This makes the mapping not quite 1 to 1 if there are any AtomBreakSymbols in names.
-        for (let index = 0; index  "101.2.0"
+        for (let index = 0; index  "101.2.1"
   
     static fromDisk(path: string): Particle {
       const format = this._getFileFormat(path)
@@ -12215,9 +12215,9 @@ stamp
         .filter(result => result.hasParser)
         .map(result => result.filename)
   
+      // todo: add tests for this
       if (importFilepathsWithParserDefinitions.length) {
-        filepathsWithParserDefinitions = filepathsWithParserDefinitions || []
-        filepathsWithParserDefinitions.concat(importFilepathsWithParserDefinitions)
+        filepathsWithParserDefinitions = (filepathsWithParserDefinitions || []).concat(importFilepathsWithParserDefinitions)
       }
   
       return {

@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 101.2.1 2025-02-11
+🏥 fusion parsers imports regression fix
+
 📦 101.2.0 2025-02-11
 🎉 Fusion: better perf
 

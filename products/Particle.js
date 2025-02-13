@@ -61,6 +61,10 @@ class ParserPool {
     this._cueMap = new Map(Object.entries(cueMap))
     this._regexTests = regexTests
   }
+  // todo: allow incremental adding of parsers
+  addParser() {}
+  // todo: allow deleting/deactivating parsers?
+  // todo: allow Parser Pools having a name attribute?
   getCueOptions() {
     return Array.from(this._getCueMap().keys())
   }
@@ -76,6 +80,23 @@ class ParserPool {
       obj[key] = val
     }
     return obj
+  }
+  // todo: perhaps if needed in the future we can add more contextual params here
+  _transformStrings(line, subparticles) {
+    this.particleTransformers.forEach(fn => {
+      ;[line, subparticles] = fn(line, subparticles)
+    })
+    return [line, subparticles]
+  }
+  addTransformer(fn) {
+    if (!this.particleTransformers) this.particleTransformers = []
+    this.particleTransformers.push(fn)
+    return this
+  }
+  createParticle(parentParticle, line, index, subparticles) {
+    if (this.particleTransformers) [line, subparticles] = this._transformStrings(line, subparticles)
+    const parser = this._getMatchingParser(line, parentParticle, index)
+    return new parser(subparticles, line, parentParticle, index)
   }
   _getMatchingParser(line, contextParticle, lineNumber, atomBreakSymbol = TN_WORD_BREAK_SYMBOL) {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
@@ -98,13 +119,19 @@ class ParserPool {
   }
 }
 class Particle extends AbstractParticle {
-  constructor(subparticles, line, parent) {
+  constructor(subparticles, line, parent, index) {
     super()
     // BEGIN MUTABLE METHODS BELOw
     this._particleCreationTime = this._getProcessTimeInMilliseconds()
     this._parent = parent
     this._setLine(line)
     this._setSubparticles(subparticles)
+    if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
+    else if (parent) parent._getSubparticlesArray().push(this)
+    this.wake()
+  }
+  wake() {
+    // noop by default
   }
   execute() {}
   async loadRequirements(context) {
@@ -1425,15 +1452,6 @@ class Particle extends AbstractParticle {
     }
     this._insertLineAndSubparticles(line, subparticles)
   }
-  _insertLineAndSubparticles(line, subparticles, index = this.length) {
-    const parser = this._getParserPool()._getMatchingParser(line, this, index)
-    const newParticle = new parser(subparticles, line, this)
-    const adjustedIndex = index < 0 ? this.length + index : index
-    this._getSubparticlesArray().splice(adjustedIndex, 0, newParticle)
-    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
-    this.clearQuickCache()
-    return newParticle
-  }
   _insertLines(lines, index = this.length) {
     const parser = this.constructor
     const newParticle = new parser()
@@ -1446,6 +1464,13 @@ class Particle extends AbstractParticle {
   }
   insertLinesAfter(lines) {
     return this.parent._insertLines(lines, this.index + 1)
+  }
+  _insertLineAndSubparticles(line, subparticles, index = this.length) {
+    const adjustedIndex = index < 0 ? this.length + index : index
+    const newParticle = this._getParserPool().createParticle(this, line, index, subparticles)
+    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
+    this.clearQuickCache()
+    return newParticle
   }
   _appendSubparticlesFromString(str) {
     const lines = str.split(this.particleBreakSymbolRegex)
@@ -1464,12 +1489,10 @@ class Particle extends AbstractParticle {
           currentIndentCount--
         }
       }
-      const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const subparticles = parent._getSubparticlesArray()
-      const parser = parent._getParserPool()._getMatchingParser(lineContent, parent, subparticles.length)
-      lastParticle = new parser(undefined, lineContent, parent)
-      subparticles.push(lastParticle)
+      const index = parent._getSubparticlesArray().length
+      const lineContent = line.substr(currentIndentCount)
+      lastParticle = parent._getParserPool().createParticle(parent, lineContent, index)
     })
   }
   _getCueIndex() {

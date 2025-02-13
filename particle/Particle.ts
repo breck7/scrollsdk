@@ -82,6 +82,13 @@ class ParserPool {
     this._regexTests = regexTests
   }
 
+  // todo: allow incremental adding of parsers
+  addParser() {}
+
+  // todo: allow deleting/deactivating parsers?
+
+  // todo: allow Parser Pools having a name attribute?
+
   getCueOptions() {
     return Array.from(this._getCueMap().keys())
   }
@@ -99,6 +106,28 @@ class ParserPool {
       obj[key] = val
     }
     return obj
+  }
+
+  particleTransformers?: particlesTypes.particleTransformer[]
+
+  // todo: perhaps if needed in the future we can add more contextual params here
+  _transformStrings(line: string, subparticles?: particlesTypes.subparticles) {
+    this.particleTransformers.forEach(fn => {
+      ;[line, subparticles] = fn(line, subparticles)
+    })
+    return [line, subparticles]
+  }
+
+  addTransformer(fn: particlesTypes.particleTransformer) {
+    if (!this.particleTransformers) this.particleTransformers = []
+    this.particleTransformers.push(fn)
+    return this
+  }
+
+  createParticle(parentParticle: particlesTypes.particle, line: string, index: number, subparticles?: particlesTypes.subparticles): particlesTypes.particle {
+    if (this.particleTransformers) [line, subparticles] = this._transformStrings(line, subparticles)
+    const parser: any = this._getMatchingParser(line, parentParticle, index)
+    return new parser(subparticles, line, parentParticle, index)
   }
 
   _getMatchingParser(line: string, contextParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
@@ -129,11 +158,18 @@ class ParserPool {
 }
 
 class Particle extends AbstractParticle {
-  constructor(subparticles?: particlesTypes.subparticles, line?: string, parent?: Particle) {
+  constructor(subparticles?: particlesTypes.subparticles, line?: string, parent?: Particle, index?: number) {
     super()
     this._parent = parent
     this._setLine(line)
     this._setSubparticles(subparticles)
+    if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
+    else if (parent) parent._getSubparticlesArray().push(this)
+    this.wake()
+  }
+
+  wake() {
+    // noop by default
   }
 
   private _uid: int
@@ -1706,18 +1742,6 @@ class Particle extends AbstractParticle {
     this._insertLineAndSubparticles(line, subparticles)
   }
 
-  protected _insertLineAndSubparticles(line: string, subparticles?: particlesTypes.subparticles, index = this.length) {
-    const parser: any = this._getParserPool()._getMatchingParser(line, this, index)
-    const newParticle = new parser(subparticles, line, this)
-    const adjustedIndex = index < 0 ? this.length + index : index
-
-    this._getSubparticlesArray().splice(adjustedIndex, 0, newParticle)
-
-    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
-    this.clearQuickCache()
-    return newParticle
-  }
-
   protected _insertLines(lines: string, index = this.length) {
     const parser: any = this.constructor
     const newParticle = new parser()
@@ -1731,6 +1755,14 @@ class Particle extends AbstractParticle {
 
   insertLinesAfter(lines: string) {
     return this.parent._insertLines(lines, this.index + 1)
+  }
+
+  protected _insertLineAndSubparticles(line: string, subparticles?: particlesTypes.subparticles, index = this.length) {
+    const adjustedIndex = index < 0 ? this.length + index : index
+    const newParticle = this._getParserPool().createParticle(this, line, index, subparticles)
+    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
+    this.clearQuickCache()
+    return newParticle
   }
 
   protected _appendSubparticlesFromString(str: string) {
@@ -1750,12 +1782,10 @@ class Particle extends AbstractParticle {
           currentIndentCount--
         }
       }
-      const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const subparticles = parent._getSubparticlesArray()
-      const parser: any = parent._getParserPool()._getMatchingParser(lineContent, parent, subparticles.length)
-      lastParticle = new parser(undefined, lineContent, parent)
-      subparticles.push(lastParticle)
+      const index = parent._getSubparticlesArray().length
+      const lineContent = line.substr(currentIndentCount)
+      lastParticle = parent._getParserPool().createParticle(parent, lineContent, index)
     })
   }
 

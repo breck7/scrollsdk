@@ -214,9 +214,6 @@ class MemoryWriter {
   }
 }
 class EmptyScrollParser extends Particle {
-  evalMacros(fusionFile) {
-    return fusionFile.fusedCode
-  }
   setFile(fusionFile) {
     this.file = fusionFile
   }
@@ -263,13 +260,9 @@ class FusionFile {
       this.fusedFile = fusedFile
     }
     this.fusedCode = fusedCode
-    const tempProgram = new defaultParser()
-    // PASS 3: READ AND REPLACE MACROS. PARSE AND REMOVE MACROS DEFINITIONS THEN REPLACE REFERENCES.
-    const codeAfterMacroPass = tempProgram.evalMacros(this)
-    this.codeAfterMacroPass = codeAfterMacroPass
     this.parser = (fusedFile === null || fusedFile === void 0 ? void 0 : fusedFile.parser) || defaultParser
     // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(codeAfterMacroPass)
+    this.scrollProgram = new this.parser(fusedCode)
     this.scrollProgram.setFile(this)
     return this
   }
@@ -287,7 +280,7 @@ let fusionIdNumber = 0
 const parserCache = {}
 class Fusion {
   constructor(inMemoryFiles, standardParserDirectory) {
-    this.productCache = {}
+    this.productCache = [] // todo: remove productCache?
     this._particleCache = {}
     this._parserCache = {}
     this._parsersExpandersCache = {}
@@ -300,9 +293,9 @@ class Fusion {
     this.fusionId = fusionIdNumber
     this.defaultFileClass = FusionFile
     this.standardParserDirectory = standardParserDirectory
-    if (standardParserDirectory) this.loadDefaultParser()
+    if (standardParserDirectory) this._loadDefaultParser()
   }
-  loadDefaultParser() {
+  _loadDefaultParser() {
     const { standardParserDirectory } = this
     const cacheHit = parserCache[standardParserDirectory]
     if (cacheHit) {
@@ -354,7 +347,7 @@ class Fusion {
     return await this._storage.getCTime(absolutePath)
   }
   async writeProduct(absolutePath, content) {
-    this.productCache[absolutePath] = content
+    this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
   async _getFileAsParticles(absoluteFilePathOrUrl) {
@@ -542,9 +535,9 @@ class Fusion {
   async getLoadedFile(filePath) {
     return await this._getLoadedFile(filePath, this.defaultFileClass)
   }
-  async _getLoadedFile(absolutePath, parser) {
+  async _getLoadedFile(absolutePath, fusionFileClass) {
     if (this.parsedFiles[absolutePath]) return this.parsedFiles[absolutePath]
-    const file = new parser(undefined, absolutePath, this)
+    const file = new fusionFileClass(undefined, absolutePath, this)
     await file.fuse()
     this.parsedFiles[absolutePath] = file
     return file

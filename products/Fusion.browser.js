@@ -216,8 +216,6 @@ class FusionFile {
     this.defaultParser = EmptyScrollParser
     this.fileSystem = fileSystem
     this.filePath = absoluteFilePath
-    this.filename = Utils.posix.basename(absoluteFilePath)
-    this.folderPath = Utils.posix.dirname(absoluteFilePath) + "/"
     this.codeAtStart = codeAtStart
     this.timeIndex = 0
     this.timestamp = 0

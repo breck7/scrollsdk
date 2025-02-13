@@ -284,20 +284,50 @@ class FusionFile {
   }
 }
 let fusionIdNumber = 0
+const parserCache = {}
 class Fusion {
-  constructor(inMemoryFiles) {
+  constructor(inMemoryFiles, standardParserDirectory) {
     this.productCache = {}
     this._particleCache = {}
     this._parserCache = {}
     this._parsersExpandersCache = {}
     this._pendingFuseRequests = {}
-    this.defaultFileClass = FusionFile
     this.parsedFiles = {}
     this.folderCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
     fusionIdNumber = fusionIdNumber + 1
     this.fusionId = fusionIdNumber
+    this.defaultFileClass = FusionFile
+    this.standardParserDirectory = standardParserDirectory
+    if (standardParserDirectory) this.loadDefaultParser()
+  }
+  loadDefaultParser() {
+    const { standardParserDirectory } = this
+    const cacheHit = parserCache[standardParserDirectory]
+    if (cacheHit) {
+      this.defaultParser = cacheHit.defaultParser
+      this.defaultFileClass = cacheHit.defaultFileClass
+      return this
+    }
+    const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
+    const defaultParser = Fusion.combineParsers(
+      defaultParserFiles,
+      defaultParserFiles.map(filePath => Disk.read(filePath))
+    )
+    parserCache[standardParserDirectory] = {
+      defaultParser,
+      defaultFileClass: class extends FusionFile {
+        constructor() {
+          super(...arguments)
+          this.defaultParserCode = defaultParser.parsersCode
+          this.defaultParser = defaultParser.parser
+        }
+      }
+    }
+    this.defaultParser = parserCache[standardParserDirectory].defaultParser
+    this.defaultFileClass = parserCache[standardParserDirectory].defaultFileClass
+    return this
   }
   async read(absolutePath) {
     return await this._storage.read(absolutePath)

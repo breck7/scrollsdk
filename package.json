@@ -20,7 +20,6 @@
     "products/ParsersCompiler.js",
     "products/Parsers.js",
     "products/hakon.nodejs.js",
-    "products/Path.js",
     "products/stamp.nodejs.js",
     "products/stump.nodejs.js",
     "products/swarm.nodejs.js",

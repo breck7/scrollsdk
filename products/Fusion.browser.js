@@ -194,7 +194,7 @@ class MemoryWriter {
     if (isUrl(path)) {
       return path.substring(0, path.lastIndexOf("/"))
     }
-    return posix.dirname(path)
+    return Utils.posix.dirname(path)
   }
   join(...segments) {
     const firstSegment = segments[0]
@@ -202,7 +202,7 @@ class MemoryWriter {
       const baseUrl = firstSegment.endsWith("/") ? firstSegment : firstSegment + "/"
       return new URL(segments.slice(1).join("/"), baseUrl).toString()
     }
-    return posix.join(...segments)
+    return Utils.posix.join(...segments)
   }
 }
 class EmptyScrollParser extends Particle {
@@ -216,8 +216,8 @@ class FusionFile {
     this.defaultParser = EmptyScrollParser
     this.fileSystem = fileSystem
     this.filePath = absoluteFilePath
-    this.filename = posix.basename(absoluteFilePath)
-    this.folderPath = posix.dirname(absoluteFilePath) + "/"
+    this.filename = Utils.posix.basename(absoluteFilePath)
+    this.folderPath = Utils.posix.dirname(absoluteFilePath) + "/"
     this.codeAtStart = codeAtStart
     this.timeIndex = 0
     this.timestamp = 0

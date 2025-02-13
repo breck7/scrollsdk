@@ -355,12 +355,46 @@ class FusionFile {
   defaultParser = EmptyScrollParser
 }
 let fusionIdNumber = 0
+
+const parserCache: any = {}
 class Fusion implements Storage {
-  constructor(inMemoryFiles: particlesTypes.diskMap) {
+  constructor(inMemoryFiles?: particlesTypes.diskMap, standardParserDirectory?: string) {
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
     fusionIdNumber = fusionIdNumber + 1
     this.fusionId = fusionIdNumber
+    this.defaultFileClass = FusionFile
+    this.standardParserDirectory = standardParserDirectory
+    if (standardParserDirectory) this.loadDefaultParser()
+  }
+
+  standardParserDirectory?: string
+
+  loadDefaultParser() {
+    const { standardParserDirectory } = this
+    const cacheHit = parserCache[standardParserDirectory]
+    if (cacheHit) {
+      this.defaultParser = cacheHit.defaultParser
+      this.defaultFileClass = cacheHit.defaultFileClass
+      return this
+    }
+
+    const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
+    const defaultParser = Fusion.combineParsers(
+      defaultParserFiles,
+      defaultParserFiles.map(filePath => Disk.read(filePath))
+    )
+    parserCache[standardParserDirectory] = {
+      defaultParser,
+      defaultFileClass: class extends FusionFile {
+        defaultParserCode = defaultParser.parsersCode
+        defaultParser = defaultParser.parser
+      }
+    }
+
+    this.defaultParser = parserCache[standardParserDirectory].defaultParser
+    this.defaultFileClass = parserCache[standardParserDirectory].defaultFileClass
+    return this
   }
 
   async read(absolutePath: particlesTypes.filepath) {
@@ -622,7 +656,6 @@ class Fusion implements Storage {
     return fusedFile
   }
 
-  defaultFileClass = FusionFile
   async getLoadedFile(filePath) {
     return await this._getLoadedFile(filePath, this.defaultFileClass)
   }

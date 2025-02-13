@@ -70,9 +70,11 @@ class PerfTest {
 
   async runAll() {
     console.log("Starting performance tests...\n")
-    this.gatherFiles().readToStrings().parseToParticles()
+    this.gatherFiles()
+    this.readToStrings()
+    this.parseToParticles()
     await this.fuseFiles()
-    this.parseAsScroll()
+    //this.parseAsScroll()
 
     console.log(`\nTotal time: ${this.timer.getTotalElapsedTime()}ms`)
     this.printMemoryUsage()

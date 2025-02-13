@@ -138,7 +138,6 @@ class Particle extends AbstractParticle {
     this._setSubparticles(subparticles)
     if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
     else if (parent) parent._getSubparticlesArray().push(this)
-    this.wake()
   }
   wake() {
     // noop by default
@@ -1478,6 +1477,7 @@ class Particle extends AbstractParticle {
   _insertLineAndSubparticles(line, subparticles, index = this.length) {
     const adjustedIndex = index < 0 ? this.length + index : index
     const newParticle = this._getParserPool().createParticle(this, line, index, subparticles)
+    newParticle.wake()
     if (this._cueIndex) this._makeCueIndex(adjustedIndex)
     this.clearQuickCache()
     return newParticle
@@ -1493,17 +1493,30 @@ class Particle extends AbstractParticle {
         currentIndentCount++
         parentStack.push(lastParticle)
       } else if (indentCount < currentIndentCount) {
+        lastParticle.wake()
         // pop things off stack
         while (indentCount < currentIndentCount) {
-          parentStack.pop()
+          const parent = parentStack.pop()
+          parent.wake()
           currentIndentCount--
         }
+      } else if (lastParticle !== this) {
+        lastParticle.wake()
       }
       const parent = parentStack[parentStack.length - 1]
       const index = parent._getSubparticlesArray().length
       const lineContent = line.substr(currentIndentCount)
       lastParticle = parent._getParserPool().createParticle(parent, lineContent, index)
     })
+    if (lastParticle !== this) {
+      lastParticle.wake()
+    }
+    if (parentStack.length > 1) {
+      parentStack
+        .slice(1)
+        .reverse()
+        .forEach(part => part.wake())
+    }
   }
   _getCueIndex() {
     // StringMap<int> {cue: index}

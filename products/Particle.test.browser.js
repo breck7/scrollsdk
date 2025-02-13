@@ -3367,6 +3367,25 @@ testParticles.trim = equal => {
   const particle2 = new Particle(testStrings.webpage)
   equal(particle2.length, particle2.trim().length)
 }
+testParticles.wakeTest = equal => {
+  // Arrange
+  let str = ""
+  class Foo extends Particle {
+    wake() {
+      str += this.cue
+    }
+  }
+  // Act
+  const particle = new Foo(`c
+ b
+  a
+d
+e
+g
+ f`)
+  // Assert
+  equal(str, "abcdefg")
+}
 testParticles.queryMethods = equal => {
   // Arrange
   const particle = Particle.fromCsv(Particle.iris)

@@ -258,8 +258,8 @@ class FusionFile {
     }
     this.fusedCode = fusedCode
     this.parser = (fusedFile === null || fusedFile === void 0 ? void 0 : fusedFile.parser) || defaultParser
-    // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(fusedCode, filePath)
+    // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
+    this.scrollProgram = new this.parser(fusedCode, [filePath, this.timestamp].join(" "))
     this.scrollProgram.setFile(this)
     return this
   }
@@ -278,11 +278,10 @@ const parserCache = {}
 class Fusion {
   constructor(inMemoryFiles, standardParserDirectory) {
     this.productCache = [] // todo: remove productCache?
-    this._particleCache = {}
     this._parserCache = {}
     this._parsersExpandersCache = {}
     this._pendingFuseRequests = {}
-    this.parsedFiles = {}
+    this._parsedFiles = {}
     this.folderCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
@@ -301,7 +300,7 @@ class Fusion {
       return this
     }
     const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
-    const defaultParser = Fusion.combineParsers(
+    const defaultParser = Fusion._combineParsers(
       defaultParserFiles,
       defaultParserFiles.map(filePath => Disk.read(filePath))
     )
@@ -347,15 +346,7 @@ class Fusion {
     this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
-  async _getFileAsParticles(absoluteFilePathOrUrl) {
-    const { _particleCache } = this
-    if (_particleCache[absoluteFilePathOrUrl] === undefined) {
-      const content = await this._storage.read(absoluteFilePathOrUrl)
-      _particleCache[absoluteFilePathOrUrl] = new Particle(content)
-    }
-    return _particleCache[absoluteFilePathOrUrl]
-  }
-  getImports(particle, absoluteFilePathOrUrl, importStack) {
+  _getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)
     const results = particle
       .filter(particle => particle.getLine().match(importRegex))
@@ -422,7 +413,7 @@ class Fusion {
     }
     const particle = new Particle(processedCode)
     // Fetch all imports in parallel
-    const imported = await this.getImports(particle, absoluteFilePathOrUrl, importStack)
+    const imported = await this._getImports(particle, absoluteFilePathOrUrl, importStack)
     // Assemble all imports
     let importFilePaths = []
     let footers
@@ -484,20 +475,9 @@ class Fusion {
   }
   async _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
     const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
-    return Fusion.combineParsers(filePaths, fileContents, baseParsersCode)
+    return Fusion._combineParsers(filePaths, fileContents, baseParsersCode)
   }
-  async getParser(filePaths, baseParsersCode = "") {
-    const { _parserCache } = this
-    const key = filePaths
-      .filter(fp => fp)
-      .sort()
-      .join("\n")
-    const hit = _parserCache[key]
-    if (hit) return hit
-    _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    return _parserCache[key]
-  }
-  static combineParsers(filePaths, fileContents, baseParsersCode = "") {
+  static _combineParsers(filePaths, fileContents, baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const mapped = fileContents.map((content, index) => {
@@ -517,26 +497,32 @@ class Fusion {
       parser: new HandParsersProgram(parsersCode).compileAndReturnRootParser()
     }
   }
-  get parsers() {
-    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+  async _getParser(filePaths, baseParsersCode = "") {
+    const { _parserCache } = this
+    const key = filePaths
+      .filter(fp => fp)
+      .sort()
+      .join("\n")
+    const hit = _parserCache[key]
+    if (hit) return hit
+    _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    return _parserCache[key]
   }
   async fuseFile(absoluteFilePathOrUrl, defaultParserCode) {
     const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
     if (!defaultParserCode) return fusedFile
     if (fusedFile.filepathsWithParserDefinitions) {
-      const parser = await this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
+      const parser = await this._getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
       fusedFile.parser = parser.parser
     }
     return fusedFile
   }
-  async getLoadedFile(filePath) {
-    return await this._getLoadedFile(filePath, this.defaultFileClass)
-  }
-  async _getLoadedFile(absolutePath, fusionFileClass) {
-    if (this.parsedFiles[absolutePath]) return this.parsedFiles[absolutePath]
+  async _getLoadedFile(absolutePath, fusionFileClass = this.defaultFileClass) {
+    const cache = this._parsedFiles
+    if (cache[absolutePath]) return cache[absolutePath]
     const file = new fusionFileClass(undefined, absolutePath, this)
     await file.fuse()
-    this.parsedFiles[absolutePath] = file
+    cache[absolutePath] = file
     return file
   }
   getCachedLoadedFilesInFolder(folderPath, requester) {
@@ -578,7 +564,7 @@ class Fusion {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
     if (this.folderCache[folderPath]) return this.folderCache[folderPath]
     const allFiles = await this.list(folderPath)
-    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this.getLoadedFile(filePath)))
+    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this._getLoadedFile(filePath)))
     const sorted = loadedFiles.sort((a, b) => b.timestamp - a.timestamp)
     sorted.forEach((file, index) => (file.timeIndex = index))
     this.folderCache[folderPath] = sorted

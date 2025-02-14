@@ -428,6 +428,10 @@ class Fusion implements Storage {
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
+  get parsers() {
+    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+  }
+
   private _getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)
     const results = particle

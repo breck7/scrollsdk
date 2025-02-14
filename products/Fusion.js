@@ -346,6 +346,9 @@ class Fusion {
     this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
+  get parsers() {
+    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+  }
   _getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)
     const results = particle

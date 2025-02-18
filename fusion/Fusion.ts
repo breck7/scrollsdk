@@ -335,7 +335,7 @@ class FusionFile {
     this.codeAfterMacroPass = codeAfterMacroPass
     this.parser = fusedFile?.parser || defaultParser
     // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(codeAfterMacroPass)
+    this.scrollProgram = new this.parser(codeAfterMacroPass, filePath)
     this.scrollProgram.setFile(this)
     return this
   }

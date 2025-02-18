@@ -19,7 +19,7 @@ test('callBindBasic', function (t) {
 	});
 
 	var sentinel = { sentinel: true };
-	/** @type {<T>(this: T, a: number, b: number) => [T | undefined, number, number]} */
+	/** @type {<T, A extends number, B extends number>(this: T, a: A, b: B) => [T | undefined, A, B]} */
 	var func = function (a, b) {
 		// eslint-disable-next-line no-invalid-this
 		return [!hasStrictMode && this === global ? undefined : this, a, b];
@@ -28,10 +28,10 @@ test('callBindBasic', function (t) {
 
 	/** type {(thisArg: unknown, a: number, b: number) => [unknown, number, number]} */
 	var bound = callBind([func]);
-	/** type {((a: number, b: number) => [sentinel, typeof a, typeof b])} */
+	/** type {((a: number, b: number) => [typeof sentinel, typeof a, typeof b])} */
 	var boundR = callBind([func, sentinel]);
-	/** type {((b: number) => [sentinel, number, typeof b])} */
-	var boundArg = callBind([func, sentinel, 1]);
+	/** type {((b: number) => [typeof sentinel, number, typeof b])} */
+	var boundArg = callBind([func, sentinel, /** @type {const} */ (1)]);
 
 	// @ts-expect-error
 	t.deepEqual(bound(), [undefined, undefined, undefined], 'bound func with no args');

@@ -7,6 +7,23 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+102.0.0 2025-02-18
+==================
+⚠️ BREAKING: (no one should be affected) removed Path.js and move the posix class to Utils.posix
+⚠️ BREAKING: (no one should be affected) removed filename and folderPath from FusionFile class (can be derived)
+
+101.3.0 2025-02-18
+==================
+🎉 Fusion: pass in filepath when creating a new Scroll file
+
+Now when parsing a Scroll file you pass file metadata via the line parameter:
+```
+new Scroll("h1 Hello world", filename)
+```
+We will likely also start passing in the file metadata (timestamp, for example) via that as well.
+You may still have anonymous programs, they just will have "undefined" as their filename.
+This makes it conceptually simpler that all Scroll programs have a location in space (a uri), and thus all particles/parsers in a program can access that information. We already were depending on that, just doing it via the hacky setFile method.
+
 101.2.1 2025-02-11
 ==================
 🏥 fusion parsers imports regression fix

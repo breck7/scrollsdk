@@ -20,6 +20,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 102.0.0 2025-02-18
+⚠️ BREAKING: (no one should be affected) removed Path.js and move the posix class to Utils.posix
+⚠️ BREAKING: (no one should be affected) removed filename and folderPath from FusionFile class (can be derived)
+
 📦 101.3.0 2025-02-18
 🎉 Fusion: pass in filepath when creating a new Scroll file
 

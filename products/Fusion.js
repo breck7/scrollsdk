@@ -1,3 +1,4 @@
+// todo: as much as we can, remove Fusion and move these capabilities into the root Particle class.
 const fs = require("fs").promises
 const path = require("path")
 const { Disk } = require("../products/Disk.node.js")
@@ -269,7 +270,7 @@ class FusionFile {
     this.codeAfterMacroPass = codeAfterMacroPass
     this.parser = (fusedFile === null || fusedFile === void 0 ? void 0 : fusedFile.parser) || defaultParser
     // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(codeAfterMacroPass)
+    this.scrollProgram = new this.parser(codeAfterMacroPass, filePath)
     this.scrollProgram.setFile(this)
     return this
   }

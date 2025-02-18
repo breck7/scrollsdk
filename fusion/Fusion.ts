@@ -1,3 +1,4 @@
+// todo: as much as we can, remove Fusion and move these capabilities into the root Particle class.
 const fs = require("fs").promises
 const path = require("path")
 

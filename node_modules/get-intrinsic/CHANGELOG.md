@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0](https://github.com/ljharb/get-intrinsic/compare/v1.2.7...v1.3.0) - 2025-02-22
+
+### Commits
+
+- [Dev Deps] update `es-abstract`, `es-value-fixtures`, `for-each`, `object-inspect` [`9b61553`](https://github.com/ljharb/get-intrinsic/commit/9b61553c587f1c1edbd435597e88c7d387da97dd)
+- [Deps] update `call-bind-apply-helpers`, `es-object-atoms`, `get-proto` [`a341fee`](https://github.com/ljharb/get-intrinsic/commit/a341fee0f39a403b0f0069e82c97642d5eb11043)
+- [New] add `Float16Array` [`de22116`](https://github.com/ljharb/get-intrinsic/commit/de22116b492fb989a0341bceb6e573abfaed73dc)
+
 ## [v1.2.7](https://github.com/ljharb/get-intrinsic/compare/v1.2.6...v1.2.7) - 2025-01-02
 
 ### Commits

@@ -15,9 +15,9 @@ enum FileFormat {
   particles = "particles"
 }
 
-const TN_WORD_BREAK_SYMBOL = " "
-const TN_EDGE_SYMBOL = " "
-const TN_NODE_BREAK_SYMBOL = "\n"
+const ATOM_MEMBRANE = " " // The symbol that separates atoms (words)
+const PARTICLE_MEMBRANE = "\n" // The symbol that separates particles (lines)
+const SUBPARTICLE_MEMBRANE = " " // The symbol, in combination with PARTICLE_MEMBRANE, that makes subparticles
 
 declare type removeAfterRunning = boolean
 
@@ -101,7 +101,7 @@ class ParserPool {
     return obj
   }
 
-  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = TN_WORD_BREAK_SYMBOL): particlesTypes.ParticleParser {
+  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = ATOM_MEMBRANE): particlesTypes.ParticleParser {
     return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
   }
 
@@ -1597,11 +1597,11 @@ class Particle extends AbstractParticle {
   }
 
   get particleBreakSymbol(): string {
-    return TN_NODE_BREAK_SYMBOL
+    return PARTICLE_MEMBRANE
   }
 
   get atomBreakSymbol(): string {
-    return TN_WORD_BREAK_SYMBOL
+    return ATOM_MEMBRANE
   }
 
   get edgeSymbolRegex() {
@@ -1613,7 +1613,7 @@ class Particle extends AbstractParticle {
   }
 
   get edgeSymbol(): string {
-    return TN_EDGE_SYMBOL
+    return SUBPARTICLE_MEMBRANE
   }
 
   protected _textToContentAndSubparticlesTuple(text: string) {
@@ -3116,8 +3116,8 @@ class Particle extends AbstractParticle {
   }
 
   static nest(str: string, xValue: int) {
-    const ParticleBreakSymbol = TN_NODE_BREAK_SYMBOL
-    const AtomBreakSymbol = TN_WORD_BREAK_SYMBOL
+    const ParticleBreakSymbol = PARTICLE_MEMBRANE
+    const AtomBreakSymbol = ATOM_MEMBRANE
     const indent = ParticleBreakSymbol + AtomBreakSymbol.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
@@ -3162,7 +3162,7 @@ abstract class AbstractExtendibleParticle extends Particle {
     this.forEach(particle => {
       const path = particle._getAncestorsArray().map((particle: AbstractExtendibleParticle) => particle.id)
       path.reverse()
-      newParticle.touchParticle(path.join(TN_EDGE_SYMBOL))
+      newParticle.touchParticle(path.join(SUBPARTICLE_MEMBRANE))
     })
     return newParticle
   }

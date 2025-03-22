@@ -21,3 +21,5 @@ package-lock.json
 *.css
 *.js
 .*
+*.cpuprofile
+*.heapprofile

@@ -31,33 +31,40 @@ class PerfTest {
       .filter(file => file.endsWith(".scroll"))
       .map(file => path.join(this.folderPath, file))
     console.log(`Found ${this.files.length} .scroll files`)
-    this.timer.tick("Finding files")
+    this.tick("Finding files")
     return this
   }
 
   readToStrings() {
     this.simpleStrings = this.files.map(file => fs.readFileSync(file, "utf8"))
-    this.timer.tick("Reading files to strings")
+    this.tick("Reading files to strings")
     return this
   }
 
   parseToParticles() {
     this.particles = this.simpleStrings.map(str => new Particle(str))
-    this.timer.tick("Parsing to Particles")
+    this.tick("Parsing to Particles")
     return this
   }
 
   async fuseFiles() {
     const fusion = new Fusion()
     this.fusedFiles = await Promise.all(this.files.map(file => fusion.fuseFile(file)))
-    this.timer.tick("Fusing files")
+    this.tick("Fusing files")
     return this
   }
 
   parseAsScroll() {
     this.scrollFiles = this.simpleStrings.map(str => new ScrollFile(str))
-    this.timer.tick("Parsing as Scroll")
+    this.tick("Parsing as Scroll")
     return this
+  }
+
+  tick(message) {
+    this.printMemoryUsage()
+    console.log("")
+    this.timer.tick(message)
+    console.log("----------")
   }
 
   printMemoryUsage() {
@@ -69,13 +76,10 @@ class PerfTest {
   }
 
   async runAll() {
-    console.log("Starting performance tests...\n")
+    this.tick("Starting performance tests...\n")
     this.gatherFiles().readToStrings().parseToParticles()
     await this.fuseFiles()
     this.parseAsScroll()
-
-    console.log(`\nTotal time: ${this.timer.getTotalElapsedTime()}ms`)
-    this.printMemoryUsage()
   }
 }
 

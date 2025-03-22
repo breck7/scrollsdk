@@ -41,7 +41,7 @@ const main = (parsersCode, code) => {
 
   let totalLines = code.numberOfLines
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-  let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Expected ${expected} errors. Actual errors: ${errors.length}.`
+  let msg = `checked ${totalLines} lines of Parsers code in ${elapsed}ms. ${ps} lines per second. Expected ${expected} errors. Actual errors: ${errors.length}.`
 
   logFn(msg)
   logFn("")
@@ -67,7 +67,7 @@ const parseStringTest = () => {
 
   let totalLines = lineLength * trials
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-  logFn(`parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second<br><br>`)
+  logFn(`parsed ${totalLines} lines of Particles in ${elapsed}ms. ${ps} lines per second<br><br>`)
 }
 
 const toStringTest = () => {
@@ -79,7 +79,7 @@ const toStringTest = () => {
 
   let totalLines = data.numberOfLines
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-  logFn(`toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`)
+  logFn(`toString ${totalLines} lines of Particles in ${elapsed}ms. ${ps} lines per second`)
 }
 
 const fetchAndRun = async () => {

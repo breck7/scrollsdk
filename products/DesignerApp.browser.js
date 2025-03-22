@@ -548,8 +548,8 @@ class headerComponent extends AbstractParticleComponentParser {
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building languages on top of Particles. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, atom checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
+  p This is a simple web IDE for building parsers. You write Parsers in the textarea on the left. You can then use your parsers in the textarea on the right. You instantly get syntax highlighting, autocomplete, atom checking, suggested corrections, and more.
+  p Sometimes we call a group of parsers a "microlang". Click "Newlang" to create a new microlang, or explore/edit existing microlangs. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">tutorial for creating Parsers</a>.`
   }
 }
 class githubTriangleComponent extends AbstractGithubTriangleComponent {

@@ -8,7 +8,7 @@ cueAtom
 // Line Parsers
 newlangParser
  root
- description This is the basic root parser for your new prefix Language.
+ description A basic root parser.
  catchAllParser catchAllErrorParser
  inScope helloParser
 helloParser

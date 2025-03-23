@@ -29,6 +29,14 @@ class AbstractParticleEvent {
     this.targetParticle = targetParticle
   }
 }
+function _getIndentCount(str, edgeSymbol) {
+  let level = 0
+  const edgeChar = edgeSymbol
+  while (str[level] === edgeChar) {
+    level++
+  }
+  return level
+}
 class ChildAddedParticleEvent extends AbstractParticleEvent {}
 class ChildRemovedParticleEvent extends AbstractParticleEvent {}
 class DescendantChangedParticleEvent extends AbstractParticleEvent {}
@@ -1462,12 +1470,13 @@ class Particle extends AbstractParticle {
     return this.parent._insertLines(lines, this.index + 1)
   }
   _appendSubparticlesFromString(str) {
-    const lines = str.split(this.particleBreakSymbolRegex)
+    const { edgeSymbol, particleBreakSymbolRegex } = this
+    const lines = str.split(particleBreakSymbolRegex)
     const parentStack = []
     let currentIndentCount = -1
     let lastParticle = this
     lines.forEach(line => {
-      const indentCount = this._getIndentCount(line)
+      const indentCount = _getIndentCount(line, edgeSymbol)
       if (indentCount > currentIndentCount) {
         currentIndentCount++
         parentStack.push(lastParticle)
@@ -1537,14 +1546,6 @@ class Particle extends AbstractParticle {
   }
   _subparticlesToXml(indentCount) {
     return this.map(particle => particle._toXml(indentCount)).join("")
-  }
-  _getIndentCount(str) {
-    let level = 0
-    const edgeChar = this.edgeSymbol
-    while (str[level] === edgeChar) {
-      level++
-    }
-    return level
   }
   clone(subparticles = this.subparticlesToString(), line = this.getLine()) {
     return new this.constructor(subparticles, line)

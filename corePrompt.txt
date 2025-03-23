@@ -6666,7 +6666,7 @@ stamp
       if (hasHeaders) {
         // Strip any AtomBreakSymbols from column names in the header row.
         // This makes the mapping not quite 1 to 1 if there are any AtomBreakSymbols in names.
-        for (let index = 0; index  "102.0.0"
+        for (let index = 0; index  "103.0.0"
   
     static fromDisk(path: string): Particle {
       const format = this._getFileFormat(path)
@@ -12072,9 +12072,9 @@ stamp
       return await this._storage.getCTime(absolutePath)
     }
   
-    productCache = {}
+    productCache = []
     async writeProduct(absolutePath, content) {
-      this.productCache[absolutePath] = content
+      this.productCache.push(absolutePath)
       return await this.write(absolutePath, content)
     }
   

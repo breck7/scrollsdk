@@ -3722,7 +3722,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "102.0.0"
+Particle.getVersion = () => "103.0.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -6537,7 +6537,7 @@ class FusionFile {
 let fusionIdNumber = 0
 class Fusion {
   constructor(inMemoryFiles) {
-    this.productCache = {}
+    this.productCache = []
     this._particleCache = {}
     this._parserCache = {}
     this._parsersExpandersCache = {}
@@ -6575,7 +6575,7 @@ class Fusion {
     return await this._storage.getCTime(absolutePath)
   }
   async writeProduct(absolutePath, content) {
-    this.productCache[absolutePath] = content
+    this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
   async _getFileAsParticles(absoluteFilePathOrUrl) {

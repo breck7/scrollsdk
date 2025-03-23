@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+103.0.0 2025-03-23
+==================
+🏥 perf: don't keep build outputs in memory.
+⚠️ BREAKING: (no one should be affected) productCache now an array of strings
+
 102.0.0 2025-02-18
 ==================
 ⚠️ BREAKING: (no one should be affected) removed Path.js and move the posix class to Utils.posix

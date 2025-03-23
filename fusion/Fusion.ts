@@ -393,9 +393,9 @@ class Fusion implements Storage {
     return await this._storage.getCTime(absolutePath)
   }
 
-  productCache = {}
+  productCache = []
   async writeProduct(absolutePath, content) {
-    this.productCache[absolutePath] = content
+    this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
 

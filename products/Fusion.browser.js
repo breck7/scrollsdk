@@ -277,7 +277,7 @@ class FusionFile {
 let fusionIdNumber = 0
 class Fusion {
   constructor(inMemoryFiles) {
-    this.productCache = {}
+    this.productCache = []
     this._particleCache = {}
     this._parserCache = {}
     this._parsersExpandersCache = {}
@@ -315,7 +315,7 @@ class Fusion {
     return await this._storage.getCTime(absolutePath)
   }
   async writeProduct(absolutePath, content) {
-    this.productCache[absolutePath] = content
+    this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
   async _getFileAsParticles(absoluteFilePathOrUrl) {

@@ -482,6 +482,7 @@ class Fusion {
     }
   }
   get parsers() {
+    // todo: remove
     return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
   async fuseFile(absoluteFilePathOrUrl, defaultParserCode) {

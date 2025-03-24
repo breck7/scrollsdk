@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 104.0.0 2025-03-24
+🎉 Support for single pass macros
+⚠️ BREAKING: (no one should be affected) old evalMacros code gone
+
 📦 103.0.0 2025-03-23
 🏥 perf: don't keep build outputs in memory.
 ⚠️ BREAKING: (no one should be affected) productCache now an array of strings

@@ -566,10 +566,10 @@ class Fusion implements Storage {
       .join("\n")
 
     const hit = _parserCache[key]
-    if (hit) return hit
+    if (hit) return await hit
 
-    _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    return _parserCache[key]
+    _parserCache[key] = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    return await _parserCache[key]
   }
 
   static combineParsers(filePaths: string[], fileContents: string[], baseParsersCode = "") {

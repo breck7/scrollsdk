@@ -150,6 +150,7 @@ class Particle extends AbstractParticle {
     this._setSubparticles(subparticles)
     if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
     else if (parent) parent._getSubparticlesArray().push(this)
+    this.wake()
   }
 
   private _uid: int
@@ -161,6 +162,7 @@ class Particle extends AbstractParticle {
     [cue: string]: int
   }
 
+  wake() {}
   execute() {}
 
   async loadRequirements(context: any) {

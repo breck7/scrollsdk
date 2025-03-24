@@ -110,8 +110,8 @@ class ParserPool {
     return obj
   }
 
-  _getMatchingParser(line: string, contextParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = ATOM_MEMBRANE): particlesTypes.ParticleParser {
-    return this._getCueMap().get(this._getCue(line, atomBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextParticle)
+  _getMatchingParser(block: string, parentParticle: particlesTypes.particle, lineNumber: number, atomBreakSymbol = ATOM_MEMBRANE): particlesTypes.ParticleParser {
+    return this._getCueMap().get(this._getCue(block, atomBreakSymbol)) || this._getParserFromRegexTests(block) || this._getCatchAllParser(parentParticle)
   }
 
   _getCatchAllParser(contextParticle: particlesTypes.particle) {
@@ -124,23 +124,31 @@ class ParserPool {
     return contextParticle.constructor
   }
 
-  private _getParserFromRegexTests(line: string): particlesTypes.ParticleParser {
+  private _getParserFromRegexTests(block: string): particlesTypes.ParticleParser {
     if (!this._regexTests) return undefined
+    const line = block.split(/\n/)[0]
     const hit = this._regexTests.find(test => test.regex.test(line))
     if (hit) return hit.parser
     return undefined
   }
 
-  private _getCue(line: string, atomBreakSymbol: string) {
+  private _getCue(block: string, atomBreakSymbol: string) {
+    const line = block.split(/\n/)[0]
     const firstBreak = line.indexOf(atomBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 
-  createParticle(parentParticle: particlesTypes.particle, line: string, index: number, subparticles?: particlesTypes.subparticles): particlesTypes.particle {
+  createParticle(parentParticle: particlesTypes.particle, block: string, index: number): particlesTypes.particle {
     const rootParticle = parentParticle.root
-    if (rootParticle.particleTransformers) [line, subparticles] = rootParticle._transformStrings(line, subparticles)
-    const parser: any = this._getMatchingParser(line, parentParticle, index)
-    return new parser(subparticles, line, parentParticle, index)
+    if (rootParticle.particleTransformers) block = rootParticle._transformStrings(block)
+    const parser: any = this._getMatchingParser(block, parentParticle, index)
+    const { particleBreakSymbol } = parentParticle
+    const lines = block.split(particleBreakSymbol)
+    const subparticles = lines
+      .slice(1)
+      .map(line => line.substr(1))
+      .join(particleBreakSymbol)
+    return new parser(subparticles, lines[0], parentParticle, index)
   }
 }
 
@@ -171,11 +179,11 @@ class Particle extends AbstractParticle {
   particleTransformers?: particlesTypes.particleTransformer[]
 
   // todo: perhaps if needed in the future we can add more contextual params here
-  _transformStrings(line: string, subparticles?: particlesTypes.subparticles) {
+  _transformStrings(block: string) {
     this.particleTransformers.forEach(fn => {
-      ;[line, subparticles] = fn(line, subparticles)
+      block = fn(block)
     })
-    return [line, subparticles]
+    return block
   }
 
   addTransformer(fn: particlesTypes.particleTransformer) {
@@ -351,6 +359,10 @@ class Particle extends AbstractParticle {
 
   toString(indentCount = 0, language = this): string {
     if (this.isRoot()) return this._subparticlesToString(indentCount, language)
+    return this._toStringWithLine(indentCount, language)
+  }
+
+  _toStringWithLine(indentCount = 0, language = this): string {
     return language.edgeSymbol.repeat(indentCount) + this.getLine(language) + (this.length ? language.particleBreakSymbol + this._subparticlesToString(indentCount + 1, language) : "")
   }
 
@@ -1597,7 +1609,7 @@ class Particle extends AbstractParticle {
   }
 
   copyTo(particle: Particle, index: int) {
-    return particle._insertLineAndSubparticles(this.getLine(), this.subparticlesToString(), index)
+    return particle._insertBlock(this.toString(), index)
   }
 
   // Note: Splits using a positive lookahead
@@ -1694,7 +1706,7 @@ class Particle extends AbstractParticle {
 
     // set from particle
     if (content instanceof Particle) {
-      content.forEach(particle => this._insertLineAndSubparticles(particle.getLine(), particle.subparticlesToString()))
+      content.forEach(particle => this._insertBlock(particle.toString()))
       return this
     }
 
@@ -1740,12 +1752,12 @@ class Particle extends AbstractParticle {
       // iirc this is return early from circular
       return
     }
-    this._insertLineAndSubparticles(line, subparticles)
+    this._insertBlock(this._makeBlock(line, subparticles))
   }
 
-  protected _insertLineAndSubparticles(line: string, subparticles?: particlesTypes.subparticles, index = this.length) {
+  protected _insertBlock(block: string, index = this.length) {
     const adjustedIndex = index < 0 ? this.length + index : index
-    const newParticle = this._getParserPool().createParticle(this, line, index, subparticles)
+    const newParticle = this._getParserPool().createParticle(this, block, index)
     if (this._cueIndex) this._makeCueIndex(adjustedIndex)
     this.clearQuickCache()
     return newParticle
@@ -1772,12 +1784,7 @@ class Particle extends AbstractParticle {
     const blocks = str.split(regex)
     const parserPool = this._getParserPool()
     const startIndex = this._getSubparticlesArray().length
-    blocks.forEach((block, index) => {
-      const lines = block.split(particleBreakSymbol)
-      const firstLine = lines.shift()
-      const subs = lines.map(line => line.substr(1)).join(particleBreakSymbol)
-      parserPool.createParticle(this, firstLine, startIndex + index, subs)
-    })
+    blocks.forEach((block, index) => parserPool.createParticle(this, block, startIndex + index))
   }
 
   protected _getCueIndex() {
@@ -2253,7 +2260,7 @@ class Particle extends AbstractParticle {
   }
 
   duplicate() {
-    return this.parent._insertLineAndSubparticles(this.getLine(), this.subparticlesToString(), this.index + 1)
+    return this.parent._insertBlock(this.toString(), this.index + 1)
   }
 
   trim() {
@@ -2297,7 +2304,7 @@ class Particle extends AbstractParticle {
 
   // todo: throw error if line contains a \n
   appendLine(line: string) {
-    return this._insertLineAndSubparticles(line)
+    return this._insertBlock(line)
   }
 
   appendUniqueLine(line: string) {
@@ -2306,7 +2313,13 @@ class Particle extends AbstractParticle {
   }
 
   appendLineAndSubparticles(line: string, subparticles: particlesTypes.subparticles) {
-    return this._insertLineAndSubparticles(line, subparticles)
+    return this._insertBlock(this._makeBlock(line, subparticles))
+  }
+
+  _makeBlock(line: string, subparticles: particlesTypes.subparticles) {
+    if (subparticles === undefined) return line
+    const particle = new Particle(subparticles, line)
+    return particle._toStringWithLine()
   }
 
   getParticlesByRegex(regex: RegExp | RegExp[]) {
@@ -2340,7 +2353,7 @@ class Particle extends AbstractParticle {
 
   concat(particle: string | Particle) {
     if (typeof particle === "string") particle = new Particle(particle)
-    return particle.map(particle => this._insertLineAndSubparticles(particle.getLine(), particle.subparticlesToString()))
+    return particle.map(particle => this._insertBlock(particle.toString()))
   }
 
   protected _deleteByIndexes(indexesToDelete: int[]) {
@@ -2457,16 +2470,15 @@ class Particle extends AbstractParticle {
   }
 
   insertLineAndSubparticles(line: string, subparticles: particlesTypes.subparticles, index: int) {
-    return this._insertLineAndSubparticles(line, subparticles, index)
+    return this._insertBlock(this._makeBlock(line, subparticles), index)
   }
 
   insertLine(line: string, index: int) {
-    return this._insertLineAndSubparticles(line, undefined, index)
+    return this._insertBlock(line, index)
   }
 
   insertSection(lines: string, index: int) {
-    const particle = new Particle(lines)
-    this._insertLineAndSubparticles(line, subparticles)
+    return this._insertBlock(lines, index)
   }
 
   prependLine(line: string) {
@@ -3134,7 +3146,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "104.0.0"
+  static getVersion = () => "105.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

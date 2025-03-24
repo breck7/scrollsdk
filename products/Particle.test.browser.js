@@ -1929,7 +1929,7 @@ testParticles.createFromArray = equal => {
   // Arrange
   const a = new Particle([1, 2, 3])
   // Assert
-  equal(a.asString, "0 1\n1 2\n2 3")
+  equal(a.asString, "0 1\n1 2\n2 3", "basic array creation")
   // Arrange
   const b = new Particle({
     data: [
@@ -1942,7 +1942,7 @@ testParticles.createFromArray = equal => {
     ]
   })
   // Assert
-  equal(b.asString, "data\n 0\n  charge 1\n 1\n  charge 2")
+  equal(b.asString, "data\n 0\n  charge 1\n 1\n  charge 2", "creation from objects")
 }
 testParticles.createFromObject = equal => {
   // Arrange
@@ -3167,7 +3167,7 @@ testParticles.getBiDirectionalMaps = equal => {
 }
 testParticles.delimitedTests = equal => {
   let base = new Particle(`foo.csv`).particleAt(0)
-  equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n name,age\n Joe,100`)
+  equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n name,age\n Joe,100`, "Add objects works")
   base = new Particle(`foo.csv`).particleAt(0)
   equal(base.setSubparticlesAsDelimited(`person\n name Joe\n age 100`).asString, `foo.csv\n name,age\n Joe,100`)
   let template = `foo.csv\n person\n  name Joe\n  age 100`
@@ -3371,11 +3371,7 @@ testParticles.macros = equal => {
   const program = new Particle()
   const search = "NAME"
   const replacement = "Breck"
-  program.addTransformer((line, subparticles) => {
-    line = line.replace(search, replacement)
-    if (subparticles !== undefined) subparticles = subparticles.replace(search, replacement)
-    return [line, subparticles]
-  })
+  program.addTransformer(block => block.replace(search, replacement))
   program.appendLine("hello NAME")
   equal(program.particleAt(0).content, "Breck", "Macro evaluated")
 }

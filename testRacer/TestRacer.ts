@@ -113,7 +113,7 @@ class TestRacerFile {
   private _testParticles: any
 
   private _filterSkippedTestBlocks() {
-    // _ prefix = run on these tests block
+    // _ prefix = run only these tests block
     // $ prefix = skip this test
 
     const runOnlyTheseTestBlocks = Object.keys(this._testParticles).filter(key => key.startsWith("_"))

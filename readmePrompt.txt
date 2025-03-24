@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 105.0.0 2025-03-24
+🎉 Simpler "block" API for using macros.
+⚠️ BREAKING: (no one should be affected) instead of macros working with `[line, subparticles]` now its just `block: string`
+
 📦 104.0.0 2025-03-24
 🎉 Support for single pass macros
 ⚠️ BREAKING: (no one should be affected) old evalMacros code gone

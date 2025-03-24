@@ -1746,27 +1746,16 @@ class Particle extends AbstractParticle {
   }
 
   protected _appendSubparticlesFromString(str: string) {
-    const { edgeSymbol, particleBreakSymbolRegex } = this
-    const lines = str.split(particleBreakSymbolRegex)
-    const parentStack: Particle[] = []
-    let currentIndentCount = -1
-    let lastParticle: any = this
-    lines.forEach(line => {
-      const indentCount = _getIndentCount(line, edgeSymbol)
-      if (indentCount > currentIndentCount) {
-        currentIndentCount++
-        parentStack.push(lastParticle)
-      } else if (indentCount < currentIndentCount) {
-        // pop things off stack
-        while (indentCount < currentIndentCount) {
-          parentStack.pop()
-          currentIndentCount--
-        }
-      }
-      const parent = parentStack[parentStack.length - 1]
-      const index = parent._getSubparticlesArray().length
-      const lineContent = line.substr(currentIndentCount)
-      lastParticle = parent._getParserPool().createParticle(parent, lineContent, index)
+    const { edgeSymbol, particleBreakSymbol } = this
+    const regex = new RegExp(`\\${particleBreakSymbol}(?!\\${edgeSymbol})`, "g")
+    const blocks = str.split(regex)
+    const parserPool = this._getParserPool()
+    const startIndex = this._getSubparticlesArray().length
+    blocks.forEach((block, index) => {
+      const lines = block.split(particleBreakSymbol)
+      const firstLine = lines.shift()
+      const subs = lines.map(line => line.substr(1)).join(particleBreakSymbol)
+      parserPool.createParticle(this, firstLine, startIndex + index, subs)
     })
   }
 

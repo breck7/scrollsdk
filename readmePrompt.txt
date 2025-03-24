@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 105.1.0 2025-03-24
+🎉 Added support for macros that add multiple blocks
+
 📦 105.0.1 2025-03-24
 🏥 perf: fix async cache race condition in fusion
 

@@ -30,6 +30,11 @@ abstract class AbstractParticleEvent {
   }
 }
 
+function splitBlocks(str: string, edgeSymbol: string, particleBreakSymbol: string) {
+  const regex = new RegExp(`\\${particleBreakSymbol}(?!\\${edgeSymbol})`, "g")
+  return str.split(regex)
+}
+
 function _getIndentCount(str: string, edgeSymbol: string) {
   let level = 0
   const edgeChar = edgeSymbol
@@ -138,9 +143,18 @@ class ParserPool {
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 
-  createParticle(parentParticle: particlesTypes.particle, block: string, index: number): particlesTypes.particle {
+  createParticle(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
     const rootParticle = parentParticle.root
-    if (rootParticle.particleTransformers) block = rootParticle._transformStrings(block)
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+      const newParticles = blocks.map((block, newBlockIndex) => this._createParticle(parentParticle, block, index === undefined ? undefined : index + newBlockIndex))
+      return newParticles[0]
+    } else return this._createParticle(parentParticle, block, index)
+  }
+
+  _createParticle(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
+    index = index === undefined ? parentParticle.length : index
     const parser: any = this._getMatchingParser(block, parentParticle, index)
     const { particleBreakSymbol } = parentParticle
     const lines = block.split(particleBreakSymbol)
@@ -179,7 +193,7 @@ class Particle extends AbstractParticle {
   particleTransformers?: particlesTypes.particleTransformer[]
 
   // todo: perhaps if needed in the future we can add more contextual params here
-  _transformStrings(block: string) {
+  _transformBlock(block: string) {
     this.particleTransformers.forEach(fn => {
       block = fn(block)
     })
@@ -1755,10 +1769,10 @@ class Particle extends AbstractParticle {
     this._insertBlock(this._makeBlock(line, subparticles))
   }
 
-  protected _insertBlock(block: string, index = this.length) {
-    const adjustedIndex = index < 0 ? this.length + index : index
+  protected _insertBlock(block: string, index?: number) {
+    if (index !== undefined) index = index < 0 ? this.length + index : index
     const newParticle = this._getParserPool().createParticle(this, block, index)
-    if (this._cueIndex) this._makeCueIndex(adjustedIndex)
+    if (this._cueIndex) this._makeCueIndex(index)
     this.clearQuickCache()
     return newParticle
   }
@@ -1780,11 +1794,9 @@ class Particle extends AbstractParticle {
 
   protected _appendSubparticlesFromString(str: string) {
     const { edgeSymbol, particleBreakSymbol } = this
-    const regex = new RegExp(`\\${particleBreakSymbol}(?!\\${edgeSymbol})`, "g")
-    const blocks = str.split(regex)
+    const blocks = splitBlocks(str, edgeSymbol, particleBreakSymbol)
     const parserPool = this._getParserPool()
-    const startIndex = this._getSubparticlesArray().length
-    blocks.forEach((block, index) => parserPool.createParticle(this, block, startIndex + index))
+    blocks.forEach((block, index) => parserPool.createParticle(this, block))
   }
 
   protected _getCueIndex() {

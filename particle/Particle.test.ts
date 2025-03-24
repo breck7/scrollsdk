@@ -4092,6 +4092,18 @@ testParticles.macros = equal => {
   program.addTransformer((block: string) => block.replace(search, replacement))
   program.appendLine("hello NAME")
   equal(program.particleAt(0).content, "Breck", "Macro evaluated")
+
+  program.addTransformer((block: string) =>
+    block.replace(
+      "Square",
+      `A multiline
+string`
+    )
+  )
+
+  program.appendLine("Square")
+
+  equal(program.particleAt(0).content, "Breck", "Macro evaluated")
 }
 
 testParticles.wakeTest = equal => {

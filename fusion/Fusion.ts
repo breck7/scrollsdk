@@ -277,9 +277,6 @@ class MemoryWriter implements Storage {
 }
 
 class EmptyScrollParser extends Particle {
-  evalMacros(fusionFile: any) {
-    return fusionFile.fusedCode
-  }
   setFile(fusionFile: any) {
     this.file = fusionFile
   }
@@ -326,14 +323,9 @@ class FusionFile {
       this.fusedFile = fusedFile
     }
     this.fusedCode = fusedCode
-
-    const tempProgram = new defaultParser()
-    // PASS 3: READ AND REPLACE MACROS. PARSE AND REMOVE MACROS DEFINITIONS THEN REPLACE REFERENCES.
-    const codeAfterMacroPass = tempProgram.evalMacros(this)
-    this.codeAfterMacroPass = codeAfterMacroPass
     this.parser = fusedFile?.parser || defaultParser
-    // PASS 4: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(codeAfterMacroPass, filePath)
+    // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
+    this.scrollProgram = new this.parser(fusedCode, filePath)
     this.scrollProgram.setFile(this)
     return this
   }

@@ -137,6 +137,8 @@ class ParserPool {
   }
 
   createParticle(parentParticle: particlesTypes.particle, line: string, index: number, subparticles?: particlesTypes.subparticles): particlesTypes.particle {
+    const rootParticle = parentParticle.root
+    if (rootParticle.particleTransformers) [line, subparticles] = rootParticle._transformStrings(line, subparticles)
     const parser: any = this._getMatchingParser(line, parentParticle, index)
     return new parser(subparticles, line, parentParticle, index)
   }
@@ -163,7 +165,24 @@ class Particle extends AbstractParticle {
   }
 
   wake() {}
+
   execute() {}
+
+  particleTransformers?: particlesTypes.particleTransformer[]
+
+  // todo: perhaps if needed in the future we can add more contextual params here
+  _transformStrings(line: string, subparticles?: particlesTypes.subparticles) {
+    this.particleTransformers.forEach(fn => {
+      ;[line, subparticles] = fn(line, subparticles)
+    })
+    return [line, subparticles]
+  }
+
+  addTransformer(fn: particlesTypes.particleTransformer) {
+    if (!this.particleTransformers) this.particleTransformers = []
+    this.particleTransformers.push(fn)
+    return this
+  }
 
   async loadRequirements(context: any) {
     // todo: remove

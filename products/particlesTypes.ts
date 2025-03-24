@@ -115,6 +115,8 @@ namespace particlesTypes {
   export declare type ParticleProgramParser = Function // A constructor extending AbstractRuntimeParticle
   export declare type particleProgram = particle // A constructor extending AbstractRuntimeParticle
 
+  export declare type particleTransformer = Function // Takes a line and subparticles? and returns [line, subparticles?]
+
   export declare type upgradeFunction = (particle: particle) => particle
   export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
   export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }

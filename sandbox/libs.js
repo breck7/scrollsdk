@@ -3740,7 +3740,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "105.0.0"
+Particle.getVersion = () => "105.0.1"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -6735,9 +6735,9 @@ class Fusion {
       .sort()
       .join("\n")
     const hit = _parserCache[key]
-    if (hit) return hit
-    _parserCache[key] = await this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    return _parserCache[key]
+    if (hit) return await hit
+    _parserCache[key] = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    return await _parserCache[key]
   }
   static combineParsers(filePaths, fileContents, baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/

@@ -3367,6 +3367,37 @@ testParticles.trim = equal => {
   const particle2 = new Particle(testStrings.webpage)
   equal(particle2.length, particle2.trim().length)
 }
+testParticles.macros = equal => {
+  const program = new Particle()
+  const search = "NAME"
+  const replacement = "Breck"
+  program.addTransformer((line, subparticles) => {
+    line = line.replace(search, replacement)
+    if (subparticles !== undefined) subparticles = subparticles.replace(search, replacement)
+    return [line, subparticles]
+  })
+  program.appendLine("hello NAME")
+  equal(program.particleAt(0).content, "Breck", "Macro evaluated")
+}
+testParticles.wakeTest = equal => {
+  // Arrange
+  let str = ""
+  class Foo extends Particle {
+    wake() {
+      str += this.cue
+    }
+  }
+  // Act
+  const particle = new Foo(`c
+ b
+  a
+d
+e
+g
+ f`)
+  // Assert
+  equal(str, "abcdefg")
+}
 testParticles.queryMethods = equal => {
   // Arrange
   const particle = Particle.fromCsv(Particle.iris)

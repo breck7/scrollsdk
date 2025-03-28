@@ -178,6 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 106.0.0 2025-03-28
+⚠️ BREAKING: renamed Fusion to ScrollFileSystem and FusionFile to ScrollFile.
+⚠️ BREAKING: Simplified implementation of what was formerly called Fusion.
+
 📦 105.1.0 2025-03-24
 🎉 Added support for macros that add multiple blocks
 
@@ -2262,9 +2266,9 @@ nodeProduct
  insertLastLine module.exports = {Utils}
  combineTypeScriptFiles utils/Utils.ts
 nodeProduct
- outputFileName Fusion.js
- insertLastLine module.exports = {Fusion, FusionFile}
- combineTypeScriptFiles fusion/Fusion.ts
+ outputFileName ScrollFileSystem.js
+ insertLastLine module.exports = {ScrollFileSystem, ScrollFile}
+ combineTypeScriptFiles scrollFileSystem/ScrollFileSystem.ts
 nodeProduct
  outputFileName Kitchen.node.js
  combineTypeScriptFiles products/particlesTypes.ts kitchen/Kitchen.node.ts
@@ -2292,8 +2296,8 @@ browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
 browserProduct
- outputFileName Fusion.browser.js
- combineTypeScriptFiles fusion/Fusion.ts
+ outputFileName ScrollFileSystem.browser.js
+ combineTypeScriptFiles scrollFileSystem/ScrollFileSystem.ts
 browserProduct
  outputFileName Particle.browser.js
  removeAll window.particlesTypes = particlesTypes

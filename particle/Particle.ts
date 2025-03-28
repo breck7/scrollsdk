@@ -190,6 +190,11 @@ class Particle extends AbstractParticle {
 
   execute() {}
 
+  // If you want to link a particle to a file on the filesystem.
+  setFile(file: File) {
+    this.file = file
+  }
+
   particleTransformers?: particlesTypes.particleTransformer[]
 
   // todo: perhaps if needed in the future we can add more contextual params here
@@ -3158,7 +3163,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "105.1.0"
+  static getVersion = () => "106.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

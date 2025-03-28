@@ -4,6 +4,8 @@ namespace particlesTypes {
     y: int
   }
 
+  export interface File {}
+
   export interface atomBoundary {
     lineIndex: int
     charIndex: int

@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 const { Particle } = require("../products/Particle.js")
-const { Fusion, FusionFile } = require("../products/Fusion.js")
+const { ScrollFileSystem, ScrollFile } = require("../products/ScrollFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
 import { particlesTypes } from "../products/particlesTypes"
@@ -8,7 +8,7 @@ import { particlesTypes } from "../products/particlesTypes"
 const testParticles: particlesTypes.testParticles = {}
 
 testParticles.disk = async equal => {
-  const tfs = new Fusion()
+  const tfs = new ScrollFileSystem()
   // Arrange/Act/Assert
   const result = await tfs.fuseFile(path.join(__dirname, "..", "readme.scroll"))
   equal(result.fused.length > 0, true)
@@ -28,7 +28,7 @@ testParticles.inMemory = async equal => {
     "/nested/test": "ciao",
     "/nested/deep/relative": "import ../../hello\nimport ../test"
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   equal(tfs.dirname("/"), "/")
   const mainResult = await tfs.fuseFile("/main")
   equal(stripImported(mainResult.fused), "world\nciao")
@@ -38,28 +38,13 @@ testParticles.inMemory = async equal => {
   equal(mainResult.exists, true)
 }
 
-testParticles.sourceMaps = async equal => {
-  // Arrange
-  const files = {
-    "/hello": "world",
-    "/main": "hello\nimport hello"
-  }
-  const tfs = new Fusion(files)
-  // Act
-  const mainResult = await tfs.fuseFile("/main")
-  const sourceMap = tfs.makeSourceMap("/main", mainResult.fused)
-  // Assert
-  equal(sourceMap.includes(`/hello:1 world`), true)
-  equal(sourceMap.includes(`/main:1 hello`), true)
-}
-
 testParticles.empty = async equal => {
   // Arrange
   const files = {
     "/hello": "",
     "/main": "import hello\nhi"
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   // Act
   const mainResult = await tfs.fuseFile("/main")
   // Assert
@@ -71,7 +56,7 @@ testParticles.nonExistant = async equal => {
   const files = {
     "/main": "import env"
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   const result = await tfs.fuseFile("/main")
   equal(stripImported(result.fused), "")
   equal(result.exists, false)
@@ -88,7 +73,7 @@ This is my content
     "/header.scroll": "printTitle",
     "/footer.scroll": "The end."
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   const result = await tfs.fuseFile("/hello.scroll")
   equal(result.fused.includes("This is my content"), true)
   equal(result.fused.includes("The end"), false)
@@ -105,7 +90,7 @@ testParticles.circularImports = async equal => {
     "/f.scroll": "g.scroll",
     "/g.scroll": ""
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   const result2 = await tfs.fuseFile("/c.scroll")
   equal(result2.fused.includes("Circular import detected"), true, "Should have detected circularImports")
   const result = await tfs.fuseFile("/a.scroll")
@@ -123,7 +108,7 @@ testParticles.quickImports = async equal => {
     "/nested/a": "test.scroll",
     "/nested/deep/relative": "../../hello.scroll\n../test.scroll"
   }
-  const tfs = new Fusion(files)
+  const tfs = new ScrollFileSystem(files)
   equal(tfs.dirname("/"), "/")
 
   const [aResult, mainResult, relativeResult] = await Promise.all([tfs.fuseFile("/nested/a"), tfs.fuseFile("/main"), tfs.fuseFile("/nested/deep/relative")])
@@ -134,7 +119,7 @@ testParticles.quickImports = async equal => {
 
   // FileAPI
   // Arrange
-  const file = new FusionFile(files["/main"], "/main", tfs)
+  const file = new ScrollFile(files["/main"], "/main", tfs)
   equal(file.fusedCode, undefined)
   // Act
   await file.fuse()

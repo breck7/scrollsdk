@@ -31,9 +31,9 @@ nodeProduct
  insertLastLine module.exports = {Utils}
  combineTypeScriptFiles utils/Utils.ts
 nodeProduct
- outputFileName Fusion.js
- insertLastLine module.exports = {Fusion, FusionFile}
- combineTypeScriptFiles fusion/Fusion.ts
+ outputFileName ScrollFileSystem.js
+ insertLastLine module.exports = {ScrollFileSystem, ScrollFile}
+ combineTypeScriptFiles scrollFileSystem/ScrollFileSystem.ts
 nodeProduct
  outputFileName Kitchen.node.js
  combineTypeScriptFiles products/particlesTypes.ts kitchen/Kitchen.node.ts
@@ -61,8 +61,8 @@ browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
 browserProduct
- outputFileName Fusion.browser.js
- combineTypeScriptFiles fusion/Fusion.ts
+ outputFileName ScrollFileSystem.browser.js
+ combineTypeScriptFiles scrollFileSystem/ScrollFileSystem.ts
 browserProduct
  outputFileName Particle.browser.js
  removeAll window.particlesTypes = particlesTypes

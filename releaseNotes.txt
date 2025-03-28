@@ -7,6 +7,11 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+106.0.0 2025-03-28
+==================
+⚠️ BREAKING: renamed Fusion to ScrollFileSystem and FusionFile to ScrollFile.
+⚠️ BREAKING: Simplified implementation of what was formerly called Fusion.
+
 105.1.0 2025-03-24
 ==================
 🎉 Added support for macros that add multiple blocks

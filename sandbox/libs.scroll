@@ -3,7 +3,7 @@ inlineJs
  ../products/Utils.browser.js
  ../products/Particle.browser.js
  ../products/Parsers.ts.browser.js
- ../products/Fusion.browser.js
+ ../products/ScrollFileSystem.browser.js
  ../products/stump.browser.js
  ../products/hakon.browser.js
  ../products/ParticleComponentFramework.browser.js

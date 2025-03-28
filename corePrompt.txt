@@ -4180,6 +4180,11 @@ stamp
   
     execute() {}
   
+    // If you want to link a particle to a file on the filesystem.
+    setFile(file: File) {
+      this.file = file
+    }
+  
     particleTransformers?: particlesTypes.particleTransformer[]
   
     // todo: perhaps if needed in the future we can add more contextual params here
@@ -6763,7 +6768,7 @@ stamp
       if (hasHeaders) {
         // Strip any AtomBreakSymbols from column names in the header row.
         // This makes the mapping not quite 1 to 1 if there are any AtomBreakSymbols in names.
-        for (let index = 0; index  "105.1.0"
+        for (let index = 0; index  "106.0.0"
   
     static fromDisk(path: string): Particle {
       const format = this._getFileFormat(path)
@@ -11618,10 +11623,10 @@ stamp
   See the folder `langs/parsers/` for documentation on Parsers.
 
 stamp
- Fusion.test.ts
+ ScrollFileSystem.test.ts
   #!/usr/bin/env ts-node
   const { Particle } = require("../products/Particle.js")
-  const { Fusion, FusionFile } = require("../products/Fusion.js")
+  const { ScrollFileSystem, ScrollFile } = require("../products/ScrollFileSystem.js")
   const { TestRacer } = require("../products/TestRacer.js")
   const path = require("path")
   import { particlesTypes } from "../products/particlesTypes"
@@ -11629,7 +11634,7 @@ stamp
   const testParticles: particlesTypes.testParticles = {}
   
   testParticles.disk = async equal => {
-    const tfs = new Fusion()
+    const tfs = new ScrollFileSystem()
     // Arrange/Act/Assert
     const result = await tfs.fuseFile(path.join(__dirname, "..", "readme.scroll"))
     equal(result.fused.length > 0, true)
@@ -11649,7 +11654,7 @@ stamp
       "/nested/test": "ciao",
       "/nested/deep/relative": "import ../../hello\nimport ../test"
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     equal(tfs.dirname("/"), "/")
     const mainResult = await tfs.fuseFile("/main")
     equal(stripImported(mainResult.fused), "world\nciao")
@@ -11659,28 +11664,13 @@ stamp
     equal(mainResult.exists, true)
   }
   
-  testParticles.sourceMaps = async equal => {
-    // Arrange
-    const files = {
-      "/hello": "world",
-      "/main": "hello\nimport hello"
-    }
-    const tfs = new Fusion(files)
-    // Act
-    const mainResult = await tfs.fuseFile("/main")
-    const sourceMap = tfs.makeSourceMap("/main", mainResult.fused)
-    // Assert
-    equal(sourceMap.includes(`/hello:1 world`), true)
-    equal(sourceMap.includes(`/main:1 hello`), true)
-  }
-  
   testParticles.empty = async equal => {
     // Arrange
     const files = {
       "/hello": "",
       "/main": "import hello\nhi"
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     // Act
     const mainResult = await tfs.fuseFile("/main")
     // Assert
@@ -11692,7 +11682,7 @@ stamp
     const files = {
       "/main": "import env"
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     const result = await tfs.fuseFile("/main")
     equal(stripImported(result.fused), "")
     equal(result.exists, false)
@@ -11709,7 +11699,7 @@ stamp
       "/header.scroll": "printTitle",
       "/footer.scroll": "The end."
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     const result = await tfs.fuseFile("/hello.scroll")
     equal(result.fused.includes("This is my content"), true)
     equal(result.fused.includes("The end"), false)
@@ -11726,7 +11716,7 @@ stamp
       "/f.scroll": "g.scroll",
       "/g.scroll": ""
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     const result2 = await tfs.fuseFile("/c.scroll")
     equal(result2.fused.includes("Circular import detected"), true, "Should have detected circularImports")
     const result = await tfs.fuseFile("/a.scroll")
@@ -11744,7 +11734,7 @@ stamp
       "/nested/a": "test.scroll",
       "/nested/deep/relative": "../../hello.scroll\n../test.scroll"
     }
-    const tfs = new Fusion(files)
+    const tfs = new ScrollFileSystem(files)
     equal(tfs.dirname("/"), "/")
   
     const [aResult, mainResult, relativeResult] = await Promise.all([tfs.fuseFile("/nested/a"), tfs.fuseFile("/main"), tfs.fuseFile("/nested/deep/relative")])
@@ -11755,7 +11745,7 @@ stamp
   
     // FileAPI
     // Arrange
-    const file = new FusionFile(files["/main"], "/main", tfs)
+    const file = new ScrollFile(files["/main"], "/main", tfs)
     equal(file.fusedCode, undefined)
     // Act
     await file.fuse()
@@ -11773,8 +11763,8 @@ stamp
   
   export { testParticles }
   
- Fusion.ts
-  // todo: as much as we can, remove Fusion and move these capabilities into the root Particle class.
+ ScrollFileSystem.ts
+  // todo: as much as we can, remove ScrollFileSystem and move these capabilities into the root Particle class.
   const fs = require("fs").promises
   const path = require("path")
   
@@ -12052,14 +12042,8 @@ stamp
     }
   }
   
-  class EmptyScrollParser extends Particle {
-    setFile(fusionFile: any) {
-      this.file = fusionFile
-    }
-  }
-  
-  class FusionFile {
-    constructor(codeAtStart: string, absoluteFilePath = "", fileSystem = new Fusion({})) {
+  class ScrollFile {
+    constructor(codeAtStart: string, absoluteFilePath = "", fileSystem = new ScrollFileSystem({})) {
       this.fileSystem = fileSystem
       this.filePath = absoluteFilePath
       this.codeAtStart = codeAtStart
@@ -12118,15 +12102,53 @@ stamp
     }
   
     defaultParserCode = ""
-    defaultParser = EmptyScrollParser
+    defaultParser = Particle
   }
-  let fusionIdNumber = 0
-  class Fusion implements Storage {
-    constructor(inMemoryFiles: particlesTypes.diskMap) {
+  let scrollFileSystemIdNumber = 0
+  const parserCache: any = {}
+  class ScrollFileSystem implements Storage {
+    constructor(inMemoryFiles: particlesTypes.diskMap, standardParserDirectory?: string) {
       if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
       else this._storage = new DiskWriter()
-      fusionIdNumber = fusionIdNumber + 1
-      this.fusionId = fusionIdNumber
+      scrollFileSystemIdNumber = scrollFileSystemIdNumber + 1
+      this.scrollFileSystemIdNumber = scrollFileSystemIdNumber
+      this.defaultFileClass = ScrollFile
+      this.standardParserDirectory = standardParserDirectory
+      if (standardParserDirectory) this._loadDefaultParser()
+    }
+  
+    standardParserDirectory?: string
+  
+    _loadDefaultParser() {
+      const { standardParserDirectory } = this
+      const cacheHit = parserCache[standardParserDirectory]
+      if (cacheHit) {
+        this.defaultParser = cacheHit.defaultParser
+        this.defaultFileClass = cacheHit.defaultFileClass
+        return this
+      }
+  
+      const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
+      this._setDefaultParser(
+        standardParserDirectory,
+        defaultParserFiles,
+        defaultParserFiles.map(filePath => Disk.read(filePath))
+      )
+      return this
+    }
+  
+    _setDefaultParser(standardParserDirectory: string, defaultParserFiles: string[], contents: string[]) {
+      const defaultParser = ScrollFileSystem.combineParsers(defaultParserFiles, contents)
+      parserCache[standardParserDirectory] = {
+        defaultParser,
+        defaultFileClass: class extends ScrollFile {
+          defaultParserCode = defaultParser.parsersCode
+          defaultParser = defaultParser.parser
+        }
+      }
+  
+      this.defaultParser = parserCache[standardParserDirectory].defaultParser
+      this.defaultFileClass = parserCache[standardParserDirectory].defaultFileClass
     }
   
     async read(absolutePath: particlesTypes.filepath) {
@@ -12331,7 +12353,13 @@ stamp
   
     private async _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
       const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
-      return Fusion.combineParsers(filePaths, fileContents, baseParsersCode)
+      return ScrollFileSystem.combineParsers(filePaths, fileContents, baseParsersCode)
+    }
+  
+    clearParserCache(filename: string) {
+      delete this._pendingFuseRequests[filename]
+      delete this._parsersExpandersCache[filename] // todo: cleanup
+      delete this._parserCache[filename]
     }
   
     async getParser(filePaths: string[], baseParsersCode = "") {
@@ -12389,7 +12417,6 @@ stamp
       return fusedFile
     }
   
-    defaultFileClass = FusionFile
     async getLoadedFile(filePath) {
       return await this._getLoadedFile(filePath, this.defaultFileClass)
     }
@@ -12406,37 +12433,8 @@ stamp
     getCachedLoadedFilesInFolder(folderPath, requester) {
       folderPath = Utils.ensureFolderEndsInSlash(folderPath)
       const hit = this.folderCache[folderPath]
-      if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.fusionId}'. Requested by '${requester.filePath}'`)
+      if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.scrollFileSystemIdNumber}'. Requested by '${requester.filePath}'`)
       return hit || []
-    }
-  
-    makeSourceMap(fileName: string, fusedCode: string) {
-      const fileStack = [{ fileName, lineNumber: 0, linesLeft: fusedCode.split("\n").length }]
-      return new Particle(fusedCode)
-        .map(particle => {
-          const currentFile = fileStack[fileStack.length - 1]
-          currentFile.lineNumber++
-          currentFile.linesLeft--
-          if (particle.cue === "imported") {
-            const linesLeft = parseInt(particle.get("lines"))
-            const original = particle.get("original")
-            fileStack.push({ fileName: particle.atoms[1], lineNumber: 0, linesLeft })
-            return `${currentFile.fileName}:${currentFile.lineNumber} ${original}\n` + particle.map(line => `${currentFile.fileName}:${currentFile.lineNumber}  ${line}`).join("\n")
-          }
-          if (!currentFile.linesLeft) fileStack.pop()
-          return particle
-            .toString()
-            .split("\n")
-            .map((line, index) => {
-              if (index) {
-                currentFile.lineNumber++
-                currentFile.linesLeft--
-              }
-              return `${currentFile.fileName}:${currentFile.lineNumber} ${line}`
-            })
-            .join("\n")
-        })
-        .join("\n")
     }
   
     folderCache = {}
@@ -12453,105 +12451,14 @@ stamp
     }
   }
   
-  export { Fusion, FusionFile }
-  
- perf.js
-  #!/usr/bin/env node
-  
-  /*
-  This file contains a simple set of perf tests that can be run manually to keep fusion perf in check.
-  */
-  
-  // rm perf.cpuprofile; rm perf.heapprofile; node --cpu-prof --cpu-prof-name=perf.cpuprofile --heap-prof --heap-prof-name=perf.heapprofile perf.js
-  
-  const fs = require("fs")
-  const path = require("path")
-  const { Utils } = require("../products/Utils.js")
-  const { Timer } = Utils
-  const { Particle } = require("../products/Particle.js")
-  const { Fusion } = require("../products/Fusion.js")
-  const { ScrollFile } = require("scroll-cli")
-  
-  class PerfTest {
-    constructor(folderPath) {
-      this.folderPath = folderPath
-      this.timer = new Timer()
-      this.files = []
-      this.simpleStrings = []
-      this.particles = []
-      this.fusedFiles = []
-      this.scrollFiles = []
-    }
-  
-    gatherFiles() {
-      this.files = fs
-        .readdirSync(this.folderPath)
-        .filter(file => file.endsWith(".scroll"))
-        .map(file => path.join(this.folderPath, file))
-      console.log(`Found ${this.files.length} .scroll files`)
-      this.tick("Finding files")
-      return this
-    }
-  
-    readToStrings() {
-      this.simpleStrings = this.files.map(file => fs.readFileSync(file, "utf8"))
-      this.tick("Reading files to strings")
-      return this
-    }
-  
-    parseToParticles() {
-      this.particles = this.simpleStrings.map(str => new Particle(str))
-      this.tick("Parsing to Particles")
-      return this
-    }
-  
-    async fuseFiles() {
-      const fusion = new Fusion()
-      this.fusedFiles = await Promise.all(this.files.map(file => fusion.fuseFile(file)))
-      this.tick("Fusing files")
-      return this
-    }
-  
-    parseAsScroll() {
-      this.scrollFiles = this.simpleStrings.map(str => new ScrollFile(str))
-      this.tick("Parsing as Scroll")
-      return this
-    }
-  
-    tick(message) {
-      this.printMemoryUsage()
-      console.log("")
-      this.timer.tick(message)
-      console.log("----------")
-    }
-  
-    printMemoryUsage() {
-      const used = process.memoryUsage()
-      console.log("\nMemory Usage:")
-      for (let key in used) {
-        console.log(`${key}: ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`)
-      }
-    }
-  
-    async runAll() {
-      this.tick("Starting performance tests...\n")
-      this.gatherFiles().readToStrings().parseToParticles()
-      await this.fuseFiles()
-      this.parseAsScroll()
-    }
-  }
-  
-  // Run the tests
-  const dir = "/Users/breck/pldb.io/concepts"
-  const perfTest = new PerfTest(dir)
-  perfTest.runAll().catch(console.error)
+  export { ScrollFileSystem, ScrollFile }
   
  readme.scroll
-  # Fusion
+  # ScrollFileSystem
   
-  Extends Particles with URL imports.
+  Allows Scroll to have URL imports.
   
-  Fusion _fuses_ files together.
+  Currently contains the import code logic that "fuses" files together (but that is moving toward Scroll and Particles)
 
 stamp
  Utils.swarm

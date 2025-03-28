@@ -286,6 +286,9 @@ class ScrollFile {
     this.importOnly = false
   }
 
+  defaultParserCode = ""
+  defaultParser = Particle
+
   async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
     const { filePath } = this
@@ -322,9 +325,6 @@ class ScrollFile {
     this.scrollProgram.setFile(this)
     return this
   }
-
-  defaultParserCode = ""
-  defaultParser = Particle
 }
 let scrollFileSystemIdNumber = 0
 const parserCache: any = {}

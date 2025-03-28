@@ -424,18 +424,8 @@ class ScrollFileSystem implements Storage {
   }
 
   private _storage: Storage
-  private _particleCache: { [filepath: string]: typeof Particle } = {}
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
-
-  private async _getFileAsParticles(absoluteFilePathOrUrl: string) {
-    const { _particleCache } = this
-    if (_particleCache[absoluteFilePathOrUrl] === undefined) {
-      const content = await this._storage.read(absoluteFilePathOrUrl)
-      _particleCache[absoluteFilePathOrUrl] = new Particle(content)
-    }
-    return _particleCache[absoluteFilePathOrUrl]
-  }
 
   getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)

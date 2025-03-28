@@ -1,0 +1,7 @@
+# ScrollFileSystem
+
+Allows Scroll to have URL imports.
+
+Currently contains the import code logic that "fuses" files together (but that is moving toward Scroll and Particles)
+
+

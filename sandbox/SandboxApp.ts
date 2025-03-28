@@ -2,7 +2,7 @@
 
 const { AbstractParticleComponentParser, ParticleComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/ParticleComponentFramework.node.js")
 const { Particle } = require("../products/Particle.js")
-const { Fusion, FusionFile } = require("../products/Fusion.js")
+const { ScrollFileSystem, ScrollFile } = require("../products/ScrollFileSystem.js")
 
 // Todo: add inputs at the top to change the edge, particle, and atom delimiters.
 
@@ -81,7 +81,7 @@ githubTriangleComponent`)
     if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", particle.asTable)
     if (eventSource !== "sExpressionConsole") willowBrowser.setValueOfElementWithIdHack("sExpressionConsole", particle.asSExpression)
     if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", particle.asHtmlCube)
-    if (eventSource !== "fusionConsole") this.updateFusion(particle)
+    if (eventSource !== "scrollFileSystemConsole") this.updateScrollFileSystem(particle)
     if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", particle.asYaml)
 
     let win = <any>window
@@ -91,7 +91,7 @@ githubTriangleComponent`)
   }
 
   fused: any
-  async updateFusion(particle: any) {
+  async updateScrollFileSystem(particle: any) {
     const { willowBrowser } = this
     const files = {
       "/hello.scroll": `headerAndFooter.scroll
@@ -105,11 +105,11 @@ This is my content
       "/footer.scroll": "The end.",
       "/main": particle.toString()
     }
-    const fs = new Fusion(files)
-    const file = new FusionFile(particle.toString(), "/main", fs)
+    const fs = new ScrollFileSystem(files)
+    const file = new ScrollFile(particle.toString(), "/main", fs)
     await file.fuse()
     this.file = file
-    willowBrowser.setHtmlOfElementWithIdHack("fusionConsole", file.fusedCode)
+    willowBrowser.setHtmlOfElementWithIdHack("scrollFileSystemConsole", file.fusedCode)
   }
 
   async particleComponentDidMount() {
@@ -336,9 +336,9 @@ class tableComponent extends AbstractParticleComponentParser {
    textarea
     id sExpressionConsole
   td
-   div Fusion
+   div ScrollFileSystem
    pre
-    id fusionConsole
+    id scrollFileSystemConsole
  tr
   td
    div asHtmlCube

@@ -190,6 +190,11 @@ class Particle extends AbstractParticle {
 
   execute() {}
 
+  // If you want to link a particle to a file on the filesystem.
+  setFile(file: File) {
+    this.file = file
+  }
+
   particleTransformers?: particlesTypes.particleTransformer[]
 
   // todo: perhaps if needed in the future we can add more contextual params here

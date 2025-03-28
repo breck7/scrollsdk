@@ -155,6 +155,10 @@ class Particle extends AbstractParticle {
   }
   wake() {}
   execute() {}
+  // If you want to link a particle to a file on the filesystem.
+  setFile(file) {
+    this.file = file
+  }
   // todo: perhaps if needed in the future we can add more contextual params here
   _transformBlock(block) {
     this.particleTransformers.forEach(fn => {

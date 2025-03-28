@@ -276,12 +276,6 @@ class MemoryWriter implements Storage {
   }
 }
 
-class EmptyScrollParser extends Particle {
-  setFile(fusionFile: any) {
-    this.file = fusionFile
-  }
-}
-
 class FusionFile {
   constructor(codeAtStart: string, absoluteFilePath = "", fileSystem = new Fusion({})) {
     this.fileSystem = fileSystem
@@ -342,7 +336,7 @@ class FusionFile {
   }
 
   defaultParserCode = ""
-  defaultParser = EmptyScrollParser
+  defaultParser = Particle
 }
 let fusionIdNumber = 0
 class Fusion implements Storage {
@@ -632,35 +626,6 @@ class Fusion implements Storage {
     const hit = this.folderCache[folderPath]
     if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.fusionId}'. Requested by '${requester.filePath}'`)
     return hit || []
-  }
-
-  makeSourceMap(fileName: string, fusedCode: string) {
-    const fileStack = [{ fileName, lineNumber: 0, linesLeft: fusedCode.split("\n").length }]
-    return new Particle(fusedCode)
-      .map(particle => {
-        const currentFile = fileStack[fileStack.length - 1]
-        currentFile.lineNumber++
-        currentFile.linesLeft--
-        if (particle.cue === "imported") {
-          const linesLeft = parseInt(particle.get("lines"))
-          const original = particle.get("original")
-          fileStack.push({ fileName: particle.atoms[1], lineNumber: 0, linesLeft })
-          return `${currentFile.fileName}:${currentFile.lineNumber} ${original}\n` + particle.map(line => `${currentFile.fileName}:${currentFile.lineNumber}  ${line}`).join("\n")
-        }
-        if (!currentFile.linesLeft) fileStack.pop()
-        return particle
-          .toString()
-          .split("\n")
-          .map((line, index) => {
-            if (index) {
-              currentFile.lineNumber++
-              currentFile.linesLeft--
-            }
-            return `${currentFile.fileName}:${currentFile.lineNumber} ${line}`
-          })
-          .join("\n")
-      })
-      .join("\n")
   }
 
   folderCache = {}

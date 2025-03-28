@@ -213,15 +213,10 @@ class MemoryWriter {
     return Utils.posix.join(...segments)
   }
 }
-class EmptyScrollParser extends Particle {
-  setFile(fusionFile) {
-    this.file = fusionFile
-  }
-}
 class FusionFile {
   constructor(codeAtStart, absoluteFilePath = "", fileSystem = new Fusion({})) {
     this.defaultParserCode = ""
-    this.defaultParser = EmptyScrollParser
+    this.defaultParser = Particle
     this.fileSystem = fileSystem
     this.filePath = absoluteFilePath
     this.codeAtStart = codeAtStart
@@ -516,34 +511,6 @@ class Fusion {
     const hit = this.folderCache[folderPath]
     if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.fusionId}'. Requested by '${requester.filePath}'`)
     return hit || []
-  }
-  makeSourceMap(fileName, fusedCode) {
-    const fileStack = [{ fileName, lineNumber: 0, linesLeft: fusedCode.split("\n").length }]
-    return new Particle(fusedCode)
-      .map(particle => {
-        const currentFile = fileStack[fileStack.length - 1]
-        currentFile.lineNumber++
-        currentFile.linesLeft--
-        if (particle.cue === "imported") {
-          const linesLeft = parseInt(particle.get("lines"))
-          const original = particle.get("original")
-          fileStack.push({ fileName: particle.atoms[1], lineNumber: 0, linesLeft })
-          return `${currentFile.fileName}:${currentFile.lineNumber} ${original}\n` + particle.map(line => `${currentFile.fileName}:${currentFile.lineNumber}  ${line}`).join("\n")
-        }
-        if (!currentFile.linesLeft) fileStack.pop()
-        return particle
-          .toString()
-          .split("\n")
-          .map((line, index) => {
-            if (index) {
-              currentFile.lineNumber++
-              currentFile.linesLeft--
-            }
-            return `${currentFile.fileName}:${currentFile.lineNumber} ${line}`
-          })
-          .join("\n")
-      })
-      .join("\n")
   }
   // todo: this is weird. i know we evolved our way here but we should step back and clean this up.
   async getLoadedFilesInFolder(folderPath, extension) {

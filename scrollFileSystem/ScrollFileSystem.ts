@@ -286,7 +286,7 @@ class ScrollFile {
     this.importOnly = false
   }
 
-  async readCodeFromStorage() {
+  async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
     const { filePath } = this
     if (!filePath) {
@@ -296,13 +296,12 @@ class ScrollFile {
     this.codeAtStart = await this.fileSystem.read(filePath)
   }
 
-  get isFused() {
-    return this.fusedCode !== undefined
-  }
-
   async fuse() {
     // PASS 1: READ FULL FILE
-    await this.readCodeFromStorage()
+    await this._readCodeFromStorage()
+
+    // todo: single pass.
+
     const { codeAtStart, fileSystem, filePath, defaultParserCode, defaultParser } = this
     // PASS 2: READ AND REPLACE IMPORTs
     let fusedCode = codeAtStart
@@ -322,17 +321,6 @@ class ScrollFile {
     this.scrollProgram = new this.parser(fusedCode, filePath)
     this.scrollProgram.setFile(this)
     return this
-  }
-
-  get formatted() {
-    return this.codeAtStart
-  }
-
-  async formatAndSave() {
-    const { codeAtStart, formatted } = this
-    if (codeAtStart === formatted) return false
-    await this.fileSystem.write(this.filePath, formatted)
-    return true
   }
 
   defaultParserCode = ""

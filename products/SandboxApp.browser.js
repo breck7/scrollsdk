@@ -187,7 +187,7 @@ class headerComponent extends AbstractParticleComponentParser {
     return `div
  h1
   a
-   href https://notation.scroll.pub
+   href https://particles.scroll.pub
    style text-decoration: none;
    img
     id logo

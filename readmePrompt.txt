@@ -178,6 +178,9 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 106.0.1 2025-03-29
+🏥 code cleanup
+
 📦 106.0.0 2025-03-28
 ⚠️ BREAKING: renamed Fusion to ScrollFileSystem and FusionFile to ScrollFile.
 ⚠️ BREAKING: Simplified implementation of what was formerly called Fusion.

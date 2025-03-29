@@ -1031,8 +1031,16 @@ class Particle extends AbstractParticle {
     return this.map(particle => particle.getLine())
   }
 
-  getSubparticles(): any[] {
-    return this._getSubparticlesArray().slice(0)
+  _hasImportParticles?: boolean
+  getSubparticles(): particlesTypes.particle[] {
+    if (!this._hasImportParticles) return this._getSubparticlesArray().slice(0)
+    return this._getUnwrappedImportParticles()
+  }
+
+  _getUnwrappedImportParticles() {
+    return this._getSubparticlesArray()
+      .map(particle => (particle.isWrappedImport ? particle.getSubparticlesToImport() : particle))
+      .flat()
   }
 
   get length(): particlesTypes.positiveInt {

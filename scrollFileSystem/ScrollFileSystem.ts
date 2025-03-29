@@ -286,7 +286,10 @@ class ScrollFile {
     this.importOnly = false
   }
 
-  async readCodeFromStorage() {
+  defaultParserCode = ""
+  defaultParser = Particle
+
+  async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
     const { filePath } = this
     if (!filePath) {
@@ -296,13 +299,12 @@ class ScrollFile {
     this.codeAtStart = await this.fileSystem.read(filePath)
   }
 
-  get isFused() {
-    return this.fusedCode !== undefined
-  }
-
   async fuse() {
     // PASS 1: READ FULL FILE
-    await this.readCodeFromStorage()
+    await this._readCodeFromStorage()
+
+    // todo: single pass.
+
     const { codeAtStart, fileSystem, filePath, defaultParserCode, defaultParser } = this
     // PASS 2: READ AND REPLACE IMPORTs
     let fusedCode = codeAtStart
@@ -323,20 +325,6 @@ class ScrollFile {
     this.scrollProgram.setFile(this)
     return this
   }
-
-  get formatted() {
-    return this.codeAtStart
-  }
-
-  async formatAndSave() {
-    const { codeAtStart, formatted } = this
-    if (codeAtStart === formatted) return false
-    await this.fileSystem.write(this.filePath, formatted)
-    return true
-  }
-
-  defaultParserCode = ""
-  defaultParser = Particle
 }
 let scrollFileSystemIdNumber = 0
 const parserCache: any = {}
@@ -424,18 +412,8 @@ class ScrollFileSystem implements Storage {
   }
 
   private _storage: Storage
-  private _particleCache: { [filepath: string]: typeof Particle } = {}
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
-
-  private async _getFileAsParticles(absoluteFilePathOrUrl: string) {
-    const { _particleCache } = this
-    if (_particleCache[absoluteFilePathOrUrl] === undefined) {
-      const content = await this._storage.read(absoluteFilePathOrUrl)
-      _particleCache[absoluteFilePathOrUrl] = new Particle(content)
-    }
-    return _particleCache[absoluteFilePathOrUrl]
-  }
 
   getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)

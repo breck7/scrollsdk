@@ -4106,7 +4106,7 @@ string`
   equal(program.particleAt(0).content, "Breck", "Macro evaluated")
 }
 
-testParticles.wakeTest = equal => {
+testParticles.wakeTest = async equal => {
   // Arrange
   let str = ""
   class Foo extends Particle {
@@ -4115,7 +4115,8 @@ testParticles.wakeTest = equal => {
     }
   }
   // Act
-  const particle = new (<any>Foo)(`c
+  const particle = new (<any>Foo)()
+  await particle.loadFromStream(`c
  b
   a
 d
@@ -4124,6 +4125,20 @@ g
  f`)
   // Assert
   equal(str, "abcdefg")
+}
+
+testParticles.fromStreamTest = async equal => {
+  // Arrange
+  const particle = new Particle()
+  if (!particle.isNodeJs()) return
+  const fs = require("fs")
+  const path = require("path")
+  const filepath = path.join(__dirname, "readme.scroll")
+  const stream = fs.createReadStream(filepath, {
+    encoding: "utf8"
+  })
+  await particle.loadFromStream(stream)
+  equal(particle.toString(), fs.readFileSync(filepath, "utf8"), "Stream loaded correctly")
 }
 
 testParticles.queryMethods = equal => {

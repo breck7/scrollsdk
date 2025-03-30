@@ -1,3 +1,35 @@
+var __asyncValues =
+  (this && this.__asyncValues) ||
+  function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.")
+    var m = o[Symbol.asyncIterator],
+      i
+    return m
+      ? m.call(o)
+      : ((o = typeof __values === "function" ? __values(o) : o[Symbol.iterator]()),
+        (i = {}),
+        verb("next"),
+        verb("throw"),
+        verb("return"),
+        (i[Symbol.asyncIterator] = function () {
+          return this
+        }),
+        i)
+    function verb(n) {
+      i[n] =
+        o[n] &&
+        function (v) {
+          return new Promise(function (resolve, reject) {
+            ;(v = o[n](v)), settle(resolve, reject, v.done, v.value)
+          })
+        }
+    }
+    function settle(resolve, reject, d, v) {
+      Promise.resolve(v).then(function (v) {
+        resolve({ value: v, done: d })
+      }, reject)
+    }
+  }
 let _scrollsdkLatestTime = 0
 let _scrollsdkMinTimeIncrement = 0.000000000001
 class AbstractParticle {
@@ -120,6 +152,35 @@ class ParserPool {
     const firstBreak = line.indexOf(atomBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
+  async createParticleAsync(parentParticle, block, index) {
+    const rootParticle = parentParticle.root
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+      const newParticles = []
+      for (const [newBlockIndex, block] of blocks.entries()) {
+        const particle = await this._createParticleAsync(parentParticle, block, index === undefined ? undefined : index + newBlockIndex)
+        newParticles.push(particle)
+      }
+      return newParticles[0]
+    }
+    const newParticle = await this._createParticleAsync(parentParticle, block, index)
+    return newParticle
+  }
+  async _createParticleAsync(parentParticle, block, index) {
+    index = index === undefined ? parentParticle.length : index
+    const parser = this._getMatchingParser(block, parentParticle, index)
+    const { particleBreakSymbol } = parentParticle
+    const lines = block.split(particleBreakSymbol)
+    const subparticles = lines
+      .slice(1)
+      .map(line => line.substr(1))
+      .join(particleBreakSymbol)
+    const particle = new parser(undefined, lines[0], parentParticle, index)
+    if (subparticles.length) await particle.loadFromStream(subparticles)
+    await particle.wake()
+    return particle
+  }
   createParticle(parentParticle, block, index) {
     const rootParticle = parentParticle.root
     if (rootParticle.particleTransformers) {
@@ -151,7 +212,6 @@ class Particle extends AbstractParticle {
     this._setSubparticles(subparticles)
     if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
     else if (parent) parent._getSubparticlesArray().push(this)
-    this.wake()
   }
   wake() {}
   execute() {}
@@ -1517,6 +1577,81 @@ class Particle extends AbstractParticle {
     const blocks = splitBlocks(str, edgeSymbol, particleBreakSymbol)
     const parserPool = this._getParserPool()
     blocks.forEach((block, index) => parserPool.createParticle(this, block))
+  }
+  async loadFromStream(input) {
+    var _a, e_1, _b, _c
+    const { edgeSymbol, particleBreakSymbol } = this
+    const parserPool = this._getParserPool()
+    let buffer = ""
+    const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
+    // Node.js Readable stream
+    if (typeof process !== "undefined" && input instanceof require("stream").Readable) {
+      try {
+        for (var _d = true, input_1 = __asyncValues(input), input_1_1; (input_1_1 = await input_1.next()), (_a = input_1_1.done), !_a; ) {
+          _c = input_1_1.value
+          _d = false
+          try {
+            const chunk = _c
+            buffer += chunk.toString("utf8")
+            while (true) {
+              const breakIndex = buffer.search(breakRegex)
+              if (breakIndex === -1) break
+              const block = buffer.slice(0, breakIndex)
+              buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+              await parserPool.createParticleAsync(this, block)
+            }
+          } finally {
+            _d = true
+          }
+        }
+      } catch (e_1_1) {
+        e_1 = { error: e_1_1 }
+      } finally {
+        try {
+          if (!_d && !_a && (_b = input_1.return)) await _b.call(input_1)
+        } finally {
+          if (e_1) throw e_1.error
+        }
+      }
+      // Process remaining buffer
+      await parserPool.createParticleAsync(this, buffer)
+    }
+    // Browser ReadableStream
+    else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
+      const reader = input.getReader()
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += new TextDecoder().decode(value) // Convert Uint8Array to string
+          while (true) {
+            const breakIndex = buffer.search(breakRegex)
+            if (breakIndex === -1) break
+            const block = buffer.slice(0, breakIndex)
+            buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+            await parserPool.createParticleAsync(this, block)
+          }
+        }
+        // Process remaining buffer
+        await parserPool.createParticleAsync(this, buffer)
+      } finally {
+        reader.releaseLock()
+      }
+    }
+    // Plain string input (works in both environments)
+    else if (typeof input === "string") {
+      buffer = input
+      while (true) {
+        const breakIndex = buffer.search(breakRegex)
+        if (breakIndex === -1) break
+        const block = buffer.slice(0, breakIndex)
+        buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+        await parserPool.createParticleAsync(this, block)
+      }
+      await parserPool.createParticleAsync(this, buffer)
+    } else {
+      throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
+    }
   }
   _getCueIndex() {
     // StringMap<int> {cue: index}

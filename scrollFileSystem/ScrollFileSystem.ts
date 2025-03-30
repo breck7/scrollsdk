@@ -295,7 +295,7 @@ class ScrollFile {
   defaultParserCode = ""
   defaultParser = Particle
 
-  async _readCodeFromStorage() {
+  private async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
     const { filePath } = this
     if (!filePath) {
@@ -334,7 +334,7 @@ class ScrollFile {
     let fusedFile
     if (filePath) {
       this.timestamp = await fileSystem.getCTime(filePath)
-      fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
+      fusedFile = await fileSystem.fuseFile3(filePath, defaultParserCode)
       this.importOnly = fusedFile.isImportOnly
       fusedCode = fusedFile.fused
       if (fusedFile.footers) fusedCode += "\n" + fusedFile.footers.join("\n")
@@ -365,7 +365,7 @@ class ScrollFileSystem implements Storage {
 
   standardParserDirectory?: string
 
-  _loadDefaultParser() {
+  private _loadDefaultParser() {
     const { standardParserDirectory } = this
     const cacheHit = parserCache[standardParserDirectory]
     if (cacheHit) {
@@ -383,18 +383,19 @@ class ScrollFileSystem implements Storage {
     return this
   }
 
-  _setDefaultParser(standardParserDirectory: string, defaultParserFiles: string[], contents: string[]) {
-    const defaultParser = ScrollFileSystem.combineParsers(defaultParserFiles, contents)
-    parserCache[standardParserDirectory] = {
+  private _setDefaultParser(standardParserDirectory: string, defaultParserFiles: string[], contents: string[]) {
+    const defaultParser = ScrollFileSystem._combineParsers(defaultParserFiles, contents)
+    const parser = {
       defaultParser,
       defaultFileClass: class extends ScrollFile {
         defaultParserCode = defaultParser.parsersCode
         defaultParser = defaultParser.parser
       }
     }
+    parserCache[standardParserDirectory] = parser
 
-    this.defaultParser = parserCache[standardParserDirectory].defaultParser
-    this.defaultFileClass = parserCache[standardParserDirectory].defaultFileClass
+    this.defaultParser = parser.defaultParser
+    this.defaultFileClass = parser.defaultFileClass
   }
 
   async read(absolutePath: particlesTypes.filepath) {
@@ -439,7 +440,7 @@ class ScrollFileSystem implements Storage {
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
-  getImports(particle, absoluteFilePathOrUrl, importStack) {
+  private _getImports(particle, absoluteFilePathOrUrl, importStack) {
     const folder = this.dirname(absoluteFilePathOrUrl)
     const results = particle
       .filter(particle => particle.getLine().match(importRegex))
@@ -519,7 +520,7 @@ class ScrollFileSystem implements Storage {
 
     const particle = new Particle(processedCode)
     // Fetch all imports in parallel
-    const imported = await this.getImports(particle, absoluteFilePathOrUrl, importStack)
+    const imported = await this._getImports(particle, absoluteFilePathOrUrl, importStack)
 
     // Assemble all imports
     let importFilePaths: string[] = []
@@ -589,16 +590,10 @@ class ScrollFileSystem implements Storage {
 
   private async _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
     const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
-    return ScrollFileSystem.combineParsers(filePaths, fileContents, baseParsersCode)
+    return ScrollFileSystem._combineParsers(filePaths, fileContents, baseParsersCode)
   }
 
-  clearParserCache(filename: string) {
-    delete this._pendingFuseRequests[filename]
-    delete this._parsersExpandersCache[filename] // todo: cleanup
-    delete this._parserCache[filename]
-  }
-
-  async getParser(filePaths: string[], baseParsersCode = "") {
+  private async _getParser(filePaths: string[], baseParsersCode = "") {
     const { _parserCache } = this
     const key = filePaths
       .filter(fp => fp)
@@ -612,7 +607,7 @@ class ScrollFileSystem implements Storage {
     return await _parserCache[key]
   }
 
-  static combineParsers(filePaths: string[], fileContents: string[], baseParsersCode = "") {
+  static _combineParsers(filePaths: string[], fileContents: string[], baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
 
@@ -636,54 +631,62 @@ class ScrollFileSystem implements Storage {
     }
   }
 
-  get parsers() {
-    // todo: remove
-    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+  setDefaultParserFromString(contents: string) {
+    this._setDefaultParser("", ["scroll"], [contents])
   }
 
-  async fuseFile(absoluteFilePathOrUrl: string, defaultParserCode?: string): Promise<FusedFile> {
+  clearParserCache(filename: string) {
+    delete this._pendingFuseRequests[filename]
+    delete this._parsersExpandersCache[filename] // todo: cleanup
+    delete this._parserCache[filename]
+  }
+
+  // todo: remove
+  async fuseFile3(absoluteFilePathOrUrl: string, defaultParserCode?: string): Promise<FusedFile> {
     const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
 
     if (!defaultParserCode) return fusedFile
 
     if (fusedFile.filepathsWithParserDefinitions) {
-      const parser = await this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
+      const parser = await this._getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
       fusedFile.parser = parser.parser
     }
     return fusedFile
   }
 
-  async getLoadedFile(filePath) {
-    return await this._getLoadedFile(filePath, this.defaultFileClass)
+  // todo: remove
+  async getAllParsers() {
+    return await Promise.all(Object.values(this._parserCache))
   }
 
-  parsedFiles = {}
-  async _getLoadedFile(absolutePath, parser) {
-    if (this.parsedFiles[absolutePath]) return this.parsedFiles[absolutePath]
-    const file = new parser(undefined, absolutePath, this)
+  private _fusedFiles = {}
+  async getFusedFile(absolutePath) {
+    if (this._fusedFiles[absolutePath]) return this._fusedFiles[absolutePath]
+    const scrollFile = this.defaultFileClass
+    const file = new scrollFile(undefined, absolutePath, this)
     await file.fuse()
-    this.parsedFiles[absolutePath] = file
+    this._fusedFiles[absolutePath] = file
     return file
   }
 
-  getCachedLoadedFilesInFolder(folderPath, requester) {
+  getFusedFilesInFolderIfCached(folderPath, requester) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
-    const hit = this.folderCache[folderPath]
+    const hit = this._folderCache[folderPath]
     if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.scrollFileSystemIdNumber}'. Requested by '${requester.filePath}'`)
     return hit || []
   }
 
-  folderCache = {}
+  private _folderCache = {}
   // todo: this is weird. i know we evolved our way here but we should step back and clean this up.
-  async getLoadedFilesInFolder(folderPath, extension) {
+  async getFusedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
-    if (this.folderCache[folderPath]) return this.folderCache[folderPath]
+    if (this._folderCache[folderPath]) return this._folderCache[folderPath]
     const allFiles = await this.list(folderPath)
-    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this.getLoadedFile(filePath)))
+    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this.getFusedFile(filePath)))
     const sorted = loadedFiles.sort((a, b) => b.timestamp - a.timestamp)
     sorted.forEach((file, index) => (file.timeIndex = index))
-    this.folderCache[folderPath] = sorted
-    return this.folderCache[folderPath]
+    this._folderCache[folderPath] = sorted
+    return this._folderCache[folderPath]
   }
 }
 

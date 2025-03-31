@@ -264,7 +264,7 @@ class ScrollFile {
     let fusedFile
     if (filePath) {
       this.timestamp = await fileSystem.getCTime(filePath)
-      fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
+      fusedFile = await fileSystem.fuseFile3(filePath, defaultParserCode)
       this.importOnly = fusedFile.isImportOnly
       fusedCode = fusedFile.fused
       if (fusedFile.footers) fusedCode += "\n" + fusedFile.footers.join("\n")
@@ -529,7 +529,7 @@ class ScrollFileSystem {
     delete this._parserCache[filename]
   }
   // todo: remove
-  async fuseFile(absoluteFilePathOrUrl, defaultParserCode) {
+  async fuseFile3(absoluteFilePathOrUrl, defaultParserCode) {
     const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
     if (!defaultParserCode) return fusedFile
     if (fusedFile.filepathsWithParserDefinitions) {
@@ -560,8 +560,11 @@ class ScrollFileSystem {
   async getFusedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
     if (this._folderCache[folderPath]) return this._folderCache[folderPath]
-    const allFiles = await this.list(folderPath)
-    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this.getFusedFile(filePath)))
+    const allFiles = (await this.list(folderPath)).filter(file => file.endsWith(extension))
+    const loadedFiles = []
+    for (let filePath of allFiles) {
+      loadedFiles.push(await this.getFusedFile(filePath))
+    }
     const sorted = loadedFiles.sort((a, b) => b.timestamp - a.timestamp)
     sorted.forEach((file, index) => (file.timeIndex = index))
     this._folderCache[folderPath] = sorted

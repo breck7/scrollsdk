@@ -3966,7 +3966,7 @@ stamp
     equal(program.particleAt(0).content, "Breck", "Macro evaluated")
   }
   
-  testParticles.wakeTest = equal => {
+  testParticles.wakeTest = async equal => {
     // Arrange
     let str = ""
     class Foo extends Particle {
@@ -3975,7 +3975,8 @@ stamp
       }
     }
     // Act
-    const particle = new (Foo)(`c
+    const particle = new (Foo)()
+    await particle.loadFromStream(`c
    b
     a
   d
@@ -3984,6 +3985,20 @@ stamp
    f`)
     // Assert
     equal(str, "abcdefg")
+  }
+  
+  testParticles.fromStreamTest = async equal => {
+    // Arrange
+    const particle = new Particle()
+    if (!particle.isNodeJs()) return
+    const fs = require("fs")
+    const path = require("path")
+    const filepath = path.join(__dirname, "readme.scroll")
+    const stream = fs.createReadStream(filepath, {
+      encoding: "utf8"
+    })
+    await particle.loadFromStream(stream)
+    equal(particle.toString(), fs.readFileSync(filepath, "utf8"), "Stream loaded correctly")
   }
   
   testParticles.queryMethods = equal => {
@@ -4133,6 +4148,39 @@ stamp
       return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
     }
   
+    async createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
+      const rootParticle = parentParticle.root
+      if (rootParticle.particleTransformers) {
+        // A macro may return multiple new blocks.
+        const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+  
+        const newParticles: particlesTypes.particle[] = []
+        for (const [newBlockIndex, block] of blocks.entries()) {
+          const particle = await this._createParticleAsync(parentParticle, block, index === undefined ? undefined : index + newBlockIndex)
+          newParticles.push(particle)
+        }
+        return newParticles[0]
+      }
+  
+      const newParticle = await this._createParticleAsync(parentParticle, block, index)
+      return newParticle
+    }
+  
+    async _createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
+      index = index === undefined ? parentParticle.length : index
+      const parser: any = this._getMatchingParser(block, parentParticle, index)
+      const { particleBreakSymbol } = parentParticle
+      const lines = block.split(particleBreakSymbol)
+      const subparticles = lines
+        .slice(1)
+        .map(line => line.substr(1))
+        .join(particleBreakSymbol)
+      const particle = new parser(undefined, lines[0], parentParticle, index)
+      if (subparticles.length) await particle.loadFromStream(subparticles)
+      await particle.wake()
+      return particle
+    }
+  
     createParticle(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
       const rootParticle = parentParticle.root
       if (rootParticle.particleTransformers) {
@@ -4164,7 +4212,6 @@ stamp
       this._setSubparticles(subparticles)
       if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
       else if (parent) parent._getSubparticlesArray().push(this)
-      this.wake()
     }
   
     private _uid: int
@@ -5680,6 +5727,75 @@ stamp
       if (index !== undefined) index = index  parserPool.createParticle(this, block))
     }
   
+    async loadFromStream(input) {
+      const { edgeSymbol, particleBreakSymbol } = this
+      const parserPool = this._getParserPool()
+  
+      let buffer = ""
+      const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
+  
+      // Node.js Readable stream
+      if (typeof process !== "undefined" && input instanceof require("stream").Readable) {
+        for await (const chunk of input) {
+          buffer += chunk.toString("utf8")
+  
+          while (true) {
+            const breakIndex = buffer.search(breakRegex)
+            if (breakIndex === -1) break
+  
+            const block = buffer.slice(0, breakIndex)
+            buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+  
+            await parserPool.createParticleAsync(this, block)
+          }
+        }
+        // Process remaining buffer
+        await parserPool.createParticleAsync(this, buffer)
+      }
+      // Browser ReadableStream
+      else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
+        const reader = input.getReader()
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+  
+            buffer += new TextDecoder().decode(value) // Convert Uint8Array to string
+  
+            while (true) {
+              const breakIndex = buffer.search(breakRegex)
+              if (breakIndex === -1) break
+  
+              const block = buffer.slice(0, breakIndex)
+              buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+  
+              await parserPool.createParticleAsync(this, block)
+            }
+          }
+          // Process remaining buffer
+          await parserPool.createParticleAsync(this, buffer)
+        } finally {
+          reader.releaseLock()
+        }
+      }
+      // Plain string input (works in both environments)
+      else if (typeof input === "string") {
+        buffer = input
+        while (true) {
+          const breakIndex = buffer.search(breakRegex)
+          if (breakIndex === -1) break
+  
+          const block = buffer.slice(0, breakIndex)
+          buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+  
+          await parserPool.createParticleAsync(this, block)
+        }
+        await parserPool.createParticleAsync(this, buffer)
+      } else {
+        throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
+      }
+    }
+  
     protected _getCueIndex() {
       // StringMap {cue: index}
       // When there are multiple tails with the same cue, index stores the last content.
@@ -6903,10 +7019,11 @@ stamp
  readme.scroll
   title Particle
   
-  This folder contains the base Particle library. This code is used in both the browser lib and node.js lib. 
+  This folder contains the base Particle library.
+  
+  This code is used in both the browser lib and node.js lib.
   
   ? What are the differences between browser lib and node lib?
-  
   The Node lib contains a dozen or so extra static methods. The implementations otherwise are almost identical with some slight overloads for the different environments.
 
 stamp
@@ -11917,6 +12034,12 @@ stamp
       return file.content
     }
   
+    async createReadStream(absolutePath: string) {
+      return fs.createReadStream(absolutePath, {
+        encoding: "utf8"
+      })
+    }
+  
     async list(folder: string) {
       if (isUrl(folder)) {
         return [] // URLs don't support directory listing
@@ -12065,6 +12188,23 @@ stamp
       this.codeAtStart = await this.fileSystem.read(filePath)
     }
   
+    async singlePassFuse() {
+      const { fileSystem, filePath, defaultParser, codeAtStart } = this
+      this.scrollProgram = new defaultParser()
+      this.scrollProgram.setFile(this)
+      if (codeAtStart !== undefined) {
+        await this.scrollProgram.loadFromStream(codeAtStart)
+      } else {
+        this.timestamp = await fileSystem.getCTime(filePath)
+        const stream = fileSystem.createReadStream(filePath)
+        await this.scrollProgram.loadFromStream(stream)
+      }
+      // What happens if we encounter a new parser?
+      // very frequently if we encounter 1 parser we will encounter a sequence of parsers so
+      // perhaps on wake, for now, we switch into collecting parsers mode
+      // and then when we hit a non parser, only at that moment do we recompile the parsers
+    }
+  
     async fuse() {
       // PASS 1: READ FULL FILE
       await this._readCodeFromStorage()
@@ -12087,8 +12227,9 @@ stamp
       this.fusedCode = fusedCode
       this.parser = fusedFile?.parser || defaultParser
       // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-      this.scrollProgram = new this.parser(fusedCode, filePath)
+      this.scrollProgram = new this.parser(undefined, filePath)
       this.scrollProgram.setFile(this)
+      await this.scrollProgram.loadFromStream(fusedCode)
       return this
     }
   }
@@ -12430,6 +12571,97 @@ stamp
   }
   
   export { ScrollFileSystem, ScrollFile }
+  
+ perf.js
+  #!/usr/bin/env node
+  
+  /*
+  This file contains a simple set of perf tests that can be run manually to keep fusion perf in check.
+  */
+  
+  // rm perf.cpuprofile; rm perf.heapprofile; node --cpu-prof --cpu-prof-name=perf.cpuprofile --heap-prof --heap-prof-name=perf.heapprofile perf.js
+  
+  const fs = require("fs")
+  const path = require("path")
+  const { Utils } = require("../products/Utils.js")
+  const { Timer } = Utils
+  const { Particle } = require("../products/Particle.js")
+  const { Fusion } = require("../products/Fusion.js")
+  const { ScrollFile } = require("scroll-cli")
+  
+  class PerfTest {
+    constructor(folderPath) {
+      this.folderPath = folderPath
+      this.timer = new Timer()
+      this.files = []
+      this.simpleStrings = []
+      this.particles = []
+      this.fusedFiles = []
+      this.scrollFiles = []
+    }
+  
+    gatherFiles() {
+      this.files = fs
+        .readdirSync(this.folderPath)
+        .filter(file => file.endsWith(".scroll"))
+        .map(file => path.join(this.folderPath, file))
+      console.log(`Found ${this.files.length} .scroll files`)
+      this.tick("Finding files")
+      return this
+    }
+  
+    readToStrings() {
+      this.simpleStrings = this.files.map(file => fs.readFileSync(file, "utf8"))
+      this.tick("Reading files to strings")
+      return this
+    }
+  
+    parseToParticles() {
+      this.particles = this.simpleStrings.map(str => new Particle(str))
+      this.tick("Parsing to Particles")
+      return this
+    }
+  
+    async fuseFiles() {
+      const fusion = new Fusion()
+      this.fusedFiles = await Promise.all(this.files.map(file => fusion.fuseFile(file)))
+      this.tick("Fusing files")
+      return this
+    }
+  
+    parseAsScroll() {
+      this.scrollFiles = this.simpleStrings.map(str => new ScrollFile(str))
+      this.tick("Parsing as Scroll")
+      return this
+    }
+  
+    tick(message) {
+      this.printMemoryUsage()
+      console.log("")
+      this.timer.tick(message)
+      console.log("----------")
+    }
+  
+    printMemoryUsage() {
+      const used = process.memoryUsage()
+      console.log("\nMemory Usage:")
+      for (let key in used) {
+        console.log(`${key}: ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`)
+      }
+    }
+  
+    async runAll() {
+      this.tick("Starting performance tests...\n")
+      this.gatherFiles().readToStrings().parseToParticles()
+      await this.fuseFiles()
+      this.parseAsScroll()
+    }
+  }
+  
+  // Run the tests
+  const dir = "/Users/breck/pldb.io/concepts"
+  const perfTest = new PerfTest(dir)
+  perfTest.runAll().catch(console.error)
   
  readme.scroll
   # ScrollFileSystem

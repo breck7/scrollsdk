@@ -107,7 +107,7 @@ This is my content
     }
     const fs = new ScrollFileSystem(files)
     const file = new ScrollFile(particle.toString(), "/main", fs)
-    await file.fuse()
+    await file.singlePassFuse()
     this.file = file
     willowBrowser.setHtmlOfElementWithIdHack("scrollFileSystemConsole", file.fusedCode)
   }

@@ -2,6 +2,7 @@ import { AbstractParticle } from "./AbstractParticle.particle"
 import { particlesTypes } from "../products/particlesTypes"
 
 const { Utils } = require("../products/Utils.js")
+const { Readable } = require("stream")
 
 declare type int = particlesTypes.int
 declare type atom = particlesTypes.atom
@@ -143,6 +144,39 @@ class ParserPool {
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 
+  async createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
+    const rootParticle = parentParticle.root
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+
+      const newParticles: particlesTypes.particle[] = []
+      for (const [newBlockIndex, block] of blocks.entries()) {
+        const particle = await this._createParticleAsync(parentParticle, block, index === undefined ? undefined : index + newBlockIndex)
+        newParticles.push(particle)
+      }
+      return newParticles[0]
+    }
+
+    const newParticle = await this._createParticleAsync(parentParticle, block, index)
+    return newParticle
+  }
+
+  async _createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
+    index = index === undefined ? parentParticle.length : index
+    const parser: any = this._getMatchingParser(block, parentParticle, index)
+    const { particleBreakSymbol } = parentParticle
+    const lines = block.split(particleBreakSymbol)
+    const subparticles = lines
+      .slice(1)
+      .map(line => line.substr(1))
+      .join(particleBreakSymbol)
+    const particle = new parser(undefined, lines[0], parentParticle, index)
+    if (subparticles.length) await particle.loadFromStream(subparticles)
+    await particle.wake()
+    return particle
+  }
+
   createParticle(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
     const rootParticle = parentParticle.root
     if (rootParticle.particleTransformers) {
@@ -174,7 +208,6 @@ class Particle extends AbstractParticle {
     this._setSubparticles(subparticles)
     if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
     else if (parent) parent._getSubparticlesArray().push(this)
-    this.wake()
   }
 
   private _uid: int
@@ -1802,6 +1835,75 @@ class Particle extends AbstractParticle {
     const blocks = splitBlocks(str, edgeSymbol, particleBreakSymbol)
     const parserPool = this._getParserPool()
     blocks.forEach((block, index) => parserPool.createParticle(this, block))
+  }
+
+  async loadFromStream(input) {
+    const { edgeSymbol, particleBreakSymbol } = this
+    const parserPool = this._getParserPool()
+
+    let buffer = ""
+    const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
+
+    // Node.js Readable stream
+    if (typeof process !== "undefined" && input instanceof require("stream").Readable) {
+      for await (const chunk of input) {
+        buffer += chunk.toString("utf8")
+
+        while (true) {
+          const breakIndex = buffer.search(breakRegex)
+          if (breakIndex === -1) break
+
+          const block = buffer.slice(0, breakIndex)
+          buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+
+          await parserPool.createParticleAsync(this, block)
+        }
+      }
+      // Process remaining buffer
+      await parserPool.createParticleAsync(this, buffer)
+    }
+    // Browser ReadableStream
+    else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
+      const reader = input.getReader()
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += new TextDecoder().decode(value) // Convert Uint8Array to string
+
+          while (true) {
+            const breakIndex = buffer.search(breakRegex)
+            if (breakIndex === -1) break
+
+            const block = buffer.slice(0, breakIndex)
+            buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+
+            await parserPool.createParticleAsync(this, block)
+          }
+        }
+        // Process remaining buffer
+        await parserPool.createParticleAsync(this, buffer)
+      } finally {
+        reader.releaseLock()
+      }
+    }
+    // Plain string input (works in both environments)
+    else if (typeof input === "string") {
+      buffer = input
+      while (true) {
+        const breakIndex = buffer.search(breakRegex)
+        if (breakIndex === -1) break
+
+        const block = buffer.slice(0, breakIndex)
+        buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+
+        await parserPool.createParticleAsync(this, block)
+      }
+      await parserPool.createParticleAsync(this, buffer)
+    } else {
+      throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
+    }
   }
 
   protected _getCueIndex() {

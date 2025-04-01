@@ -151,6 +151,12 @@ class DiskWriter implements Storage {
     return file.content
   }
 
+  async createReadStream(absolutePath: string) {
+    return fs.createReadStream(absolutePath, {
+      encoding: "utf8"
+    })
+  }
+
   async list(folder: string) {
     if (isUrl(folder)) {
       return [] // URLs don't support directory listing
@@ -299,6 +305,23 @@ class ScrollFile {
     this.codeAtStart = await this.fileSystem.read(filePath)
   }
 
+  async singlePassFuse() {
+    const { fileSystem, filePath, defaultParser, codeAtStart } = this
+    this.scrollProgram = new defaultParser()
+    this.scrollProgram.setFile(this)
+    if (codeAtStart !== undefined) {
+      await this.scrollProgram.loadFromStream(codeAtStart)
+    } else {
+      this.timestamp = await fileSystem.getCTime(filePath)
+      const stream = fileSystem.createReadStream(filePath)
+      await this.scrollProgram.loadFromStream(stream)
+    }
+    // What happens if we encounter a new parser?
+    // very frequently if we encounter 1 parser we will encounter a sequence of parsers so
+    // perhaps on wake, for now, we switch into collecting parsers mode
+    // and then when we hit a non parser, only at that moment do we recompile the parsers
+  }
+
   async fuse() {
     // PASS 1: READ FULL FILE
     await this._readCodeFromStorage()
@@ -321,8 +344,9 @@ class ScrollFile {
     this.fusedCode = fusedCode
     this.parser = fusedFile?.parser || defaultParser
     // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(fusedCode, filePath)
+    this.scrollProgram = new this.parser(undefined, filePath)
     this.scrollProgram.setFile(this)
+    await this.scrollProgram.loadFromStream(fusedCode)
     return this
   }
 }

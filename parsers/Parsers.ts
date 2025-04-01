@@ -2500,9 +2500,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return cache
   }
 
-  static _languages: any = {}
-  static _parsers: any = {}
-
   // todo: add explanation
   private _cached_rootParser: AbstractRuntimeProgramConstructorInterface
   compileAndReturnRootParser() {

@@ -201,7 +201,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     const errs = this.parsersProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
-    const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
+    const readme = parsersProgram.toReadMe()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
   _updateShareLink() {

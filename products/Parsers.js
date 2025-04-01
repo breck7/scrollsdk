@@ -1930,12 +1930,12 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     const atomTypes = this.atomTypeDefinitions
     const parserLineage = this.parserLineage
     const exampleParticle = rootParticleDef.examples[0]
-    return `title2 ${languageName} stats
-
-list
- - ${languageName} has ${parserLineage.topDownArray.length} parsers.
- - ${languageName} has ${Object.keys(atomTypes).length} atom types.
- - The source code for ${languageName} is ${this.topDownArray.length} lines long.
+    return `<h3>${languageName} stats</h3>
+<ul>
+<li>${languageName} has ${parserLineage.topDownArray.length} parsers.</li>
+<li>${languageName} has ${Object.keys(atomTypes).length} atom types.</li>
+<li>The source code for ${languageName} is ${this.topDownArray.length} lines long.</li>
+</ul>
 `
   }
   get atomTypeDefinitions() {
@@ -2152,18 +2152,6 @@ class UnknownParsersProgram extends Particle {
     // Todo: add conditional frequencies
     return particleDefParticle.parent.toString()
   }
-  //  inferParsersFileForAnSSVLanguage(parsersName: string): string {
-  //     parsersName = HandParsersProgram.makeParserId(parsersName)
-  //    const rootParticle = new Particle(`${parsersName}
-  // ${ParsersConstants.root}`)
-  //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-  //    const rootParticleNames = this.getCues().map(atom => HandParsersProgram.makeParserId(atom))
-  //    rootParticle
-  //      .particleAt(0)
-  //      .touchParticle(ParsersConstants.inScope)
-  //      .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
-  //    return rootParticle
-  //  }
   inferParsersFileForACueLanguage(parsersName) {
     const clone = this.clone()
     this._renameIntegerCues(clone)

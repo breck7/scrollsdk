@@ -9,7 +9,6 @@ declare var parsersParser: any
 // todo: get typings in here.
 declare var CodeMirror: any
 declare var saveAs: any
-declare var dumbdownParser: any
 declare type html = string
 
 class DesignerApp extends AbstractParticleComponentParser {
@@ -263,7 +262,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     const errs = this.parsersProgram.getAllErrors().map((err: any) => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
-    const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
+    const readme = parsersProgram.toReadMe()
 
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }

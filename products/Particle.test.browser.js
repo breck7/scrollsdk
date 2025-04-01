@@ -3394,7 +3394,7 @@ testParticles.wakeTest = async equal => {
   }
   // Act
   const particle = new Foo()
-  await particle.loadFromStream(`c
+  await particle.appendFromStream(`c
  b
   a
 d
@@ -3414,8 +3414,11 @@ testParticles.fromStreamTest = async equal => {
   const stream = fs.createReadStream(filepath, {
     encoding: "utf8"
   })
-  await particle.loadFromStream(stream)
+  await particle.appendFromStream(stream)
   equal(particle.toString(), fs.readFileSync(filepath, "utf8"), "Stream loaded correctly")
+  const length = particle.length
+  await particle.appendFromStream("abc")
+  equal(particle.length, length + 1)
 }
 testParticles.queryMethods = equal => {
   // Arrange

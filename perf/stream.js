@@ -43,7 +43,7 @@ const main = async () => {
   const stream = createRandomStream(1e6)
 
   // Act
-  await particle.loadFromStream(stream)
+  await particle.appendFromStream(stream)
 
   timer.tick("loaded")
 

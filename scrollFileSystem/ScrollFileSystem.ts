@@ -1,5 +1,6 @@
 // todo: as much as we can, remove ScrollFileSystem and move these capabilities into the root Particle class.
-const fs = require("fs").promises
+const fs = require("fs")
+const fsp = fs.promises
 const path = require("path")
 
 import { particlesTypes } from "../products/particlesTypes"
@@ -114,8 +115,8 @@ class DiskWriter implements Storage {
     const { fileCache } = this
     if (fileCache[absolutePath]) return fileCache[absolutePath]
     try {
-      const stats = await fs.stat(absolutePath)
-      const content = await fs.readFile(absolutePath, {
+      const stats = await fsp.stat(absolutePath)
+      const content = await fsp.readFile(absolutePath, {
         encoding: "utf8",
         flag: "r" // explicit read flag
       })
@@ -152,7 +153,8 @@ class DiskWriter implements Storage {
   }
 
   async createReadStream(absolutePath: string) {
-    return fs.createReadStream(absolutePath, {
+    const fd = await fsp.open(absolutePath)
+    return fd.createReadStream({
       encoding: "utf8"
     })
   }
@@ -227,6 +229,10 @@ class MemoryWriter implements Storage {
     return value
   }
 
+  async createReadStream(absolutePath: string) {
+    return await this.read(absolutePath)
+  }
+
   async exists(absolutePath: string) {
     if (isUrl(absolutePath)) {
       const result = await fetchWithCache(absolutePath)
@@ -290,10 +296,11 @@ class ScrollFile {
     this.timeIndex = 0
     this.timestamp = 0
     this.importOnly = false
+    this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
+    this.scrollProgram.setFile(this)
   }
 
-  defaultParserCode = ""
-  defaultParser = Particle
+  exists = true
 
   private async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
@@ -306,74 +313,54 @@ class ScrollFile {
   }
 
   async singlePassFuse() {
-    const { fileSystem, filePath, defaultParser, codeAtStart } = this
-    this.scrollProgram = new defaultParser()
-    this.scrollProgram.setFile(this)
+    if (!this._fuseRequest) this._fuseRequest = this._singlePassFuse()
+    return await this._fuseRequest
+  }
+
+  async _singlePassFuse() {
+    const { fileSystem, filePath, codeAtStart } = this
     if (codeAtStart !== undefined) {
-      await this.scrollProgram.loadFromStream(codeAtStart)
+      await this.scrollProgram.appendFromStream(codeAtStart)
     } else {
+      if (!(await fileSystem.exists(filePath))) {
+        this.exists = false
+        this.isFused = true
+        return this
+      }
       this.timestamp = await fileSystem.getCTime(filePath)
-      const stream = fileSystem.createReadStream(filePath)
-      await this.scrollProgram.loadFromStream(stream)
+      const stream = await fileSystem.createReadStream(filePath)
+      await this.scrollProgram.appendFromStream(stream)
     }
+    this.scrollProgram.wake()
     // What happens if we encounter a new parser?
     // very frequently if we encounter 1 parser we will encounter a sequence of parsers so
     // perhaps on wake, for now, we switch into collecting parsers mode
     // and then when we hit a non parser, only at that moment do we recompile the parsers
   }
-
-  async fuse() {
-    // PASS 1: READ FULL FILE
-    await this._readCodeFromStorage()
-
-    // todo: single pass.
-
-    const { codeAtStart, fileSystem, filePath, defaultParserCode, defaultParser } = this
-    // PASS 2: READ AND REPLACE IMPORTs
-    let fusedCode = codeAtStart
-    let fusedFile
-    if (filePath) {
-      this.timestamp = await fileSystem.getCTime(filePath)
-      fusedFile = await fileSystem.fuseFile3(filePath, defaultParserCode)
-      this.importOnly = fusedFile.isImportOnly
-      fusedCode = fusedFile.fused
-      if (fusedFile.footers) fusedCode += "\n" + fusedFile.footers.join("\n")
-      this.dependencies = fusedFile.importFilePaths
-      this.fusedFile = fusedFile
-    }
-    this.fusedCode = fusedCode
-    this.parser = fusedFile?.parser || defaultParser
-    // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(undefined, filePath)
-    this.scrollProgram.setFile(this)
-    await this.scrollProgram.loadFromStream(fusedCode)
-    return this
-  }
 }
 let scrollFileSystemIdNumber = 0
-const parserCache: any = {}
 class ScrollFileSystem implements Storage {
   constructor(inMemoryFiles: particlesTypes.diskMap, standardParserDirectory?: string) {
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
     scrollFileSystemIdNumber = scrollFileSystemIdNumber + 1
     this.scrollFileSystemIdNumber = scrollFileSystemIdNumber
-    this.defaultFileClass = ScrollFile
     this.standardParserDirectory = standardParserDirectory
     if (standardParserDirectory) this._loadDefaultParser()
   }
 
   standardParserDirectory?: string
 
+  defaultParserCode = ""
+  defaultParser = Particle
+  defaultFileClass = ScrollFile
+
+  newFile(codeAtStart: string, absoluteFilePath) {
+    return new this.defaultFileClass(codeAtStart, absoluteFilePath, this)
+  }
+
   private _loadDefaultParser() {
     const { standardParserDirectory } = this
-    const cacheHit = parserCache[standardParserDirectory]
-    if (cacheHit) {
-      this.defaultParser = cacheHit.defaultParser
-      this.defaultFileClass = cacheHit.defaultFileClass
-      return this
-    }
-
     const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
     this._setDefaultParser(
       standardParserDirectory,
@@ -385,21 +372,16 @@ class ScrollFileSystem implements Storage {
 
   private _setDefaultParser(standardParserDirectory: string, defaultParserFiles: string[], contents: string[]) {
     const defaultParser = ScrollFileSystem._combineParsers(defaultParserFiles, contents)
-    const parser = {
-      defaultParser,
-      defaultFileClass: class extends ScrollFile {
-        defaultParserCode = defaultParser.parsersCode
-        defaultParser = defaultParser.parser
-      }
-    }
-    parserCache[standardParserDirectory] = parser
-
-    this.defaultParser = parser.defaultParser
-    this.defaultFileClass = parser.defaultFileClass
+    this.defaultParserCode = defaultParser.parsersCode
+    this.defaultParser = defaultParser.parser
   }
 
   async read(absolutePath: particlesTypes.filepath) {
     return await this._storage.read(absolutePath)
+  }
+
+  async createReadStream(absolutePath: string) {
+    return await this._storage.createReadStream(absolutePath)
   }
 
   async exists(absolutePath: particlesTypes.filepath) {
@@ -438,173 +420,13 @@ class ScrollFileSystem implements Storage {
 
   private _storage: Storage
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
-  private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
-  private _getImports(particle, absoluteFilePathOrUrl, importStack) {
-    const folder = this.dirname(absoluteFilePathOrUrl)
-    const results = particle
-      .filter(particle => particle.getLine().match(importRegex))
-      .map(async importParticle => {
-        const rawPath = importParticle.getLine().replace("import ", "")
-        let absoluteImportFilePath = this.join(folder, rawPath)
-        if (isUrl(rawPath)) absoluteImportFilePath = rawPath
-        else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
-
-        if (importStack.includes(absoluteImportFilePath) || absoluteImportFilePath === absoluteFilePathOrUrl) {
-          const circularImportError = `Circular import detected: ${[...importStack, absoluteImportFilePath].join(" -> ")}`
-          return {
-            expandedFile: circularImportError,
-            exists: true,
-            absoluteImportFilePath,
-            importParticle,
-            circularImportError,
-            lineCount: particle.numberOfLines
-          }
-        }
-
-        const expandedFile = await this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl])
-        const exists = await this.exists(absoluteImportFilePath)
-        return {
-          expandedFile,
-          exists,
-          absoluteImportFilePath,
-          importParticle,
-          lineCount: expandedFile.lineCount
-        }
-      })
-    return Promise.all(results)
-  }
-
-  private _pendingFuseRequests: { [filepath: string]: Promise<FusedFile> } = {}
-
-  private async _fuseFile(absoluteFilePathOrUrl: string, importStack: string[]): Promise<FusedFile> {
-    const { _pendingFuseRequests } = this
-    if (_pendingFuseRequests[absoluteFilePathOrUrl]) return _pendingFuseRequests[absoluteFilePathOrUrl]
-
-    _pendingFuseRequests[absoluteFilePathOrUrl] = this._fuseFile2(absoluteFilePathOrUrl, importStack)
-    return _pendingFuseRequests[absoluteFilePathOrUrl]
-  }
-
-  private async _fuseFile2(absoluteFilePathOrUrl: string, importStack: string[]): Promise<FusedFile> {
-    const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
-
-    const isImportOnly = importOnlyRegex.test(code)
-
-    // Perf hack
-    // If its a parsers file, it will have no content, just parsers (and maybe imports).
-    // The parsers will already have been processed. We can skip them
-    const stripParsers = absoluteFilePathOrUrl.endsWith(PARSERS_EXTENSION)
-    let processedCode = stripParsers
-      ? code
-          .split("\n")
-          .filter(line => importRegex.test(line))
-          .join("\n")
-      : code
-
-    const lineCount = (processedCode.match(/\n/g) || []).length + 1
-
-    let filepathsWithParserDefinitions: string[]
-    if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
-      filepathsWithParserDefinitions = [absoluteFilePathOrUrl]
-    }
-
-    if (!importRegex.test(processedCode)) {
-      return {
-        fused: processedCode,
-        isImportOnly,
-        filepathsWithParserDefinitions,
-        exists,
-        lineCount
-      }
-    }
-
-    const particle = new Particle(processedCode)
-    // Fetch all imports in parallel
-    const imported = await this._getImports(particle, absoluteFilePathOrUrl, importStack)
-
-    // Assemble all imports
-    let importFilePaths: string[] = []
-    let footers: string[]
-    let hasCircularImportError = false
-    imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError, lineCount } = importResults
-      importFilePaths.push(absoluteImportFilePath)
-      if (expandedFile.importFilePaths) importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
-
-      const originalLine = importParticle.getLine()
-      importParticle.setLine("imported " + absoluteImportFilePath)
-      importParticle.set("exists", `${exists}`)
-      importParticle.set("original", `${originalLine}`)
-      importParticle.set("lines", `${lineCount}`)
-      if (circularImportError) {
-        hasCircularImportError = true
-        importParticle.set("circularImportError", circularImportError)
-      }
-
-      if (expandedFile.footers) footers = (footers || []).concat(expandedFile.footers)
-      if (importParticle.has("footer")) {
-        footers = footers || []
-        footers.push(expandedFile.fused)
-      } else importParticle.insertLinesAfter(expandedFile.fused)
-    })
-
-    const existStates = await Promise.all(importFilePaths.map(file => this.exists(file)))
-    const allImportsExist = !existStates.some(exists => !exists)
-    const importFilepathsWithParserDefinitions = (
-      await Promise.all(
-        importFilePaths.map(async filename => ({
-          filename,
-          hasParser: await this._doesFileHaveParsersDefinitions(filename)
-        }))
-      )
-    )
-      .filter(result => result.hasParser)
-      .map(result => result.filename)
-
-    // todo: add tests for this
-    if (importFilepathsWithParserDefinitions.length) {
-      filepathsWithParserDefinitions = (filepathsWithParserDefinitions || []).concat(importFilepathsWithParserDefinitions)
-    }
-
-    return {
-      importFilePaths,
-      isImportOnly,
-      fused: particle.toString(),
-      lineCount,
-      footers,
-      circularImportError: hasCircularImportError,
-      exists: allImportsExist,
-      filepathsWithParserDefinitions
-    }
-  }
-
-  private async _doesFileHaveParsersDefinitions(absoluteFilePathOrUrl: particlesTypes.filepath) {
-    if (!absoluteFilePathOrUrl) return false
-    const { _parsersExpandersCache } = this
-    if (_parsersExpandersCache[absoluteFilePathOrUrl] === undefined) {
-      const content = await this._storage.read(absoluteFilePathOrUrl)
-      _parsersExpandersCache[absoluteFilePathOrUrl] = !!content.match(parserRegex)
-    }
-    return _parsersExpandersCache[absoluteFilePathOrUrl]
-  }
-
-  private async _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
-    const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
-    return ScrollFileSystem._combineParsers(filePaths, fileContents, baseParsersCode)
-  }
-
-  private async _getParser(filePaths: string[], baseParsersCode = "") {
-    const { _parserCache } = this
-    const key = filePaths
-      .filter(fp => fp)
-      .sort()
-      .join("\n")
-
-    const hit = _parserCache[key]
-    if (hit) return await hit
-
-    _parserCache[key] = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    return await _parserCache[key]
+  makeRelativePath(importer: string, importee: string) {
+    const folder = this.dirname(importer)
+    let absoluteImportFilePath = this.join(folder, importee)
+    if (isUrl(importee)) absoluteImportFilePath = importee
+    else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + importee
+    return absoluteImportFilePath
   }
 
   static _combineParsers(filePaths: string[], fileContents: string[], baseParsersCode = "") {
@@ -635,36 +457,16 @@ class ScrollFileSystem implements Storage {
     this._setDefaultParser("", ["scroll"], [contents])
   }
 
-  clearParserCache(filename: string) {
-    delete this._pendingFuseRequests[filename]
-    delete this._parsersExpandersCache[filename] // todo: cleanup
-    delete this._parserCache[filename]
-  }
-
-  // todo: remove
-  async fuseFile3(absoluteFilePathOrUrl: string, defaultParserCode?: string): Promise<FusedFile> {
-    const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
-
-    if (!defaultParserCode) return fusedFile
-
-    if (fusedFile.filepathsWithParserDefinitions) {
-      const parser = await this._getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
-      fusedFile.parser = parser.parser
-    }
-    return fusedFile
-  }
-
-  // todo: remove
-  async getAllParsers() {
-    return await Promise.all(Object.values(this._parserCache))
-  }
-
   private _fusedFiles = {}
-  async getFusedFile(absolutePath) {
+  async getFusedFile(absolutePath: string) {
+    const file = await this.getFile(absolutePath)
+    await file.singlePassFuse()
+    return file
+  }
+
+  async getFile(absolutePath: string) {
     if (this._fusedFiles[absolutePath]) return this._fusedFiles[absolutePath]
-    const scrollFile = this.defaultFileClass
-    const file = new scrollFile(undefined, absolutePath, this)
-    await file.fuse()
+    const file = new ScrollFile(undefined, absolutePath, this)
     this._fusedFiles[absolutePath] = file
     return file
   }

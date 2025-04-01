@@ -1,6 +1,5 @@
 // todo: as much as we can, remove ScrollFileSystem and move these capabilities into the root Particle class.
-const fs = require("fs")
-const fsp = fs.promises
+const fsp = require("fs").promises
 const path = require("path")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
@@ -228,7 +227,6 @@ class ScrollFile {
     this.codeAtStart = codeAtStart
     this.timeIndex = 0
     this.timestamp = 0
-    this.importOnly = false
     this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
     this.scrollProgram.setFile(this)
   }

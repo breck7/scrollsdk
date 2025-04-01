@@ -1,5 +1,4 @@
 // todo: as much as we can, remove ScrollFileSystem and move these capabilities into the root Particle class.
-const fsp = fs.promises
 const PARSERS_EXTENSION = ".parsers"
 const SCROLL_EXTENSION = ".scroll"
 // Add URL regex pattern
@@ -221,7 +220,6 @@ class ScrollFile {
     this.codeAtStart = codeAtStart
     this.timeIndex = 0
     this.timestamp = 0
-    this.importOnly = false
     this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
     this.scrollProgram.setFile(this)
   }

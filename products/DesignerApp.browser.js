@@ -72,23 +72,6 @@ class DesignerApp extends AbstractParticleComponentParser {
     }
     this._setParsersAndCode(parsers.text, sample)
   }
-  // TODO: ADD TESTS!!!!!
-  async downloadBundleCommand() {
-    const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    const bundle = parsersProgram.toBundle()
-    const languageName = parsersProgram.extensionName
-    return this._makeZipBundle(languageName + ".zip", bundle)
-  }
-  async _makeZipBundle(fileName, bundle) {
-    const zip = new JSZip()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
-    zip.generateAsync({ type: "blob" }).then(content => {
-      // see FileSaver.js
-      saveAs(content, fileName)
-    })
-  }
   _toIceTray(program) {
     const columns = program.programWidth
     const atomTypes = new Particle(program.asAtomTypeParticlesWithParserIds)

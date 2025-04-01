@@ -17,12 +17,6 @@ const GlobalNamespaceAdditions: particlesTypes.stringMap = {
   ParserBackedParticle: "Parsers.js"
 }
 
-interface SimplePredictionModel {
-  matrix: particlesTypes.int[][]
-  idToIndex: { [id: string]: particlesTypes.int }
-  indexToId: { [index: number]: string }
-}
-
 enum ParsersConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
@@ -52,14 +46,6 @@ enum ParsersConstantsConstantTypes {
   string = "string",
   int = "int",
   float = "float"
-}
-
-enum ParsersBundleFiles {
-  package = "package.json",
-  readme = "readme.md",
-  indexHtml = "index.html",
-  indexJs = "index.js",
-  testJs = "test.js"
 }
 
 enum ParsersAtomParser {

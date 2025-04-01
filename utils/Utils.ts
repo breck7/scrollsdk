@@ -224,19 +224,6 @@ class Utils {
     return arr.reduce((curr, next) => curr + next, 0)
   }
 
-  static makeVector(length: number, fill: any = 0) {
-    return new Array(length).fill(fill)
-  }
-
-  static makeMatrix(cols: number, rows: number, fill = 0) {
-    const matrix: number[][] = []
-    while (rows) {
-      matrix.push(Utils.makeVector(cols, fill))
-      rows--
-    }
-    return matrix
-  }
-
   static removeNonAscii(str: string) {
     // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
     return str.replace(/[^\x00-\x7F]/g, "")

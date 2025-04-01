@@ -36,14 +36,6 @@ var ParsersConstantsConstantTypes
   ParsersConstantsConstantTypes["int"] = "int"
   ParsersConstantsConstantTypes["float"] = "float"
 })(ParsersConstantsConstantTypes || (ParsersConstantsConstantTypes = {}))
-var ParsersBundleFiles
-;(function (ParsersBundleFiles) {
-  ParsersBundleFiles["package"] = "package.json"
-  ParsersBundleFiles["readme"] = "readme.md"
-  ParsersBundleFiles["indexHtml"] = "index.html"
-  ParsersBundleFiles["indexJs"] = "index.js"
-  ParsersBundleFiles["testJs"] = "test.js"
-})(ParsersBundleFiles || (ParsersBundleFiles = {}))
 var ParsersAtomParser
 ;(function (ParsersAtomParser) {
   ParsersAtomParser["prefix"] = "prefix"

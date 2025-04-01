@@ -859,31 +859,6 @@ abstract class AbstractParsersBackedAtom<T> {
     return this._synthesizeAtom(seed)
   }
 
-  _getStumpEnumInput(cue: string): string {
-    const atomDef = this.atomTypeDefinition
-    const enumOptions = atomDef._getFromExtended(ParsersConstants.enum)
-    if (!enumOptions) return undefined
-    const options = new Particle(
-      enumOptions
-        .split(" ")
-        .map(option => `option ${option}`)
-        .join("\n")
-    )
-    return `select
- name ${cue}
-${options.toString(1)}`
-  }
-
-  _toStumpInput(cue: string): string {
-    // todo: remove
-    const enumInput = this._getStumpEnumInput(cue)
-    if (enumInput) return enumInput
-    // todo: cleanup. We shouldn't have these dual atomType classes.
-    return `input
- name ${cue}
- placeholder ${this.placeholder}`
-  }
-
   abstract _synthesizeAtom(seed?: number): string
 
   get atomTypeDefinition() {
@@ -938,16 +913,7 @@ class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
   }
 }
 
-abstract class ParsersNumberAtom extends AbstractParsersBackedAtom<number> {
-  _toStumpInput(cue: string): string {
-    return `input
- name ${cue}
- type number
- placeholder ${this.placeholder}
- min ${this.min}
- max ${this.max}`
-  }
-}
+abstract class ParsersNumberAtom extends AbstractParsersBackedAtom<number> {}
 
 class ParsersIntegerAtom extends ParsersNumberAtom {
   _isValid() {
@@ -2223,26 +2189,6 @@ ${properties.join("\n")}
   private _getExtendedParserId(): particlesTypes.parserId {
     const ancestorIds = this.ancestorParserIdsArray
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
-  }
-
-  protected _toStumpString() {
-    const cue = this.cueIfAny
-    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for cue langs
-    if (!atomArray.length)
-      // todo: remove this! just doing it for now until we refactor getAtomArray to handle catchAlls better.
-      return ""
-    const atoms = new Particle(atomArray.map((atom, index) => atom._toStumpInput(cue)).join("\n"))
-    return `div
- label ${cue}
-${atoms.toString(1)}`
-  }
-
-  toStumpString() {
-    const particleBreakSymbol = "\n"
-    return this._getConcreteNonErrorInScopeParticleDefinitions(this._getInScopeParserIds())
-      .map(def => def._toStumpString())
-      .filter(identity => identity)
-      .join(particleBreakSymbol)
   }
 
   private _generateSimulatedLine(seed: number): string {

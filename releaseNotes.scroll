@@ -21,7 +21,7 @@ node_modules/scroll-cli/microlangs/changes.parsers
 thinColumns 4
 
 📦 107.0.0 2025-04-?
-⚠️ BREAKING: removed unused methods `trainModel`, `predictSubparticles`, `predictParents`, `toBundle`, `toSublimeSyntaxFile`
+⚠️ BREAKING: removed unused methods `trainModel`, `predictSubparticles`, `predictParents`, `toBundle`, `toSublimeSyntaxFile`, `toStumpString`
 
 📦 106.0.1 2025-03-29
 🏥 code cleanup

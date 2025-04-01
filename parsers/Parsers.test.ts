@@ -486,40 +486,6 @@ testParticles.blobParsers = equal => {
   equal(anyProgram.topDownArray.map((particle: any) => particle.parserId).length > 0, true, "passed blob regression")
 }
 
-testParticles.toStumpString = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(arrowParsers).compileAndReturnRootParser()
-  const code = new parsersProgram().definition.getParserDefinitionByParserId("chargeParser").toStumpString()
-  const expected = `div
- label amount
- input
-  name amount
-  type number
-  placeholder 9.99
-  min 0
-  max 99999
-div
- label currency
- select
-  name currency
-  option usd
-  option cad
-  option jpy
-div
- label cardNumber
- input
-  name cardNumber
-  placeholder 1111222233334444
-div
- label token
- input
-  name token
-  placeholder sk_test_4eC39H`
-
-  // Assert
-  equal(code, expected, "form correct")
-}
-
 // todo: reenable once we have the requirement of at least 1 root particle
 // testParticles.requiredParsers = equal => {
 //   // Arrange/Act

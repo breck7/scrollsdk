@@ -292,7 +292,6 @@ class ScrollFile {
     this.codeAtStart = codeAtStart
     this.timeIndex = 0
     this.timestamp = 0
-    this.importOnly = false
     this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
     this.scrollProgram.setFile(this)
   }

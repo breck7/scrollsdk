@@ -32,8 +32,6 @@ test parsersSample
   assertLengthIs 3
  extensionName
   assertStringIs testlang
- toSublimeSyntaxFile
-  assertTypeIs string
  isDefined notDefined
   assertStringIs false
  isDefined toParser

@@ -66,34 +66,6 @@ const makeProgram = (parsersCode: string, code: string) => {
   return new rootParser(code)
 }
 
-testParticles.trainAndPredict = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(hakonParsers)
-  const hakonParser = parsersProgram.compileAndReturnRootParser()
-  const testBlankProgram = new hakonParser()
-  const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.subparticlesToString())
-  const model = parsersProgram.trainModel(examples)
-
-  // Assert
-  const predictions = handParsersProgram.predictSubparticles(model, testBlankProgram)
-  equal(predictions[0].id, "selectorParser")
-
-  // Act
-  const bodyParticle = testBlankProgram.appendLine("body")
-
-  // Assert
-  const predictions2 = handParsersProgram.predictSubparticles(model, bodyParticle)
-  equal(predictions2[0].id, "propertyParser")
-
-  // Act
-  const fontSizeParticle = testBlankProgram.appendLine("font-size")
-
-  // Assert
-  const predictions3 = handParsersProgram.predictParents(model, fontSizeParticle)
-  equal(predictions3[0].id, "selectorParser")
-}
-
 testParticles.jibberish = equal => {
   // Arrange
   const sampleJibberishCode = Disk.read(path.join(jibberishRootDir, "sample.jibberish"))
@@ -514,15 +486,6 @@ testParticles.blobParsers = equal => {
   equal(anyProgram.topDownArray.map((particle: any) => particle.parserId).length > 0, true, "passed blob regression")
 }
 
-testParticles.sublimeSyntaxFile = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(jibberishParsersCode)
-  const code = parsersProgram.toSublimeSyntaxFile()
-
-  // Assert
-  equal(code.includes("scope:"), true)
-}
-
 testParticles.toStumpString = equal => {
   // Arrange/Act
   const parsersProgram = new HandParsersProgram(arrowParsers).compileAndReturnRootParser()
@@ -747,17 +710,6 @@ testParticles.invalidParsersRegression = equal => {
   let compiledParser = program.toNodeJsJavascript()
   // Assert
   equal(typeof compiledParser, "string")
-}
-
-testParticles.bundler = equal => {
-  // Arrange
-  const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
-
-  // Act
-  const bundle = jibberishParsersProgram.toBundle()
-
-  // Assert
-  equal(bundle["readme.md"].includes("stats"), true)
 }
 
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)

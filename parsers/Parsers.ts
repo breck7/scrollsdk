@@ -2183,48 +2183,6 @@ ${properties.join("\n")}
     return !this._getFromExtended(ParsersConstants.inScope) && !this._getFromExtended(ParsersConstants.catchAllParser)
   }
 
-  private get sublimeMatchLine() {
-    const regexMatch = this.regexMatch
-    if (regexMatch) return `'${regexMatch}'`
-    const cueMatch = this.cueIfAny
-    if (cueMatch) return `'^ *${Utils.escapeRegExp(cueMatch)}(?: |$)'`
-    const enumOptions = this.cueEnumOptions
-    if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
-  }
-
-  // todo: refactor. move some parts to atomParser?
-  _toSublimeMatchBlock() {
-    const defaultPaint = "source"
-    const program = this.languageDefinitionProgram
-    const atomParser = this.atomParser
-    const requiredAtomTypeIds = atomParser.getRequiredAtomTypeIds()
-    const catchAllAtomTypeId = atomParser.catchAllAtomTypeId
-    const cueTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
-    const cuePaint = (cueTypeDef ? cueTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
-    const topHalf = ` '${this.parserIdFromDefinition}':
-  - match: ${this.sublimeMatchLine}
-    scope: ${cuePaint}`
-    if (catchAllAtomTypeId) requiredAtomTypeIds.push(catchAllAtomTypeId)
-    if (!requiredAtomTypeIds.length) return topHalf
-    const captures = requiredAtomTypeIds
-      .map((atomTypeId, index) => {
-        const atomTypeDefinition = program.getAtomTypeDefinitionById(atomTypeId) // todo: cleanup
-        if (!atomTypeDefinition) throw new Error(`No ${ParsersConstants.atomType} ${atomTypeId} found`) // todo: standardize error/capture error at parsers time
-        return `        ${index + 1}: ${(atomTypeDefinition.paint || defaultPaint) + "." + atomTypeDefinition.atomTypeId}`
-      })
-      .join("\n")
-
-    const atomTypesToRegex = (atomTypeIds: string[]) => atomTypeIds.map((atomTypeId: string) => `({{${atomTypeId}}})?`).join(" ?")
-
-    return `${topHalf}
-    push:
-     - match: ${atomTypesToRegex(requiredAtomTypeIds)}
-       captures:
-${captures}
-     - match: $
-       pop: true`
-  }
-
   private _cache_parserInheritanceSet: Set<particlesTypes.parserId>
   private _cache_ancestorParserIdsArray: particlesTypes.parserId[]
 
@@ -2457,71 +2415,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return ""
   }
 
-  trainModel(programs: string[], rootParser = this.compileAndReturnRootParser()): SimplePredictionModel {
-    const particleDefs = this.validConcreteAndAbstractParserDefinitions
-    const particleDefCountIncludingRoot = particleDefs.length + 1
-    const matrix = Utils.makeMatrix(particleDefCountIncludingRoot, particleDefCountIncludingRoot, 0)
-    const idToIndex: { [id: string]: number } = {}
-    const indexToId: { [index: number]: string } = {}
-    particleDefs.forEach((def, index) => {
-      const id = def.id
-      idToIndex[id] = index + 1
-      indexToId[index + 1] = id
-    })
-    programs.forEach(code => {
-      const exampleProgram = new rootParser(code)
-      exampleProgram.topDownArray.forEach((particle: ParserBackedParticle) => {
-        const particleIndex = idToIndex[particle.definition.id]
-        const parentParticle = <ParserBackedParticle>particle.parent
-        if (!particleIndex) return undefined
-        if (parentParticle.isRoot()) matrix[0][particleIndex]++
-        else {
-          const parentIndex = idToIndex[parentParticle.definition.id]
-          if (!parentIndex) return undefined
-          matrix[parentIndex][particleIndex]++
-        }
-      })
-    })
-    return {
-      idToIndex,
-      indexToId,
-      matrix
-    }
-  }
-
-  private _mapPredictions(predictionsVector: number[], model: SimplePredictionModel) {
-    const total = Utils.sum(predictionsVector)
-    const predictions = predictionsVector.slice(1).map((count, index) => {
-      const id = model.indexToId[index + 1]
-      return {
-        id,
-        def: this.getParserDefinitionByParserId(id),
-        count,
-        prob: count / total
-      }
-    })
-    predictions.sort(Utils.makeSortByFn((prediction: any) => prediction.count)).reverse()
-    return predictions
-  }
-
-  predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return this._mapPredictions(this._predictSubparticles(model, particle), model)
-  }
-
-  predictParents(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return this._mapPredictions(this._predictParents(model, particle), model)
-  }
-
-  private _predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return model.matrix[particle.isRoot() ? 0 : model.idToIndex[particle.definition.id]]
-  }
-
-  private _predictParents(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    if (particle.isRoot()) return []
-    const particleIndex = model.idToIndex[particle.definition.id]
-    return model.matrix.map(row => row[particleIndex])
-  }
-
   // todo: hacky, remove
   private _dirName: string
   _setDirName(name: string) {
@@ -2578,55 +2471,6 @@ list
  - ${languageName} has ${Object.keys(atomTypes).length} atom types.
  - The source code for ${languageName} is ${this.topDownArray.length} lines long.
 `
-  }
-
-  toBundle() {
-    const files: particlesTypes.stringMap = {}
-    const rootParticleDef = this.rootParserDefinition
-    const languageName = this.extensionName
-    const example = rootParticleDef.examples[0]
-    const sampleCode = example ? example.subparticlesToString() : ""
-
-    files[ParsersBundleFiles.package] = JSON.stringify(
-      {
-        name: languageName,
-        private: true,
-        dependencies: {
-          scrollsdk: Particle.getVersion()
-        }
-      },
-      null,
-      2
-    )
-    files[ParsersBundleFiles.readme] = this.toReadMe()
-
-    const testCode = `const program = new ${languageName}(sampleCode)
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.message))`
-
-    const nodePath = `${languageName}.node.js`
-    files[nodePath] = this.toNodeJsJavascript()
-    files[ParsersBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
-
-    const browserPath = `${languageName}.browser.js`
-    files[browserPath] = this.toBrowserJavascript()
-    files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Particle.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
-<script src="${browserPath}"></script>
-<script>
-const sampleCode = \`${sampleCode.toString()}\`
-${testCode}
-</script>`
-
-    const samplePath = "sample." + this.extensionName
-    files[samplePath] = sampleCode.toString()
-    files[ParsersBundleFiles.testJs] = `const ${languageName} = require("./index.js")
-/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
-${testCode}`
-    return files
   }
 
   private _cache_atomTypes: {
@@ -2784,32 +2628,6 @@ ${parserClasses}
 ${exportScript}
 }
 `
-  }
-
-  toSublimeSyntaxFile(fileExtensions = "") {
-    const atomTypeDefs = this.atomTypeDefinitions
-    const variables = Object.keys(atomTypeDefs)
-      .map(name => ` ${name}: '${atomTypeDefs[name].regexString}'`)
-      .join("\n")
-
-    const defs = this.validConcreteAndAbstractParserDefinitions.filter(kw => !kw._isAbstract())
-    const parserContexts = defs.map(def => def._toSublimeMatchBlock()).join("\n\n")
-    const includes = defs.map(parserDef => `  - include: '${parserDef.parserIdFromDefinition}'`).join("\n")
-
-    return `%YAML 1.2
----
-name: ${this.extensionName}
-file_extensions: [${fileExtensions}]
-scope: source.${this.extensionName}
-
-variables:
-${variables}
-
-contexts:
- main:
-${includes}
-
-${parserContexts}`
   }
 }
 

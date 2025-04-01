@@ -9,7 +9,6 @@ declare var parsersParser: any
 // todo: get typings in here.
 declare var CodeMirror: any
 declare var saveAs: any
-declare var JSZip: any
 declare var dumbdownParser: any
 declare type html = string
 
@@ -89,26 +88,6 @@ class DesignerApp extends AbstractParticleComponentParser {
     }
 
     this._setParsersAndCode(parsers.text, sample)
-  }
-
-  // TODO: ADD TESTS!!!!!
-  async downloadBundleCommand() {
-    const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    const bundle = parsersProgram.toBundle()
-    const languageName = parsersProgram.extensionName
-    return this._makeZipBundle(languageName + ".zip", bundle)
-  }
-
-  private async _makeZipBundle(fileName: string, bundle: any) {
-    const zip = new JSZip()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
-
-    zip.generateAsync({ type: "blob" }).then((content: any) => {
-      // see FileSaver.js
-      saveAs(content, fileName)
-    })
   }
 
   private _toIceTray(program: any) {

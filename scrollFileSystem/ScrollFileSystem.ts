@@ -1,6 +1,5 @@
 // todo: as much as we can, remove ScrollFileSystem and move these capabilities into the root Particle class.
-const fs = require("fs")
-const fsp = fs.promises
+const fsp = require("fs").promises
 const path = require("path")
 
 import { particlesTypes } from "../products/particlesTypes"

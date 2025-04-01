@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class chuckParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(this._getBlobParserCatchAllParser(), undefined, [

@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class poopParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { "🌄": dayParser }), [

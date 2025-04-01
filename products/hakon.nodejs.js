@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class hakonParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(selectorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { comment: commentParser }), undefined)

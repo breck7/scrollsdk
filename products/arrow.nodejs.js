@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class commentParser extends ParserBackedParticle {
     get commentAtom() {
       return this.getAtom(0)

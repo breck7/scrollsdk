@@ -101,8 +101,6 @@ enum ParsersConstants {
   uniqueLine = "uniqueLine", // Can't have duplicate lines.
   tags = "tags",
 
-  _rootNodeJsHeader = "_rootNodeJsHeader", // todo: remove
-
   // default catchAll parser
   BlobParser = "BlobParser",
   DefaultRootParser = "DefaultRootParser",
@@ -1782,7 +1780,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.javascript,
       ParsersConstants.single,
@@ -2529,7 +2526,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootParserDefinition
-    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(ParsersConstants._rootNodeJsHeader)
     const rootName = rootDef.generatedClassName
 
     if (!rootName) throw new Error(`Root Particle Type Has No Name`)
@@ -2554,7 +2550,6 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the parsers, which we preserve.
     return `{
 ${nodeJsImports}
-${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${parserClasses}
 
 ${exportScript}

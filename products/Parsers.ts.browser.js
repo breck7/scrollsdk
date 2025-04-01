@@ -84,7 +84,6 @@ var ParsersConstants
   ParsersConstants["single"] = "single"
   ParsersConstants["uniqueLine"] = "uniqueLine"
   ParsersConstants["tags"] = "tags"
-  ParsersConstants["_rootNodeJsHeader"] = "_rootNodeJsHeader"
   // default catchAll parser
   ParsersConstants["BlobParser"] = "BlobParser"
   ParsersConstants["DefaultRootParser"] = "DefaultRootParser"
@@ -1428,7 +1427,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.javascript,
       ParsersConstants.single,
@@ -2027,7 +2025,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootParserDefinition
-    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(ParsersConstants._rootNodeJsHeader)
     const rootName = rootDef.generatedClassName
     if (!rootName) throw new Error(`Root Particle Type Has No Name`)
     let exportScript = ""
@@ -2048,7 +2045,6 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the parsers, which we preserve.
     return `{
 ${nodeJsImports}
-${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${parserClasses}
 
 ${exportScript}

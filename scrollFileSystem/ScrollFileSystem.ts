@@ -44,9 +44,6 @@ interface Storage {
 
 // Add URL regex pattern
 const urlRegex = /^https?:\/\/[^ ]+$/i
-const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
-const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$|https?:\/\/.+\.(scroll|parsers)$)/gm
-const importOnlyRegex = /^importOnly/
 
 const isUrl = (path: string) => urlRegex.test(path)
 

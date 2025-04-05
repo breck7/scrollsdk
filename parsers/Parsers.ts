@@ -142,6 +142,17 @@ abstract class ParserBackedParticle extends Particle {
     return this._definition
   }
 
+  registerParser(parserCode: string) {
+    // Todo: hacky as shit for now. Thats fine.
+    const root = this.root
+    const currentParserCode = root.constructor._parserSourceCode
+    const parsersProgram = new HandParsersProgram(currentParserCode + parserCode)
+    const rootParser = parsersProgram.compileAndReturnRootParser()
+    const basicProgram = new rootParser()
+    const newParserPool = basicProgram._getParserPool()
+    Particle._parserPools.set(root.constructor, newParserPool)
+  }
+
   get rootParsersParticles() {
     return this.definition.root
   }
@@ -2090,7 +2101,8 @@ ${properties.join("\n")}
     const thisClassName = this.generatedClassName
 
     if (this._amIRoot()) {
-      components.push(`static cachedHandParsersProgramRoot = new HandParsersProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
+      components.push(`static _parserSourceCode = \`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`
+        static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
         get handParsersProgram() {
           return this.constructor.cachedHandParsersProgramRoot
       }`)

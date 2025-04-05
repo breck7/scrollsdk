@@ -678,6 +678,50 @@ testParticles.invalidParsersRegression = equal => {
   equal(typeof compiledParser, "string")
 }
 
+testParticles.addRunTimeParser = equal => {
+  const parsers = `// Atom Parsers
+nameAtom
+ description A person's name
+ paint string
+cueAtom
+ paint keyword
+
+// Line Parsers
+newlangParser
+ root
+ description A basic root parser.
+ catchAllParser catchAllErrorParser
+ inScope helloParser
+helloParser
+ int luckyNumber 7
+ catchAllAtomType nameAtom
+ atoms cueAtom
+ cue hello
+catchAllErrorParser
+ baseParser errorParser`
+
+  // Arrange
+  const parsersProgram = new HandParsersProgram(parsers)
+  const rootParser = parsersProgram.compileAndReturnRootParser()
+
+  // Act/Assert
+  const basicProgram = new rootParser(`hello Mom`)
+  equal(basicProgram.particleAt(0).luckyNumber, 7, "Basics work")
+
+  const byeParser = `byeParser
+ int luckyNumber 42
+ atoms cueAtom
+ cue bye`
+
+  // Act
+  // Now we need to add a Parser.
+  basicProgram.registerParser(byeParser)
+
+  // Assert
+  basicProgram.appendLine("bye")
+  equal(basicProgram.particleAt(1).luckyNumber, 42, "registerParser work")
+}
+
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
 Object.assign(testParticles, jibberishParsersProgram.examplesToTestBlocks())
 

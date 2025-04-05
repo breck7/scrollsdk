@@ -145,8 +145,9 @@ abstract class ParserBackedParticle extends Particle {
   registerParser(parserCode: string) {
     // Todo: hacky as shit for now. Thats fine.
     const root = this.root
-    const currentParserCode = root.constructor._parserSourceCode
-    const parsersProgram = new HandParsersProgram(currentParserCode + parserCode)
+    if (!root._parserCode) root._parserCode = root.constructor._parserSourceCode + "\n" + parserCode
+    else root._parserCode += "\n" + parserCode
+    const parsersProgram = new HandParsersProgram(root._parserCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
     const basicProgram = new rootParser()
     const newParserPool = basicProgram._getParserPool()

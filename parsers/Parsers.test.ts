@@ -711,6 +711,7 @@ catchAllErrorParser
   const byeParser = `byeParser
  int luckyNumber 42
  atoms cueAtom
+ extends helloParser
  cue bye`
 
   // Act

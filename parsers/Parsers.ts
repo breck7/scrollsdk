@@ -158,6 +158,7 @@ abstract class ParserBackedParticle extends Particle {
     const parsersProgram = new HandParsersProgram(root._parserCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
     const basicProgram = new rootParser()
+    root._modifiedConstructor = rootParser
     root._definition = parsersProgram
     root._parserPool = basicProgram._getParserPool()
     // Clear parser cache.

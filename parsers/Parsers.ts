@@ -135,6 +135,9 @@ class TypedAtom extends ParticleAtom {
 // todo: can we merge these methods into base Particle and ditch this class?
 abstract class ParserBackedParticle extends Particle {
   private _definition: AbstractParserDefinitionParser | HandParsersProgram | parserDefinitionParser
+
+  // Returns a pointer to the Particle containing the parser definition. In the future this will
+  // be in the same file. Right now we still have the split between Parser definitions and program code.
   get definition(): AbstractParserDefinitionParser | HandParsersProgram | parserDefinitionParser {
     if (this._definition) return this._definition
 
@@ -144,13 +147,21 @@ abstract class ParserBackedParticle extends Particle {
 
   registerParser(parserCode: string) {
     // Todo: hacky as shit for now. Thats fine.
+    // What we do here is if a parser comes in we recreate the entire root parser.
+    // What we actually want to do is just minimally update the parser pool.
+    // We can do that later, but it is sort of time to look at moving the Parsers
+    // concept directly into Particles, perhaps even with a bit of a rewrite, and
+    // remove a lot of the classes in this file.
     const root = this.root
     if (!root._parserCode) root._parserCode = root.constructor._parserSourceCode + "\n" + parserCode
     else root._parserCode += "\n" + parserCode
     const parsersProgram = new HandParsersProgram(root._parserCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
     const basicProgram = new rootParser()
+    root._definition = parsersProgram
     root._parserPool = basicProgram._getParserPool()
+    // Clear parser cache.
+    delete this._parserIdIndex
   }
 
   get rootParsersParticles() {
@@ -300,7 +311,7 @@ abstract class ParserBackedParticle extends Particle {
     if (!parserOrder.length) return this
     const orderMap: particlesTypes.stringMap = {}
     parserOrder.forEach((atom, index) => (orderMap[atom] = index))
-    this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
+    this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.parserId]))
     return this
   }
 
@@ -340,7 +351,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   findAllParticlesWithParser(parserId: particlesTypes.parserId) {
-    return this.topDownArray.filter((particle: ParserBackedParticle) => particle.definition.parserIdFromDefinition === parserId)
+    return this.topDownArray.filter((particle: ParserBackedParticle) => particle.parserId === parserId)
   }
 
   toAtomTypeParticles() {
@@ -519,7 +530,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get parserId(): particlesTypes.parserId {
-    return this.definition.parserIdFromDefinition
+    return this.definition.cue
   }
 
   get atomTypes() {
@@ -1147,7 +1158,7 @@ abstract class AbstractParticleError implements particlesTypes.ParticleError {
   }
 
   get parserId(): string {
-    return (<ParserBackedParticle>this.getParticle()).definition.parserIdFromDefinition
+    return (<ParserBackedParticle>this.getParticle()).parserId
   }
 
   private _getCodeMirrorLineWidgetElementAtomTypeHints() {
@@ -1868,7 +1879,7 @@ ${properties.join("\n")}
   }
 
   get parserIdFromDefinition(): particlesTypes.parserId {
-    return this.getAtom(0)
+    return this.cue
   }
 
   // todo: remove? just reused parserId

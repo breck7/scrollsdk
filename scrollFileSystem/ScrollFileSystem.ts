@@ -19,17 +19,6 @@ interface OpenedFile {
   stats: any // https://nodejs.org/api/fs.html#class-fsstats
 }
 
-interface FusedFile {
-  fused: string // codeWithoutImportsNorParserDefinitions
-  footers?: string[]
-  importFilePaths?: string[]
-  isImportOnly: boolean
-  parser?: particlesTypes.particle
-  filepathsWithParserDefinitions?: string[]
-  exists: boolean
-  circularImportError?: boolean
-}
-
 interface Storage {
   read(absolutePath: string): Promise<string>
   exists(absolutePath: string): Promise<boolean>

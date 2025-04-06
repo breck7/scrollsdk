@@ -329,6 +329,9 @@ class ScrollFileSystem {
     else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + importee
     return absoluteImportFilePath
   }
+  static sortParsers(code) {
+    return new parsersParser(code)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
+  }
   static _combineParsers(filePaths, fileContents, baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
@@ -341,7 +344,7 @@ class ScrollFileSystem {
         .join("\n")
     })
     const asOneFile = mapped.join("\n").trim()
-    const sorted = new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
+    const sorted = this.sortParsers(baseParsersCode + "\n" + asOneFile)
     const parsersCode = sorted.asString
     return {
       parsersParser: sorted,

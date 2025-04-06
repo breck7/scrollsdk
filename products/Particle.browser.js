@@ -1572,7 +1572,7 @@ class Particle extends AbstractParticle {
   }
   async _transformAndAppendBlockAsync(block) {
     const rootParticle = this.root
-    if (this._beforeAppend) this._beforeAppend(block)
+    if (this._beforeAppend) this._beforeAppend(block) // todo: clean this up and document it.
     if (rootParticle.particleTransformers) {
       // A macro may return multiple new blocks.
       const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)

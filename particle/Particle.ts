@@ -1650,7 +1650,8 @@ class Particle extends AbstractParticle {
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
   split(cue: particlesTypes.atom): Particle[] {
-    const constructor = <any>this.constructor
+    // todo: cleanup
+    const constructor = this._modifiedConstructor || <any>this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const AtomBreakSymbol = this.atomBreakSymbol
 

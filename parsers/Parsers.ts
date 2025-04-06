@@ -145,7 +145,7 @@ abstract class ParserBackedParticle extends Particle {
     return this._definition
   }
 
-  registerParser(parserCode: string) {
+  registerParsers(parserCode: string) {
     // Todo: hacky as shit for now. Thats fine.
     // What we do here is if a parser comes in we recreate the entire root parser.
     // What we actually want to do is just minimally update the parser pool.

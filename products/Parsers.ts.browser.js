@@ -118,7 +118,7 @@ class ParserBackedParticle extends Particle {
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
     return this._definition
   }
-  registerParser(parserCode) {
+  registerParsers(parserCode) {
     // Todo: hacky as shit for now. Thats fine.
     // What we do here is if a parser comes in we recreate the entire root parser.
     // What we actually want to do is just minimally update the parser pool.

@@ -8,7 +8,7 @@
     createParserPool() {
       return new Particle.ParserPool(errorParser, Object.assign(Object.assign({}, super.createParserPool()._getCueMapAsObject()), { apple: appleParser }), undefined)
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameAtom
+    static _parserSourceCode = `fruitNameAtom
  paint keyword
 fruitParser
  description A useless language to test scoped parsers.
@@ -27,7 +27,8 @@ appleParser
  bananaParser
   extends abstractFruitParser
 errorParser
- baseParser errorParser`)
+ baseParser errorParser`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

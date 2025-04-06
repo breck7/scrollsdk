@@ -29,7 +29,7 @@
         [{ regex: /^$/, parser: blankLineParser }]
       )
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 anyAtom
 blankAtom
 dashAtom
@@ -160,7 +160,8 @@ title6Parser
 quickParagraphParser
  catchAllAtomType textAtom
  compiler
-  stringTemplate <p>{textAtom}</p>`)
+  stringTemplate <p>{textAtom}</p>`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

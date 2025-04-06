@@ -25,7 +25,7 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+    static _parserSourceCode = `// Atom parsers
 dateIntAtom
  paint constant.numeric.integer
 monthIntAtom
@@ -139,7 +139,8 @@ dayParser
    return Utils.removeNonAscii(this.getLine())
     .trim()
     .replace(/ /g, "/")
-  }`)
+  }`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

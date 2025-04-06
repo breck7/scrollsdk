@@ -225,7 +225,6 @@ class ScrollFile {
     this.fileSystem = fileSystem
     this.filePath = absoluteFilePath
     this.codeAtStart = codeAtStart
-    this.timeIndex = 0
     this.timestamp = 0
     this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
     this.scrollProgram.setFile(this)
@@ -386,9 +385,7 @@ class ScrollFileSystem {
     for (let filePath of allFiles) {
       loadedFiles.push(await this.getFusedFile(filePath))
     }
-    const sorted = loadedFiles.sort((a, b) => b.timestamp - a.timestamp)
-    sorted.forEach((file, index) => (file.timeIndex = index))
-    this._folderCache[folderPath] = sorted
+    this._folderCache[folderPath] = loadedFiles
     return this._folderCache[folderPath]
   }
 }

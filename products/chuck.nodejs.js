@@ -13,7 +13,7 @@
         { regex: /^[\d\. ]+$/, parser: onlyNumbersParser }
       ])
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Make this compile and execute
+    static _parserSourceCode = `// todo Make this compile and execute
 
 // Atom Parsers
 operatorAtom
@@ -41,7 +41,8 @@ printParser
  pattern print
 onlyNumbersParser
  catchAllAtomType floatAtom
- pattern ^[\\d\\. ]+$`)
+ pattern ^[\\d\\. ]+$`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

@@ -16,7 +16,7 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
+    static _parserSourceCode = `// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 // todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 
 // Atom Parsers
@@ -86,7 +86,8 @@ memberParser
   stringTemplate "{stringAtom}" :
  atoms stringAtom
 errorParser
- baseParser errorParser`)
+ baseParser errorParser`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

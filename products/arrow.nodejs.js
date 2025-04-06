@@ -23,7 +23,7 @@
     compile() {
       return this.asJsonSubset
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+    static _parserSourceCode = `// Atom parsers
 cueAtom
  enum charge cardNumber amount currency description token
 floatAtom
@@ -100,7 +100,8 @@ descriptionParser
  catchAllAtomType descriptionAtom
 tokenParser
  cueFromId
- atoms cueAtom tokenAtom`)
+ atoms cueAtom tokenAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

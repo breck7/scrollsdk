@@ -79,7 +79,7 @@
       const pathStartIndex = rootFolderPath.length + 1
       return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo File permissions
+    static _parserSourceCode = `// todo File permissions
 
 // Atom parsers
 anyAtom
@@ -233,7 +233,8 @@ folderParser
    const fs = require("fs")
    fs.mkdirSync(path, {recursive: true})
   }
- cue folder`)
+ cue folder`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

@@ -111,10 +111,31 @@ class TypedAtom extends ParticleAtom {
 }
 // todo: can we merge these methods into base Particle and ditch this class?
 class ParserBackedParticle extends Particle {
+  // Returns a pointer to the Particle containing the parser definition. In the future this will
+  // be in the same file. Right now we still have the split between Parser definitions and program code.
   get definition() {
     if (this._definition) return this._definition
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
     return this._definition
+  }
+  registerParser(parserCode) {
+    // Todo: hacky as shit for now. Thats fine.
+    // What we do here is if a parser comes in we recreate the entire root parser.
+    // What we actually want to do is just minimally update the parser pool.
+    // We can do that later, but it is sort of time to look at moving the Parsers
+    // concept directly into Particles, perhaps even with a bit of a rewrite, and
+    // remove a lot of the classes in this file.
+    const root = this.root
+    if (!root._parserCode) root._parserCode = root.constructor._parserSourceCode + "\n" + parserCode
+    else root._parserCode += "\n" + parserCode
+    const parsersProgram = new HandParsersProgram(root._parserCode)
+    const rootParser = parsersProgram.compileAndReturnRootParser()
+    const basicProgram = new rootParser()
+    root._modifiedConstructor = rootParser
+    root._definition = parsersProgram
+    root._parserPool = basicProgram._getParserPool()
+    // Clear parser cache.
+    delete this._parserIdIndex
   }
   get rootParsersParticles() {
     return this.definition.root
@@ -231,7 +252,7 @@ class ParserBackedParticle extends Particle {
     if (!parserOrder.length) return this
     const orderMap = {}
     parserOrder.forEach((atom, index) => (orderMap[atom] = index))
-    this.sort(Utils.makeSortByFn(runtimeParticle => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
+    this.sort(Utils.makeSortByFn(runtimeParticle => orderMap[runtimeParticle.parserId]))
     return this
   }
   get requiredParticleErrors() {
@@ -265,7 +286,7 @@ class ParserBackedParticle extends Particle {
     return this.allTypedAtoms.filter(typedAtom => typedAtom.type === atomTypeId)
   }
   findAllParticlesWithParser(parserId) {
-    return this.topDownArray.filter(particle => particle.definition.parserIdFromDefinition === parserId)
+    return this.topDownArray.filter(particle => particle.parserId === parserId)
   }
   toAtomTypeParticles() {
     return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.lineAtomTypes).join("\n")
@@ -417,7 +438,7 @@ class ParserBackedParticle extends Particle {
     return this.isRoot() ? new Particle.ParserPool(BlobParser) : new Particle.ParserPool(this.parent._getParserPool()._getCatchAllParser(this.parent), {})
   }
   get parserId() {
-    return this.definition.parserIdFromDefinition
+    return this.definition.cue
   }
   get atomTypes() {
     return this.parsedAtoms.filter(atom => atom.getAtom() !== undefined)
@@ -905,7 +926,7 @@ class AbstractParticleError {
     return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
   }
   get parserId() {
-    return this.getParticle().definition.parserIdFromDefinition
+    return this.getParticle().parserId
   }
   _getCodeMirrorLineWidgetElementAtomTypeHints() {
     const el = document.createElement("div")
@@ -1493,7 +1514,7 @@ ${properties.join("\n")}
     return this._getSubparticlesByParserInExtended(ParsersExampleParser)
   }
   get parserIdFromDefinition() {
-    return this.getAtom(0)
+    return this.cue
   }
   // todo: remove? just reused parserId
   get generatedClassName() {
@@ -1679,7 +1700,8 @@ ${properties.join("\n")}
     const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.atomGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
     const thisClassName = this.generatedClassName
     if (this._amIRoot()) {
-      components.push(`static cachedHandParsersProgramRoot = new HandParsersProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
+      components.push(`static _parserSourceCode = \`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`
+        static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
         get handParsersProgram() {
           return this.constructor.cachedHandParsersProgramRoot
       }`)
@@ -2059,8 +2081,6 @@ HandParsersProgram.parserFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConsta
 HandParsersProgram.blankLineRegex = new RegExp("^$")
 HandParsersProgram.atomTypeSuffixRegex = new RegExp(ParsersConstants.atomTypeSuffix + "$")
 HandParsersProgram.atomTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.atomTypeSuffix + "$")
-HandParsersProgram._languages = {}
-HandParsersProgram._parsers = {}
 const PreludeKinds = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
 PreludeKinds[PreludeAtomTypeIds.cueAtom] = ParsersCueAtom

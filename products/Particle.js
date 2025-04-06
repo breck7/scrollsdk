@@ -144,21 +144,6 @@ class ParserPool {
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
   async appendParticleAsync(parentParticle, block) {
-    const rootParticle = parentParticle.root
-    if (rootParticle.particleTransformers) {
-      // A macro may return multiple new blocks.
-      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
-      const newParticles = []
-      for (const [newBlockIndex, block] of blocks.entries()) {
-        const particle = await this._appendParticleAsync(parentParticle, block)
-        newParticles.push(particle)
-      }
-      return newParticles[0]
-    }
-    const newParticle = await this._appendParticleAsync(parentParticle, block)
-    return newParticle
-  }
-  async _appendParticleAsync(parentParticle, block) {
     const index = parentParticle.length
     const parser = this._getMatchingParser(block, parentParticle, index)
     const { particleBreakSymbol } = parentParticle
@@ -1425,7 +1410,8 @@ class Particle extends AbstractParticle {
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
   split(cue) {
-    const constructor = this.constructor
+    // todo: cleanup
+    const constructor = this._modifiedConstructor || this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const AtomBreakSymbol = this.atomBreakSymbol
     // todo: cleanup. the escaping is wierd.
@@ -1569,10 +1555,30 @@ class Particle extends AbstractParticle {
     const parserPool = this._getParserPool()
     return blocks.map((block, index) => parserPool.createParticle(this, block))
   }
+  async _appendBlockAsync(block) {
+    // We need to keep grapping the parserPool in case it changed.
+    // todo: cleanup and perf optimize
+    let parserPool = this._getParserPool()
+    await parserPool.appendParticleAsync(this, block)
+  }
+  async _transformAndAppendBlockAsync(block) {
+    const rootParticle = this.root
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+      const newParticles = []
+      for (const [newBlockIndex, block] of blocks.entries()) {
+        const particle = await this._appendBlockAsync(block)
+        newParticles.push(particle)
+      }
+      return newParticles[0]
+    }
+    const newParticle = await this._appendBlockAsync(block)
+    return newParticle
+  }
   async appendFromStream(input) {
     var _a, e_1, _b, _c
     const { edgeSymbol, particleBreakSymbol } = this
-    const parserPool = this._getParserPool()
     let buffer = ""
     const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
     // Node.js Readable stream
@@ -1589,7 +1595,7 @@ class Particle extends AbstractParticle {
               if (breakIndex === -1) break
               const block = buffer.slice(0, breakIndex)
               buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
-              await parserPool.appendParticleAsync(this, block)
+              await this._transformAndAppendBlockAsync(block)
             }
           } finally {
             _d = true
@@ -1605,7 +1611,7 @@ class Particle extends AbstractParticle {
         }
       }
       // Process remaining buffer
-      await parserPool.appendParticleAsync(this, buffer)
+      await this._transformAndAppendBlockAsync(buffer)
     }
     // Browser ReadableStream
     else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
@@ -1620,11 +1626,11 @@ class Particle extends AbstractParticle {
             if (breakIndex === -1) break
             const block = buffer.slice(0, breakIndex)
             buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
-            await parserPool.appendParticleAsync(this, block)
+            await this._transformAndAppendBlockAsync(block)
           }
         }
         // Process remaining buffer
-        await parserPool.appendParticleAsync(this, buffer)
+        await this._transformAndAppendBlockAsync(buffer)
       } finally {
         reader.releaseLock()
       }
@@ -1637,9 +1643,9 @@ class Particle extends AbstractParticle {
         if (breakIndex === -1) break
         const block = buffer.slice(0, breakIndex)
         buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
-        await parserPool.appendParticleAsync(this, block)
+        await this._transformAndAppendBlockAsync(block)
       }
-      await parserPool.appendParticleAsync(this, buffer)
+      await this._transformAndAppendBlockAsync(buffer)
     } else {
       throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
     }
@@ -1664,6 +1670,17 @@ class Particle extends AbstractParticle {
   }
   getParticleByParser(parser) {
     return this.find(subparticle => subparticle instanceof parser)
+  }
+  // todo: switch to native classes and parsers in particles and away from javascript classes for parsing.
+  // move off particle.ts
+  // make the below work.
+  // By default every particle has a parser. By default they all match to the first particle.
+  get parser() {
+    return this._parser || this.root.particleAt(0)
+  }
+  // The parserId of a particle at the moment is defined as the cue of the parser it is matched to.
+  get parserId() {
+    return this.parser.cue
   }
   indexOfLast(cue) {
     const result = this._getCueIndex()[cue]
@@ -1794,8 +1811,9 @@ class Particle extends AbstractParticle {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
   _getParserPool() {
-    if (!Particle._parserPools.has(this.constructor)) Particle._parserPools.set(this.constructor, this.createParserPool())
-    return Particle._parserPools.get(this.constructor)
+    if (this._parserPool) return this._parserPool
+    if (!Particle._parserPoolsCache.has(this.constructor)) Particle._parserPoolsCache.set(this.constructor, this.createParserPool())
+    return Particle._parserPoolsCache.get(this.constructor)
   }
   createParserPool() {
     return new ParserPool(this.constructor)
@@ -2773,7 +2791,7 @@ class Particle extends AbstractParticle {
     return particle
   }
 }
-Particle._parserPools = new Map()
+Particle._parserPoolsCache = new Map()
 Particle.ParserPool = ParserPool
 Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -2786,7 +2804,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "106.0.1"
+Particle.getVersion = () => "107.0.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)

@@ -1427,6 +1427,24 @@ b`
   )
 }
 
+testParticles.replaceWith = equal => {
+  // Arrange
+  const test = new Particle(`a
+b`)
+  const a = test.getParticle("a")
+
+  // Act
+  a.replaceWith(`c\nd`)
+
+  // Assert
+  equal(
+    test.asString,
+    `c
+d
+b`
+  )
+}
+
 testParticles.fromSsv = equal => {
   // Arrange/Act
   const a = Particle.fromSsv(testStrings.ssv)

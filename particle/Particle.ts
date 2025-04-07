@@ -2603,6 +2603,15 @@ class Particle extends AbstractParticle {
     return results
   }
 
+  replaceWith(blocks: string) {
+    const split = splitBlocks(blocks, SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE).reverse()
+    const parent = this.parent
+    const index = this.index
+    const newParticles = split.map((block, newBlockIndex) => parent._insertBlock(block, index))
+    this.destroy()
+    return newParticles
+  }
+
   replaceParticle(fn: (thisStr: string) => string) {
     const parent = this.parent
     const index = this.index

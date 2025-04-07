@@ -132,6 +132,7 @@ class TypedAtom extends ParticleAtom {
   }
 }
 
+const _parserPoolCache = {}
 // todo: can we merge these methods into base Particle and ditch this class?
 abstract class ParserBackedParticle extends Particle {
   private _definition: AbstractParserDefinitionParser | HandParsersProgram | parserDefinitionParser
@@ -145,7 +146,7 @@ abstract class ParserBackedParticle extends Particle {
     return this._definition
   }
 
-  registerParsers(parserCode: string) {
+  registerParsers(parserCode: string, id?: string) {
     // Todo: hacky as shit for now. Thats fine.
     // What we do here is if a parser comes in we recreate the entire root parser.
     // What we actually want to do is just minimally update the parser pool.
@@ -153,16 +154,26 @@ abstract class ParserBackedParticle extends Particle {
     // concept directly into Particles, perhaps even with a bit of a rewrite, and
     // remove a lot of the classes in this file.
     const root = this.root
-    if (!root._parserCode) root._parserCode = root.constructor._parserSourceCode + "\n" + parserCode
-    else root._parserCode += "\n" + parserCode
-    const parsersProgram = new HandParsersProgram(root._parserCode)
+    const currentParserCode = (root._modifiedConstructor || root.constructor)._parserSourceCode
+    const newParserCode = currentParserCode + "\n" + parserCode
+    const parsersProgram = new HandParsersProgram(newParserCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
-    const basicProgram = new rootParser()
-    root._modifiedConstructor = rootParser
     root._definition = parsersProgram
-    root._parserPool = basicProgram._getParserPool()
+    root._modifiedConstructor = rootParser
+    root._parserPool = new rootParser()._getParserPool()
     // Clear parser cache.
-    delete this._parserIdIndex
+    delete root._parserIdIndex
+    if (id) _parserPoolCache[id] = root
+  }
+
+  switchParserPool(parserPoolId: string) {
+    const sourceParticle = _parserPoolCache[parserPoolId]
+    const root = this.root
+    root._definition = sourceParticle._definition
+    root._modifiedConstructor = sourceParticle._modifiedConstructor
+    root._parserPool = sourceParticle._parserPool
+    // Clear parser cache.
+    delete root._parserIdIndex
   }
 
   get rootParsersParticles() {

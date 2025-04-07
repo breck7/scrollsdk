@@ -717,10 +717,25 @@ catchAllErrorParser
   // Act
   // Now we need to add a Parser.
   basicProgram.registerParsers(byeParser)
+  basicProgram.appendLine("bye")
 
   // Assert
-  basicProgram.appendLine("bye")
   equal(basicProgram.particleAt(1).luckyNumber, 42, "registerParsers work")
+
+  const adiosParser = `adiosParser
+ int luckyNumber 15
+ atoms cueAtom
+ extends helloParser
+ cueFromId`
+
+  // Act
+  basicProgram.registerParsers(adiosParser)
+  basicProgram.appendLine("adios")
+  basicProgram.appendLine("bye")
+
+  // Assert
+  equal(basicProgram.particleAt(2).luckyNumber, 15, "adding multiple parsers works")
+  equal(basicProgram.particleAt(3).luckyNumber, 42, "earlier additions work")
 }
 
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)

@@ -1571,6 +1571,7 @@ class Particle extends AbstractParticle {
     await parserPool.appendParticleAsync(this, block)
   }
   async _transformAndAppendBlockAsync(block) {
+    block = block.replace(/\r/g, "") // I hate \r
     const rootParticle = this.root
     if (this._beforeAppend) this._beforeAppend(block) // todo: clean this up and document it.
     if (rootParticle.particleTransformers) {
@@ -2208,6 +2209,14 @@ class Particle extends AbstractParticle {
     const results = this.topDownArray.filter(particle => particle.hasDuplicateCues())
     if (this.hasDuplicateCues()) results.unshift(this)
     return results
+  }
+  replaceWith(blocks) {
+    const split = splitBlocks(blocks, SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE).reverse()
+    const parent = this.parent
+    const index = this.index
+    const newParticles = split.map((block, newBlockIndex) => parent._insertBlock(block, index))
+    this.destroy()
+    return newParticles
   }
   replaceParticle(fn) {
     const parent = this.parent

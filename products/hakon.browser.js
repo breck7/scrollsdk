@@ -12,7 +12,7 @@
         .map(subparticle => subparticle.compile())
         .join("")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 anyAtom
 cueAtom
 commentKeywordAtom
@@ -112,7 +112,8 @@ selectorParser
   \${propertyParsers.map(subparticle => subparticle.compile(spaces)).join("\\n")}
   }\\n\`
   }
- atoms selectorAtom`)
+ atoms selectorAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

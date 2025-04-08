@@ -72,23 +72,6 @@ class DesignerApp extends AbstractParticleComponentParser {
     }
     this._setParsersAndCode(parsers.text, sample)
   }
-  // TODO: ADD TESTS!!!!!
-  async downloadBundleCommand() {
-    const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    const bundle = parsersProgram.toBundle()
-    const languageName = parsersProgram.extensionName
-    return this._makeZipBundle(languageName + ".zip", bundle)
-  }
-  async _makeZipBundle(fileName, bundle) {
-    const zip = new JSZip()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
-    zip.generateAsync({ type: "blob" }).then(content => {
-      // see FileSaver.js
-      saveAs(content, fileName)
-    })
-  }
   _toIceTray(program) {
     const columns = program.programWidth
     const atomTypes = new Particle(program.asAtomTypeParticlesWithParserIds)
@@ -218,7 +201,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     const errs = this.parsersProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
-    const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
+    const readme = parsersProgram.toReadMe()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
   _updateShareLink() {

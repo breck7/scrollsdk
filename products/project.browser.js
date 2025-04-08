@@ -68,7 +68,7 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 anyAtom
 filepathAtom
  paint string
@@ -188,7 +188,8 @@ fileParser
    return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
  atoms fileConstantAtom
- cue file`)
+ cue file`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

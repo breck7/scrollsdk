@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class numbersParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(
@@ -16,7 +15,7 @@
     execute() {
       return this.map(subparticle => subparticle.execute())
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 floatAtom
 commentAtom
  paint comment
@@ -97,7 +96,8 @@ hashBangParser
 errorParser
  catchAllAtomType errorAtom
  baseParser errorParser
- atoms errorAtom`)
+ atoms errorAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

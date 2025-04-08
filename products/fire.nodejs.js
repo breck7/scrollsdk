@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class fireParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(
@@ -57,7 +56,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Explore best ways to add polymorphism
+    static _parserSourceCode = `// todo Explore best ways to add polymorphism
 
 // Atom Parsers
 anyAtom
@@ -401,7 +400,8 @@ hashbangParser
 errorParser
  baseParser errorParser
  compiler
-  stringTemplate // error`)
+  stringTemplate // error`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

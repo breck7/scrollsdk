@@ -14,11 +14,6 @@ testParticles.version = equal => {
   equal(!!Particle.getVersion(), true)
 }
 
-testParticles.vector = equal => {
-  // Arrange/Act/Assert
-  equal(Utils.sum(Utils.makeVector(5, 3)), 15)
-}
-
 testParticles.titleToPermalink = equal => {
   // Arrange/Act/Assert
   equal(Utils.titleToPermalink("C#"), "c-sharp")

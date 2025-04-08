@@ -179,17 +179,6 @@ class Utils {
   static sum(arr) {
     return arr.reduce((curr, next) => curr + next, 0)
   }
-  static makeVector(length, fill = 0) {
-    return new Array(length).fill(fill)
-  }
-  static makeMatrix(cols, rows, fill = 0) {
-    const matrix = []
-    while (rows) {
-      matrix.push(Utils.makeVector(cols, fill))
-      rows--
-    }
-    return matrix
-  }
   static removeNonAscii(str) {
     // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
     return str.replace(/[^\x00-\x7F]/g, "")
@@ -1095,6 +1084,38 @@ Utils.posix = posix
 window.Utils = Utils
 ;
 
+var __asyncValues =
+  (this && this.__asyncValues) ||
+  function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.")
+    var m = o[Symbol.asyncIterator],
+      i
+    return m
+      ? m.call(o)
+      : ((o = typeof __values === "function" ? __values(o) : o[Symbol.iterator]()),
+        (i = {}),
+        verb("next"),
+        verb("throw"),
+        verb("return"),
+        (i[Symbol.asyncIterator] = function () {
+          return this
+        }),
+        i)
+    function verb(n) {
+      i[n] =
+        o[n] &&
+        function (v) {
+          return new Promise(function (resolve, reject) {
+            ;(v = o[n](v)), settle(resolve, reject, v.done, v.value)
+          })
+        }
+    }
+    function settle(resolve, reject, d, v) {
+      Promise.resolve(v).then(function (v) {
+        resolve({ value: v, done: d })
+      }, reject)
+    }
+  }
 let _scrollsdkLatestTime = 0
 let _scrollsdkMinTimeIncrement = 0.000000000001
 class AbstractParticle {
@@ -1217,6 +1238,20 @@ class ParserPool {
     const firstBreak = line.indexOf(atomBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
+  async appendParticleAsync(parentParticle, block) {
+    const index = parentParticle.length
+    const parser = this._getMatchingParser(block, parentParticle, index)
+    const { particleBreakSymbol } = parentParticle
+    const lines = block.split(particleBreakSymbol)
+    const subparticles = lines
+      .slice(1)
+      .map(line => line.substr(1))
+      .join(particleBreakSymbol)
+    const particle = new parser(undefined, lines[0], parentParticle, index)
+    if (subparticles.length) await particle.appendFromStream(subparticles)
+    await particle.wake()
+    return particle
+  }
   createParticle(parentParticle, block, index) {
     const rootParticle = parentParticle.root
     if (rootParticle.particleTransformers) {
@@ -1248,7 +1283,6 @@ class Particle extends AbstractParticle {
     this._setSubparticles(subparticles)
     if (index !== undefined) parent._getSubparticlesArray().splice(index, 0, this)
     else if (parent) parent._getSubparticlesArray().push(this)
-    this.wake()
   }
   wake() {}
   execute() {}
@@ -2471,7 +2505,8 @@ class Particle extends AbstractParticle {
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
   split(cue) {
-    const constructor = this.constructor
+    // todo: cleanup
+    const constructor = this._modifiedConstructor || this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const AtomBreakSymbol = this.atomBreakSymbol
     // todo: cleanup. the escaping is wierd.
@@ -2613,7 +2648,104 @@ class Particle extends AbstractParticle {
     const { edgeSymbol, particleBreakSymbol } = this
     const blocks = splitBlocks(str, edgeSymbol, particleBreakSymbol)
     const parserPool = this._getParserPool()
-    blocks.forEach((block, index) => parserPool.createParticle(this, block))
+    return blocks.map((block, index) => parserPool.createParticle(this, block))
+  }
+  async _appendBlockAsync(block) {
+    // We need to keep grapping the parserPool in case it changed.
+    // todo: cleanup and perf optimize
+    let parserPool = this._getParserPool()
+    await parserPool.appendParticleAsync(this, block)
+  }
+  async _transformAndAppendBlockAsync(block) {
+    block = block.replace(/\r/g, "") // I hate \r
+    const rootParticle = this.root
+    if (this._beforeAppend) this._beforeAppend(block) // todo: clean this up and document it.
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+      const newParticles = []
+      for (const [newBlockIndex, block] of blocks.entries()) {
+        const particle = await this._appendBlockAsync(block)
+        newParticles.push(particle)
+      }
+      return newParticles[0]
+    }
+    const newParticle = await this._appendBlockAsync(block)
+    return newParticle
+  }
+  async appendFromStream(input) {
+    var _a, e_1, _b, _c
+    const { edgeSymbol, particleBreakSymbol } = this
+    let buffer = ""
+    const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
+    // Node.js Readable stream
+    if (typeof process !== "undefined" && input instanceof require("stream").Readable) {
+      try {
+        for (var _d = true, input_1 = __asyncValues(input), input_1_1; (input_1_1 = await input_1.next()), (_a = input_1_1.done), !_a; ) {
+          _c = input_1_1.value
+          _d = false
+          try {
+            const chunk = _c
+            buffer += chunk.toString("utf8")
+            while (true) {
+              const breakIndex = buffer.search(breakRegex)
+              if (breakIndex === -1) break
+              const block = buffer.slice(0, breakIndex)
+              buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+              await this._transformAndAppendBlockAsync(block)
+            }
+          } finally {
+            _d = true
+          }
+        }
+      } catch (e_1_1) {
+        e_1 = { error: e_1_1 }
+      } finally {
+        try {
+          if (!_d && !_a && (_b = input_1.return)) await _b.call(input_1)
+        } finally {
+          if (e_1) throw e_1.error
+        }
+      }
+      // Process remaining buffer
+      await this._transformAndAppendBlockAsync(buffer)
+    }
+    // Browser ReadableStream
+    else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
+      const reader = input.getReader()
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += new TextDecoder().decode(value) // Convert Uint8Array to string
+          while (true) {
+            const breakIndex = buffer.search(breakRegex)
+            if (breakIndex === -1) break
+            const block = buffer.slice(0, breakIndex)
+            buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+            await this._transformAndAppendBlockAsync(block)
+          }
+        }
+        // Process remaining buffer
+        await this._transformAndAppendBlockAsync(buffer)
+      } finally {
+        reader.releaseLock()
+      }
+    }
+    // Plain string input (works in both environments)
+    else if (typeof input === "string") {
+      buffer = input
+      while (true) {
+        const breakIndex = buffer.search(breakRegex)
+        if (breakIndex === -1) break
+        const block = buffer.slice(0, breakIndex)
+        buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+        await this._transformAndAppendBlockAsync(block)
+      }
+      await this._transformAndAppendBlockAsync(buffer)
+    } else {
+      throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
+    }
   }
   _getCueIndex() {
     // StringMap<int> {cue: index}
@@ -2635,6 +2767,17 @@ class Particle extends AbstractParticle {
   }
   getParticleByParser(parser) {
     return this.find(subparticle => subparticle instanceof parser)
+  }
+  // todo: switch to native classes and parsers in particles and away from javascript classes for parsing.
+  // move off particle.ts
+  // make the below work.
+  // By default every particle has a parser. By default they all match to the first particle.
+  get parser() {
+    return this._parser || this.root.particleAt(0)
+  }
+  // The parserId of a particle at the moment is defined as the cue of the parser it is matched to.
+  get parserId() {
+    return this.parser.cue
   }
   indexOfLast(cue) {
     const result = this._getCueIndex()[cue]
@@ -2765,8 +2908,9 @@ class Particle extends AbstractParticle {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
   _getParserPool() {
-    if (!Particle._parserPools.has(this.constructor)) Particle._parserPools.set(this.constructor, this.createParserPool())
-    return Particle._parserPools.get(this.constructor)
+    if (this._parserPool) return this._parserPool
+    if (!Particle._parserPoolsCache.has(this.constructor)) Particle._parserPoolsCache.set(this.constructor, this.createParserPool())
+    return Particle._parserPoolsCache.get(this.constructor)
   }
   createParserPool() {
     return new ParserPool(this.constructor)
@@ -3034,6 +3178,9 @@ class Particle extends AbstractParticle {
   appendLineAndSubparticles(line, subparticles) {
     return this._insertBlock(this._makeBlock(line, subparticles))
   }
+  appendBlocks(blocks) {
+    return this._appendSubparticlesFromString(blocks)
+  }
   _makeBlock(line, subparticles) {
     if (subparticles === undefined) return line
     const particle = new Particle(subparticles, line)
@@ -3148,6 +3295,14 @@ class Particle extends AbstractParticle {
     const results = this.topDownArray.filter(particle => particle.hasDuplicateCues())
     if (this.hasDuplicateCues()) results.unshift(this)
     return results
+  }
+  replaceWith(blocks) {
+    const split = splitBlocks(blocks, SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE).reverse()
+    const parent = this.parent
+    const index = this.index
+    const newParticles = split.map((block, newBlockIndex) => parent._insertBlock(block, index))
+    this.destroy()
+    return newParticles
   }
   replaceParticle(fn) {
     const parent = this.parent
@@ -3741,7 +3896,7 @@ class Particle extends AbstractParticle {
     return particle
   }
 }
-Particle._parserPools = new Map()
+Particle._parserPoolsCache = new Map()
 Particle.ParserPool = ParserPool
 Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -3754,7 +3909,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "106.0.1"
+Particle.getVersion = () => "107.0.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -3878,14 +4033,6 @@ var ParsersConstantsConstantTypes
   ParsersConstantsConstantTypes["int"] = "int"
   ParsersConstantsConstantTypes["float"] = "float"
 })(ParsersConstantsConstantTypes || (ParsersConstantsConstantTypes = {}))
-var ParsersBundleFiles
-;(function (ParsersBundleFiles) {
-  ParsersBundleFiles["package"] = "package.json"
-  ParsersBundleFiles["readme"] = "readme.md"
-  ParsersBundleFiles["indexHtml"] = "index.html"
-  ParsersBundleFiles["indexJs"] = "index.js"
-  ParsersBundleFiles["testJs"] = "test.js"
-})(ParsersBundleFiles || (ParsersBundleFiles = {}))
 var ParsersAtomParser
 ;(function (ParsersAtomParser) {
   ParsersAtomParser["prefix"] = "prefix"
@@ -3934,7 +4081,6 @@ var ParsersConstants
   ParsersConstants["single"] = "single"
   ParsersConstants["uniqueLine"] = "uniqueLine"
   ParsersConstants["tags"] = "tags"
-  ParsersConstants["_rootNodeJsHeader"] = "_rootNodeJsHeader"
   // default catchAll parser
   ParsersConstants["BlobParser"] = "BlobParser"
   ParsersConstants["DefaultRootParser"] = "DefaultRootParser"
@@ -3960,12 +4106,45 @@ class TypedAtom extends ParticleAtom {
     return this.atom + ":" + this.type
   }
 }
+const _parserPoolCache = {}
 // todo: can we merge these methods into base Particle and ditch this class?
 class ParserBackedParticle extends Particle {
+  // Returns a pointer to the Particle containing the parser definition. In the future this will
+  // be in the same file. Right now we still have the split between Parser definitions and program code.
   get definition() {
     if (this._definition) return this._definition
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
     return this._definition
+  }
+  registerParsers(parserCode, id) {
+    // Todo: hacky as shit for now. Thats fine.
+    // What we do here is if a parser comes in we recreate the entire root parser.
+    // What we actually want to do is just minimally update the parser pool.
+    // We can do that later, but it is sort of time to look at moving the Parsers
+    // concept directly into Particles, perhaps even with a bit of a rewrite, and
+    // remove a lot of the classes in this file.
+    const root = this.root
+    const currentParserCode = (root._modifiedConstructor || root.constructor)._parserSourceCode
+    const newParserCode = currentParserCode + "\n" + parserCode
+    const parsersProgram = new HandParsersProgram(newParserCode)
+    const rootParser = parsersProgram.compileAndReturnRootParser()
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
+    root._definition = parsersProgram
+    root._modifiedConstructor = rootParser
+    root._parserPool = new rootParser()._getParserPool()
+    // Clear parser cache.
+    delete root._parserIdIndex
+    if (id) _parserPoolCache[id] = root
+  }
+  switchParserPool(parserPoolId) {
+    const sourceParticle = _parserPoolCache[parserPoolId]
+    const root = this.root
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
+    root._definition = sourceParticle._definition
+    root._modifiedConstructor = sourceParticle._modifiedConstructor
+    root._parserPool = sourceParticle._parserPool
+    // Clear parser cache.
+    delete root._parserIdIndex
   }
   get rootParsersParticles() {
     return this.definition.root
@@ -4082,7 +4261,7 @@ class ParserBackedParticle extends Particle {
     if (!parserOrder.length) return this
     const orderMap = {}
     parserOrder.forEach((atom, index) => (orderMap[atom] = index))
-    this.sort(Utils.makeSortByFn(runtimeParticle => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
+    this.sort(Utils.makeSortByFn(runtimeParticle => orderMap[runtimeParticle.parserId]))
     return this
   }
   get requiredParticleErrors() {
@@ -4116,7 +4295,7 @@ class ParserBackedParticle extends Particle {
     return this.allTypedAtoms.filter(typedAtom => typedAtom.type === atomTypeId)
   }
   findAllParticlesWithParser(parserId) {
-    return this.topDownArray.filter(particle => particle.definition.parserIdFromDefinition === parserId)
+    return this.topDownArray.filter(particle => particle.parserId === parserId)
   }
   toAtomTypeParticles() {
     return this.topDownArray.map(subparticle => subparticle.indentation + subparticle.lineAtomTypes).join("\n")
@@ -4268,7 +4447,7 @@ class ParserBackedParticle extends Particle {
     return this.isRoot() ? new Particle.ParserPool(BlobParser) : new Particle.ParserPool(this.parent._getParserPool()._getCatchAllParser(this.parent), {})
   }
   get parserId() {
-    return this.definition.parserIdFromDefinition
+    return this.definition.cue
   }
   get atomTypes() {
     return this.parsedAtoms.filter(atom => atom.getAtom() !== undefined)
@@ -4539,29 +4718,6 @@ class AbstractParsersBackedAtom {
     if (enumOptions) return Utils.getRandomString(1, enumOptions.split(" "))
     return this._synthesizeAtom(seed)
   }
-  _getStumpEnumInput(cue) {
-    const atomDef = this.atomTypeDefinition
-    const enumOptions = atomDef._getFromExtended(ParsersConstants.enum)
-    if (!enumOptions) return undefined
-    const options = new Particle(
-      enumOptions
-        .split(" ")
-        .map(option => `option ${option}`)
-        .join("\n")
-    )
-    return `select
- name ${cue}
-${options.toString(1)}`
-  }
-  _toStumpInput(cue) {
-    // todo: remove
-    const enumInput = this._getStumpEnumInput(cue)
-    if (enumInput) return enumInput
-    // todo: cleanup. We shouldn't have these dual atomType classes.
-    return `input
- name ${cue}
- placeholder ${this.placeholder}`
-  }
   get atomTypeDefinition() {
     return this._typeDef
   }
@@ -4602,16 +4758,7 @@ class ParsersBitAtom extends AbstractParsersBackedAtom {
   }
 }
 ParsersBitAtom.defaultPaint = "constant.numeric"
-class ParsersNumberAtom extends AbstractParsersBackedAtom {
-  _toStumpInput(cue) {
-    return `input
- name ${cue}
- type number
- placeholder ${this.placeholder}
- min ${this.min}
- max ${this.max}`
-  }
-}
+class ParsersNumberAtom extends AbstractParsersBackedAtom {}
 class ParsersIntegerAtom extends ParsersNumberAtom {
   _isValid() {
     const atom = this.getAtom()
@@ -4788,7 +4935,7 @@ class AbstractParticleError {
     return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
   }
   get parserId() {
-    return this.getParticle().definition.parserIdFromDefinition
+    return this.getParticle().parserId
   }
   _getCodeMirrorLineWidgetElementAtomTypeHints() {
     const el = document.createElement("div")
@@ -5310,7 +5457,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleParticle {
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.javascript,
       ParsersConstants.single,
@@ -5377,7 +5523,7 @@ ${properties.join("\n")}
     return this._getSubparticlesByParserInExtended(ParsersExampleParser)
   }
   get parserIdFromDefinition() {
-    return this.getAtom(0)
+    return this.cue
   }
   // todo: remove? just reused parserId
   get generatedClassName() {
@@ -5563,7 +5709,8 @@ ${properties.join("\n")}
     const components = [this.parserAsJavascript, this.errorMethodToJavascript, this.atomGettersAndParserConstants, this.customJavascriptMethods].filter(identity => identity)
     const thisClassName = this.generatedClassName
     if (this._amIRoot()) {
-      components.push(`static cachedHandParsersProgramRoot = new HandParsersProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
+      components.push(`static _parserSourceCode = \`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`
+        static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
         get handParsersProgram() {
           return this.constructor.cachedHandParsersProgramRoot
       }`)
@@ -5596,44 +5743,6 @@ ${properties.join("\n")}
   }
   isTerminalParser() {
     return !this._getFromExtended(ParsersConstants.inScope) && !this._getFromExtended(ParsersConstants.catchAllParser)
-  }
-  get sublimeMatchLine() {
-    const regexMatch = this.regexMatch
-    if (regexMatch) return `'${regexMatch}'`
-    const cueMatch = this.cueIfAny
-    if (cueMatch) return `'^ *${Utils.escapeRegExp(cueMatch)}(?: |$)'`
-    const enumOptions = this.cueEnumOptions
-    if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
-  }
-  // todo: refactor. move some parts to atomParser?
-  _toSublimeMatchBlock() {
-    const defaultPaint = "source"
-    const program = this.languageDefinitionProgram
-    const atomParser = this.atomParser
-    const requiredAtomTypeIds = atomParser.getRequiredAtomTypeIds()
-    const catchAllAtomTypeId = atomParser.catchAllAtomTypeId
-    const cueTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
-    const cuePaint = (cueTypeDef ? cueTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
-    const topHalf = ` '${this.parserIdFromDefinition}':
-  - match: ${this.sublimeMatchLine}
-    scope: ${cuePaint}`
-    if (catchAllAtomTypeId) requiredAtomTypeIds.push(catchAllAtomTypeId)
-    if (!requiredAtomTypeIds.length) return topHalf
-    const captures = requiredAtomTypeIds
-      .map((atomTypeId, index) => {
-        const atomTypeDefinition = program.getAtomTypeDefinitionById(atomTypeId) // todo: cleanup
-        if (!atomTypeDefinition) throw new Error(`No ${ParsersConstants.atomType} ${atomTypeId} found`) // todo: standardize error/capture error at parsers time
-        return `        ${index + 1}: ${(atomTypeDefinition.paint || defaultPaint) + "." + atomTypeDefinition.atomTypeId}`
-      })
-      .join("\n")
-    const atomTypesToRegex = atomTypeIds => atomTypeIds.map(atomTypeId => `({{${atomTypeId}}})?`).join(" ?")
-    return `${topHalf}
-    push:
-     - match: ${atomTypesToRegex(requiredAtomTypeIds)}
-       captures:
-${captures}
-     - match: $
-       pop: true`
   }
   _getParserInheritanceSet() {
     if (!this._cache_parserInheritanceSet) this._cache_parserInheritanceSet = new Set(this.ancestorParserIdsArray)
@@ -5678,24 +5787,6 @@ ${captures}
   _getExtendedParserId() {
     const ancestorIds = this.ancestorParserIdsArray
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
-  }
-  _toStumpString() {
-    const cue = this.cueIfAny
-    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for cue langs
-    if (!atomArray.length)
-      // todo: remove this! just doing it for now until we refactor getAtomArray to handle catchAlls better.
-      return ""
-    const atoms = new Particle(atomArray.map((atom, index) => atom._toStumpInput(cue)).join("\n"))
-    return `div
- label ${cue}
-${atoms.toString(1)}`
-  }
-  toStumpString() {
-    const particleBreakSymbol = "\n"
-    return this._getConcreteNonErrorInScopeParticleDefinitions(this._getInScopeParserIds())
-      .map(def => def._toStumpString())
-      .filter(identity => identity)
-      .join(particleBreakSymbol)
   }
   _generateSimulatedLine(seed) {
     // todo: generate simulated data from catch all
@@ -5822,65 +5913,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
   get cuePath() {
     return ""
   }
-  trainModel(programs, rootParser = this.compileAndReturnRootParser()) {
-    const particleDefs = this.validConcreteAndAbstractParserDefinitions
-    const particleDefCountIncludingRoot = particleDefs.length + 1
-    const matrix = Utils.makeMatrix(particleDefCountIncludingRoot, particleDefCountIncludingRoot, 0)
-    const idToIndex = {}
-    const indexToId = {}
-    particleDefs.forEach((def, index) => {
-      const id = def.id
-      idToIndex[id] = index + 1
-      indexToId[index + 1] = id
-    })
-    programs.forEach(code => {
-      const exampleProgram = new rootParser(code)
-      exampleProgram.topDownArray.forEach(particle => {
-        const particleIndex = idToIndex[particle.definition.id]
-        const parentParticle = particle.parent
-        if (!particleIndex) return undefined
-        if (parentParticle.isRoot()) matrix[0][particleIndex]++
-        else {
-          const parentIndex = idToIndex[parentParticle.definition.id]
-          if (!parentIndex) return undefined
-          matrix[parentIndex][particleIndex]++
-        }
-      })
-    })
-    return {
-      idToIndex,
-      indexToId,
-      matrix
-    }
-  }
-  _mapPredictions(predictionsVector, model) {
-    const total = Utils.sum(predictionsVector)
-    const predictions = predictionsVector.slice(1).map((count, index) => {
-      const id = model.indexToId[index + 1]
-      return {
-        id,
-        def: this.getParserDefinitionByParserId(id),
-        count,
-        prob: count / total
-      }
-    })
-    predictions.sort(Utils.makeSortByFn(prediction => prediction.count)).reverse()
-    return predictions
-  }
-  predictSubparticles(model, particle) {
-    return this._mapPredictions(this._predictSubparticles(model, particle), model)
-  }
-  predictParents(model, particle) {
-    return this._mapPredictions(this._predictParents(model, particle), model)
-  }
-  _predictSubparticles(model, particle) {
-    return model.matrix[particle.isRoot() ? 0 : model.idToIndex[particle.definition.id]]
-  }
-  _predictParents(model, particle) {
-    if (particle.isRoot()) return []
-    const particleIndex = model.idToIndex[particle.definition.id]
-    return model.matrix.map(row => row[particleIndex])
-  }
   _setDirName(name) {
     this._dirName = name
     return this
@@ -5925,56 +5957,13 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     const atomTypes = this.atomTypeDefinitions
     const parserLineage = this.parserLineage
     const exampleParticle = rootParticleDef.examples[0]
-    return `title2 ${languageName} stats
-
-list
- - ${languageName} has ${parserLineage.topDownArray.length} parsers.
- - ${languageName} has ${Object.keys(atomTypes).length} atom types.
- - The source code for ${languageName} is ${this.topDownArray.length} lines long.
+    return `<h3>${languageName} stats</h3>
+<ul>
+<li>${languageName} has ${parserLineage.topDownArray.length} parsers.</li>
+<li>${languageName} has ${Object.keys(atomTypes).length} atom types.</li>
+<li>The source code for ${languageName} is ${this.topDownArray.length} lines long.</li>
+</ul>
 `
-  }
-  toBundle() {
-    const files = {}
-    const rootParticleDef = this.rootParserDefinition
-    const languageName = this.extensionName
-    const example = rootParticleDef.examples[0]
-    const sampleCode = example ? example.subparticlesToString() : ""
-    files[ParsersBundleFiles.package] = JSON.stringify(
-      {
-        name: languageName,
-        private: true,
-        dependencies: {
-          scrollsdk: Particle.getVersion()
-        }
-      },
-      null,
-      2
-    )
-    files[ParsersBundleFiles.readme] = this.toReadMe()
-    const testCode = `const program = new ${languageName}(sampleCode)
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.message))`
-    const nodePath = `${languageName}.node.js`
-    files[nodePath] = this.toNodeJsJavascript()
-    files[ParsersBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
-    const browserPath = `${languageName}.browser.js`
-    files[browserPath] = this.toBrowserJavascript()
-    files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Particle.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
-<script src="${browserPath}"></script>
-<script>
-const sampleCode = \`${sampleCode.toString()}\`
-${testCode}
-</script>`
-    const samplePath = "sample." + this.extensionName
-    files[samplePath] = sampleCode.toString()
-    files[ParsersBundleFiles.testJs] = `const ${languageName} = require("./index.js")
-/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
-${testCode}`
-    return files
   }
   get atomTypeDefinitions() {
     if (this._cache_atomTypes) return this._cache_atomTypes
@@ -6067,7 +6056,6 @@ ${testCode}`
     // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootParserDefinition
-    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(ParsersConstants._rootNodeJsHeader)
     const rootName = rootDef.generatedClassName
     if (!rootName) throw new Error(`Root Particle Type Has No Name`)
     let exportScript = ""
@@ -6088,35 +6076,11 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the parsers, which we preserve.
     return `{
 ${nodeJsImports}
-${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${parserClasses}
 
 ${exportScript}
 }
 `
-  }
-  toSublimeSyntaxFile(fileExtensions = "") {
-    const atomTypeDefs = this.atomTypeDefinitions
-    const variables = Object.keys(atomTypeDefs)
-      .map(name => ` ${name}: '${atomTypeDefs[name].regexString}'`)
-      .join("\n")
-    const defs = this.validConcreteAndAbstractParserDefinitions.filter(kw => !kw._isAbstract())
-    const parserContexts = defs.map(def => def._toSublimeMatchBlock()).join("\n\n")
-    const includes = defs.map(parserDef => `  - include: '${parserDef.parserIdFromDefinition}'`).join("\n")
-    return `%YAML 1.2
----
-name: ${this.extensionName}
-file_extensions: [${fileExtensions}]
-scope: source.${this.extensionName}
-
-variables:
-${variables}
-
-contexts:
- main:
-${includes}
-
-${parserContexts}`
   }
 }
 HandParsersProgram.makeParserId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandParsersProgram.parserSuffixRegex, "") + ParsersConstants.parserSuffix
@@ -6126,8 +6090,6 @@ HandParsersProgram.parserFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConsta
 HandParsersProgram.blankLineRegex = new RegExp("^$")
 HandParsersProgram.atomTypeSuffixRegex = new RegExp(ParsersConstants.atomTypeSuffix + "$")
 HandParsersProgram.atomTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + ParsersConstants.atomTypeSuffix + "$")
-HandParsersProgram._languages = {}
-HandParsersProgram._parsers = {}
 const PreludeKinds = {}
 PreludeKinds[PreludeAtomTypeIds.anyAtom] = ParsersAnyAtom
 PreludeKinds[PreludeAtomTypeIds.cueAtom] = ParsersCueAtom
@@ -6213,18 +6175,6 @@ class UnknownParsersProgram extends Particle {
     // Todo: add conditional frequencies
     return particleDefParticle.parent.toString()
   }
-  //  inferParsersFileForAnSSVLanguage(parsersName: string): string {
-  //     parsersName = HandParsersProgram.makeParserId(parsersName)
-  //    const rootParticle = new Particle(`${parsersName}
-  // ${ParsersConstants.root}`)
-  //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-  //    const rootParticleNames = this.getCues().map(atom => HandParsersProgram.makeParserId(atom))
-  //    rootParticle
-  //      .particleAt(0)
-  //      .touchParticle(ParsersConstants.inScope)
-  //      .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
-  //    return rootParticle
-  //  }
   inferParsersFileForACueLanguage(parsersName) {
     const clone = this.clone()
     this._renameIntegerCues(clone)
@@ -6295,9 +6245,6 @@ const PARSERS_EXTENSION = ".parsers"
 const SCROLL_EXTENSION = ".scroll"
 // Add URL regex pattern
 const urlRegex = /^https?:\/\/[^ ]+$/i
-const parserRegex = /^[a-zA-Z0-9_]+Parser$/gm
-const importRegex = /^(import |[a-zA-Z\_\-\.0-9\/]+\.(scroll|parsers)$|https?:\/\/.+\.(scroll|parsers)$)/gm
-const importOnlyRegex = /^importOnly/
 const isUrl = path => urlRegex.test(path)
 // URL content cache with pending requests tracking
 const urlCache = {}
@@ -6356,8 +6303,8 @@ class DiskWriter {
     const { fileCache } = this
     if (fileCache[absolutePath]) return fileCache[absolutePath]
     try {
-      const stats = await fs.stat(absolutePath)
-      const content = await fs.readFile(absolutePath, {
+      const stats = await fsp.stat(absolutePath)
+      const content = await fsp.readFile(absolutePath, {
         encoding: "utf8",
         flag: "r" // explicit read flag
       })
@@ -6389,6 +6336,12 @@ class DiskWriter {
   async read(absolutePath) {
     const file = await this._read(absolutePath)
     return file.content
+  }
+  async createReadStream(absolutePath) {
+    const fd = await fsp.open(absolutePath)
+    return fd.createReadStream({
+      encoding: "utf8"
+    })
   }
   async list(folder) {
     if (isUrl(folder)) {
@@ -6450,6 +6403,9 @@ class MemoryWriter {
     }
     return value
   }
+  async createReadStream(absolutePath) {
+    return await this.read(absolutePath)
+  }
   async exists(absolutePath) {
     if (isUrl(absolutePath)) {
       const result = await fetchWithCache(absolutePath)
@@ -6500,14 +6456,13 @@ class MemoryWriter {
 }
 class ScrollFile {
   constructor(codeAtStart, absoluteFilePath = "", fileSystem = new ScrollFileSystem({})) {
-    this.defaultParserCode = ""
-    this.defaultParser = Particle
+    this.exists = true
     this.fileSystem = fileSystem
     this.filePath = absoluteFilePath
     this.codeAtStart = codeAtStart
-    this.timeIndex = 0
     this.timestamp = 0
-    this.importOnly = false
+    this.scrollProgram = new fileSystem.defaultParser(undefined, absoluteFilePath)
+    this.scrollProgram.setFile(this)
   }
   async _readCodeFromStorage() {
     if (this.codeAtStart !== undefined) return this // Code provided
@@ -6518,57 +6473,53 @@ class ScrollFile {
     }
     this.codeAtStart = await this.fileSystem.read(filePath)
   }
-  async fuse() {
-    // PASS 1: READ FULL FILE
-    await this._readCodeFromStorage()
-    // todo: single pass.
-    const { codeAtStart, fileSystem, filePath, defaultParserCode, defaultParser } = this
-    // PASS 2: READ AND REPLACE IMPORTs
-    let fusedCode = codeAtStart
-    let fusedFile
-    if (filePath) {
+  async singlePassFuse() {
+    if (!this._fuseRequest) this._fuseRequest = this._singlePassFuse()
+    return await this._fuseRequest
+  }
+  async _singlePassFuse() {
+    const { fileSystem, filePath, codeAtStart } = this
+    if (codeAtStart !== undefined) {
+      await this.scrollProgram.appendFromStream(codeAtStart)
+    } else {
+      if (!(await fileSystem.exists(filePath))) {
+        this.exists = false
+        this.isFused = true
+        return this
+      }
       this.timestamp = await fileSystem.getCTime(filePath)
-      fusedFile = await fileSystem.fuseFile(filePath, defaultParserCode)
-      this.importOnly = fusedFile.isImportOnly
-      fusedCode = fusedFile.fused
-      if (fusedFile.footers) fusedCode += "\n" + fusedFile.footers.join("\n")
-      this.dependencies = fusedFile.importFilePaths
-      this.fusedFile = fusedFile
+      const stream = await fileSystem.createReadStream(filePath)
+      await this.scrollProgram.appendFromStream(stream)
     }
-    this.fusedCode = fusedCode
-    this.parser = (fusedFile === null || fusedFile === void 0 ? void 0 : fusedFile.parser) || defaultParser
-    // PASS 3: PARSER WITH CUSTOM PARSER OR STANDARD SCROLL PARSER
-    this.scrollProgram = new this.parser(fusedCode, filePath)
-    this.scrollProgram.setFile(this)
-    return this
+    this.scrollProgram.wake()
+    // What happens if we encounter a new parser?
+    // very frequently if we encounter 1 parser we will encounter a sequence of parsers so
+    // perhaps on wake, for now, we switch into collecting parsers mode
+    // and then when we hit a non parser, only at that moment do we recompile the parsers
   }
 }
 let scrollFileSystemIdNumber = 0
-const parserCache = {}
 class ScrollFileSystem {
   constructor(inMemoryFiles, standardParserDirectory) {
+    this.defaultParserCode = ""
+    this.defaultParser = Particle
+    this.defaultFileClass = ScrollFile
     this.productCache = []
     this._parserCache = {}
-    this._parsersExpandersCache = {}
-    this._pendingFuseRequests = {}
-    this.parsedFiles = {}
-    this.folderCache = {}
+    this._fusedFiles = {}
+    this._folderCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
     scrollFileSystemIdNumber = scrollFileSystemIdNumber + 1
     this.scrollFileSystemIdNumber = scrollFileSystemIdNumber
-    this.defaultFileClass = ScrollFile
     this.standardParserDirectory = standardParserDirectory
     if (standardParserDirectory) this._loadDefaultParser()
   }
+  newFile(codeAtStart, absoluteFilePath) {
+    return new this.defaultFileClass(codeAtStart, absoluteFilePath, this)
+  }
   _loadDefaultParser() {
     const { standardParserDirectory } = this
-    const cacheHit = parserCache[standardParserDirectory]
-    if (cacheHit) {
-      this.defaultParser = cacheHit.defaultParser
-      this.defaultFileClass = cacheHit.defaultFileClass
-      return this
-    }
     const defaultParserFiles = Disk.getFiles(standardParserDirectory).filter(file => file.endsWith(PARSERS_EXTENSION))
     this._setDefaultParser(
       standardParserDirectory,
@@ -6578,22 +6529,15 @@ class ScrollFileSystem {
     return this
   }
   _setDefaultParser(standardParserDirectory, defaultParserFiles, contents) {
-    const defaultParser = ScrollFileSystem.combineParsers(defaultParserFiles, contents)
-    parserCache[standardParserDirectory] = {
-      defaultParser,
-      defaultFileClass: class extends ScrollFile {
-        constructor() {
-          super(...arguments)
-          this.defaultParserCode = defaultParser.parsersCode
-          this.defaultParser = defaultParser.parser
-        }
-      }
-    }
-    this.defaultParser = parserCache[standardParserDirectory].defaultParser
-    this.defaultFileClass = parserCache[standardParserDirectory].defaultFileClass
+    const defaultParser = ScrollFileSystem._combineParsers(defaultParserFiles, contents)
+    this.defaultParserCode = defaultParser.parsersCode
+    this.defaultParser = defaultParser.parser
   }
   async read(absolutePath) {
     return await this._storage.read(absolutePath)
+  }
+  async createReadStream(absolutePath) {
+    return await this._storage.createReadStream(absolutePath)
   }
   async exists(absolutePath) {
     return await this._storage.exists(absolutePath)
@@ -6620,154 +6564,17 @@ class ScrollFileSystem {
     this.productCache.push(absolutePath)
     return await this.write(absolutePath, content)
   }
-  getImports(particle, absoluteFilePathOrUrl, importStack) {
-    const folder = this.dirname(absoluteFilePathOrUrl)
-    const results = particle
-      .filter(particle => particle.getLine().match(importRegex))
-      .map(async importParticle => {
-        const rawPath = importParticle.getLine().replace("import ", "")
-        let absoluteImportFilePath = this.join(folder, rawPath)
-        if (isUrl(rawPath)) absoluteImportFilePath = rawPath
-        else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + rawPath
-        if (importStack.includes(absoluteImportFilePath) || absoluteImportFilePath === absoluteFilePathOrUrl) {
-          const circularImportError = `Circular import detected: ${[...importStack, absoluteImportFilePath].join(" -> ")}`
-          return {
-            expandedFile: circularImportError,
-            exists: true,
-            absoluteImportFilePath,
-            importParticle,
-            circularImportError,
-            lineCount: particle.numberOfLines
-          }
-        }
-        const expandedFile = await this._fuseFile(absoluteImportFilePath, [...importStack, absoluteFilePathOrUrl])
-        const exists = await this.exists(absoluteImportFilePath)
-        return {
-          expandedFile,
-          exists,
-          absoluteImportFilePath,
-          importParticle,
-          lineCount: expandedFile.lineCount
-        }
-      })
-    return Promise.all(results)
+  makeRelativePath(importer, importee) {
+    const folder = this.dirname(importer)
+    let absoluteImportFilePath = this.join(folder, importee)
+    if (isUrl(importee)) absoluteImportFilePath = importee
+    else if (isUrl(folder)) absoluteImportFilePath = folder + "/" + importee
+    return absoluteImportFilePath
   }
-  async _fuseFile(absoluteFilePathOrUrl, importStack) {
-    const { _pendingFuseRequests } = this
-    if (_pendingFuseRequests[absoluteFilePathOrUrl]) return _pendingFuseRequests[absoluteFilePathOrUrl]
-    _pendingFuseRequests[absoluteFilePathOrUrl] = this._fuseFile2(absoluteFilePathOrUrl, importStack)
-    return _pendingFuseRequests[absoluteFilePathOrUrl]
+  static sortParsers(code) {
+    return new parsersParser(code)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
   }
-  async _fuseFile2(absoluteFilePathOrUrl, importStack) {
-    const [code, exists] = await Promise.all([this.read(absoluteFilePathOrUrl), this.exists(absoluteFilePathOrUrl)])
-    const isImportOnly = importOnlyRegex.test(code)
-    // Perf hack
-    // If its a parsers file, it will have no content, just parsers (and maybe imports).
-    // The parsers will already have been processed. We can skip them
-    const stripParsers = absoluteFilePathOrUrl.endsWith(PARSERS_EXTENSION)
-    let processedCode = stripParsers
-      ? code
-          .split("\n")
-          .filter(line => importRegex.test(line))
-          .join("\n")
-      : code
-    const lineCount = (processedCode.match(/\n/g) || []).length + 1
-    let filepathsWithParserDefinitions
-    if (await this._doesFileHaveParsersDefinitions(absoluteFilePathOrUrl)) {
-      filepathsWithParserDefinitions = [absoluteFilePathOrUrl]
-    }
-    if (!importRegex.test(processedCode)) {
-      return {
-        fused: processedCode,
-        isImportOnly,
-        filepathsWithParserDefinitions,
-        exists,
-        lineCount
-      }
-    }
-    const particle = new Particle(processedCode)
-    // Fetch all imports in parallel
-    const imported = await this.getImports(particle, absoluteFilePathOrUrl, importStack)
-    // Assemble all imports
-    let importFilePaths = []
-    let footers
-    let hasCircularImportError = false
-    imported.forEach(importResults => {
-      const { importParticle, absoluteImportFilePath, expandedFile, exists, circularImportError, lineCount } = importResults
-      importFilePaths.push(absoluteImportFilePath)
-      if (expandedFile.importFilePaths) importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
-      const originalLine = importParticle.getLine()
-      importParticle.setLine("imported " + absoluteImportFilePath)
-      importParticle.set("exists", `${exists}`)
-      importParticle.set("original", `${originalLine}`)
-      importParticle.set("lines", `${lineCount}`)
-      if (circularImportError) {
-        hasCircularImportError = true
-        importParticle.set("circularImportError", circularImportError)
-      }
-      if (expandedFile.footers) footers = (footers || []).concat(expandedFile.footers)
-      if (importParticle.has("footer")) {
-        footers = footers || []
-        footers.push(expandedFile.fused)
-      } else importParticle.insertLinesAfter(expandedFile.fused)
-    })
-    const existStates = await Promise.all(importFilePaths.map(file => this.exists(file)))
-    const allImportsExist = !existStates.some(exists => !exists)
-    const importFilepathsWithParserDefinitions = (
-      await Promise.all(
-        importFilePaths.map(async filename => ({
-          filename,
-          hasParser: await this._doesFileHaveParsersDefinitions(filename)
-        }))
-      )
-    )
-      .filter(result => result.hasParser)
-      .map(result => result.filename)
-    // todo: add tests for this
-    if (importFilepathsWithParserDefinitions.length) {
-      filepathsWithParserDefinitions = (filepathsWithParserDefinitions || []).concat(importFilepathsWithParserDefinitions)
-    }
-    return {
-      importFilePaths,
-      isImportOnly,
-      fused: particle.toString(),
-      lineCount,
-      footers,
-      circularImportError: hasCircularImportError,
-      exists: allImportsExist,
-      filepathsWithParserDefinitions
-    }
-  }
-  async _doesFileHaveParsersDefinitions(absoluteFilePathOrUrl) {
-    if (!absoluteFilePathOrUrl) return false
-    const { _parsersExpandersCache } = this
-    if (_parsersExpandersCache[absoluteFilePathOrUrl] === undefined) {
-      const content = await this._storage.read(absoluteFilePathOrUrl)
-      _parsersExpandersCache[absoluteFilePathOrUrl] = !!content.match(parserRegex)
-    }
-    return _parsersExpandersCache[absoluteFilePathOrUrl]
-  }
-  async _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
-    const fileContents = await Promise.all(filePaths.map(async filePath => await this._storage.read(filePath)))
-    return ScrollFileSystem.combineParsers(filePaths, fileContents, baseParsersCode)
-  }
-  clearParserCache(filename) {
-    delete this._pendingFuseRequests[filename]
-    delete this._parsersExpandersCache[filename] // todo: cleanup
-    delete this._parserCache[filename]
-  }
-  async getParser(filePaths, baseParsersCode = "") {
-    const { _parserCache } = this
-    const key = filePaths
-      .filter(fp => fp)
-      .sort()
-      .join("\n")
-    const hit = _parserCache[key]
-    if (hit) return await hit
-    _parserCache[key] = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
-    return await _parserCache[key]
-  }
-  static combineParsers(filePaths, fileContents, baseParsersCode = "") {
+  static _combineParsers(filePaths, fileContents, baseParsersCode = "") {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser$/
     const atomDefinitionRegex = /^[a-zA-Z0-9_]+Atom/
     const mapped = fileContents.map((content, index) => {
@@ -6779,7 +6586,7 @@ class ScrollFileSystem {
         .join("\n")
     })
     const asOneFile = mapped.join("\n").trim()
-    const sorted = new parsersParser(baseParsersCode + "\n" + asOneFile)._sortParticlesByInScopeOrder()._sortWithParentParsersUpTop()
+    const sorted = this.sortParsers(baseParsersCode + "\n" + asOneFile)
     const parsersCode = sorted.asString
     return {
       parsersParser: sorted,
@@ -6787,45 +6594,37 @@ class ScrollFileSystem {
       parser: new HandParsersProgram(parsersCode).compileAndReturnRootParser()
     }
   }
-  get parsers() {
-    // todo: remove
-    return Object.values(this._parserCache).map(parser => parser.parsersParser)
+  setDefaultParserFromString(contents) {
+    this._setDefaultParser("", ["scroll"], [contents])
   }
-  async fuseFile(absoluteFilePathOrUrl, defaultParserCode) {
-    const fusedFile = await this._fuseFile(absoluteFilePathOrUrl, [])
-    if (!defaultParserCode) return fusedFile
-    if (fusedFile.filepathsWithParserDefinitions) {
-      const parser = await this.getParser(fusedFile.filepathsWithParserDefinitions, defaultParserCode)
-      fusedFile.parser = parser.parser
-    }
-    return fusedFile
-  }
-  async getLoadedFile(filePath) {
-    return await this._getLoadedFile(filePath, this.defaultFileClass)
-  }
-  async _getLoadedFile(absolutePath, parser) {
-    if (this.parsedFiles[absolutePath]) return this.parsedFiles[absolutePath]
-    const file = new parser(undefined, absolutePath, this)
-    await file.fuse()
-    this.parsedFiles[absolutePath] = file
+  async getFusedFile(absolutePath) {
+    const file = await this.getFile(absolutePath)
+    await file.singlePassFuse()
     return file
   }
-  getCachedLoadedFilesInFolder(folderPath, requester) {
+  async getFile(absolutePath) {
+    if (this._fusedFiles[absolutePath]) return this._fusedFiles[absolutePath]
+    const file = new ScrollFile(undefined, absolutePath, this)
+    this._fusedFiles[absolutePath] = file
+    return file
+  }
+  getFusedFilesInFolderIfCached(folderPath, requester) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
-    const hit = this.folderCache[folderPath]
+    const hit = this._folderCache[folderPath]
     if (!hit) console.log(`Warning: '${folderPath}' not yet loaded in '${this.scrollFileSystemIdNumber}'. Requested by '${requester.filePath}'`)
     return hit || []
   }
   // todo: this is weird. i know we evolved our way here but we should step back and clean this up.
-  async getLoadedFilesInFolder(folderPath, extension) {
+  async getFusedFilesInFolder(folderPath, extension) {
     folderPath = Utils.ensureFolderEndsInSlash(folderPath)
-    if (this.folderCache[folderPath]) return this.folderCache[folderPath]
-    const allFiles = await this.list(folderPath)
-    const loadedFiles = await Promise.all(allFiles.filter(file => file.endsWith(extension)).map(filePath => this.getLoadedFile(filePath)))
-    const sorted = loadedFiles.sort((a, b) => b.timestamp - a.timestamp)
-    sorted.forEach((file, index) => (file.timeIndex = index))
-    this.folderCache[folderPath] = sorted
-    return this.folderCache[folderPath]
+    if (this._folderCache[folderPath]) return this._folderCache[folderPath]
+    const allFiles = (await this.list(folderPath)).filter(file => file.endsWith(extension))
+    const loadedFiles = []
+    for (let filePath of allFiles) {
+      loadedFiles.push(await this.getFusedFile(filePath))
+    }
+    this._folderCache[folderPath] = loadedFiles
+    return this._folderCache[folderPath]
   }
 }
 window.ScrollFileSystem = ScrollFileSystem
@@ -6961,7 +6760,7 @@ window.ScrollFile = ScrollFile
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+    static _parserSourceCode = `// Atom parsers
 anyAtom
 cueAtom
 emptyAtom
@@ -7228,7 +7027,8 @@ bernParser
    return this.subparticlesToString()
   }
   getTextContent() {return ""}
- atoms bernKeywordAtom`)
+ atoms bernKeywordAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
@@ -7805,7 +7605,7 @@ bernParser
         .map(subparticle => subparticle.compile())
         .join("")
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 anyAtom
 cueAtom
 commentKeywordAtom
@@ -7905,7 +7705,8 @@ selectorParser
   \${propertyParsers.map(subparticle => subparticle.compile(spaces)).join("\\n")}
   }\\n\`
   }
- atoms selectorAtom`)
+ atoms selectorAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

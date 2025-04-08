@@ -20,9 +20,8 @@ Before you start:
  /mailto:breck7@gmail.com email Breck
 [] Take a look at some of the sample languages in the Parser Designer. You might be able to use these as a reference if you get stuck.
  /designer/index.html Parser Designer
-[] Open the Parser Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Parsers).
+[] Open the Parser Designer or use your own editor.
  /designer/index.html Parser Designer
- https://sublimetext.com SublimeText4
 
 Step 1
 ======

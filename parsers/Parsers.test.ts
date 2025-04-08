@@ -66,34 +66,6 @@ const makeProgram = (parsersCode: string, code: string) => {
   return new rootParser(code)
 }
 
-testParticles.trainAndPredict = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(hakonParsers)
-  const hakonParser = parsersProgram.compileAndReturnRootParser()
-  const testBlankProgram = new hakonParser()
-  const handParsersProgram = testBlankProgram.handParsersProgram
-  const examples = handParsersProgram.getParticlesByGlobPath("* example").map((particle: any) => particle.subparticlesToString())
-  const model = parsersProgram.trainModel(examples)
-
-  // Assert
-  const predictions = handParsersProgram.predictSubparticles(model, testBlankProgram)
-  equal(predictions[0].id, "selectorParser")
-
-  // Act
-  const bodyParticle = testBlankProgram.appendLine("body")
-
-  // Assert
-  const predictions2 = handParsersProgram.predictSubparticles(model, bodyParticle)
-  equal(predictions2[0].id, "propertyParser")
-
-  // Act
-  const fontSizeParticle = testBlankProgram.appendLine("font-size")
-
-  // Assert
-  const predictions3 = handParsersProgram.predictParents(model, fontSizeParticle)
-  equal(predictions3[0].id, "selectorParser")
-}
-
 testParticles.jibberish = equal => {
   // Arrange
   const sampleJibberishCode = Disk.read(path.join(jibberishRootDir, "sample.jibberish"))
@@ -514,49 +486,6 @@ testParticles.blobParsers = equal => {
   equal(anyProgram.topDownArray.map((particle: any) => particle.parserId).length > 0, true, "passed blob regression")
 }
 
-testParticles.sublimeSyntaxFile = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(jibberishParsersCode)
-  const code = parsersProgram.toSublimeSyntaxFile()
-
-  // Assert
-  equal(code.includes("scope:"), true)
-}
-
-testParticles.toStumpString = equal => {
-  // Arrange/Act
-  const parsersProgram = new HandParsersProgram(arrowParsers).compileAndReturnRootParser()
-  const code = new parsersProgram().definition.getParserDefinitionByParserId("chargeParser").toStumpString()
-  const expected = `div
- label amount
- input
-  name amount
-  type number
-  placeholder 9.99
-  min 0
-  max 99999
-div
- label currency
- select
-  name currency
-  option usd
-  option cad
-  option jpy
-div
- label cardNumber
- input
-  name cardNumber
-  placeholder 1111222233334444
-div
- label token
- input
-  name token
-  placeholder sk_test_4eC39H`
-
-  // Assert
-  equal(code, expected, "form correct")
-}
-
 // todo: reenable once we have the requirement of at least 1 root particle
 // testParticles.requiredParsers = equal => {
 //   // Arrange/Act
@@ -749,15 +678,64 @@ testParticles.invalidParsersRegression = equal => {
   equal(typeof compiledParser, "string")
 }
 
-testParticles.bundler = equal => {
+testParticles.addRunTimeParser = equal => {
+  const parsers = `// Atom Parsers
+nameAtom
+ description A person's name
+ paint string
+cueAtom
+ paint keyword
+
+// Line Parsers
+newlangParser
+ root
+ description A basic root parser.
+ catchAllParser catchAllErrorParser
+ inScope helloParser
+helloParser
+ int luckyNumber 7
+ catchAllAtomType nameAtom
+ atoms cueAtom
+ cue hello
+catchAllErrorParser
+ baseParser errorParser`
+
   // Arrange
-  const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
+  const parsersProgram = new HandParsersProgram(parsers)
+  const rootParser = parsersProgram.compileAndReturnRootParser()
+
+  // Act/Assert
+  const basicProgram = new rootParser(`hello Mom`)
+  equal(basicProgram.particleAt(0).luckyNumber, 7, "Basics work")
+
+  const byeParser = `byeParser
+ int luckyNumber 42
+ atoms cueAtom
+ extends helloParser
+ cue bye`
 
   // Act
-  const bundle = jibberishParsersProgram.toBundle()
+  // Now we need to add a Parser.
+  basicProgram.registerParsers(byeParser)
+  basicProgram.appendLine("bye")
 
   // Assert
-  equal(bundle["readme.md"].includes("stats"), true)
+  equal(basicProgram.particleAt(1).luckyNumber, 42, "registerParsers work")
+
+  const adiosParser = `adiosParser
+ int luckyNumber 15
+ atoms cueAtom
+ extends helloParser
+ cueFromId`
+
+  // Act
+  basicProgram.registerParsers(adiosParser)
+  basicProgram.appendLine("adios")
+  basicProgram.appendLine("bye")
+
+  // Assert
+  equal(basicProgram.particleAt(2).luckyNumber, 15, "adding multiple parsers works")
+  equal(basicProgram.particleAt(3).luckyNumber, 42, "earlier additions work")
 }
 
 const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)

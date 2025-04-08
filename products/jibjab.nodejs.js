@@ -4,7 +4,6 @@
   const { Particle } = require("./Particle.js")
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedParticle } = require("./Parsers.js")
-
   class jibberishParser extends ParserBackedParticle {
     createParserPool() {
       return new Particle.ParserPool(
@@ -40,7 +39,7 @@
   }
 
   class jibjabParser extends jibberishParser {
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom Parsers
+    static _parserSourceCode = `// Atom Parsers
 anyAtom
 columnNameEnumAtom
 columnNameAtom
@@ -189,7 +188,8 @@ textParser
 scoresParser
  catchAllAtomType integerAtom
  atoms topLevelPropertyAtom
- cue scores`)
+ cue scores`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

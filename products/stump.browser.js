@@ -127,7 +127,7 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Atom parsers
+    static _parserSourceCode = `// Atom parsers
 anyAtom
 cueAtom
 emptyAtom
@@ -394,7 +394,8 @@ bernParser
    return this.subparticlesToString()
   }
   getTextContent() {return ""}
- atoms bernKeywordAtom`)
+ atoms bernKeywordAtom`
+    static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }

@@ -21,7 +21,32 @@ node_modules/scroll-cli/microlangs/changes.parsers
 thinColumns 4
 
 📦 107.0.0 2025-04-06
+
+This is a major release that moves Scroll from a multi-pass parser to a single pass parser.
+
+# Particle
+🎉 Added replaceWith method
+🎉 Added appendFromStream method
+🎉 Added appendBlocks method
+
+# Parsers
+🎉 Added registerParsers method
+🎉 Added switchParserPool method
 ⚠️ BREAKING: removed unused methods `trainModel`, `predictSubparticles`, `predictParents`, `toBundle`, `toSublimeSyntaxFile`, `toStumpString`
+
+# ScrollFileSystem
+SFS is now lightweight and does not do macros, imports, or parsers. Those are now done in Scroll.
+🎉 Added getFile to just get a file handle
+🎉 Added makeRelativePath
+🎉 Added setDefaultParserFromString
+🎉 Added createReadStream
+🎉 Added newFile method
+⚠️ BREAKING: getCachedLoadedFilesInFolder is now getFusedFilesInFolderIfCached and getLoadedFilesInFolder is getFusedFilesInFolder.
+⚠️ BREAKING: removed folderCache, parsedFiles, fuseFile, parsers, combineParsers, getParser, clearParserCache
+⚠️ BREAKING: removed old method for creating a new file. Use newFile instead.
+⚠️ BREAKING: removed fuse. Use singlePassFuse instead
+⚠️ BREAKING: removed FusedFile interface
+⚠️ BREAKING: getLoadedFile is now getFusedFile
 
 📦 106.0.1 2025-03-29
 🏥 code cleanup

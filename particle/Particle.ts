@@ -144,26 +144,8 @@ class ParserPool {
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 
-  async createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
-    const rootParticle = parentParticle.root
-    if (rootParticle.particleTransformers) {
-      // A macro may return multiple new blocks.
-      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
-
-      const newParticles: particlesTypes.particle[] = []
-      for (const [newBlockIndex, block] of blocks.entries()) {
-        const particle = await this._createParticleAsync(parentParticle, block, index === undefined ? undefined : index + newBlockIndex)
-        newParticles.push(particle)
-      }
-      return newParticles[0]
-    }
-
-    const newParticle = await this._createParticleAsync(parentParticle, block, index)
-    return newParticle
-  }
-
-  async _createParticleAsync(parentParticle: particlesTypes.particle, block: string, index?: number): particlesTypes.particle {
-    index = index === undefined ? parentParticle.length : index
+  async appendParticleAsync(parentParticle: particlesTypes.particle, block: string): particlesTypes.particle {
+    const index = parentParticle.length
     const parser: any = this._getMatchingParser(block, parentParticle, index)
     const { particleBreakSymbol } = parentParticle
     const lines = block.split(particleBreakSymbol)
@@ -172,7 +154,7 @@ class ParserPool {
       .map(line => line.substr(1))
       .join(particleBreakSymbol)
     const particle = new parser(undefined, lines[0], parentParticle, index)
-    if (subparticles.length) await particle.loadFromStream(subparticles)
+    if (subparticles.length) await particle.appendFromStream(subparticles)
     await particle.wake()
     return particle
   }
@@ -228,6 +210,7 @@ class Particle extends AbstractParticle {
     this.file = file
   }
 
+  // Store all parsing state in the document, not the parser pool.
   particleTransformers?: particlesTypes.particleTransformer[]
 
   // todo: perhaps if needed in the future we can add more contextual params here
@@ -1667,7 +1650,8 @@ class Particle extends AbstractParticle {
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
   split(cue: particlesTypes.atom): Particle[] {
-    const constructor = <any>this.constructor
+    // todo: cleanup
+    const constructor = this._modifiedConstructor || <any>this.constructor
     const ParticleBreakSymbol = this.particleBreakSymbol
     const AtomBreakSymbol = this.atomBreakSymbol
 
@@ -1834,12 +1818,38 @@ class Particle extends AbstractParticle {
     const { edgeSymbol, particleBreakSymbol } = this
     const blocks = splitBlocks(str, edgeSymbol, particleBreakSymbol)
     const parserPool = this._getParserPool()
-    blocks.forEach((block, index) => parserPool.createParticle(this, block))
+    return blocks.map((block, index) => parserPool.createParticle(this, block))
   }
 
-  async loadFromStream(input) {
+  private async _appendBlockAsync(block) {
+    // We need to keep grapping the parserPool in case it changed.
+    // todo: cleanup and perf optimize
+    let parserPool = this._getParserPool()
+    await parserPool.appendParticleAsync(this, block)
+  }
+
+  private async _transformAndAppendBlockAsync(block: string): particlesTypes.particle {
+    block = block.replace(/\r/g, "") // I hate \r
+    const rootParticle = this.root
+    if (this._beforeAppend) this._beforeAppend(block) // todo: clean this up and document it.
+    if (rootParticle.particleTransformers) {
+      // A macro may return multiple new blocks.
+      const blocks = splitBlocks(rootParticle._transformBlock(block), SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE)
+
+      const newParticles: particlesTypes.particle[] = []
+      for (const [newBlockIndex, block] of blocks.entries()) {
+        const particle = await this._appendBlockAsync(block)
+        newParticles.push(particle)
+      }
+      return newParticles[0]
+    }
+
+    const newParticle = await this._appendBlockAsync(block)
+    return newParticle
+  }
+
+  async appendFromStream(input) {
     const { edgeSymbol, particleBreakSymbol } = this
-    const parserPool = this._getParserPool()
 
     let buffer = ""
     const breakRegex = new RegExp(`${particleBreakSymbol}(?!${edgeSymbol})`)
@@ -1856,11 +1866,11 @@ class Particle extends AbstractParticle {
           const block = buffer.slice(0, breakIndex)
           buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
 
-          await parserPool.createParticleAsync(this, block)
+          await this._transformAndAppendBlockAsync(block)
         }
       }
       // Process remaining buffer
-      await parserPool.createParticleAsync(this, buffer)
+      await this._transformAndAppendBlockAsync(buffer)
     }
     // Browser ReadableStream
     else if (typeof ReadableStream !== "undefined" && input instanceof ReadableStream) {
@@ -1879,11 +1889,11 @@ class Particle extends AbstractParticle {
             const block = buffer.slice(0, breakIndex)
             buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
 
-            await parserPool.createParticleAsync(this, block)
+            await this._transformAndAppendBlockAsync(block)
           }
         }
         // Process remaining buffer
-        await parserPool.createParticleAsync(this, buffer)
+        await this._transformAndAppendBlockAsync(buffer)
       } finally {
         reader.releaseLock()
       }
@@ -1898,9 +1908,9 @@ class Particle extends AbstractParticle {
         const block = buffer.slice(0, breakIndex)
         buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
 
-        await parserPool.createParticleAsync(this, block)
+        await this._transformAndAppendBlockAsync(block)
       }
-      await parserPool.createParticleAsync(this, buffer)
+      await this._transformAndAppendBlockAsync(buffer)
     } else {
       throw new Error("Unsupported input type. Expected string, Node.js Readable, or ReadableStream.")
     }
@@ -1930,6 +1940,19 @@ class Particle extends AbstractParticle {
 
   getParticleByParser(parser: Function) {
     return this.find(subparticle => subparticle instanceof parser)
+  }
+
+  // todo: switch to native classes and parsers in particles and away from javascript classes for parsing.
+  // move off particle.ts
+  // make the below work.
+  // By default every particle has a parser. By default they all match to the first particle.
+  get parser() {
+    return this._parser || this.root.particleAt(0)
+  }
+
+  // The parserId of a particle at the moment is defined as the cue of the parser it is matched to.
+  get parserId() {
+    return this.parser.cue
   }
 
   indexOfLast(cue: atom): int {
@@ -2091,11 +2114,13 @@ class Particle extends AbstractParticle {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
 
-  private static _parserPools = new Map<any, ParserPool>()
+  private static _parserPoolsCache = new Map<any, ParserPool>()
 
+  private _parserPool?: ParserPool
   _getParserPool() {
-    if (!Particle._parserPools.has(this.constructor)) Particle._parserPools.set(this.constructor, this.createParserPool())
-    return Particle._parserPools.get(this.constructor)
+    if (this._parserPool) return this._parserPool
+    if (!Particle._parserPoolsCache.has(this.constructor)) Particle._parserPoolsCache.set(this.constructor, this.createParserPool())
+    return Particle._parserPoolsCache.get(this.constructor)
   }
 
   createParserPool(): ParserPool {
@@ -2435,6 +2460,10 @@ class Particle extends AbstractParticle {
     return this._insertBlock(this._makeBlock(line, subparticles))
   }
 
+  appendBlocks(blocks: string) {
+    return this._appendSubparticlesFromString(blocks)
+  }
+
   _makeBlock(line: string, subparticles: particlesTypes.subparticles) {
     if (subparticles === undefined) return line
     const particle = new Particle(subparticles, line)
@@ -2573,6 +2602,15 @@ class Particle extends AbstractParticle {
     const results = this.topDownArray.filter(particle => particle.hasDuplicateCues())
     if (this.hasDuplicateCues()) results.unshift(this)
     return results
+  }
+
+  replaceWith(blocks: string) {
+    const split = splitBlocks(blocks, SUBPARTICLE_MEMBRANE, PARTICLE_MEMBRANE).reverse()
+    const parent = this.parent
+    const index = this.index
+    const newParticles = split.map((block, newBlockIndex) => parent._insertBlock(block, index))
+    this.destroy()
+    return newParticles
   }
 
   replaceParticle(fn: (thisStr: string) => string) {
@@ -3265,7 +3303,7 @@ class Particle extends AbstractParticle {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "106.0.1"
+  static getVersion = () => "107.0.0"
 
   static fromDisk(path: string): Particle {
     const format = this._getFileFormat(path)

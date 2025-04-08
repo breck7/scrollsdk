@@ -9,8 +9,6 @@ declare var parsersParser: any
 // todo: get typings in here.
 declare var CodeMirror: any
 declare var saveAs: any
-declare var JSZip: any
-declare var dumbdownParser: any
 declare type html = string
 
 class DesignerApp extends AbstractParticleComponentParser {
@@ -89,26 +87,6 @@ class DesignerApp extends AbstractParticleComponentParser {
     }
 
     this._setParsersAndCode(parsers.text, sample)
-  }
-
-  // TODO: ADD TESTS!!!!!
-  async downloadBundleCommand() {
-    const parsersProgram = new HandParsersProgram(this.getParsersCode())
-    const bundle = parsersProgram.toBundle()
-    const languageName = parsersProgram.extensionName
-    return this._makeZipBundle(languageName + ".zip", bundle)
-  }
-
-  private async _makeZipBundle(fileName: string, bundle: any) {
-    const zip = new JSZip()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
-
-    zip.generateAsync({ type: "blob" }).then((content: any) => {
-      // see FileSaver.js
-      saveAs(content, fileName)
-    })
   }
 
   private _toIceTray(program: any) {
@@ -284,7 +262,7 @@ class DesignerApp extends AbstractParticleComponentParser {
     const errs = this.parsersProgram.getAllErrors().map((err: any) => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
-    const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
+    const readme = parsersProgram.toReadMe()
 
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }

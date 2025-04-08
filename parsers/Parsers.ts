@@ -17,12 +17,6 @@ const GlobalNamespaceAdditions: particlesTypes.stringMap = {
   ParserBackedParticle: "Parsers.js"
 }
 
-interface SimplePredictionModel {
-  matrix: particlesTypes.int[][]
-  idToIndex: { [id: string]: particlesTypes.int }
-  indexToId: { [index: number]: string }
-}
-
 enum ParsersConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
@@ -52,14 +46,6 @@ enum ParsersConstantsConstantTypes {
   string = "string",
   int = "int",
   float = "float"
-}
-
-enum ParsersBundleFiles {
-  package = "package.json",
-  readme = "readme.md",
-  indexHtml = "index.html",
-  indexJs = "index.js",
-  testJs = "test.js"
 }
 
 enum ParsersAtomParser {
@@ -115,8 +101,6 @@ enum ParsersConstants {
   uniqueLine = "uniqueLine", // Can't have duplicate lines.
   tags = "tags",
 
-  _rootNodeJsHeader = "_rootNodeJsHeader", // todo: remove
-
   // default catchAll parser
   BlobParser = "BlobParser",
   DefaultRootParser = "DefaultRootParser",
@@ -148,14 +132,50 @@ class TypedAtom extends ParticleAtom {
   }
 }
 
+const _parserPoolCache = {}
 // todo: can we merge these methods into base Particle and ditch this class?
 abstract class ParserBackedParticle extends Particle {
   private _definition: AbstractParserDefinitionParser | HandParsersProgram | parserDefinitionParser
+
+  // Returns a pointer to the Particle containing the parser definition. In the future this will
+  // be in the same file. Right now we still have the split between Parser definitions and program code.
   get definition(): AbstractParserDefinitionParser | HandParsersProgram | parserDefinitionParser {
     if (this._definition) return this._definition
 
     this._definition = this.isRoot() ? this.handParsersProgram : this.parent.definition.getParserDefinitionByParserId(this.constructor.name)
     return this._definition
+  }
+
+  registerParsers(parserCode: string, id?: string) {
+    // Todo: hacky as shit for now. Thats fine.
+    // What we do here is if a parser comes in we recreate the entire root parser.
+    // What we actually want to do is just minimally update the parser pool.
+    // We can do that later, but it is sort of time to look at moving the Parsers
+    // concept directly into Particles, perhaps even with a bit of a rewrite, and
+    // remove a lot of the classes in this file.
+    const root = this.root
+    const currentParserCode = (root._modifiedConstructor || root.constructor)._parserSourceCode
+    const newParserCode = currentParserCode + "\n" + parserCode
+    const parsersProgram = new HandParsersProgram(newParserCode)
+    const rootParser = parsersProgram.compileAndReturnRootParser()
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
+    root._definition = parsersProgram
+    root._modifiedConstructor = rootParser
+    root._parserPool = new rootParser()._getParserPool()
+    // Clear parser cache.
+    delete root._parserIdIndex
+    if (id) _parserPoolCache[id] = root
+  }
+
+  switchParserPool(parserPoolId: string) {
+    const sourceParticle = _parserPoolCache[parserPoolId]
+    const root = this.root
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
+    root._definition = sourceParticle._definition
+    root._modifiedConstructor = sourceParticle._modifiedConstructor
+    root._parserPool = sourceParticle._parserPool
+    // Clear parser cache.
+    delete root._parserIdIndex
   }
 
   get rootParsersParticles() {
@@ -305,7 +325,7 @@ abstract class ParserBackedParticle extends Particle {
     if (!parserOrder.length) return this
     const orderMap: particlesTypes.stringMap = {}
     parserOrder.forEach((atom, index) => (orderMap[atom] = index))
-    this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.definition.parserIdFromDefinition]))
+    this.sort(Utils.makeSortByFn((runtimeParticle: ParserBackedParticle) => orderMap[runtimeParticle.parserId]))
     return this
   }
 
@@ -345,7 +365,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   findAllParticlesWithParser(parserId: particlesTypes.parserId) {
-    return this.topDownArray.filter((particle: ParserBackedParticle) => particle.definition.parserIdFromDefinition === parserId)
+    return this.topDownArray.filter((particle: ParserBackedParticle) => particle.parserId === parserId)
   }
 
   toAtomTypeParticles() {
@@ -524,7 +544,7 @@ abstract class ParserBackedParticle extends Particle {
   }
 
   get parserId(): particlesTypes.parserId {
-    return this.definition.parserIdFromDefinition
+    return this.definition.cue
   }
 
   get atomTypes() {
@@ -873,31 +893,6 @@ abstract class AbstractParsersBackedAtom<T> {
     return this._synthesizeAtom(seed)
   }
 
-  _getStumpEnumInput(cue: string): string {
-    const atomDef = this.atomTypeDefinition
-    const enumOptions = atomDef._getFromExtended(ParsersConstants.enum)
-    if (!enumOptions) return undefined
-    const options = new Particle(
-      enumOptions
-        .split(" ")
-        .map(option => `option ${option}`)
-        .join("\n")
-    )
-    return `select
- name ${cue}
-${options.toString(1)}`
-  }
-
-  _toStumpInput(cue: string): string {
-    // todo: remove
-    const enumInput = this._getStumpEnumInput(cue)
-    if (enumInput) return enumInput
-    // todo: cleanup. We shouldn't have these dual atomType classes.
-    return `input
- name ${cue}
- placeholder ${this.placeholder}`
-  }
-
   abstract _synthesizeAtom(seed?: number): string
 
   get atomTypeDefinition() {
@@ -952,16 +947,7 @@ class ParsersBitAtom extends AbstractParsersBackedAtom<boolean> {
   }
 }
 
-abstract class ParsersNumberAtom extends AbstractParsersBackedAtom<number> {
-  _toStumpInput(cue: string): string {
-    return `input
- name ${cue}
- type number
- placeholder ${this.placeholder}
- min ${this.min}
- max ${this.max}`
-  }
-}
+abstract class ParsersNumberAtom extends AbstractParsersBackedAtom<number> {}
 
 class ParsersIntegerAtom extends ParsersNumberAtom {
   _isValid() {
@@ -1186,7 +1172,7 @@ abstract class AbstractParticleError implements particlesTypes.ParticleError {
   }
 
   get parserId(): string {
-    return (<ParserBackedParticle>this.getParticle()).definition.parserIdFromDefinition
+    return (<ParserBackedParticle>this.getParticle()).parserId
   }
 
   private _getCodeMirrorLineWidgetElementAtomTypeHints() {
@@ -1830,7 +1816,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleParticle
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.javascript,
       ParsersConstants.single,
@@ -1908,7 +1893,7 @@ ${properties.join("\n")}
   }
 
   get parserIdFromDefinition(): particlesTypes.parserId {
-    return this.getAtom(0)
+    return this.cue
   }
 
   // todo: remove? just reused parserId
@@ -2141,7 +2126,8 @@ ${properties.join("\n")}
     const thisClassName = this.generatedClassName
 
     if (this._amIRoot()) {
-      components.push(`static cachedHandParsersProgramRoot = new HandParsersProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
+      components.push(`static _parserSourceCode = \`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`
+        static cachedHandParsersProgramRoot = new HandParsersProgram(this._parserSourceCode)
         get handParsersProgram() {
           return this.constructor.cachedHandParsersProgramRoot
       }`)
@@ -2181,48 +2167,6 @@ ${properties.join("\n")}
 
   isTerminalParser() {
     return !this._getFromExtended(ParsersConstants.inScope) && !this._getFromExtended(ParsersConstants.catchAllParser)
-  }
-
-  private get sublimeMatchLine() {
-    const regexMatch = this.regexMatch
-    if (regexMatch) return `'${regexMatch}'`
-    const cueMatch = this.cueIfAny
-    if (cueMatch) return `'^ *${Utils.escapeRegExp(cueMatch)}(?: |$)'`
-    const enumOptions = this.cueEnumOptions
-    if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
-  }
-
-  // todo: refactor. move some parts to atomParser?
-  _toSublimeMatchBlock() {
-    const defaultPaint = "source"
-    const program = this.languageDefinitionProgram
-    const atomParser = this.atomParser
-    const requiredAtomTypeIds = atomParser.getRequiredAtomTypeIds()
-    const catchAllAtomTypeId = atomParser.catchAllAtomTypeId
-    const cueTypeDef = program.getAtomTypeDefinitionById(requiredAtomTypeIds[0])
-    const cuePaint = (cueTypeDef ? cueTypeDef.paint : defaultPaint) + "." + this.parserIdFromDefinition
-    const topHalf = ` '${this.parserIdFromDefinition}':
-  - match: ${this.sublimeMatchLine}
-    scope: ${cuePaint}`
-    if (catchAllAtomTypeId) requiredAtomTypeIds.push(catchAllAtomTypeId)
-    if (!requiredAtomTypeIds.length) return topHalf
-    const captures = requiredAtomTypeIds
-      .map((atomTypeId, index) => {
-        const atomTypeDefinition = program.getAtomTypeDefinitionById(atomTypeId) // todo: cleanup
-        if (!atomTypeDefinition) throw new Error(`No ${ParsersConstants.atomType} ${atomTypeId} found`) // todo: standardize error/capture error at parsers time
-        return `        ${index + 1}: ${(atomTypeDefinition.paint || defaultPaint) + "." + atomTypeDefinition.atomTypeId}`
-      })
-      .join("\n")
-
-    const atomTypesToRegex = (atomTypeIds: string[]) => atomTypeIds.map((atomTypeId: string) => `({{${atomTypeId}}})?`).join(" ?")
-
-    return `${topHalf}
-    push:
-     - match: ${atomTypesToRegex(requiredAtomTypeIds)}
-       captures:
-${captures}
-     - match: $
-       pop: true`
   }
 
   private _cache_parserInheritanceSet: Set<particlesTypes.parserId>
@@ -2279,26 +2223,6 @@ ${captures}
   private _getExtendedParserId(): particlesTypes.parserId {
     const ancestorIds = this.ancestorParserIdsArray
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
-  }
-
-  protected _toStumpString() {
-    const cue = this.cueIfAny
-    const atomArray = this.atomParser.getAtomArray().filter((item, index) => index) // for now this only works for cue langs
-    if (!atomArray.length)
-      // todo: remove this! just doing it for now until we refactor getAtomArray to handle catchAlls better.
-      return ""
-    const atoms = new Particle(atomArray.map((atom, index) => atom._toStumpInput(cue)).join("\n"))
-    return `div
- label ${cue}
-${atoms.toString(1)}`
-  }
-
-  toStumpString() {
-    const particleBreakSymbol = "\n"
-    return this._getConcreteNonErrorInScopeParticleDefinitions(this._getInScopeParserIds())
-      .map(def => def._toStumpString())
-      .filter(identity => identity)
-      .join(particleBreakSymbol)
   }
 
   private _generateSimulatedLine(seed: number): string {
@@ -2457,71 +2381,6 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     return ""
   }
 
-  trainModel(programs: string[], rootParser = this.compileAndReturnRootParser()): SimplePredictionModel {
-    const particleDefs = this.validConcreteAndAbstractParserDefinitions
-    const particleDefCountIncludingRoot = particleDefs.length + 1
-    const matrix = Utils.makeMatrix(particleDefCountIncludingRoot, particleDefCountIncludingRoot, 0)
-    const idToIndex: { [id: string]: number } = {}
-    const indexToId: { [index: number]: string } = {}
-    particleDefs.forEach((def, index) => {
-      const id = def.id
-      idToIndex[id] = index + 1
-      indexToId[index + 1] = id
-    })
-    programs.forEach(code => {
-      const exampleProgram = new rootParser(code)
-      exampleProgram.topDownArray.forEach((particle: ParserBackedParticle) => {
-        const particleIndex = idToIndex[particle.definition.id]
-        const parentParticle = <ParserBackedParticle>particle.parent
-        if (!particleIndex) return undefined
-        if (parentParticle.isRoot()) matrix[0][particleIndex]++
-        else {
-          const parentIndex = idToIndex[parentParticle.definition.id]
-          if (!parentIndex) return undefined
-          matrix[parentIndex][particleIndex]++
-        }
-      })
-    })
-    return {
-      idToIndex,
-      indexToId,
-      matrix
-    }
-  }
-
-  private _mapPredictions(predictionsVector: number[], model: SimplePredictionModel) {
-    const total = Utils.sum(predictionsVector)
-    const predictions = predictionsVector.slice(1).map((count, index) => {
-      const id = model.indexToId[index + 1]
-      return {
-        id,
-        def: this.getParserDefinitionByParserId(id),
-        count,
-        prob: count / total
-      }
-    })
-    predictions.sort(Utils.makeSortByFn((prediction: any) => prediction.count)).reverse()
-    return predictions
-  }
-
-  predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return this._mapPredictions(this._predictSubparticles(model, particle), model)
-  }
-
-  predictParents(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return this._mapPredictions(this._predictParents(model, particle), model)
-  }
-
-  private _predictSubparticles(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    return model.matrix[particle.isRoot() ? 0 : model.idToIndex[particle.definition.id]]
-  }
-
-  private _predictParents(model: SimplePredictionModel, particle: ParserBackedParticle) {
-    if (particle.isRoot()) return []
-    const particleIndex = model.idToIndex[particle.definition.id]
-    return model.matrix.map(row => row[particleIndex])
-  }
-
   // todo: hacky, remove
   private _dirName: string
   _setDirName(name: string) {
@@ -2571,62 +2430,13 @@ class HandParsersProgram extends AbstractParserDefinitionParser {
     const atomTypes = this.atomTypeDefinitions
     const parserLineage = this.parserLineage
     const exampleParticle = rootParticleDef.examples[0]
-    return `title2 ${languageName} stats
-
-list
- - ${languageName} has ${parserLineage.topDownArray.length} parsers.
- - ${languageName} has ${Object.keys(atomTypes).length} atom types.
- - The source code for ${languageName} is ${this.topDownArray.length} lines long.
+    return `<h3>${languageName} stats</h3>
+<ul>
+<li>${languageName} has ${parserLineage.topDownArray.length} parsers.</li>
+<li>${languageName} has ${Object.keys(atomTypes).length} atom types.</li>
+<li>The source code for ${languageName} is ${this.topDownArray.length} lines long.</li>
+</ul>
 `
-  }
-
-  toBundle() {
-    const files: particlesTypes.stringMap = {}
-    const rootParticleDef = this.rootParserDefinition
-    const languageName = this.extensionName
-    const example = rootParticleDef.examples[0]
-    const sampleCode = example ? example.subparticlesToString() : ""
-
-    files[ParsersBundleFiles.package] = JSON.stringify(
-      {
-        name: languageName,
-        private: true,
-        dependencies: {
-          scrollsdk: Particle.getVersion()
-        }
-      },
-      null,
-      2
-    )
-    files[ParsersBundleFiles.readme] = this.toReadMe()
-
-    const testCode = `const program = new ${languageName}(sampleCode)
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.message))`
-
-    const nodePath = `${languageName}.node.js`
-    files[nodePath] = this.toNodeJsJavascript()
-    files[ParsersBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
-
-    const browserPath = `${languageName}.browser.js`
-    files[browserPath] = this.toBrowserJavascript()
-    files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Particle.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
-<script src="${browserPath}"></script>
-<script>
-const sampleCode = \`${sampleCode.toString()}\`
-${testCode}
-</script>`
-
-    const samplePath = "sample." + this.extensionName
-    files[samplePath] = sampleCode.toString()
-    files[ParsersBundleFiles.testJs] = `const ${languageName} = require("./index.js")
-/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
-${testCode}`
-    return files
   }
 
   private _cache_atomTypes: {
@@ -2727,9 +2537,6 @@ ${testCode}`
     return cache
   }
 
-  static _languages: any = {}
-  static _parsers: any = {}
-
   // todo: add explanation
   private _cached_rootParser: AbstractRuntimeProgramConstructorInterface
   compileAndReturnRootParser() {
@@ -2753,7 +2560,6 @@ ${testCode}`
     // todo: throw if there is no root particle defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootParserDefinition
-    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(ParsersConstants._rootNodeJsHeader)
     const rootName = rootDef.generatedClassName
 
     if (!rootName) throw new Error(`Root Particle Type Has No Name`)
@@ -2778,38 +2584,11 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the parsers, which we preserve.
     return `{
 ${nodeJsImports}
-${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${parserClasses}
 
 ${exportScript}
 }
 `
-  }
-
-  toSublimeSyntaxFile(fileExtensions = "") {
-    const atomTypeDefs = this.atomTypeDefinitions
-    const variables = Object.keys(atomTypeDefs)
-      .map(name => ` ${name}: '${atomTypeDefs[name].regexString}'`)
-      .join("\n")
-
-    const defs = this.validConcreteAndAbstractParserDefinitions.filter(kw => !kw._isAbstract())
-    const parserContexts = defs.map(def => def._toSublimeMatchBlock()).join("\n\n")
-    const includes = defs.map(parserDef => `  - include: '${parserDef.parserIdFromDefinition}'`).join("\n")
-
-    return `%YAML 1.2
----
-name: ${this.extensionName}
-file_extensions: [${fileExtensions}]
-scope: source.${this.extensionName}
-
-variables:
-${variables}
-
-contexts:
- main:
-${includes}
-
-${parserContexts}`
   }
 }
 
@@ -2913,21 +2692,6 @@ class UnknownParsersProgram extends Particle {
     // Todo: add conditional frequencies
     return particleDefParticle.parent.toString()
   }
-
-  //  inferParsersFileForAnSSVLanguage(parsersName: string): string {
-  //     parsersName = HandParsersProgram.makeParserId(parsersName)
-  //    const rootParticle = new Particle(`${parsersName}
-  // ${ParsersConstants.root}`)
-
-  //    // note: right now we assume 1 global atomTypeMap and parserMap per parsers. But we may have scopes in the future?
-  //    const rootParticleNames = this.getCues().map(atom => HandParsersProgram.makeParserId(atom))
-  //    rootParticle
-  //      .particleAt(0)
-  //      .touchParticle(ParsersConstants.inScope)
-  //      .setAtomsFrom(1, Array.from(new Set(rootParticleNames)))
-
-  //    return rootParticle
-  //  }
 
   inferParsersFileForACueLanguage(parsersName: string): string {
     const clone = <UnknownParsersProgram>this.clone()

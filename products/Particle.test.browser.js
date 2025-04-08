@@ -1186,6 +1186,21 @@ b`)
 b`
   )
 }
+testParticles.replaceWith = equal => {
+  // Arrange
+  const test = new Particle(`a
+b`)
+  const a = test.getParticle("a")
+  // Act
+  a.replaceWith(`c\nd`)
+  // Assert
+  equal(
+    test.asString,
+    `c
+d
+b`
+  )
+}
 testParticles.fromSsv = equal => {
   // Arrange/Act
   const a = Particle.fromSsv(testStrings.ssv)
@@ -3384,7 +3399,7 @@ string`
   program.appendLine("Square")
   equal(program.particleAt(0).content, "Breck", "Macro evaluated")
 }
-testParticles.wakeTest = equal => {
+testParticles.wakeTest = async equal => {
   // Arrange
   let str = ""
   class Foo extends Particle {
@@ -3393,7 +3408,8 @@ testParticles.wakeTest = equal => {
     }
   }
   // Act
-  const particle = new Foo(`c
+  const particle = new Foo()
+  await particle.appendFromStream(`c
  b
   a
 d
@@ -3402,6 +3418,22 @@ g
  f`)
   // Assert
   equal(str, "abcdefg")
+}
+testParticles.fromStreamTest = async equal => {
+  // Arrange
+  const particle = new Particle()
+  if (!particle.isNodeJs()) return
+  const fs = require("fs")
+  const path = require("path")
+  const filepath = path.join(__dirname, "readme.scroll")
+  const stream = fs.createReadStream(filepath, {
+    encoding: "utf8"
+  })
+  await particle.appendFromStream(stream)
+  equal(particle.toString(), fs.readFileSync(filepath, "utf8"), "Stream loaded correctly")
+  const length = particle.length
+  await particle.appendFromStream("abc")
+  equal(particle.length, length + 1)
 }
 testParticles.queryMethods = equal => {
   // Arrange

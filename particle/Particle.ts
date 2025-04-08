@@ -1829,6 +1829,7 @@ class Particle extends AbstractParticle {
   }
 
   private async _transformAndAppendBlockAsync(block: string): particlesTypes.particle {
+    block = block.replace(/\r/g, "") // I hate \r
     const rootParticle = this.root
     if (this._beforeAppend) this._beforeAppend(block) // todo: clean this up and document it.
     if (rootParticle.particleTransformers) {

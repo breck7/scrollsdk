@@ -158,6 +158,7 @@ abstract class ParserBackedParticle extends Particle {
     const newParserCode = currentParserCode + "\n" + parserCode
     const parsersProgram = new HandParsersProgram(newParserCode)
     const rootParser = parsersProgram.compileAndReturnRootParser()
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
     root._definition = parsersProgram
     root._modifiedConstructor = rootParser
     root._parserPool = new rootParser()._getParserPool()
@@ -169,6 +170,7 @@ abstract class ParserBackedParticle extends Particle {
   switchParserPool(parserPoolId: string) {
     const sourceParticle = _parserPoolCache[parserPoolId]
     const root = this.root
+    root.topDownArray.forEach(part => part.definition) // Hacky. We need to bind all previous particles to their earlier definitions, which now may change.
     root._definition = sourceParticle._definition
     root._modifiedConstructor = sourceParticle._modifiedConstructor
     root._parserPool = sourceParticle._parserPool

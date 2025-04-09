@@ -94,14 +94,7 @@ testParticles.codeMirrorTest = equal => {
   const code = `testParser
  root`
 
-  const mock = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "parsersParser",
-        () => ParsersProgram,
-        () => code
-      )
-  )
+  const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("parsersParser", () => new ParsersProgram(code)))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.join(" "), `def bracket atom`)
 }
@@ -111,26 +104,12 @@ testParticles.iris = equal => {
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingAtom = `6.1 3 4.9  virginica`
   // Act
-  const tokenLines = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "irisParser",
-        () => irisParser,
-        () => goodCode
-      )
-  ).getTokenLines(goodCode)
+  const tokenLines = new MockCodeMirror(() => new ParsersCodeMirrorMode("irisParser", () => new irisParser(goodCode))).getTokenLines(goodCode)
   // Assert
   equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
 
   // Act
-  const tokenLines2 = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "irisParser",
-        () => irisParser,
-        () => codeWithMissingAtom
-      )
-  ).getTokenLines(codeWithMissingAtom)
+  const tokenLines2 = new MockCodeMirror(() => new ParsersCodeMirrorMode("irisParser", () => new irisParser(codeWithMissingAtom))).getTokenLines(codeWithMissingAtom)
   // Assert
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }
@@ -140,14 +119,7 @@ testParticles.codeMirrorTest2 = equal => {
  root
 foobarParser`
 
-  const mock = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "parsersParser",
-        () => ParsersProgram,
-        () => code
-      )
-  )
+  const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("parsersParser", () => new ParsersProgram(code)))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), `def bracket atom def`)
@@ -156,14 +128,7 @@ foobarParser`
 testParticles.regressionTest = equal => {
   const code = Disk.read(__dirname + "/ParsersCodeMirrorMode.regression.stamp")
 
-  const mock = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "stampParser",
-        () => stamp,
-        () => code
-      )
-  )
+  const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("stampParser", () => new stamp(code)))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
 }
@@ -173,14 +138,7 @@ testParticles.regression2 = equal => {
  prettier
   object`
 
-  const mock = new MockCodeMirror(
-    () =>
-      new ParsersCodeMirrorMode(
-        "dugParser",
-        () => DugProgram,
-        () => code
-      )
-  )
+  const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("dugParser", () => new DugProgram(code)))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)

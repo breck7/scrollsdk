@@ -197,30 +197,16 @@ interface particleCodeMirrorState {
 }
 
 class ParsersCodeMirrorMode {
-  constructor(name: string, getRootParserFn: () => particlesTypes.ParticleProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getParsedProgramFn: () => particlesTypes.particleProgram, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
-    this._getRootParserFn = getRootParserFn
-    this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
+    this._getParsedProgram = getParsedProgramFn
     this._codeMirrorLib = codeMirrorLib
   }
 
   private _name: string
-  private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getRootParserFn: () => particlesTypes.ParticleProgramParser
   private _codeMirrorLib: typeof CodeMirrorLib
-  private _cachedSource: string
-  private _cachedProgram: particlesTypes.particleProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
-
-  _getParsedProgram() {
-    const source = this._getProgramCodeFn(this._cmInstance) || ""
-    if (!this._cachedProgram || this._cachedSource !== source) {
-      this._cachedSource = source
-      this._cachedProgram = new (<any>this._getRootParserFn())(source)
-    }
-    return this._cachedProgram
-  }
 
   private _getExcludedIntelliSenseTriggerKeys(): particlesTypes.stringMap {
     return {
@@ -304,7 +290,8 @@ class ParsersCodeMirrorMode {
   async codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) {
     const cursor = cmInstance.getDoc().getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
-    const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
+    const program = this._getParsedProgram()
+    const result = await program.getAutocompleteResultsAt(cursor.line, cursor.ch)
 
     // It seems to be better UX if there's only 1 result, and its the atom the user entered, to close autocomplete
     if (result.matches.length === 1 && result.matches[0].text === result.atom) return null

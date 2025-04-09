@@ -178,7 +178,10 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
-📦 107.0.0 2025-04-06
+📦 107.0.1 2025-04-09
+🏥 updated ParsersCodeMirrorMode API to allow for multiple parsers.
+
+📦 107.0.0 2025-04-08
 
 This is a major release that moves Scroll from a multi-pass parser to a single pass parser.
 

@@ -138,11 +138,29 @@ class DesignerApp extends AbstractParticleComponentParser {
   async start() {
     this._bindParticleComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpParticle())
-    this.parsersInstance = new ParsersCodeMirrorMode("parsers", () => parsersParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("parsersConsole"), { lineWrapping: true })
+    this.parsersInstance = new ParsersCodeMirrorMode(
+      "parsers",
+      () => {
+        this._parsersDidUpdate()
+        return this.parsersProgram
+      },
+      CodeMirror
+    )
+      .register()
+      .fromTextAreaWithAutocomplete(document.getElementById("parsersConsole"), { lineWrapping: true })
     this.parsersInstance.on("keyup", () => {
       this._onParsersKeyup()
     })
-    this.codeInstance = new ParsersCodeMirrorMode("custom", () => this._getParsersParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new ParsersCodeMirrorMode(
+      "custom",
+      () => {
+        this._updateProgram()
+        return this.program
+      },
+      CodeMirror
+    )
+      .register()
+      .fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
@@ -195,14 +213,15 @@ class DesignerApp extends AbstractParticleComponentParser {
     console.log(err)
     this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
   }
-  _parsersDidUpdate() {
-    const parsersCode = this.getParsersCode()
+  _parsersDidUpdate(parsersCode = this.getParsersCode()) {
+    if (this._currentParserCode === parsersCode) return
     this.parsersProgram = new parsersParser(parsersCode)
     const errs = this.parsersProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("parsersErrorsConsole", errs.length ? new Particle(errs).toFormattedTable(200) : "0 errors")
     const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
     const readme = parsersProgram.toReadMe()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
+    this._currentParserCode = parsersCode
   }
   _updateShareLink() {
     const url = new URL(location.href)
@@ -216,13 +235,18 @@ class DesignerApp extends AbstractParticleComponentParser {
     particle.appendLineAndSubparticles("sample", this.getCodeValue())
     return "#" + encodeURIComponent(particle.asString)
   }
+  _updateProgram() {
+    const code = this.getCodeValue()
+    if (this._currentCode === code) return
+    const parser = this._getParsersParser()
+    this.program = new parser(code)
+    this._currentCode = code
+  }
   _onCodeKeyUp() {
     const { willowBrowser } = this
-    const code = this.getCodeValue()
     this._updateLocalStorage()
-    const parsersParser = this._getParsersParser()
+    this._updateProgram()
     const that = this
-    this.program = new parsersParser(code)
     const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new Particle(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
     const cursor = this.codeInstance.getCursor()

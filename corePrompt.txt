@@ -6944,7 +6944,7 @@ stamp
       if (hasHeaders) {
         // Strip any AtomBreakSymbols from column names in the header row.
         // This makes the mapping not quite 1 to 1 if there are any AtomBreakSymbols in names.
-        for (let index = 0; index  "107.0.0"
+        for (let index = 0; index  "107.0.1"
   
     static fromDisk(path: string): Particle {
       const format = this._getFileFormat(path)
@@ -10729,14 +10729,7 @@ stamp
     const code = `testParser
    root`
   
-    const mock = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "parsersParser",
-          () => ParsersProgram,
-          () => code
-        )
-    )
+    const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("parsersParser", () => new ParsersProgram(code)))
     const tokenLines = mock.getTokenLines(code)
     equal(tokenLines.join(" "), `def bracket atom`)
   }
@@ -10746,26 +10739,12 @@ stamp
     const goodCode = `6.1 3 4.9 2 virginica`
     const codeWithMissingAtom = `6.1 3 4.9  virginica`
     // Act
-    const tokenLines = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "irisParser",
-          () => irisParser,
-          () => goodCode
-        )
-    ).getTokenLines(goodCode)
+    const tokenLines = new MockCodeMirror(() => new ParsersCodeMirrorMode("irisParser", () => new irisParser(goodCode))).getTokenLines(goodCode)
     // Assert
     equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
   
     // Act
-    const tokenLines2 = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "irisParser",
-          () => irisParser,
-          () => codeWithMissingAtom
-        )
-    ).getTokenLines(codeWithMissingAtom)
+    const tokenLines2 = new MockCodeMirror(() => new ParsersCodeMirrorMode("irisParser", () => new irisParser(codeWithMissingAtom))).getTokenLines(codeWithMissingAtom)
     // Assert
     equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
   }
@@ -10775,14 +10754,7 @@ stamp
    root
   foobarParser`
   
-    const mock = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "parsersParser",
-          () => ParsersProgram,
-          () => code
-        )
-    )
+    const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("parsersParser", () => new ParsersProgram(code)))
     const tokenLines = mock.getTokenLines(code)
     equal(tokenLines.length, 3)
     equal(tokenLines.join(" "), `def bracket atom def`)
@@ -10791,14 +10763,7 @@ stamp
   testParticles.regressionTest = equal => {
     const code = Disk.read(__dirname + "/ParsersCodeMirrorMode.regression.stamp")
   
-    const mock = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "stampParser",
-          () => stamp,
-          () => code
-        )
-    )
+    const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("stampParser", () => new stamp(code)))
     const tokenLines = mock.getTokenLines(code)
     equal(tokenLines.length, 217)
   }
@@ -10808,14 +10773,7 @@ stamp
    prettier
     object`
   
-    const mock = new MockCodeMirror(
-      () =>
-        new ParsersCodeMirrorMode(
-          "dugParser",
-          () => DugProgram,
-          () => code
-        )
-    )
+    const mock = new MockCodeMirror(() => new ParsersCodeMirrorMode("dugParser", () => new DugProgram(code)))
     const tokenLines = mock.getTokenLines(code)
     equal(tokenLines.length, 3)
     equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)
@@ -11025,30 +10983,16 @@ stamp
   }
   
   class ParsersCodeMirrorMode {
-    constructor(name: string, getRootParserFn: () => particlesTypes.ParticleProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+    constructor(name: string, getParsedProgramFn: () => particlesTypes.particleProgram, codeMirrorLib: typeof CodeMirrorLib = undefined) {
       this._name = name
-      this._getRootParserFn = getRootParserFn
-      this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? instance.getValue() : this._originalValue))
+      this._getParsedProgram = getParsedProgramFn
       this._codeMirrorLib = codeMirrorLib
     }
   
     private _name: string
-    private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-    private _getRootParserFn: () => particlesTypes.ParticleProgramParser
     private _codeMirrorLib: typeof CodeMirrorLib
-    private _cachedSource: string
-    private _cachedProgram: particlesTypes.particleProgram
     private _cmInstance: CodeMirrorLib.EditorFromTextArea
     private _originalValue: string
-  
-    _getParsedProgram() {
-      const source = this._getProgramCodeFn(this._cmInstance) || ""
-      if (!this._cachedProgram || this._cachedSource !== source) {
-        this._cachedSource = source
-        this._cachedProgram = new (this._getRootParserFn())(source)
-      }
-      return this._cachedProgram
-    }
   
     private _getExcludedIntelliSenseTriggerKeys(): particlesTypes.stringMap {
       return {
@@ -11132,7 +11076,8 @@ stamp
     async codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) {
       const cursor = cmInstance.getDoc().getCursor()
       const codeMirrorLib = this._getCodeMirrorLib()
-      const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
+      const program = this._getParsedProgram()
+      const result = await program.getAutocompleteResultsAt(cursor.line, cursor.ch)
   
       // It seems to be better UX if there's only 1 result, and its the atom the user entered, to close autocomplete
       if (result.matches.length === 1 && result.matches[0].text === result.atom) return null

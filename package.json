@@ -38,7 +38,7 @@
     "updateVersion": "./builder.ts updateVersion",
     "test": "ts-node builder.ts test",
     "cloc": "cloc $(git ls-files | grep --extended-regexp --invert-match 'products|lib|package-lock')",
-    "checkLinks": "linkinator -r https://sdk.scroll.pub",
+    "checkLinks": "linkinator -r https://sdk.scroll.surf",
     "coverage": "tap --cov --coverage-report=lcov ${__filename} test"
   },
   "repository": {

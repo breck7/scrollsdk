@@ -528,12 +528,12 @@ class headerComponent extends AbstractParticleComponentParser {
     return `div
  h1
   a
-   href https://particles.scroll.pub
+   href https://particles.scroll.surf
    style text-decoration: none;
    img
     id logo
     src ../images/helloWorld3D.svg
-    title particles.scroll.pub
+    title particles.scroll.surf
   span ${this._getTitle()}
  p
   a Particles Sandbox
@@ -556,7 +556,7 @@ class headerComponent extends AbstractParticleComponentParser {
   id helpSection
   style display: none;
   p This is a simple web IDE for building parsers. You write Parsers in the textarea on the left. You can then use your parsers in the textarea on the right. You instantly get syntax highlighting, autocomplete, atom checking, suggested corrections, and more.
-  p Sometimes we call a group of parsers a "microlang". Click "Newlang" to create a new microlang, or explore/edit existing microlangs. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">tutorial for creating Parsers</a>.`
+  p Sometimes we call a group of parsers a "microlang". Click "Newlang" to create a new microlang, or explore/edit existing microlangs. In dev tools, you can access the parsed particles below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.surf/parsersTutorial.html">tutorial for creating Parsers</a>.`
   }
 }
 class githubTriangleComponent extends AbstractGithubTriangleComponent {

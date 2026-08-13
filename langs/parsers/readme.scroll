@@ -11,16 +11,16 @@ css html,body{background: rgb(240,240,240);}
 container 600px
 
 LeetSheet · Designer · Scroll · Subreddit
- https://scroll.pub/parserLeetsheet.html LeetSheet
+ https://scroll.surf/parserLeetsheet.html LeetSheet
  ../../designer/index.html Designer
- https://scroll.pub/ Scroll
+ https://scroll.surf/ Scroll
  https://www.reddit.com/r/WorldWideScroll/ Subreddit
 
 ? What is Parsers?
 Parsers is a language for making languages.
 
 Parsers is built on Particles (Particle Syntax).
- https://scroll.pub/particlesLeetsheet.html Particles
+ https://scroll.surf/particlesLeetsheet.html Particles
 
 ? Can you show me an example?
 Below is some code written in Parsers to create a microlanguage called *Panda*.
@@ -42,7 +42,7 @@ Parsers is a language built on Particles for building other languages built on P
 
 ? What is built on Parsers?
 Many things are built on Parsers including Scroll and PLDB.
- https://scroll.pub Scroll
+ https://scroll.surf Scroll
  https://pldb.io PLDB
 
 ? Can I try it online?

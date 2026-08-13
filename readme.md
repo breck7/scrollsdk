@@ -6,10 +6,10 @@ A powerful SDK for building and extending Scroll with Particles and Parsers.
 
 ## 🔗 Quick Links
 
-- [Scroll Homepage](https://scroll.pub)
-- [The World Wide Scroll](https://wws.scroll.pub)
-- [Particles Homepage](https://particles.scroll.pub)
-- [Particles FAQ](https://faq.scroll.pub)
+- [Scroll Homepage](https://scroll.surf)
+- [The World Wide Scroll](https://wws.scroll.surf)
+- [Particles Homepage](https://particles.scroll.surf)
+- [Particles FAQ](https://faq.scroll.surf)
 - [WWS Subreddit](https://www.reddit.com/r/WorldWideScroll)
 
 ## 🛠️ Tools
@@ -20,7 +20,7 @@ A powerful SDK for building and extending Scroll with Particles and Parsers.
 ## 📝 Documentation
 
 - [SDK Release Notes](releaseNotes.html)
-- [Particles FAQ](https://faq.scroll.pub)
+- [Particles FAQ](https://faq.scroll.surf)
 
 ## 🧪 Tests
 

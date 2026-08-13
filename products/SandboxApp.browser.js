@@ -187,12 +187,12 @@ class headerComponent extends AbstractParticleComponentParser {
     return `div
  h1
   a
-   href https://particles.scroll.pub
+   href https://particles.scroll.surf
    style text-decoration: none;
    img
     id logo
     src ../images/helloWorld3D.svg
-    title Scroll.pub
+    title scroll.surf
   span Particles Sandbox
  p
   a Parser Designer

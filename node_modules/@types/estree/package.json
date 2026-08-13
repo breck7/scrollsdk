@@ -1,6 +1,6 @@
 {
     "name": "@types/estree",
-    "version": "1.0.7",
+    "version": "1.0.9",
     "description": "TypeScript definitions for estree",
     "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree",
     "license": "MIT",
@@ -21,7 +21,7 @@
     "scripts": {},
     "dependencies": {},
     "peerDependencies": {},
-    "typesPublisherContentHash": "1ab11f4e78319f80655b4ca20a073da0dc035be5f3290fb0bfa1e08a055d0c7d",
-    "typeScriptVersion": "5.0",
+    "typesPublisherContentHash": "db16da859cb0bee641414117047a4becba2e9f39d3e14a6745f887c47ef68482",
+    "typeScriptVersion": "5.3",
     "nonNpm": true
 }

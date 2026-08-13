@@ -1,3 +1,23 @@
+1.20.6 / 2026-07-09
+===================
+* fix: improve `limit` option validation (#698)
+  * Invalid `limit` values (e.g. unparseable strings or `NaN`) now throw instead of being silently ignored, which previously disabled size limit enforcement
+  * `null` and `undefined` fall back to the default 100kb limit
+
+1.20.5 / 2026-04-24
+===================
+* refactor(json): simplify strict mode error string construction
+* fix: extended urlencoded parsing of arrays with >100 elements (#716)
+* deps: qs@~6.15.1
+
+1.20.4 / 2025-12-01
+===================
+
+  * deps: qs@~6.14.0
+  * deps: use tilde notation for dependencies
+  * deps: http-errors@~2.0.1
+  * deps: raw-body@~2.5.3
+
 1.20.3 / 2024-09-10
 ===================
 

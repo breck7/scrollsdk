@@ -57,7 +57,7 @@ dumbdownParser
   
   paragraph
    It compiles to HTML. Blank lines get turned into brs.
-  link https://particles.scroll.pub Dumbdown is a Language.
+  link https://particles.scroll.surf Dumbdown is a Language.
   list
    - It has lists
    - Too!

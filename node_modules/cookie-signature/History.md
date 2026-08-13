@@ -1,9 +1,13 @@
+1.0.7 / 2023-04-12
+==================
+
+* backport the buffer support from the 1.2.x release branch (thanks @FadhiliNjagi!)
+
 1.0.6 / 2015-02-03
 ==================
 
 * use `npm test` instead of `make test` to run tests
 * clearer assertion messages when checking input
-
 
 1.0.5 / 2014-09-05
 ==================

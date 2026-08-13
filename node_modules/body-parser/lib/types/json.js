@@ -53,14 +53,18 @@ var JSON_SYNTAX_REGEXP = /#+/g
 function json (options) {
   var opts = options || {}
 
-  var limit = typeof opts.limit !== 'number'
-    ? bytes.parse(opts.limit || '100kb')
-    : opts.limit
+  var limit = typeof opts.limit === 'undefined' || opts.limit === null
+    ? 102400 // 100kb default
+    : bytes.parse(opts.limit)
   var inflate = opts.inflate !== false
   var reviver = opts.reviver
   var strict = opts.strict !== false
   var type = opts.type || 'application/json'
   var verify = opts.verify || false
+
+  if (limit === null) {
+    throw new TypeError('option limit "' + String(opts.limit) + '" is invalid')
+  }
 
   if (verify !== false && typeof verify !== 'function') {
     throw new TypeError('option verify must be function')
@@ -158,11 +162,7 @@ function createStrictSyntaxError (str, char) {
   var partial = ''
 
   if (index !== -1) {
-    partial = str.substring(0, index) + JSON_SYNTAX_CHAR
-
-    for (var i = index + 1; i < str.length; i++) {
-      partial += JSON_SYNTAX_CHAR
-    }
+    partial = str.substring(0, index) + new Array(str.length - index + 1).join(JSON_SYNTAX_CHAR)
   }
 
   try {

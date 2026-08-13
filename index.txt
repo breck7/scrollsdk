@@ -4,9 +4,9 @@ Particles, Parsers, and other code for building Scroll
 ======================================================
 
 - Scroll Homepage
- https://scroll.pub Scroll Homepage
+ https://scroll.surf Scroll Homepage
 - The World Wide Scroll
- https://wws.scroll.pub The World Wide Scroll
+ https://wws.scroll.surf The World Wide Scroll
 
 Tools
 =====
@@ -20,9 +20,9 @@ Docs
 - SDK Release Notes
  /releaseNotes.html SDK Release Notes
 - Particles Homepage
- https://particles.scroll.pub Particles Homepage
+ https://particles.scroll.surf Particles Homepage
 - Particles FAQ
- https://faq.scroll.pub Particles FAQ
+ https://faq.scroll.surf Particles FAQ
 - WWS Subreddit
  https://www.reddit.com/r/WorldWideScroll WWS Subreddit
 

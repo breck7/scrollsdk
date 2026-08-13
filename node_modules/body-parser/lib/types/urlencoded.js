@@ -50,14 +50,15 @@ function urlencoded (options) {
 
   var extended = opts.extended !== false
   var inflate = opts.inflate !== false
-  var limit = typeof opts.limit !== 'number'
-    ? bytes.parse(opts.limit || '100kb')
-    : opts.limit
+  var limit = typeof opts.limit === 'undefined' || opts.limit === null
+    ? 102400 // 100kb default
+    : bytes.parse(opts.limit)
   var type = opts.type || 'application/x-www-form-urlencoded'
   var verify = opts.verify || false
-  var depth = typeof opts.depth !== 'number'
-    ? Number(opts.depth || 32)
-    : opts.depth
+
+  if (limit === null) {
+    throw new TypeError('option limit "' + String(opts.limit) + '" is invalid')
+  }
 
   if (verify !== false && typeof verify !== 'function') {
     throw new TypeError('option verify must be function')
@@ -121,8 +122,7 @@ function urlencoded (options) {
       encoding: charset,
       inflate: inflate,
       limit: limit,
-      verify: verify,
-      depth: depth
+      verify: verify
     })
   }
 }
@@ -137,10 +137,7 @@ function extendedparser (options) {
   var parameterLimit = options.parameterLimit !== undefined
     ? options.parameterLimit
     : 1000
-
-  var depth = typeof options.depth !== 'number'
-    ? Number(options.depth || 32)
-    : options.depth
+  var depth = options.depth !== undefined ? options.depth : 32
   var parse = parser('qs')
 
   if (isNaN(parameterLimit) || parameterLimit < 1) {
@@ -213,16 +210,15 @@ function getCharset (req) {
 
 function parameterCount (body, limit) {
   var count = 0
-  var index = 0
+  var index = -1
 
-  while ((index = body.indexOf('&', index)) !== -1) {
+  do {
     count++
-    index++
-
-    if (count === limit) {
+    if (count > limit) {
       return undefined
     }
-  }
+    index = body.indexOf('&', index + 1)
+  } while (index !== -1)
 
   return count
 }

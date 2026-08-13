@@ -8,7 +8,7 @@ This package contains type definitions for estree (https://github.com/estree/est
 Files were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree.
 
 ### Additional Details
- * Last updated: Mon, 24 Mar 2025 07:34:10 GMT
+ * Last updated: Wed, 06 May 2026 21:01:00 GMT
  * Dependencies: none
 
 # Credits

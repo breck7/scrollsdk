@@ -4,7 +4,6 @@ const { Utils } = require("../products/Utils.js")
 const { ParserBackedParticle } = require("../products/Parsers.js")
 const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
-const superagent = require("superagent")
 const BrowserEvents = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"
@@ -62,12 +61,12 @@ var CacheType
   CacheType["inBrowserMemory"] = "inBrowserMemory"
 })(CacheType || (CacheType = {}))
 class WillowHTTPResponse {
-  constructor(superAgentResponse) {
+  constructor(response) {
     this._cacheType = CacheType.inBrowserMemory
     this._fromCache = false
     this._cacheTime = Date.now()
-    this._superAgentResponse = superAgentResponse
-    this._mimeType = superAgentResponse && superAgentResponse.type
+    this._response = response
+    this._mimeType = response && response.type
   }
   // todo: ServerMemoryCacheTime and ServerMemoryDiskCacheTime
   get cacheTime() {
@@ -77,10 +76,10 @@ class WillowHTTPResponse {
     return this._cacheType
   }
   get body() {
-    return this._superAgentResponse && this._superAgentResponse.body
+    return this._response && this._response.body
   }
   get text() {
-    if (this._text === undefined) this._text = this._superAgentResponse && this._superAgentResponse.text ? this._superAgentResponse.text : this.body ? JSON.stringify(this.body, null, 2) : ""
+    if (this._text === undefined) this._text = this._response && this._response.text ? this._response.text : this.body ? JSON.stringify(this.body, null, 2) : ""
     return this._text
   }
   get asJson() {
@@ -356,11 +355,11 @@ class AbstractWillowBrowser extends stumpParser {
   }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superAgentResponse = await superagent
-      .get(url)
-      .query(queryStringObject)
-      .set(this._headers || {})
-    return new responseClass(superAgentResponse)
+    const target = new URL(this._makeRelativeUrlAbsolute(url))
+    Object.entries(queryStringObject || {}).forEach(([key, value]) => {
+      ;(Array.isArray(value) ? value : [value]).forEach(item => target.searchParams.append(key, item == null ? "" : String(item)))
+    })
+    return new responseClass(await Utils.httpRequest(target.href, { headers: this._headers || {} }))
   }
   _getFromResponseCache(cacheKey) {
     const hit = this._httpGetResponseCache[cacheKey]
@@ -389,11 +388,14 @@ class AbstractWillowBrowser extends stumpParser {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superAgentResponse = await superagent
-      .post(this._makeRelativeUrlAbsolute(url))
-      .set(this._headers || {})
-      .send(data)
-    return new WillowHTTPResponse(superAgentResponse)
+    const isText = typeof data === "string"
+    return new WillowHTTPResponse(
+      await Utils.httpRequest(this._makeRelativeUrlAbsolute(url), {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": isText ? "application/x-www-form-urlencoded" : "application/json" }, this._headers),
+        body: isText ? data : JSON.stringify(data)
+      })
+    )
   }
   encodeURIComponent(str) {
     return encodeURIComponent(str)

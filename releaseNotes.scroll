@@ -20,6 +20,13 @@ node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 108.0.0 2026-09-17
+⚠️ Requires Node.js 24+. Install from GitHub: npm install github:breck7/scrollsdk.
+🧹 Replaced SuperAgent with native fetch and glob with fs.globSync. No runtime package dependencies.
+⚠️ Disk.getUrl returns a plain object with status, type, text, and parsed JSON body, rather than a SuperAgent response. HTTP errors still reject.
+⚠️ ParsersCompiler no longer uses Prettier by default. Formatting remains opt-in with a separately installed Prettier 2.
+🧹 Development Scroll packages install from GitHub. Build with npm run buildSdk; build the website with npm run buildDocs.
+
 📦 107.0.1 2025-04-09
 🏥 updated ParsersCodeMirrorMode API to allow for multiple parsers.
 

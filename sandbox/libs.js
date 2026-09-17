@@ -14,6 +14,14 @@ class Timer {
   }
 }
 class Utils {
+  static async httpRequest(url, options = {}) {
+    const response = await fetch(url, options)
+    const text = await response.text()
+    const type = (response.headers.get("content-type") || "").split(";")[0].trim()
+    const result = { status: response.status, type, text, body: text && (type === "application/json" || type.endsWith("+json")) ? JSON.parse(text) : undefined }
+    if (!response.ok) throw Object.assign(new Error(`HTTP ${response.status}: ${url}`), { status: response.status, response: result })
+    return result
+  }
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
@@ -2681,21 +2689,17 @@ class Particle extends AbstractParticle {
     // Node.js Readable stream
     if (typeof process !== "undefined" && input instanceof require("stream").Readable) {
       try {
-        for (var _d = true, input_1 = __asyncValues(input), input_1_1; (input_1_1 = await input_1.next()), (_a = input_1_1.done), !_a; ) {
+        for (var _d = true, input_1 = __asyncValues(input), input_1_1; (input_1_1 = await input_1.next()), (_a = input_1_1.done), !_a; _d = true) {
           _c = input_1_1.value
           _d = false
-          try {
-            const chunk = _c
-            buffer += chunk.toString("utf8")
-            while (true) {
-              const breakIndex = buffer.search(breakRegex)
-              if (breakIndex === -1) break
-              const block = buffer.slice(0, breakIndex)
-              buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
-              await this._transformAndAppendBlockAsync(block)
-            }
-          } finally {
-            _d = true
+          const chunk = _c
+          buffer += chunk.toString("utf8")
+          while (true) {
+            const breakIndex = buffer.search(breakRegex)
+            if (breakIndex === -1) break
+            const block = buffer.slice(0, breakIndex)
+            buffer = buffer.slice(breakIndex + particleBreakSymbol.length)
+            await this._transformAndAppendBlockAsync(block)
           }
         }
       } catch (e_1_1) {
@@ -3909,7 +3913,7 @@ Particle.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-Particle.getVersion = () => "107.0.1"
+Particle.getVersion = () => "108.0.0"
 class AbstractExtendibleParticle extends Particle {
   _getFromExtended(cuePath) {
     const hit = this._getParticleFromExtended(cuePath)
@@ -8069,12 +8073,12 @@ var CacheType
   CacheType["inBrowserMemory"] = "inBrowserMemory"
 })(CacheType || (CacheType = {}))
 class WillowHTTPResponse {
-  constructor(superAgentResponse) {
+  constructor(response) {
     this._cacheType = CacheType.inBrowserMemory
     this._fromCache = false
     this._cacheTime = Date.now()
-    this._superAgentResponse = superAgentResponse
-    this._mimeType = superAgentResponse && superAgentResponse.type
+    this._response = response
+    this._mimeType = response && response.type
   }
   // todo: ServerMemoryCacheTime and ServerMemoryDiskCacheTime
   get cacheTime() {
@@ -8084,10 +8088,10 @@ class WillowHTTPResponse {
     return this._cacheType
   }
   get body() {
-    return this._superAgentResponse && this._superAgentResponse.body
+    return this._response && this._response.body
   }
   get text() {
-    if (this._text === undefined) this._text = this._superAgentResponse && this._superAgentResponse.text ? this._superAgentResponse.text : this.body ? JSON.stringify(this.body, null, 2) : ""
+    if (this._text === undefined) this._text = this._response && this._response.text ? this._response.text : this.body ? JSON.stringify(this.body, null, 2) : ""
     return this._text
   }
   get asJson() {
@@ -8363,11 +8367,11 @@ class AbstractWillowBrowser extends stumpParser {
   }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superAgentResponse = await superagent
-      .get(url)
-      .query(queryStringObject)
-      .set(this._headers || {})
-    return new responseClass(superAgentResponse)
+    const target = new URL(this._makeRelativeUrlAbsolute(url))
+    Object.entries(queryStringObject || {}).forEach(([key, value]) => {
+      ;(Array.isArray(value) ? value : [value]).forEach(item => target.searchParams.append(key, item == null ? "" : String(item)))
+    })
+    return new responseClass(await Utils.httpRequest(target.href, { headers: this._headers || {} }))
   }
   _getFromResponseCache(cacheKey) {
     const hit = this._httpGetResponseCache[cacheKey]
@@ -8396,11 +8400,14 @@ class AbstractWillowBrowser extends stumpParser {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superAgentResponse = await superagent
-      .post(this._makeRelativeUrlAbsolute(url))
-      .set(this._headers || {})
-      .send(data)
-    return new WillowHTTPResponse(superAgentResponse)
+    const isText = typeof data === "string"
+    return new WillowHTTPResponse(
+      await Utils.httpRequest(this._makeRelativeUrlAbsolute(url), {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": isText ? "application/x-www-form-urlencoded" : "application/json" }, this._headers),
+        body: isText ? data : JSON.stringify(data)
+      })
+    )
   }
   encodeURIComponent(str) {
     return encodeURIComponent(str)

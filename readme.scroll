@@ -65,7 +65,15 @@ At this point in time, to make your Parsers do very useful things, you also need
 # Using the ScrollSDK
 The ScrollSDK currently includes a number of libraries and apps to use (scripts in the "products" folder).
 
-# Basic Particles library for npm projects:
+Install directly from GitHub (Node.js 24+):
+code
+ npm install github:breck7/scrollsdk
+
+The SDK has zero runtime package dependencies. Built JavaScript is committed, so installing from GitHub needs no build step. Pin a commit with github:breck7/scrollsdk#COMMIT for reproducible installs.
+
+Development uses npm for third-party tools; Scroll packages come from GitHub. Clone the repo and run npm install before building or testing. npm run buildSdk builds the SDK; npm run buildDocs builds the website. Parser compilation no longer formats with Prettier by default; install Prettier 2 and pass true for usePrettier to opt in.
+
+# Basic Particles library for Node.js projects:
 code
  const {Particle} = require("scrollsdk/products/Particle.js")
  const particle = new Particle("hello world")
@@ -94,7 +102,7 @@ If you look at the source, you will also see a set of build tools (such as Build
 
 ## Building all tools and running tests
 code
- npm run build
+ npm run buildSdk
  npm test
 
 ***

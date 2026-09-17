@@ -70,7 +70,15 @@ At this point in time, to make your Parsers do very useful things, you also need
 # Using the ScrollSDK
 The ScrollSDK currently includes a number of libraries and apps to use (scripts in the "products" folder).
 
-# Basic Particles library for npm projects:
+Install directly from GitHub (Node.js 24+):
+code
+ npm install github:breck7/scrollsdk
+
+The SDK has zero runtime package dependencies. Built JavaScript is committed, so installing from GitHub needs no build step. Pin a commit with github:breck7/scrollsdk#COMMIT for reproducible installs.
+
+Development uses npm for third-party tools; Scroll packages come from GitHub. Clone the repo and run npm install before building or testing. npm run buildSdk builds the SDK; npm run buildDocs builds the website. Parser compilation no longer formats with Prettier by default; install Prettier 2 and pass true for usePrettier to opt in.
+
+# Basic Particles library for Node.js projects:
 code
  const {Particle} = require("scrollsdk/products/Particle.js")
  const particle = new Particle("hello world")
@@ -78,9 +86,9 @@ code
 
 # Basic Particles Library + Parsers for the browser:
 code
- 
- 
- 
+ <script src="../../products/Utils.browser.js"></script>
+ <script src="../../products/Particle.browser.js"></script>
+ <script src="../../products/Parsers.ts.browser.js"></script>
 
 ## Particles Sandbox web app for exploring base Particles
 code
@@ -99,7 +107,7 @@ If you look at the source, you will also see a set of build tools (such as Build
 
 ## Building all tools and running tests
 code
- npm run build
+ npm run buildSdk
  npm test
 
 ***
@@ -177,6 +185,13 @@ br
 node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
+
+📦 108.0.0 2026-09-17
+⚠️ Requires Node.js 24+. Install from GitHub: npm install github:breck7/scrollsdk.
+🧹 Replaced SuperAgent with native fetch and glob with fs.globSync. No runtime package dependencies.
+⚠️ Disk.getUrl returns a plain object with status, type, text, and parsed JSON body, rather than a SuperAgent response. HTTP errors still reject.
+⚠️ ParsersCompiler no longer uses Prettier by default. Formatting remains opt-in with a separately installed Prettier 2.
+🧹 Development Scroll packages install from GitHub. Build with npm run buildSdk; build the website with npm run buildDocs.
 
 📦 107.0.1 2025-04-09
 🏥 updated ParsersCodeMirrorMode API to allow for multiple parsers.
@@ -623,19 +638,19 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 TrueBaseFolder:
 loop
  atoms makeId getFile rename createFile searchIndex
- javascript `${item}`
+ javascript `<code>${item}</code>`
  join  
 
 TrueBaseFile:
 loop
  atoms sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
- javascript `${item}`
+ javascript `<code>${item}</code>`
  join  
 
 TrueBaseServer:
 loop
  atoms applyPatch validateSubmission
- javascript `${item}`
+ javascript `<code>${item}</code>`
 
 📦 67.2.0 2023-2-12
 🎉 TrueBase: add `requestTimes.log`
@@ -720,13 +735,13 @@ This is a major release that makes the code more modular and eliminates a lot of
 ⚠️ BREAKING: The bundled file `jtree.browser.js` is now deprecated. That file will be kept for now (for external links) but will no longer be updated and will be removed in a future version. Include exactly what you need.
 Before:
 code
- 
+ <script src="../products/jtree.browser.js"></script>
 After: (to get everything that was previously in the bundle)
 code
- 
- 
- 
- 
+ <script src="../products/Utils.browser.js"></script>
+ <script src="../products/Particle.browser.js"></script>
+ <script src="../products/Parsers.ts.browser.js"></script>
+ <script src="../products/ParsersCodeMirrorMode.browser.js"></script>
 
 ⚠️ BREAKING: The `jtree` namespace is no more. Include exactly what you need:
 Before:

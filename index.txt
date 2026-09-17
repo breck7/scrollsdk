@@ -70,8 +70,17 @@ Using the ScrollSDK
 ===================
 The ScrollSDK currently includes a number of libraries and apps to use (scripts in the "products" folder).
 
-Basic Particles library for npm projects:
-=========================================
+Install directly from GitHub (Node.js 24+):
+```
+npm install github:breck7/scrollsdk
+```
+
+The SDK has zero runtime package dependencies. Built JavaScript is committed, so installing from GitHub needs no build step. Pin a commit with github:breck7/scrollsdk#COMMIT for reproducible installs.
+
+Development uses npm for third-party tools; Scroll packages come from GitHub. Clone the repo and run npm install before building or testing. npm run buildSdk builds the SDK; npm run buildDocs builds the website. Parser compilation no longer formats with Prettier by default; install Prettier 2 and pass true for usePrettier to opt in.
+
+Basic Particles library for Node.js projects:
+=============================================
 ```
 const {Particle} = require("scrollsdk/products/Particle.js")
 const particle = new Particle("hello world")
@@ -81,7 +90,9 @@ console.log(particle.asString)
 Basic Particles Library + Parsers for the browser:
 ==================================================
 ```
-
+<script src="../../products/Utils.browser.js"></script>
+<script src="../../products/Particle.browser.js"></script>
+<script src="../../products/Parsers.ts.browser.js"></script>
 ```
 
 Particles Sandbox web app for exploring base Particles
@@ -107,7 +118,7 @@ If you look at the source, you will also see a set of build tools (such as Build
 Building all tools and running tests
 ====================================
 ```
-npm run build
+npm run buildSdk
 npm test
 ```
 
@@ -171,4 +182,4 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 ❤️ Public Domain ❤️
 ===================
 
-Built with Scroll v164.12.0
+Built with Scroll v178.3.0

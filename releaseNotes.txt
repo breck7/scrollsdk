@@ -7,6 +7,14 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+108.0.0 2026-09-17
+==================
+⚠️ Requires Node.js 24+. Install from GitHub: npm install github:breck7/scrollsdk.
+🧹 Replaced SuperAgent with native fetch and glob with fs.globSync. No runtime package dependencies.
+⚠️ Disk.getUrl returns a plain object with status, type, text, and parsed JSON body, rather than a SuperAgent response. HTTP errors still reject.
+⚠️ ParsersCompiler no longer uses Prettier by default. Formatting remains opt-in with a separately installed Prettier 2.
+🧹 Development Scroll packages install from GitHub. Build with npm run buildSdk; build the website with npm run buildDocs.
+
 107.0.1 2025-04-09
 ==================
 🏥 updated ParsersCodeMirrorMode API to allow for multiple parsers.
@@ -557,19 +565,19 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 TrueBaseFolder:
 loop
  atoms makeId getFile rename createFile searchIndex
- javascript `${item}`
+ javascript `<code>${item}</code>`
  join  
 
 TrueBaseFile:
 loop
  atoms sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
- javascript `${item}`
+ javascript `<code>${item}</code>`
  join  
 
 TrueBaseServer:
 loop
  atoms applyPatch validateSubmission
- javascript `${item}`
+ javascript `<code>${item}</code>`
 
 67.2.0 2023-2-12
 ================
@@ -591,12 +599,6 @@ loop
 ===============
 ⚠️ Legacy `products/jtree.browser.js` has been removed.
 ⚠️ Particle: This is the first of the *getter releases*. Start the long overdue switch to Javascript getters for `get` methods with zero params.
-Before After
-getParent() parent
-getContent() content
-getRootNode() root
-getAtoms() atoms
-getFirstAtom() firstAtom
 
 65.4.0 2023-2-6
 ===============
@@ -670,11 +672,14 @@ This is a major release that makes the code more modular and eliminates a lot of
 ⚠️ BREAKING: The bundled file `jtree.browser.js` is now deprecated. That file will be kept for now (for external links) but will no longer be updated and will be removed in a future version. Include exactly what you need.
 Before:
 ```
-
+<script src="../products/jtree.browser.js"></script>
 ```
 After: (to get everything that was previously in the bundle)
 ```
-
+<script src="../products/Utils.browser.js"></script>
+<script src="../products/Particle.browser.js"></script>
+<script src="../products/Parsers.ts.browser.js"></script>
+<script src="../products/ParsersCodeMirrorMode.browser.js"></script>
 ```
 
 ⚠️ BREAKING: The `jtree` namespace is no more. Include exactly what you need:
@@ -2513,4 +2518,4 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 ===============
 🎉 Initial release
 
-Built with Scroll v164.12.0
+Built with Scroll v178.3.0

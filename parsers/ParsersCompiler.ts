@@ -1,7 +1,6 @@
 const fs = require("fs")
 const path = require("path")
 
-const { Utils } = require("../products/Utils.js")
 const { Particle } = require("../products/Particle.js")
 const { HandParsersProgram } = require("./Parsers.js")
 import { particlesTypes } from "../products/particlesTypes"
@@ -18,7 +17,7 @@ class ParsersCompiler {
     return new rootParser(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileParsersForNodeJs(pathToParsers: particlesTypes.absoluteFilePath, outputFolder: particlesTypes.absoluteFolderPath, usePrettier = true, scrollsdkProductsPath = __dirname) {
+  static compileParsersForNodeJs(pathToParsers: particlesTypes.absoluteFilePath, outputFolder: particlesTypes.absoluteFolderPath, usePrettier = false, scrollsdkProductsPath = __dirname) {
     return this._compileParsers(pathToParsers, outputFolder, CompileTarget.nodejs, usePrettier, scrollsdkProductsPath)
   }
 
@@ -65,7 +64,7 @@ if (!module.parent) new ${program.rootParserId}(Particle.fromDisk(process.argv[2
     return outputFilePath
   }
 
-  static compileParsersForBrowser(pathToParsers: particlesTypes.absoluteFilePath, outputFolder: particlesTypes.absoluteFolderPath, usePrettier = true) {
+  static compileParsersForBrowser(pathToParsers: particlesTypes.absoluteFilePath, outputFolder: particlesTypes.absoluteFolderPath, usePrettier = false) {
     return this._compileParsers(pathToParsers, outputFolder, CompileTarget.browser, usePrettier)
   }
 
@@ -78,8 +77,7 @@ if (!module.parent) new ${program.rootParserId}(Particle.fromDisk(process.argv[2
   }
 
   static combineFiles = (globPatterns: particlesTypes.globPattern[]) => {
-    const glob = require("glob")
-    const files = Utils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
+    const files = globPatterns.flatMap(pattern => fs.globSync(pattern))
     const content = files.map((path: particlesTypes.filepath) => fs.readFileSync(path, "utf8")).join("\n")
 
     return new Particle(content)

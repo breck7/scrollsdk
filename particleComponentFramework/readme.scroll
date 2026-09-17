@@ -44,8 +44,8 @@ code
                   |                                   |             
                   |                                   |             
     +--------------------------+        +--------------------------+
-    |  External Dependencies:  |        |    External Dependencies:|
-    |           SuperAgent     |        |         Superagent       |
+    |  Built-in APIs:          |        |    Built-in APIs:        |
+    |           fetch          |        |         fetch            |
     +--------------------------+        +--------------------------+
                   |                                   |             
                   |    +----------------------------+ |             

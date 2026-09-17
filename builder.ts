@@ -306,7 +306,8 @@ class Builder extends Particle {
   }
 
   async test() {
-    let folders = `langs
+    let folders = `disk
+langs
 designer
 sandbox
 kitchen

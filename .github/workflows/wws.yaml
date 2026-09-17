@@ -10,10 +10,13 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - name: Install and Build
         run: |
-          npm install scroll-cli
-          ./node_modules/scroll-cli/scroll.js list | ./node_modules/scroll-cli/scroll.js build
+          npm install
+          npm run buildDocs
           # Uncomment the line below if you are ignoring *.html files in your gitignore file
           rm .gitignore
       - name: Deploy 🚀

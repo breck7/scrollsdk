@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = require("path")
+const { Utils } = require("../products/Utils.js")
 
 import { particlesTypes } from "../products/particlesTypes"
 
@@ -108,19 +109,10 @@ class Disk {
     particle.destroy()
   }
   static _getTextUrl = async (url: particlesTypes.url) => {
-    // todo: https://visionmedia.github.io/superagent/
-    // build well tested version of this.
-    // have a mock server returning with all sorts of things.
     const res = await Disk.getUrl(url)
-    // todo: leave it up to user to specfiy text ro body
-    return res.body || res.text || ""
+    return res.body === undefined ? res.text : res.body
   }
-  static getUrl = async (url: particlesTypes.url) => {
-    const superagent = require("superagent")
-    const agent = superagent.agent()
-    const res = await agent.get(url)
-    return res
-  }
+  static getUrl = (url: particlesTypes.url) => Utils.httpRequest(url)
   static download = async (url: particlesTypes.url, destination: particlesTypes.filepath) => {
     const result = await Disk._getTextUrl(url)
     Disk.write(destination, result)

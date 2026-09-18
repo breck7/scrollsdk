@@ -16,7 +16,7 @@ Download as CSV | TSV | JSON
 
 br
 
-node_modules/scroll-cli/microlangs/changes.parsers
+node_modules/scroll/microlangs/changes.parsers
 
 thinColumns 4
 

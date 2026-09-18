@@ -12,7 +12,7 @@ const { Utils } = require("../products/Utils.js")
 const { Timer } = Utils
 const { Particle } = require("../products/Particle.js")
 const { Fusion } = require("../products/Fusion.js")
-const { ScrollFile } = require("scroll-cli")
+const { ScrollFile } = require("scroll")
 
 class PerfTest {
   constructor(folderPath) {
